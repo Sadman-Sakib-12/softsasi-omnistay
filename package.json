@@ -1,0 +1,20 @@
+{
+  "name": "softsasi-omnistay",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@12.11.2",
+  "scripts": {
+    "dev:web": "pnpm --filter @omnistay/web dev",
+    "dev:admin": "pnpm --filter @omnistay/admin dev",
+    "dev:api": "pnpm --filter @omnistay/api start:dev",
+    "build:web": "pnpm --filter @omnistay/web build",
+    "build:admin": "pnpm --filter @omnistay/admin build",
+    "build:api": "pnpm --filter @omnistay/api build",
+    "dev:backend": "pnpm --filter @omnistay/backend start:dev",
+    "build:backend": "pnpm --filter @omnistay/backend build"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}
