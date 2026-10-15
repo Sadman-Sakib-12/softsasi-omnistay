@@ -48,3 +48,8 @@ Thumbs.db
 # Temp
 .tmp/
 .temp/
+
+# Local environment secrets
+.env
+.env.*
+!.env.example
