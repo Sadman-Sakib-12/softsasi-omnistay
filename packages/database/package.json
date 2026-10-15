@@ -3,7 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "db:validate": "prisma validate",
     "db:pull": "prisma db pull",
     "db:generate": "prisma generate",
@@ -16,7 +25,9 @@
     "pg": "^8.23.1"
   },
   "devDependencies": {
+    "@types/node": "^24.0.0",
     "@types/pg": "^8.23.1",
-    "prisma": "7.10.0"
+    "prisma": "7.10.0",
+    "typescript": "^6.0.2"
   }
 }
