@@ -23,6 +23,19 @@ describe('AppController (e2e)', () => {
       .expect('Hello World!');
   });
 
+  it('should query PostgreSQL database through PrismaService', async () => {
+    const { PrismaService } = await import('../src/infrastructure/database/prisma.service.js');
+    const prisma = app.get(PrismaService);
+    const result = await prisma.$queryRaw<Array<{ result: number }>>`SELECT 1 as result`;
+    expect(result[0].result).toBe(1);
+
+    const users = await prisma.user.findMany();
+    expect(Array.isArray(users)).toBe(true);
+
+    const organizations = await prisma.organization.findMany();
+    expect(Array.isArray(organizations)).toBe(true);
+  });
+
   afterEach(async () => {
     await app.close();
   });
