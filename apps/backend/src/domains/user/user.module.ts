@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './controllers/user.controller.js';
 import { UserService } from './services/user.service.js';
-import { PrismaModule } from '../../infrastructure/database/prisma.module.js';
+import { PrismaModule } from '@omnistay/database';
 
 @Module({
   imports: [PrismaModule],
@@ -9,6 +9,6 @@ import { PrismaModule } from '../../infrastructure/database/prisma.module.js';
   providers: [UserService],
   exports: [UserService],
 })
-export class UserModule {}
+export class UserModule { }
 
 export const UsersModule = UserModule;

@@ -54,6 +54,8 @@ export const ModelName = {
   User: 'User',
   Organization: 'Organization',
   Role: 'Role',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
   Membership: 'Membership',
   Hotel: 'Hotel',
   RefreshToken: 'RefreshToken'
@@ -85,6 +87,9 @@ export const UserScalarFieldEnum = {
   isTwoFactorEnabled: 'isTwoFactorEnabled',
   twoFactorConfirmedAt: 'twoFactorConfirmedAt',
   twoFactorRecoveryCodes: 'twoFactorRecoveryCodes',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -96,6 +101,12 @@ export const OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
+  domain: 'domain',
+  subdomain: 'subdomain',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -110,6 +121,9 @@ export const RoleScalarFieldEnum = {
   description: 'description',
   permissions: 'permissions',
   isSystemRole: 'isSystemRole',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -117,11 +131,34 @@ export const RoleScalarFieldEnum = {
 export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
 
 
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const RolePermissionScalarFieldEnum = {
+  roleId: 'roleId',
+  permissionId: 'permissionId',
+  createdAt: 'createdAt'
+} as const
+
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
 export const MembershipScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   organizationId: 'organizationId',
   roleId: 'roleId',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -136,6 +173,9 @@ export const HotelScalarFieldEnum = {
   code: 'code',
   timezone: 'timezone',
   currency: 'currency',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -150,6 +190,7 @@ export const RefreshTokenScalarFieldEnum = {
   familyId: 'familyId',
   isRevoked: 'isRevoked',
   expiresAt: 'expiresAt',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

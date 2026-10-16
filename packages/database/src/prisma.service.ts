@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@omnistay/database';
+import { PrismaClient } from '../generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { config } from 'dotenv';
 import path from 'node:path';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 if (!process.env.DATABASE_URL) {
-  config({ path: path.resolve(currentDir, '../../../../.env') });
+  config({ path: path.resolve(currentDir, '../../../.env') });
 }
 if (!process.env.DATABASE_URL) {
   config({ path: path.resolve(process.cwd(), '.env') });

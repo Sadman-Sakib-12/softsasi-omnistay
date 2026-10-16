@@ -33,6 +33,9 @@ export type UserMinAggregateOutputType = {
   twoFactorSecret: string | null
   isTwoFactorEnabled: boolean | null
   twoFactorConfirmedAt: Date | null
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,6 +49,9 @@ export type UserMaxAggregateOutputType = {
   twoFactorSecret: string | null
   isTwoFactorEnabled: boolean | null
   twoFactorConfirmedAt: Date | null
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +66,9 @@ export type UserCountAggregateOutputType = {
   isTwoFactorEnabled: number
   twoFactorConfirmedAt: number
   twoFactorRecoveryCodes: number
+  deletedAt: number
+  createdBy: number
+  updatedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -75,6 +84,9 @@ export type UserMinAggregateInputType = {
   twoFactorSecret?: true
   isTwoFactorEnabled?: true
   twoFactorConfirmedAt?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +100,9 @@ export type UserMaxAggregateInputType = {
   twoFactorSecret?: true
   isTwoFactorEnabled?: true
   twoFactorConfirmedAt?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -102,6 +117,9 @@ export type UserCountAggregateInputType = {
   isTwoFactorEnabled?: true
   twoFactorConfirmedAt?: true
   twoFactorRecoveryCodes?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -189,6 +207,9 @@ export type UserGroupByOutputType = {
   isTwoFactorEnabled: boolean
   twoFactorConfirmedAt: Date | null
   twoFactorRecoveryCodes: string[]
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -215,7 +236,7 @@ export type UserWhereInput = {
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  id?: Prisma.StringFilter<"User"> | string
+  id?: Prisma.UuidFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
@@ -224,6 +245,9 @@ export type UserWhereInput = {
   isTwoFactorEnabled?: Prisma.BoolFilter<"User"> | boolean
   twoFactorConfirmedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   twoFactorRecoveryCodes?: Prisma.StringNullableListFilter<"User">
+  deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"User"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   memberships?: Prisma.MembershipListRelationFilter
@@ -240,6 +264,9 @@ export type UserOrderByWithRelationInput = {
   isTwoFactorEnabled?: Prisma.SortOrder
   twoFactorConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   twoFactorRecoveryCodes?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   memberships?: Prisma.MembershipOrderByRelationAggregateInput
@@ -259,6 +286,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   isTwoFactorEnabled?: Prisma.BoolFilter<"User"> | boolean
   twoFactorConfirmedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   twoFactorRecoveryCodes?: Prisma.StringNullableListFilter<"User">
+  deletedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"User"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   memberships?: Prisma.MembershipListRelationFilter
@@ -275,6 +305,9 @@ export type UserOrderByWithAggregationInput = {
   isTwoFactorEnabled?: Prisma.SortOrder
   twoFactorConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   twoFactorRecoveryCodes?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -286,7 +319,7 @@ export type UserScalarWhereWithAggregatesInput = {
   AND?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"User"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"User"> | string
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
@@ -295,6 +328,9 @@ export type UserScalarWhereWithAggregatesInput = {
   isTwoFactorEnabled?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   twoFactorConfirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   twoFactorRecoveryCodes?: Prisma.StringNullableListFilter<"User">
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  createdBy?: Prisma.UuidNullableWithAggregatesFilter<"User"> | string | null
+  updatedBy?: Prisma.UuidNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -309,6 +345,9 @@ export type UserCreateInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
@@ -325,6 +364,9 @@ export type UserUncheckedCreateInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
@@ -341,6 +383,9 @@ export type UserUpdateInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
@@ -357,6 +402,9 @@ export type UserUncheckedUpdateInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
@@ -373,6 +421,9 @@ export type UserCreateManyInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -387,6 +438,9 @@ export type UserUpdateManyMutationInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -401,6 +455,9 @@ export type UserUncheckedUpdateManyInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -423,6 +480,9 @@ export type UserCountOrderByAggregateInput = {
   isTwoFactorEnabled?: Prisma.SortOrder
   twoFactorConfirmedAt?: Prisma.SortOrder
   twoFactorRecoveryCodes?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -436,6 +496,9 @@ export type UserMaxOrderByAggregateInput = {
   twoFactorSecret?: Prisma.SortOrder
   isTwoFactorEnabled?: Prisma.SortOrder
   twoFactorConfirmedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -449,6 +512,9 @@ export type UserMinOrderByAggregateInput = {
   twoFactorSecret?: Prisma.SortOrder
   isTwoFactorEnabled?: Prisma.SortOrder
   twoFactorConfirmedAt?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -525,6 +591,9 @@ export type UserCreateWithoutMembershipsInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
@@ -540,6 +609,9 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
@@ -571,6 +643,9 @@ export type UserUpdateWithoutMembershipsInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
@@ -586,6 +661,9 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
@@ -601,6 +679,9 @@ export type UserCreateWithoutRefreshTokensInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
@@ -616,6 +697,9 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserCreatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
@@ -647,6 +731,9 @@ export type UserUpdateWithoutRefreshTokensInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
@@ -662,6 +749,9 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   isTwoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   twoFactorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   twoFactorRecoveryCodes?: Prisma.UserUpdatetwoFactorRecoveryCodesInput | string[]
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
@@ -717,6 +807,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: boolean
   twoFactorRecoveryCodes?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
@@ -734,6 +827,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: boolean
   twoFactorRecoveryCodes?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -748,6 +844,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: boolean
   twoFactorRecoveryCodes?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -762,11 +861,14 @@ export type UserSelectScalar = {
   isTwoFactorEnabled?: boolean
   twoFactorConfirmedAt?: boolean
   twoFactorRecoveryCodes?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "status" | "twoFactorSecret" | "isTwoFactorEnabled" | "twoFactorConfirmedAt" | "twoFactorRecoveryCodes" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "status" | "twoFactorSecret" | "isTwoFactorEnabled" | "twoFactorConfirmedAt" | "twoFactorRecoveryCodes" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
@@ -791,6 +893,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     isTwoFactorEnabled: boolean
     twoFactorConfirmedAt: Date | null
     twoFactorRecoveryCodes: string[]
+    deletedAt: Date | null
+    createdBy: string | null
+    updatedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1227,6 +1332,9 @@ export interface UserFieldRefs {
   readonly isTwoFactorEnabled: Prisma.FieldRef<"User", 'Boolean'>
   readonly twoFactorConfirmedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly twoFactorRecoveryCodes: Prisma.FieldRef<"User", 'String[]'>
+  readonly deletedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly createdBy: Prisma.FieldRef<"User", 'String'>
+  readonly updatedBy: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

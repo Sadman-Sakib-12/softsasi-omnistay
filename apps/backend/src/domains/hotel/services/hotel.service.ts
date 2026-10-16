@@ -4,13 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/database/prisma.service.js';
+import { PrismaService } from '@omnistay/database';
 import { CreateHotelDto } from '../dto/create-hotel.dto.js';
 import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
 
 @Injectable()
 export class HotelService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Lists properties/hotels belonging to the authenticated tenant organization.

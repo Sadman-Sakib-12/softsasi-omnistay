@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OrganizationController } from './controllers/organization.controller.js';
 import { OrganizationService } from './services/organization.service.js';
-import { PrismaModule } from '../../infrastructure/database/prisma.module.js';
+import { PrismaModule } from '@omnistay/database';
 
 @Module({
   imports: [PrismaModule],
@@ -9,6 +9,6 @@ import { PrismaModule } from '../../infrastructure/database/prisma.module.js';
   providers: [OrganizationService],
   exports: [OrganizationService],
 })
-export class OrganizationModule {}
+export class OrganizationModule { }
 
 export const OrganizationsModule = OrganizationModule;

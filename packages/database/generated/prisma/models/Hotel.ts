@@ -31,6 +31,9 @@ export type HotelMinAggregateOutputType = {
   code: string | null
   timezone: string | null
   currency: string | null
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +45,9 @@ export type HotelMaxAggregateOutputType = {
   code: string | null
   timezone: string | null
   currency: string | null
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +59,9 @@ export type HotelCountAggregateOutputType = {
   code: number
   timezone: number
   currency: number
+  deletedAt: number
+  createdBy: number
+  updatedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +75,9 @@ export type HotelMinAggregateInputType = {
   code?: true
   timezone?: true
   currency?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +89,9 @@ export type HotelMaxAggregateInputType = {
   code?: true
   timezone?: true
   currency?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +103,9 @@ export type HotelCountAggregateInputType = {
   code?: true
   timezone?: true
   currency?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +190,9 @@ export type HotelGroupByOutputType = {
   code: string
   timezone: string
   currency: string
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: HotelCountAggregateOutputType | null
@@ -198,12 +219,15 @@ export type HotelWhereInput = {
   AND?: Prisma.HotelWhereInput | Prisma.HotelWhereInput[]
   OR?: Prisma.HotelWhereInput[]
   NOT?: Prisma.HotelWhereInput | Prisma.HotelWhereInput[]
-  id?: Prisma.StringFilter<"Hotel"> | string
-  organizationId?: Prisma.StringFilter<"Hotel"> | string
+  id?: Prisma.UuidFilter<"Hotel"> | string
+  organizationId?: Prisma.UuidFilter<"Hotel"> | string
   name?: Prisma.StringFilter<"Hotel"> | string
   code?: Prisma.StringFilter<"Hotel"> | string
   timezone?: Prisma.StringFilter<"Hotel"> | string
   currency?: Prisma.StringFilter<"Hotel"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Hotel"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -216,6 +240,9 @@ export type HotelOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -227,11 +254,14 @@ export type HotelWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.HotelWhereInput | Prisma.HotelWhereInput[]
   OR?: Prisma.HotelWhereInput[]
   NOT?: Prisma.HotelWhereInput | Prisma.HotelWhereInput[]
-  organizationId?: Prisma.StringFilter<"Hotel"> | string
+  organizationId?: Prisma.UuidFilter<"Hotel"> | string
   name?: Prisma.StringFilter<"Hotel"> | string
   code?: Prisma.StringFilter<"Hotel"> | string
   timezone?: Prisma.StringFilter<"Hotel"> | string
   currency?: Prisma.StringFilter<"Hotel"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Hotel"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -244,6 +274,9 @@ export type HotelOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.HotelCountOrderByAggregateInput
@@ -255,12 +288,15 @@ export type HotelScalarWhereWithAggregatesInput = {
   AND?: Prisma.HotelScalarWhereWithAggregatesInput | Prisma.HotelScalarWhereWithAggregatesInput[]
   OR?: Prisma.HotelScalarWhereWithAggregatesInput[]
   NOT?: Prisma.HotelScalarWhereWithAggregatesInput | Prisma.HotelScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
-  organizationId?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Hotel"> | string
+  organizationId?: Prisma.UuidWithAggregatesFilter<"Hotel"> | string
   name?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
   code?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
   timezone?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
   currency?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Hotel"> | Date | string | null
+  createdBy?: Prisma.UuidNullableWithAggregatesFilter<"Hotel"> | string | null
+  updatedBy?: Prisma.UuidNullableWithAggregatesFilter<"Hotel"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Hotel"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Hotel"> | Date | string
 }
@@ -271,6 +307,9 @@ export type HotelCreateInput = {
   code: string
   timezone?: string
   currency?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
@@ -283,6 +322,9 @@ export type HotelUncheckedCreateInput = {
   code: string
   timezone?: string
   currency?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -293,6 +335,9 @@ export type HotelUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
@@ -305,6 +350,9 @@ export type HotelUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -316,6 +364,9 @@ export type HotelCreateManyInput = {
   code: string
   timezone?: string
   currency?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -326,6 +377,9 @@ export type HotelUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -337,6 +391,9 @@ export type HotelUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -363,6 +420,9 @@ export type HotelCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -374,6 +434,9 @@ export type HotelMaxOrderByAggregateInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -385,6 +448,9 @@ export type HotelMinOrderByAggregateInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -437,6 +503,9 @@ export type HotelCreateWithoutOrganizationInput = {
   code: string
   timezone?: string
   currency?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -447,6 +516,9 @@ export type HotelUncheckedCreateWithoutOrganizationInput = {
   code: string
   timezone?: string
   currency?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -481,12 +553,15 @@ export type HotelScalarWhereInput = {
   AND?: Prisma.HotelScalarWhereInput | Prisma.HotelScalarWhereInput[]
   OR?: Prisma.HotelScalarWhereInput[]
   NOT?: Prisma.HotelScalarWhereInput | Prisma.HotelScalarWhereInput[]
-  id?: Prisma.StringFilter<"Hotel"> | string
-  organizationId?: Prisma.StringFilter<"Hotel"> | string
+  id?: Prisma.UuidFilter<"Hotel"> | string
+  organizationId?: Prisma.UuidFilter<"Hotel"> | string
   name?: Prisma.StringFilter<"Hotel"> | string
   code?: Prisma.StringFilter<"Hotel"> | string
   timezone?: Prisma.StringFilter<"Hotel"> | string
   currency?: Prisma.StringFilter<"Hotel"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Hotel"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
 }
@@ -497,6 +572,9 @@ export type HotelCreateManyOrganizationInput = {
   code: string
   timezone?: string
   currency?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -507,6 +585,9 @@ export type HotelUpdateWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -517,6 +598,9 @@ export type HotelUncheckedUpdateWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -527,6 +611,9 @@ export type HotelUncheckedUpdateManyWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -540,6 +627,9 @@ export type HotelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -552,6 +642,9 @@ export type HotelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -564,6 +657,9 @@ export type HotelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -576,11 +672,14 @@ export type HotelSelectScalar = {
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type HotelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "code" | "timezone" | "currency" | "createdAt" | "updatedAt", ExtArgs["result"]["hotel"]>
+export type HotelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "code" | "timezone" | "currency" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["hotel"]>
 export type HotelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
@@ -603,6 +702,9 @@ export type $HotelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     code: string
     timezone: string
     currency: string
+    deletedAt: Date | null
+    createdBy: string | null
+    updatedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["hotel"]>
@@ -1035,6 +1137,9 @@ export interface HotelFieldRefs {
   readonly code: Prisma.FieldRef<"Hotel", 'String'>
   readonly timezone: Prisma.FieldRef<"Hotel", 'String'>
   readonly currency: Prisma.FieldRef<"Hotel", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"Hotel", 'DateTime'>
+  readonly createdBy: Prisma.FieldRef<"Hotel", 'String'>
+  readonly updatedBy: Prisma.FieldRef<"Hotel", 'String'>
   readonly createdAt: Prisma.FieldRef<"Hotel", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Hotel", 'DateTime'>
 }

@@ -28,6 +28,12 @@ export type OrganizationMinAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
+  domain: string | null
+  subdomain: string | null
+  status: string | null
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +42,12 @@ export type OrganizationMaxAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
+  domain: string | null
+  subdomain: string | null
+  status: string | null
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +56,12 @@ export type OrganizationCountAggregateOutputType = {
   id: number
   name: number
   slug: number
+  domain: number
+  subdomain: number
+  status: number
+  deletedAt: number
+  createdBy: number
+  updatedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +72,12 @@ export type OrganizationMinAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  domain?: true
+  subdomain?: true
+  status?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +86,12 @@ export type OrganizationMaxAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  domain?: true
+  subdomain?: true
+  status?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +100,12 @@ export type OrganizationCountAggregateInputType = {
   id?: true
   name?: true
   slug?: true
+  domain?: true
+  subdomain?: true
+  status?: true
+  deletedAt?: true
+  createdBy?: true
+  updatedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +187,12 @@ export type OrganizationGroupByOutputType = {
   id: string
   name: string
   slug: string
+  domain: string | null
+  subdomain: string | null
+  status: string
+  deletedAt: Date | null
+  createdBy: string | null
+  updatedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: OrganizationCountAggregateOutputType | null
@@ -177,9 +219,15 @@ export type OrganizationWhereInput = {
   AND?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
-  id?: Prisma.StringFilter<"Organization"> | string
+  id?: Prisma.UuidFilter<"Organization"> | string
   name?: Prisma.StringFilter<"Organization"> | string
   slug?: Prisma.StringFilter<"Organization"> | string
+  domain?: Prisma.StringNullableFilter<"Organization"> | string | null
+  subdomain?: Prisma.StringNullableFilter<"Organization"> | string | null
+  status?: Prisma.StringFilter<"Organization"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"Organization"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   memberships?: Prisma.MembershipListRelationFilter
@@ -191,6 +239,12 @@ export type OrganizationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  domain?: Prisma.SortOrderInput | Prisma.SortOrder
+  subdomain?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   memberships?: Prisma.MembershipOrderByRelationAggregateInput
@@ -205,6 +259,12 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   name?: Prisma.StringFilter<"Organization"> | string
+  domain?: Prisma.StringNullableFilter<"Organization"> | string | null
+  subdomain?: Prisma.StringNullableFilter<"Organization"> | string | null
+  status?: Prisma.StringFilter<"Organization"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
+  createdBy?: Prisma.UuidNullableFilter<"Organization"> | string | null
+  updatedBy?: Prisma.UuidNullableFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   memberships?: Prisma.MembershipListRelationFilter
@@ -216,6 +276,12 @@ export type OrganizationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  domain?: Prisma.SortOrderInput | Prisma.SortOrder
+  subdomain?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
@@ -227,9 +293,15 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   AND?: Prisma.OrganizationScalarWhereWithAggregatesInput | Prisma.OrganizationScalarWhereWithAggregatesInput[]
   OR?: Prisma.OrganizationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OrganizationScalarWhereWithAggregatesInput | Prisma.OrganizationScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Organization"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Organization"> | string
   name?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
+  domain?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  subdomain?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  status?: Prisma.StringWithAggregatesFilter<"Organization"> | string
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+  createdBy?: Prisma.UuidNullableWithAggregatesFilter<"Organization"> | string | null
+  updatedBy?: Prisma.UuidNullableWithAggregatesFilter<"Organization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
 }
@@ -238,6 +310,12 @@ export type OrganizationCreateInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
@@ -249,6 +327,12 @@ export type OrganizationUncheckedCreateInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
@@ -260,6 +344,12 @@ export type OrganizationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
@@ -271,6 +361,12 @@ export type OrganizationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -282,6 +378,12 @@ export type OrganizationCreateManyInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -290,6 +392,12 @@ export type OrganizationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -298,6 +406,12 @@ export type OrganizationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -306,6 +420,12 @@ export type OrganizationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
+  subdomain?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -314,6 +434,12 @@ export type OrganizationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
+  subdomain?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -322,6 +448,12 @@ export type OrganizationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
+  subdomain?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  createdBy?: Prisma.SortOrder
+  updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -377,6 +509,12 @@ export type OrganizationCreateWithoutRolesInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
@@ -387,6 +525,12 @@ export type OrganizationUncheckedCreateWithoutRolesInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
@@ -413,6 +557,12 @@ export type OrganizationUpdateWithoutRolesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
@@ -423,6 +573,12 @@ export type OrganizationUncheckedUpdateWithoutRolesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -433,6 +589,12 @@ export type OrganizationCreateWithoutMembershipsInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
@@ -443,6 +605,12 @@ export type OrganizationUncheckedCreateWithoutMembershipsInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
@@ -469,6 +637,12 @@ export type OrganizationUpdateWithoutMembershipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
@@ -479,6 +653,12 @@ export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -489,6 +669,12 @@ export type OrganizationCreateWithoutHotelsInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
@@ -499,6 +685,12 @@ export type OrganizationUncheckedCreateWithoutHotelsInput = {
   id?: string
   name: string
   slug: string
+  domain?: string | null
+  subdomain?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
@@ -525,6 +717,12 @@ export type OrganizationUpdateWithoutHotelsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
@@ -535,6 +733,12 @@ export type OrganizationUncheckedUpdateWithoutHotelsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -594,6 +798,12 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   name?: boolean
   slug?: boolean
+  domain?: boolean
+  subdomain?: boolean
+  status?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   memberships?: boolean | Prisma.Organization$membershipsArgs<ExtArgs>
@@ -606,6 +816,12 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   slug?: boolean
+  domain?: boolean
+  subdomain?: boolean
+  status?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["organization"]>
@@ -614,6 +830,12 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   slug?: boolean
+  domain?: boolean
+  subdomain?: boolean
+  status?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["organization"]>
@@ -622,11 +844,17 @@ export type OrganizationSelectScalar = {
   id?: boolean
   name?: boolean
   slug?: boolean
+  domain?: boolean
+  subdomain?: boolean
+  status?: boolean
+  deletedAt?: boolean
+  createdBy?: boolean
+  updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "subdomain" | "status" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.Organization$membershipsArgs<ExtArgs>
   roles?: boolean | Prisma.Organization$rolesArgs<ExtArgs>
@@ -647,6 +875,12 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     name: string
     slug: string
+    domain: string | null
+    subdomain: string | null
+    status: string
+    deletedAt: Date | null
+    createdBy: string | null
+    updatedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["organization"]>
@@ -1078,6 +1312,12 @@ export interface OrganizationFieldRefs {
   readonly id: Prisma.FieldRef<"Organization", 'String'>
   readonly name: Prisma.FieldRef<"Organization", 'String'>
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
+  readonly domain: Prisma.FieldRef<"Organization", 'String'>
+  readonly subdomain: Prisma.FieldRef<"Organization", 'String'>
+  readonly status: Prisma.FieldRef<"Organization", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly createdBy: Prisma.FieldRef<"Organization", 'String'>
+  readonly updatedBy: Prisma.FieldRef<"Organization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Organization", 'DateTime'>
 }

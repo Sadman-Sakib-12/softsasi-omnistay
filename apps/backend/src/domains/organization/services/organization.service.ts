@@ -4,13 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/database/prisma.service.js';
+import { PrismaService } from '@omnistay/database';
 import { CreateOrganizationDto } from '../dto/create-organization.dto.js';
 import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
 
 @Injectable()
 export class OrganizationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Retrieves all organizations where the authenticated user has verified membership.

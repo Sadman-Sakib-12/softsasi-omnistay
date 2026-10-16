@@ -3,14 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/database/prisma.service.js';
+import { PrismaService } from '@omnistay/database';
 import { UpdateUserDto } from '../dto/update-user.dto.js';
 import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
 import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Retrieves profile of currently authenticated user without leaking credentials or secrets.

@@ -7,3 +7,5 @@ allowBuilds:
   "@prisma/engines": true
   prisma: true
   bcrypt: true
+  "@scarf/scarf": false
+  "msgpackr-extract": false

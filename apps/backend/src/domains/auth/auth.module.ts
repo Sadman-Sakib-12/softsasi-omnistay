@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { PrismaModule } from '../../infrastructure/database/prisma.module.js';
+import { PrismaModule } from '@omnistay/database';
 import { AuthController } from './controllers/auth.controller.js';
 import { AuthService } from './services/auth.service.js';
 import { CryptoService } from './services/crypto.service.js';
@@ -48,4 +48,4 @@ import { TenantGuard } from '../../common/guards/tenant.guard.js';
     JwtModule,
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

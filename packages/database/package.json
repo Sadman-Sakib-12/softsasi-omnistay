@@ -16,13 +16,16 @@
     "db:validate": "prisma validate",
     "db:pull": "prisma db pull",
     "db:generate": "prisma generate",
-    "db:status": "prisma migrate status"
+    "db:status": "prisma migrate status",
+    "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
+    "@nestjs/common": "^12.0.1",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
     "dotenv": "^18.0.7",
-    "pg": "^8.23.1"
+    "pg": "^8.23.1",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

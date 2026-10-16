@@ -2,7 +2,9 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { PrismaModule } from './infrastructure/database/prisma.module.js';
+import { PrismaModule } from '@omnistay/database';
+import { RedisModule } from './infrastructure/redis/redis.module.js';
+import { QueueModule } from './infrastructure/queue/queue.module.js';
 import { AuthModule } from './domains/auth/auth.module.js';
 import { HealthModule } from './domains/health/health.module.js';
 import { OrganizationModule } from './domains/organization/organization.module.js';
@@ -20,6 +22,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'backend',
     }),
     PrismaModule,
+    RedisModule,
+    QueueModule,
     AuthModule,
     HealthModule,
     OrganizationModule,
