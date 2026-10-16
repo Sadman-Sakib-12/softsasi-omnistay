@@ -24,7 +24,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('should query PostgreSQL database through PrismaService', async () => {
-    const { PrismaService } = await import('../src/infrastructure/database/prisma.service.js');
+    const { PrismaService } = await import('@omnistay/database');
     const prisma = app.get(PrismaService);
     const result = await prisma.$queryRaw<Array<{ result: number }>>`SELECT 1 as result`;
     expect(result[0].result).toBe(1);

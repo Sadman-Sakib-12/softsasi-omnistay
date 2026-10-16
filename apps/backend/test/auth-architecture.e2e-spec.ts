@@ -3,10 +3,11 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
-import { PrismaService } from '../src/infrastructure/database/prisma.service.js';
+import { PrismaService } from '@omnistay/database';
 import { TotpService } from '../src/domains/auth/services/totp.service.js';
 import { CryptoService } from '../src/domains/auth/services/crypto.service.js';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter.js';
+import { setupSwagger } from '../src/setup-swagger.js';
 import bcrypt from 'bcryptjs';
 
 describe('OmniStay 360 Architecture & Auth (e2e)', () => {
@@ -20,6 +21,7 @@ describe('OmniStay 360 Architecture & Auth (e2e)', () => {
   let frontDeskUser: any;
   let ownerUser: any;
   let ownerPlainSecret: string;
+  let sharedOwnerToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,6 +31,7 @@ describe('OmniStay 360 Architecture & Auth (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
     app.useGlobalFilters(new HttpExceptionFilter());
+    setupSwagger(app);
     await app.init();
 
     prisma = app.get(PrismaService);
@@ -230,6 +233,7 @@ describe('OmniStay 360 Architecture & Auth (e2e)', () => {
       expect(res.body.role).toBe('Company Owner/GM');
 
       ownerTokens = { accessToken: res.body.accessToken, refreshToken: res.body.refreshToken };
+      sharedOwnerToken = res.body.accessToken;
     });
 
     it('should allow access to profile with valid access token', async () => {
@@ -268,16 +272,7 @@ describe('OmniStay 360 Architecture & Auth (e2e)', () => {
         .post('/api/v1/auth/login')
         .send({ email: 'frontdesk.test@omnistay.com', password: 'Password123!' });
       frontDeskToken = fdRes.body.accessToken;
-
-      const ownerLogin = await request(app.getHttpServer())
-        .post('/api/v1/auth/login')
-        .send({ email: 'owner.test@omnistay.com', password: 'Password123!' });
-
-      const code = totpService.generateToken(ownerPlainSecret);
-      const ownerVerify = await request(app.getHttpServer())
-        .post('/api/v1/auth/2fa/verify')
-        .send({ tempToken: ownerLogin.body.tempToken, code });
-      ownerToken = ownerVerify.body.accessToken;
+      ownerToken = sharedOwnerToken;
     });
 
     it('should allow Company Owner/GM to access financial reports', async () => {
@@ -316,4 +311,59 @@ describe('OmniStay 360 Architecture & Auth (e2e)', () => {
         .expect(200);
     });
   });
+
+  describe('OpenAPI 3.1 & Password Reset Endpoints', () => {
+    it('should serve Swagger UI at /api/docs', async () => {
+      const res = await request(app.getHttpServer()).get('/api/docs/').expect(200);
+      expect(res.text).toContain('swagger-ui');
+    });
+
+    it('should serve valid OpenAPI 3.1.0 document at /api/docs-json', async () => {
+      const res = await request(app.getHttpServer()).get('/api/docs-json').expect(200);
+      expect(res.body.openapi).toBe('3.1.0');
+      expect(res.body.info.title).toBe('Softsasi OmniStay 360 Enterprise Suite API');
+      expect(res.body.components.securitySchemes['JWT-Auth']).toBeDefined();
+      expect(res.body.paths['/api/v1/auth/password-reset/request']).toBeDefined();
+      expect(res.body.paths['/api/v1/auth/password-reset/confirm']).toBeDefined();
+    });
+
+    it('should accept password reset request for registered user and return generic response', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/v1/auth/password-reset/request')
+        .send({ email: 'frontdesk.test@omnistay.com' })
+        .expect(200);
+
+      expect(res.body.message).toContain('If an account exists');
+    });
+
+    it('should return identical generic message for unknown email to mitigate enumeration', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/v1/auth/password-reset/request')
+        .send({ email: 'nonexistent.user.999@omnistay.com' })
+        .expect(200);
+
+      expect(res.body.message).toContain('If an account exists');
+    });
+
+    it('should reject password reset confirmation with invalid token (400 Bad Request)', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/password-reset/confirm')
+        .send({
+          token: 'invalid_token_123',
+          newPassword: 'BrandNewPassword123!',
+        })
+        .expect(400);
+    });
+
+    it('should reject password reset when new password does not meet complexity requirements', async () => {
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/password-reset/confirm')
+        .send({
+          token: 'some_token',
+          newPassword: 'simple',
+        })
+        .expect(400);
+    });
+  });
 });
+
