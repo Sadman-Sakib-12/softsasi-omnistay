@@ -1,17 +1,22 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../../infrastructure/database/prisma.service.js';
+import { PrismaService } from '@omnistay/database';
+import { RedisService } from '../../../infrastructure/redis/redis.service.js';
+import { NotificationProducer } from '../../../infrastructure/queue/notification.producer.js';
 import { CryptoService } from './crypto.service.js';
 import { TotpService } from './totp.service.js';
 import { RateLimiterService } from './rate-limiter.service.js';
 import { LoginDto } from '../dto/login.dto.js';
 import { Verify2faDto } from '../dto/verify-2fa.dto.js';
 import { Disable2faDto } from '../dto/disable-2fa.dto.js';
+import { PasswordResetConfirmDto } from '../dto/password-reset-confirm.dto.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 
@@ -23,13 +28,19 @@ export const MANDATORY_2FA_ROLES = [
 
 @Injectable()
 export class AuthService {
+  private readonly inMemoryChallengeTokens = new Set<string>();
+  private readonly inMemoryConsumedOtps = new Set<string>();
+  private readonly inMemoryResetTokens = new Map<string, { userId: string; expiresAt: number }>();
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly cryptoService: CryptoService,
     private readonly totpService: TotpService,
     private readonly rateLimiter: RateLimiterService,
-  ) {}
+    @Optional() private readonly redisService?: RedisService,
+    @Optional() private readonly notificationProducer?: NotificationProducer,
+  ) { }
 
   /**
    * Authenticates user credentials.
@@ -91,13 +102,15 @@ export class AuthService {
         });
       }
 
-      // Generate short-lived purpose-restricted challenge token (5 min expiry)
+      // Generate short-lived purpose-restricted challenge token (5 min expiry) with unique jti
+      const jti = crypto.randomUUID();
       const tempToken = this.jwtService.sign(
         {
           sub: user.id,
           email: user.email,
           organizationId: activeOrg?.id,
           type: '2FA_CHALLENGE',
+          jti,
         },
         { expiresIn: '5m' },
       );
@@ -108,10 +121,10 @@ export class AuthService {
         message: 'Two-factor authentication code required',
         ...(plainSecret
           ? {
-              enrollmentRequired: true,
-              secret: plainSecret,
-              otpAuthUri,
-            }
+            enrollmentRequired: true,
+            secret: plainSecret,
+            otpAuthUri,
+          }
           : {}),
       };
     }
@@ -138,6 +151,22 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token purpose');
     }
 
+    // Single-use challenge token enforcement (check if already consumed)
+    const jti = decoded.jti || dto.tempToken;
+    if (jti) {
+      const challengeKey = `omnistay:challenge_used:${jti}`;
+      if (this.redisService?.isReady()) {
+        const used = await this.redisService.get(challengeKey);
+        if (used) {
+          throw new UnauthorizedException('2FA challenge token has already been used');
+        }
+      } else {
+        if (this.inMemoryChallengeTokens.has(jti)) {
+          throw new UnauthorizedException('2FA challenge token has already been used');
+        }
+      }
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { id: decoded.sub },
       include: {
@@ -152,6 +181,21 @@ export class AuthService {
 
     if (!user || !user.twoFactorSecret) {
       throw new UnauthorizedException('Two-factor authentication is not configured for this account');
+    }
+
+    // OTP Replay resistance check
+    if (dto.code) {
+      const otpKey = `omnistay:consumed_otp:${user.id}:${dto.code}`;
+      if (this.redisService?.isReady()) {
+        const consumed = await this.redisService.get(otpKey);
+        if (consumed) {
+          throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
+        }
+      } else {
+        if (this.inMemoryConsumedOtps.has(otpKey)) {
+          throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
+        }
+      }
     }
 
     const decryptedSecret = this.cryptoService.decrypt(user.twoFactorSecret);
@@ -181,6 +225,26 @@ export class AuthService {
 
     if (!isCodeValid) {
       throw new UnauthorizedException('Invalid two-factor authentication code');
+    }
+
+    // Mark challenge token consumed upon successful verification to prevent replay attack
+    if (jti) {
+      const challengeKey = `omnistay:challenge_used:${jti}`;
+      if (this.redisService?.isReady()) {
+        await this.redisService.set(challengeKey, '1', 300);
+      } else {
+        this.inMemoryChallengeTokens.add(jti);
+      }
+    }
+
+    // Mark TOTP code consumed to prevent replay attack
+    if (dto.code) {
+      const otpKey = `omnistay:consumed_otp:${user.id}:${dto.code}`;
+      if (this.redisService?.isReady()) {
+        await this.redisService.set(otpKey, '1', 90);
+      } else {
+        this.inMemoryConsumedOtps.add(otpKey);
+      }
     }
 
     // Mark 2FA as officially verified and confirmed
@@ -463,10 +527,10 @@ export class AuthService {
       },
       organization: activeOrg
         ? {
-            id: activeOrg.id,
-            name: activeOrg.name,
-            slug: activeOrg.slug,
-          }
+          id: activeOrg.id,
+          name: activeOrg.name,
+          slug: activeOrg.slug,
+        }
         : null,
       role: activeRole ? activeRole.name : null,
       permissions,
@@ -496,4 +560,88 @@ export class AuthService {
       permissions: membership.role ? membership.role.permissions || [] : [],
     };
   }
+
+  /**
+   * Initiates password reset flow with generic response to prevent account enumeration.
+   * Dispatches asynchronous notification email via BullMQ.
+   */
+  async forgotPassword(email: string, ip: string) {
+    await this.rateLimiter.consume(`pwd_reset_req:${ip}`, 5, 60000);
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (user && user.status === 'ACTIVE' && !user.deletedAt) {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      const tokenHash = this.cryptoService.hashToken(rawToken);
+
+      if (this.redisService?.isReady()) {
+        await this.redisService.set(`omnistay:pwd_reset:${tokenHash}`, user.id, 900);
+      } else {
+        this.inMemoryResetTokens.set(tokenHash, {
+          userId: user.id,
+          expiresAt: Date.now() + 15 * 60 * 1000,
+        });
+      }
+
+      if (this.notificationProducer) {
+        await this.notificationProducer.sendPasswordResetEmail({
+          userId: user.id,
+          email: user.email,
+          token: rawToken,
+          expiresInMinutes: 15,
+        });
+      }
+    }
+
+    return {
+      message: 'If an account exists with that email address, a password reset link has been sent.',
+    };
+  }
+
+  /**
+   * Completes password reset, atomically consumes the token, updates hash, and revokes all active sessions.
+   */
+  async resetPassword(dto: PasswordResetConfirmDto, ip: string) {
+    await this.rateLimiter.consume(`pwd_reset_attempt:${ip}`, 5, 60000);
+
+    const tokenHash = this.cryptoService.hashToken(dto.token);
+    let userId: string | null = null;
+
+    if (this.redisService?.isReady()) {
+      userId = await this.redisService.get(`omnistay:pwd_reset:${tokenHash}`);
+      if (userId) {
+        await this.redisService.del(`omnistay:pwd_reset:${tokenHash}`);
+      }
+    } else {
+      const record = this.inMemoryResetTokens.get(tokenHash);
+      if (record && record.expiresAt > Date.now()) {
+        userId = record.userId;
+        this.inMemoryResetTokens.delete(tokenHash);
+      }
+    }
+
+    if (!userId) {
+      throw new BadRequestException('Invalid or expired password reset token');
+    }
+
+    const passwordHash = await bcrypt.hash(dto.newPassword, 12);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+
+    // Invalidate all active refresh token families for this user across all devices
+    await this.prisma.refreshToken.updateMany({
+      where: { userId },
+      data: { isRevoked: true },
+    });
+
+    return {
+      message: 'Password has been successfully updated. All active sessions have been invalidated.',
+    };
+  }
 }
+
