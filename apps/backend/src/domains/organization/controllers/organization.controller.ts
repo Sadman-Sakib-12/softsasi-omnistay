@@ -9,23 +9,45 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { OrganizationService } from '../services/organization.service.js';
 import { CreateOrganizationDto } from '../dto/create-organization.dto.js';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
 import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
 
+@ApiTags('Organizations & Tenants')
+@ApiBearerAuth('JWT-Auth')
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/organizations')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'List user organizations',
+    description: 'Retrieves all tenant organizations where current user has verified membership.',
+  })
+  @ApiResponse({ status: 200, description: 'List of tenant organizations' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getMyOrganizations(@CurrentUser() user: AuthenticatedUserPayload) {
     return this.organizationService.getUserOrganizations(user.userId);
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get organization details',
+    description: 'Retrieves organization profile by UUID, verifying membership permissions.',
+  })
+  @ApiParam({ name: 'id', description: 'Organization UUID' })
+  @ApiResponse({ status: 200, description: 'Organization profile' })
+  @ApiResponse({ status: 404, description: 'Organization not found' })
   async getOrganization(
     @Param('id') id: string,
     @CurrentUser() user: AuthenticatedUserPayload,
@@ -35,6 +57,12 @@ export class OrganizationController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Create new organization',
+    description: 'Registers a new tenant organization with unique slug and assigns creator as Owner.',
+  })
+  @ApiResponse({ status: 201, description: 'Organization successfully created' })
+  @ApiResponse({ status: 400, description: 'Invalid payload or duplicate slug' })
   async createOrganization(
     @Body(new ValidationPipe({ whitelist: true })) dto: CreateOrganizationDto,
     @CurrentUser() user: AuthenticatedUserPayload,

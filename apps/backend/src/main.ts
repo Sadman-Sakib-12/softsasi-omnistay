@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule, ObserveInstrument } from './app.module.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
+import { setupSwagger } from './setup-swagger.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -31,6 +32,9 @@ async function bootstrap() {
 
   // Global logging interceptor (records request duration with correlation ID)
   app.useGlobalInterceptors(new LoggingInterceptor());
+
+  // Mount OpenAPI 3.1.0 specification and Swagger UI
+  setupSwagger(app);
 
   await app.listen(process.env.PORT ?? 4000);
 }
