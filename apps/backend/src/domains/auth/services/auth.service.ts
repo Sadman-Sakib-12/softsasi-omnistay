@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   Optional,
@@ -22,8 +24,12 @@ import crypto from 'node:crypto';
 
 export const MANDATORY_2FA_ROLES = [
   'SuperAdmin',
+  'Platform SuperAdmin',
   'Company Owner/GM',
+  'Company Owner / GM',
+  'General Manager (GM)',
   'Financial Accountant',
+  'Chief Financial Officer / Accountant',
 ];
 
 @Injectable()
@@ -49,7 +55,7 @@ export class AuthService {
    */
   async login(dto: LoginDto, ip: string) {
     const rateLimitKey = `login:${ip}:${dto.email.toLowerCase()}`;
-    this.rateLimiter.consume(rateLimitKey, 5, 60000);
+    await this.rateLimiter.consume(rateLimitKey, 5, 60000);
 
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
@@ -72,7 +78,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    this.rateLimiter.reset(rateLimitKey);
+    await this.rateLimiter?.reset?.(rateLimitKey);
 
     // Resolve tenant / membership server-side (prevent trusting client-supplied permissions or orgs)
     const { activeOrg, activeRole, permissions } = this.resolveTenantMembership(
@@ -135,11 +141,8 @@ export class AuthService {
 
   /**
    * Verifies 6-digit TOTP code (or recovery code) against the short-lived 2FA challenge token.
-   * Unlocks administrative session and returns full access token + refresh token.
    */
   async verify2fa(dto: Verify2faDto, ip: string) {
-    this.rateLimiter.consume(`otp:${ip}`, 6, 60000);
-
     let decoded: any;
     try {
       decoded = this.jwtService.verify(dto.tempToken);
@@ -151,17 +154,32 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token purpose');
     }
 
-    // Single-use challenge token enforcement (check if already consumed)
+    const otpLimitKey = `otp:${ip}:${decoded.sub}`;
+    await this.rateLimiter.consume(otpLimitKey, 6, 60000);
+
+    // Single-use challenge token enforcement (keyed HMAC derivation prevents leaking raw token/jti)
     const jti = decoded.jti || dto.tempToken;
+    let challengeDigest: string | undefined;
     if (jti) {
-      const challengeKey = `omnistay:challenge_used:${jti}`;
+      challengeDigest = this.cryptoService.hashChallengeKey(jti);
+      const challengeKey = `omnistay:challenge_used:${challengeDigest}`;
       if (this.redisService?.isReady()) {
         const used = await this.redisService.get(challengeKey);
         if (used) {
           throw new UnauthorizedException('2FA challenge token has already been used');
         }
       } else {
-        if (this.inMemoryChallengeTokens.has(jti)) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+              message: 'Authentication security service temporarily unavailable. Please retry shortly.',
+              error: 'Service Unavailable',
+            },
+            HttpStatus.SERVICE_UNAVAILABLE,
+          );
+        }
+        if (this.inMemoryChallengeTokens.has(challengeDigest)) {
           throw new UnauthorizedException('2FA challenge token has already been used');
         }
       }
@@ -183,16 +201,29 @@ export class AuthService {
       throw new UnauthorizedException('Two-factor authentication is not configured for this account');
     }
 
-    // OTP Replay resistance check
+    // OTP Replay resistance check via keyed HMAC-SHA256 (prevents exposing raw OTP codes in Redis)
+    let otpDigest: string | undefined;
+    let otpKey: string | undefined;
     if (dto.code) {
-      const otpKey = `omnistay:consumed_otp:${user.id}:${dto.code}`;
+      otpDigest = this.cryptoService.hashOtpKey(user.id, dto.code);
+      otpKey = `omnistay:consumed_otp:${otpDigest}`;
       if (this.redisService?.isReady()) {
         const consumed = await this.redisService.get(otpKey);
         if (consumed) {
           throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
         }
       } else {
-        if (this.inMemoryConsumedOtps.has(otpKey)) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+              message: 'Authentication security service temporarily unavailable. Please retry shortly.',
+              error: 'Service Unavailable',
+            },
+            HttpStatus.SERVICE_UNAVAILABLE,
+          );
+        }
+        if (this.inMemoryConsumedOtps.has(otpDigest)) {
           throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
         }
       }
@@ -227,23 +258,34 @@ export class AuthService {
       throw new UnauthorizedException('Invalid two-factor authentication code');
     }
 
-    // Mark challenge token consumed upon successful verification to prevent replay attack
-    if (jti) {
-      const challengeKey = `omnistay:challenge_used:${jti}`;
+    // Atomic consumption of challenge token (prevents concurrent reuse)
+    if (challengeDigest) {
+      const challengeKey = `omnistay:challenge_used:${challengeDigest}`;
       if (this.redisService?.isReady()) {
-        await this.redisService.set(challengeKey, '1', 300);
+        const claimed = await this.redisService.setIfNotExists(challengeKey, '1', 300);
+        if (claimed === false) {
+          throw new UnauthorizedException('2FA challenge token has already been used');
+        }
       } else {
-        this.inMemoryChallengeTokens.add(jti);
+        if (this.inMemoryChallengeTokens.has(challengeDigest)) {
+          throw new UnauthorizedException('2FA challenge token has already been used');
+        }
+        this.inMemoryChallengeTokens.add(challengeDigest);
       }
     }
 
-    // Mark TOTP code consumed to prevent replay attack
-    if (dto.code) {
-      const otpKey = `omnistay:consumed_otp:${user.id}:${dto.code}`;
+    // Atomic consumption of TOTP code via SET ... EX ... NX (eliminates TOCTOU race condition under concurrent requests)
+    if (otpDigest && otpKey) {
       if (this.redisService?.isReady()) {
-        await this.redisService.set(otpKey, '1', 90);
+        const consumed = await this.redisService.setIfNotExists(otpKey, '1', 90);
+        if (consumed === false) {
+          throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
+        }
       } else {
-        this.inMemoryConsumedOtps.add(otpKey);
+        if (this.inMemoryConsumedOtps.has(otpDigest)) {
+          throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
+        }
+        this.inMemoryConsumedOtps.add(otpDigest);
       }
     }
 
@@ -262,6 +304,8 @@ export class AuthService {
       user.memberships,
       decoded.organizationId,
     );
+
+    await this.rateLimiter?.reset?.(otpLimitKey);
 
     return this.issueFullSession(user, activeOrg, activeRole, permissions, true);
   }
@@ -444,7 +488,7 @@ export class AuthService {
       organizationId: activeOrg?.id,
       role: activeRole?.name,
       permissions,
-      isSuperAdmin: activeRole?.name === 'SuperAdmin',
+      isSuperAdmin: activeRole?.name === 'SuperAdmin' || activeRole?.name === 'Platform SuperAdmin',
       is2faVerified: true,
       type: 'ACCESS',
     });
@@ -495,7 +539,7 @@ export class AuthService {
       organizationId: activeOrg?.id,
       role: activeRole?.name,
       permissions,
-      isSuperAdmin: activeRole?.name === 'SuperAdmin',
+      isSuperAdmin: activeRole?.name === 'SuperAdmin' || activeRole?.name === 'Platform SuperAdmin',
       is2faVerified,
       type: 'ACCESS',
     });

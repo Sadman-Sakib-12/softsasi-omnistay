@@ -77,7 +77,10 @@ export class HotelService {
     const canCreate =
       caller.isSuperAdmin ||
       caller.role === 'SuperAdmin' ||
+      caller.role === 'Platform SuperAdmin' ||
       caller.role === 'Company Owner/GM' ||
+      caller.role === 'Company Owner / GM' ||
+      caller.role === 'General Manager (GM)' ||
       caller.permissions.includes('properties:manage');
 
     if (!canCreate) {

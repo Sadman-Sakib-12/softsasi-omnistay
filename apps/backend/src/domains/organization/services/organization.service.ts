@@ -41,7 +41,7 @@ export class OrganizationService {
   async getOrganizationById(orgId: string, user: AuthenticatedUserPayload) {
     // Check if user is SuperAdmin with system permission
     const isSuperAdminWithPerm =
-      (user.isSuperAdmin || user.role === 'SuperAdmin') &&
+      (user.isSuperAdmin || user.role === 'SuperAdmin' || user.role === 'Platform SuperAdmin') &&
       (user.permissions.includes('system:root') ||
         user.permissions.includes('tenant:manage') ||
         user.permissions.includes('tenant:audit'));
@@ -91,6 +91,7 @@ export class OrganizationService {
     const canCreate =
       user.isSuperAdmin ||
       user.role === 'SuperAdmin' ||
+      user.role === 'Platform SuperAdmin' ||
       user.permissions.includes('tenant:create');
 
     if (!canCreate) {

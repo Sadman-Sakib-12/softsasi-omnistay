@@ -85,7 +85,8 @@ export class UserService {
     const isMember =
       caller.organizationId === organizationId ||
       caller.isSuperAdmin ||
-      caller.role === 'SuperAdmin';
+      caller.role === 'SuperAdmin' ||
+      caller.role === 'Platform SuperAdmin';
 
     if (!isMember) {
       throw new ForbiddenException('Cross-tenant access denied: Not a member of this organization');
