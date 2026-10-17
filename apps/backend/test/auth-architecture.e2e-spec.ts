@@ -318,13 +318,44 @@ describe('OmniStay 360 Architecture & Auth (e2e)', () => {
       expect(res.text).toContain('swagger-ui');
     });
 
-    it('should serve valid OpenAPI 3.1.0 document at /api/docs-json', async () => {
+    it('should serve valid OpenAPI 3.1.0 document at /api/docs-json and pass OpenAPI 3.1 validation', async () => {
       const res = await request(app.getHttpServer()).get('/api/docs-json').expect(200);
-      expect(res.body.openapi).toBe('3.1.0');
-      expect(res.body.info.title).toBe('Softsasi OmniStay 360 Enterprise Suite API');
-      expect(res.body.components.securitySchemes['JWT-Auth']).toBeDefined();
-      expect(res.body.paths['/api/v1/auth/password-reset/request']).toBeDefined();
-      expect(res.body.paths['/api/v1/auth/password-reset/confirm']).toBeDefined();
+      const doc = res.body;
+
+      expect(doc.openapi).toBe('3.1.0');
+      expect(doc.info.title).toBe('Softsasi OmniStay 360 Enterprise Suite API');
+      expect((doc as any).jsonSchemaDialect).toBe('https://spec.openapis.org/oas/3.1/dialect/base');
+      expect(doc.components.securitySchemes['JWT-Auth']).toBeDefined();
+      expect(doc.paths['/api/v1/auth/password-reset/request']).toBeDefined();
+      expect(doc.paths['/api/v1/auth/password-reset/confirm']).toBeDefined();
+
+      // Validate that all schema references resolve
+      const brokenRefs: string[] = [];
+      function checkRefs(node: any) {
+        if (!node || typeof node !== 'object') return;
+        if (node.$ref && typeof node.$ref === 'string') {
+          if (node.$ref.startsWith('#/components/schemas/')) {
+            const schemaName = node.$ref.replace('#/components/schemas/', '');
+            if (!doc.components?.schemas?.[schemaName]) brokenRefs.push(node.$ref);
+          }
+        }
+        for (const k of Object.keys(node)) checkRefs(node[k]);
+      }
+      checkRefs(doc);
+      expect(brokenRefs).toEqual([]);
+
+      // Validate component schemas with Ajv2020 (OpenAPI 3.1 uses JSON Schema 2020-12)
+      const { createRequire } = await import('node:module');
+      const req = createRequire(import.meta.url);
+      const Ajv2020 = req('../../../node_modules/.pnpm/ajv@8.20.0/node_modules/ajv/dist/2020.js');
+      const ajv = new Ajv2020({ allErrors: true, strict: false });
+
+      for (const [name, schema] of Object.entries(doc.components.schemas || {})) {
+        ajv.addSchema(schema as any, `#/components/schemas/${name}`);
+      }
+      for (const [name, schema] of Object.entries(doc.components.schemas || {})) {
+        expect(ajv.validateSchema(schema as any), `Invalid schema: ${name}`).toBe(true);
+      }
     });
 
     it('should accept password reset request for registered user and return generic response', async () => {
