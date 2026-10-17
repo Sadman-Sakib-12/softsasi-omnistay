@@ -47,4 +47,27 @@ describe('CryptoService', () => {
       expect(service.hashToken(code)).toBe(hashedCodes[idx]);
     });
   });
+
+  it('should generate secure keyed HMAC-SHA256 digests for OTP and challenge keys', () => {
+    const userId = 'usr-12345';
+    const otp = '654321';
+    const otpKey1 = service.hashOtpKey(userId, otp);
+    const otpKey2 = service.hashOtpKey(userId, otp);
+
+    expect(otpKey1).toBe(otpKey2);
+    expect(otpKey1).toHaveLength(64);
+    expect(otpKey1).not.toContain(otp); // Raw OTP is never in the digest
+
+    // Different user or different OTP must yield completely different HMAC digests
+    const otpKeyDifferentUser = service.hashOtpKey('usr-99999', otp);
+    const otpKeyDifferentOtp = service.hashOtpKey(userId, '123456');
+    expect(otpKey1).not.toBe(otpKeyDifferentUser);
+    expect(otpKey1).not.toBe(otpKeyDifferentOtp);
+
+    // Challenge token derivation
+    const jti = 'uuid-challenge-123';
+    const challengeKey = service.hashChallengeKey(jti);
+    expect(challengeKey).toHaveLength(64);
+    expect(challengeKey).not.toContain(jti);
+  });
 });

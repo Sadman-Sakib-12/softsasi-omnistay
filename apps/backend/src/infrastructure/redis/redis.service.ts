@@ -138,6 +138,26 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /**
+   * Atomically sets a key with a TTL only if it does not already exist (SET ... EX ... NX).
+   * Returns:
+   * - true: if the key was set (did not exist previously)
+   * - false: if the key already exists (atomic replay prevention triggered)
+   * - null: if Redis is disconnected or unavailable
+   */
+  async setIfNotExists(key: string, value: string, ttlSeconds: number): Promise<boolean | null> {
+    if (!this.isReady() || !this.client) {
+      return null;
+    }
+    try {
+      const result = await this.client.set(key, value, 'EX', ttlSeconds, 'NX');
+      return result === 'OK';
+    } catch (err: any) {
+      this.logger.warn(`Redis setNX failed for key "${key}": ${err.message}`);
+      return null;
+    }
+  }
+
   async eval(script: string, numkeys: number, ...args: (string | number)[]): Promise<any> {
     if (!this.isReady() || !this.client) {
       throw new Error('Redis is not connected');

@@ -33,6 +33,11 @@ describe('RedisService', () => {
     expect(result).toBeNull();
   });
 
+  it('should safely return null on setIfNotExists when disconnected', async () => {
+    const result = await service.setIfNotExists('key', 'value', 60);
+    expect(result).toBeNull();
+  });
+
   it('should safely return 0 on del when disconnected', async () => {
     const count = await service.del('key');
     expect(count).toBe(0);

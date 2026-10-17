@@ -53,3 +53,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Documents & Specifications (Do not upload to GitHub)
+*.pdf
+Sakib_Project_Plan.pdf

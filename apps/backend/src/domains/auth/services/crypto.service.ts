@@ -60,6 +60,28 @@ export class CryptoService {
   }
 
   /**
+   * Computes a keyed HMAC-SHA256 digest to securely hash sensitive identifiers (like OTP replay cache keys).
+   * Keyed with the application's master encryption key to prevent rainbow-table/brute-force attacks against low-entropy values.
+   */
+  hmacSha256(value: string, domain = 'omnistay'): string {
+    return crypto.createHmac('sha256', this.key).update(`${domain}:${value}`).digest('hex');
+  }
+
+  /**
+   * Derives a collision-resistant, non-reversible key for TOTP replay protection without exposing raw OTP codes.
+   */
+  hashOtpKey(userId: string, code: string): string {
+    return this.hmacSha256(`${userId}:${code.trim()}`, 'omnistay:totp-replay');
+  }
+
+  /**
+   * Derives a collision-resistant, non-reversible key for single-use challenge token protection.
+   */
+  hashChallengeKey(jti: string): string {
+    return this.hmacSha256(jti.trim(), 'omnistay:challenge-replay');
+  }
+
+  /**
    * Generate cryptographically secure random recovery codes.
    */
   generateRecoveryCodes(count = 8): { plainCodes: string[]; hashedCodes: string[] } {
