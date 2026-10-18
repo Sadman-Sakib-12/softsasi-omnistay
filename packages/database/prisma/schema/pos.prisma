@@ -1,0 +1,336 @@
+model PosOrder {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outletId       String           @map("outlet_id") @db.Uuid
+  terminalId     String?          @map("terminal_id") @db.Uuid
+  tableId        String?          @map("table_id") @db.Uuid
+  orderNumber    String           @unique @map("order_number")
+  guestCount     Int              @default(1) @map("guest_count")
+  subtotal       Decimal          @map("subtotal") @db.Decimal(15, 2)
+  taxAmount      Decimal          @default(0) @map("tax_amount") @db.Decimal(15, 2)
+  serviceCharge  Decimal          @default(0) @map("service_charge") @db.Decimal(15, 2)
+  totalAmount    Decimal          @map("total_amount") @db.Decimal(15, 2)
+  status         String           @default("open") @map("status")
+  serverName     String?          @map("server_name")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  outlet         PosOutlet        @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  terminal       PosTerminal?     @relation(fields: [terminalId], references: [id], onDelete: SetNull)
+  table          DiningTable?     @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  items          PosOrderItem[]
+  payments       PosPayment[]
+  kitchenOrders  PosKitchenOrder[]
+  roomChargeLogs PosRoomChargeLog[]
+
+  @@index([outletId])
+  @@index([status])
+  @@map("pos_orders")
+}
+
+model PosOrderItem {
+  id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId    String             @map("order_id") @db.Uuid
+  itemName   String             @map("item_name")
+  quantity   Int                @default(1) @map("quantity")
+  unitPrice  Decimal            @map("unit_price") @db.Decimal(15, 2)
+  totalPrice Decimal            @map("total_price") @db.Decimal(15, 2)
+  notes      String?            @map("notes")
+  status     String             @default("ordered") @map("status")
+  createdAt  DateTime           @default(now()) @map("created_at")
+
+  // Relations
+  order      PosOrder           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  modifiers  PosOrderModifier[]
+
+  @@index([orderId])
+  @@map("pos_order_items")
+}
+
+model PosPayment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String   @map("order_id") @db.Uuid
+  paymentMode String   @map("payment_mode")
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  tipAmount   Decimal  @default(0) @map("tip_amount") @db.Decimal(10, 2)
+  reference   String?  @map("reference")
+  paidAt      DateTime @default(now()) @map("paid_at")
+
+  // Relations
+  order       PosOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("pos_payments")
+}
+
+model DiningTable {
+  id           String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outletId     String             @map("outlet_id") @db.Uuid
+  tableNumber  String             @map("table_number")
+  seatingCap   Int                @default(4) @map("seating_cap")
+  status       String             @default("vacant") @map("status")
+  posX         Int                @default(0) @map("pos_x")
+  posY         Int                @default(0) @map("pos_y")
+  createdAt    DateTime           @default(now()) @map("created_at")
+
+  // Relations
+  outlet       PosOutlet          @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  orders       PosOrder[]
+  reservations TableReservation[]
+
+  @@unique([outletId, tableNumber])
+  @@map("dining_tables")
+}
+
+model PosTerminal {
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outletId     String              @map("outlet_id") @db.Uuid
+  terminalName String              @map("terminal_name")
+  deviceSerial String              @unique @map("device_serial")
+  ipAddress    String?             @map("ip_address")
+  isActive     Boolean             @default(true) @map("is_active")
+  createdAt    DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  outlet       PosOutlet           @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  orders       PosOrder[]
+  shifts       PosCashierShift[]
+
+  @@map("pos_terminals")
+}
+
+model PosOutlet {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String            @map("tenant_id") @db.Uuid
+  outletName  String            @map("outlet_name")
+  outletType  String            @default("restaurant") @map("outlet_type")
+  isActive    Boolean           @default(true) @map("is_active")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  tables      DiningTable[]
+  terminals   PosTerminal[]
+  orders      PosOrder[]
+  floorPlans  DiningFloorPlan[]
+  menus       PosMenu[]
+  kdsStations KdsStation[]
+
+  @@index([tenantId])
+  @@map("pos_outlets")
+}
+
+model DiningFloorPlan {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outletId    String      @map("outlet_id") @db.Uuid
+  planName    String      @map("plan_name")
+  layoutJson  Json?       @map("layout_json")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  outlet      PosOutlet   @relation(fields: [outletId], references: [id], onDelete: Cascade)
+
+  @@index([outletId])
+  @@map("dining_floor_plans")
+}
+
+model TableReservation {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tableId     String      @map("table_id") @db.Uuid
+  guestName   String      @map("guest_name")
+  guestPhone  String?     @map("guest_phone")
+  partySize   Int         @default(2) @map("party_size")
+  reserveTime DateTime    @map("reserve_time")
+  status      String      @default("confirmed") @map("status")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  table       DiningTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  @@index([tableId])
+  @@map("table_reservations")
+}
+
+model PosMenu {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outletId    String            @map("outlet_id") @db.Uuid
+  menuName    String            @map("menu_name")
+  isActive    Boolean           @default(true) @map("is_active")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  outlet      PosOutlet         @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  categories  PosMenuCategory[]
+
+  @@index([outletId])
+  @@map("pos_menus")
+}
+
+model PosMenuCategory {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  menuId       String        @map("menu_id") @db.Uuid
+  categoryName String        @map("category_name")
+  displayOrder Int           @default(0) @map("display_order")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  menu         PosMenu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  items        PosMenuItem[]
+
+  @@index([menuId])
+  @@map("pos_menu_categories")
+}
+
+model PosMenuItem {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoryId  String            @map("category_id") @db.Uuid
+  itemName    String            @map("item_name")
+  price       Decimal           @map("price") @db.Decimal(15, 2)
+  allergens   String[]          @default([]) @map("allergens")
+  isAvailable Boolean           @default(true) @map("is_available")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  category    PosMenuCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  modifiers   PosItemModifier[]
+
+  @@index([categoryId])
+  @@map("pos_menu_items")
+}
+
+model PosItemModifier {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  menuItemId   String      @map("menu_item_id") @db.Uuid
+  modifierName String      @map("modifier_name")
+  priceExtra   Decimal     @default(0) @map("price_extra") @db.Decimal(10, 2)
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  menuItem     PosMenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@index([menuItemId])
+  @@map("pos_item_modifiers")
+}
+
+model PosOrderModifier {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderItemId String       @map("order_item_id") @db.Uuid
+  name        String       @map("name")
+  price       Decimal      @default(0) @map("price") @db.Decimal(10, 2)
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  orderItem   PosOrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@index([orderItemId])
+  @@map("pos_order_modifiers")
+}
+
+model PosKitchenOrder {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId      String      @map("order_id") @db.Uuid
+  stationId    String?     @map("station_id") @db.Uuid
+  ticketNumber String      @map("ticket_number")
+  status       String      @default("queued") @map("status")
+  sentAt       DateTime    @default(now()) @map("sent_at")
+  preparedAt   DateTime?   @map("prepared_at")
+
+  // Relations
+  order        PosOrder    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  station      KdsStation? @relation(fields: [stationId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@map("pos_kitchen_orders")
+}
+
+model KdsStation {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outletId     String            @map("outlet_id") @db.Uuid
+  stationName  String            @map("station_name")
+  stationType  String            @default("kitchen") @map("station_type")
+  createdAt    DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  outlet       PosOutlet         @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  orders       PosKitchenOrder[]
+
+  @@index([outletId])
+  @@map("kds_stations")
+}
+
+model PosCashierShift {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  terminalId   String        @map("terminal_id") @db.Uuid
+  cashierName  String        @map("cashier_name")
+  openingFloat Decimal       @map("opening_float") @db.Decimal(15, 2)
+  closingCash  Decimal?      @map("closing_cash") @db.Decimal(15, 2)
+  startedAt    DateTime      @default(now()) @map("started_at")
+  endedAt      DateTime?     @map("ended_at")
+
+  // Relations
+  terminal     PosTerminal   @relation(fields: [terminalId], references: [id], onDelete: Cascade)
+  cashDrops    PosCashDrop[]
+  xReports     PosXReport[]
+  zReports     PosZReport[]
+
+  @@index([terminalId])
+  @@map("pos_cashier_shifts")
+}
+
+model PosCashDrop {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shiftId     String          @map("shift_id") @db.Uuid
+  amount      Decimal         @map("amount") @db.Decimal(15, 2)
+  reason      String          @default("safe_drop") @map("reason")
+  droppedAt   DateTime        @default(now()) @map("dropped_at")
+
+  // Relations
+  shift       PosCashierShift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+
+  @@index([shiftId])
+  @@map("pos_cash_drops")
+}
+
+model PosXReport {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shiftId     String          @map("shift_id") @db.Uuid
+  totalSales  Decimal         @map("total_sales") @db.Decimal(15, 2)
+  cashTotal   Decimal         @map("cash_total") @db.Decimal(15, 2)
+  cardTotal   Decimal         @map("card_total") @db.Decimal(15, 2)
+  generatedAt DateTime        @default(now()) @map("generated_at")
+
+  // Relations
+  shift       PosCashierShift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+
+  @@index([shiftId])
+  @@map("pos_x_reports")
+}
+
+model PosZReport {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shiftId     String          @map("shift_id") @db.Uuid
+  totalSales  Decimal         @map("total_sales") @db.Decimal(15, 2)
+  discrepancy Decimal         @default(0) @map("discrepancy") @db.Decimal(10, 2)
+  closedAt    DateTime        @default(now()) @map("closed_at")
+
+  // Relations
+  shift       PosCashierShift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+
+  @@index([shiftId])
+  @@map("pos_z_reports")
+}
+
+model PosRoomChargeLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String   @map("order_id") @db.Uuid
+  roomNumber  String   @map("room_number")
+  guestName   String   @map("guest_name")
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  signatureUrl String? @map("signature_url")
+  verifiedAt  DateTime @default(now()) @map("verified_at")
+
+  // Relations
+  order       PosOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("pos_room_charge_logs")
+}

@@ -1,0 +1,308 @@
+model Cart {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String     @map("tenant_id") @db.Uuid
+  userId      String?    @map("user_id") @db.Uuid
+  sessionId   String     @unique @map("session_id")
+  status      String     @default("active") @map("status")
+  currency    String     @default("USD") @map("currency")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  items       CartItem[]
+
+  @@index([tenantId])
+  @@index([sessionId])
+  @@map("carts")
+}
+
+model CartItem {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cartId      String   @map("cart_id") @db.Uuid
+  vertical    String   @map("vertical")
+  entityId    String   @map("entity_id") @db.Uuid
+  title       String   @map("title")
+  quantity    Int      @default(1) @map("quantity")
+  unitPrice   Decimal  @map("unit_price") @db.Decimal(15, 2)
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  metadata    Json?    @map("metadata")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  cart        Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  @@index([cartId])
+  @@map("cart_items")
+}
+
+model PaymentTransaction {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  bookingId      String?   @map("booking_id") @db.Uuid
+  gatewayName    String    @map("gateway_name")
+  transactionId  String    @unique @map("transaction_id")
+  amount         Decimal   @map("amount") @db.Decimal(15, 2)
+  currency       String    @default("USD") @map("currency")
+  status         String    @default("pending") @map("status")
+  paymentMethod  String?   @map("payment_method")
+  rawResponse    Json?     @map("raw_response")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  refunds        RefundTransaction[]
+
+  @@index([tenantId])
+  @@index([bookingId])
+  @@map("payment_transactions")
+}
+
+model PaymentMethod {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  code        String   @map("code")
+  name        String   @map("name")
+  isEnabled   Boolean  @default(true) @map("is_enabled")
+  feePercent  Decimal  @default(0) @map("fee_percent") @db.Decimal(5, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([tenantId, code])
+  @@map("payment_methods")
+}
+
+model Coupon {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String        @map("tenant_id") @db.Uuid
+  code           String        @map("code")
+  discountType   String        @map("discount_type")
+  discountValue  Decimal       @map("discount_value") @db.Decimal(10, 2)
+  minSpend       Decimal?      @map("min_spend") @db.Decimal(15, 2)
+  maxRedemptions Int?          @map("max_redemptions")
+  usedCount      Int           @default(0) @map("used_count")
+  validFrom      DateTime      @map("valid_from")
+  validUntil     DateTime      @map("valid_until")
+  isActive       Boolean       @default(true) @map("is_active")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  usages         CouponUsage[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("coupons")
+}
+
+model CouponUsage {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  couponId    String   @map("coupon_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  bookingId   String?  @map("booking_id") @db.Uuid
+  discountGot Decimal  @map("discount_got") @db.Decimal(15, 2)
+  usedAt      DateTime @default(now()) @map("used_at")
+
+  // Relations
+  coupon      Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@index([couponId])
+  @@index([userId])
+  @@map("coupon_usages")
+}
+
+model Wallet {
+  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String              @unique @map("user_id") @db.Uuid
+  balance     Decimal             @default(0) @map("balance") @db.Decimal(15, 2)
+  currency    String              @default("USD") @map("currency")
+  isLocked    Boolean             @default(false) @map("is_locked")
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  walletId    String   @map("wallet_id") @db.Uuid
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  type        String   @map("type")
+  description String?  @map("description")
+  referenceId String?  @map("reference_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("wallet_transactions")
+}
+
+model LoyaltyTier {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String          @unique @map("name")
+  minPoints   Int             @map("min_points")
+  multiplier  Decimal         @default(1.0) @map("multiplier") @db.Decimal(4, 2)
+  perks       Json?           @map("perks")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  // Relations
+  members     LoyaltyMember[]
+
+  @@map("loyalty_tiers")
+}
+
+model LoyaltyMember {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String                @unique @map("user_id") @db.Uuid
+  tierId      String                @map("tier_id") @db.Uuid
+  points      Int                   @default(0) @map("points")
+  joinedAt    DateTime              @default(now()) @map("joined_at")
+  updatedAt   DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  tier        LoyaltyTier           @relation(fields: [tierId], references: [id], onDelete: Restrict)
+  ledger      LoyaltyPointsLedger[]
+
+  @@index([tierId])
+  @@map("loyalty_members")
+}
+
+model LoyaltyPointsLedger {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberId    String        @map("member_id") @db.Uuid
+  pointsDelta Int           @map("points_delta")
+  reason      String        @map("reason")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  member      LoyaltyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@map("loyalty_points_ledger")
+}
+
+model GiftCard {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String                @unique @map("code")
+  initialVal  Decimal               @map("initial_val") @db.Decimal(15, 2)
+  currentVal  Decimal               @map("current_val") @db.Decimal(15, 2)
+  currency    String                @default("USD") @map("currency")
+  senderEmail String?               @map("sender_email")
+  recipientEmail String             @map("recipient_email")
+  isRedeemed  Boolean               @default(false) @map("is_redeemed")
+  expiresAt   DateTime?             @map("expires_at")
+  createdAt   DateTime              @default(now()) @map("created_at")
+
+  // Relations
+  redemptions GiftCardRedemption[]
+
+  @@map("gift_cards")
+}
+
+model GiftCardRedemption {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  giftCardId  String   @map("gift_card_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  amountUsed  Decimal  @map("amount_used") @db.Decimal(15, 2)
+  redeemedAt  DateTime @default(now()) @map("redeemed_at")
+
+  // Relations
+  giftCard    GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+
+  @@index([giftCardId])
+  @@map("gift_card_redemptions")
+}
+
+model ReferralLink {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String               @map("user_id") @db.Uuid
+  referralCode String              @unique @map("referral_code")
+  clicksCount Int                  @default(0) @map("clicks_count")
+  createdAt   DateTime             @default(now()) @map("created_at")
+
+  // Relations
+  commissions ReferralCommission[]
+
+  @@index([userId])
+  @@map("referral_links")
+}
+
+model ReferralCommission {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  referralLinkId String       @map("referral_link_id") @db.Uuid
+  bookingId      String       @map("booking_id") @db.Uuid
+  commissionAmt  Decimal      @map("commission_amt") @db.Decimal(15, 2)
+  status         String       @default("pending") @map("status")
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  referralLink   ReferralLink @relation(fields: [referralLinkId], references: [id], onDelete: Cascade)
+
+  @@index([referralLinkId])
+  @@map("referral_commissions")
+}
+
+model TravelVoucher {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String   @map("booking_id") @db.Uuid
+  voucherCode String   @unique @map("voucher_code")
+  qrCodeUrl   String?  @map("qr_code_url")
+  pdfUrl      String?  @map("pdf_url")
+  issuedAt    DateTime @default(now()) @map("issued_at")
+
+  @@index([bookingId])
+  @@map("travel_vouchers")
+}
+
+model CancellationPolicy {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  policyName     String   @map("policy_name")
+  refundPercent  Decimal  @map("refund_percent") @db.Decimal(5, 2)
+  hoursBeforeCheckIn Int  @map("hours_before_check_in")
+  isNonRefundable Boolean @default(false) @map("is_non_refundable")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("cancellation_policies")
+}
+
+model RefundTransaction {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  paymentId      String             @map("payment_id") @db.Uuid
+  amount         Decimal            @map("amount") @db.Decimal(15, 2)
+  reason         String?            @map("reason")
+  status         String             @default("processed") @map("status")
+  createdAt      DateTime           @default(now()) @map("created_at")
+
+  // Relations
+  payment        PaymentTransaction @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([paymentId])
+  @@map("refund_transactions")
+}
+
+model CurrencyExchangeRate {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  baseCurrency String   @map("base_currency")
+  targetCurrency String @map("target_currency")
+  rate         Decimal  @map("rate") @db.Decimal(12, 6)
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@unique([baseCurrency, targetCurrency])
+  @@map("currency_exchange_rates")
+}
+
+model TaxRule {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  taxName     String   @map("tax_name")
+  taxRate     Decimal  @map("tax_rate") @db.Decimal(5, 2)
+  isInclusive Boolean  @default(false) @map("is_inclusive")
+  appliesTo   String   @default("all") @map("applies_to")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("tax_rules")
+}

@@ -1,0 +1,130 @@
+model Purchase {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String            @map("tenant_id") @db.Uuid
+  poNumber       String            @map("po_number")
+  vendorId       String?           @map("vendor_id") @db.Uuid
+  totalCost      Decimal           @map("total_cost") @db.Decimal(15, 2)
+  status         String            @default("draft") @map("status")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  products       PurchaseProduct[]
+  payments       PurchasePayment[]
+  grns           GoodsReceivedNote[]
+
+  @@unique([tenantId, poNumber])
+  @@index([tenantId])
+  @@map("purchases")
+}
+
+model PurchaseProduct {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchaseId  String   @map("purchase_id") @db.Uuid
+  productId   String   @map("product_id") @db.Uuid
+  quantity    Decimal  @map("quantity") @db.Decimal(12, 2)
+  unitCost    Decimal  @map("unit_cost") @db.Decimal(15, 2)
+  totalCost   Decimal  @map("total_cost") @db.Decimal(15, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  purchase    Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([purchaseId])
+  @@index([productId])
+  @@map("purchase_products")
+}
+
+model PurchasePayment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchaseId  String   @map("purchase_id") @db.Uuid
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  paymentDate DateTime @map("payment_date") @db.Date
+  method      String   @default("bank_transfer") @map("method")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  purchase    Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseId])
+  @@map("purchase_payments")
+}
+
+model PurchaseRequisition {
+  id            String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String                    @map("tenant_id") @db.Uuid
+  reqNumber     String                    @map("req_number")
+  department    String                    @map("department")
+  status        String                    @default("pending") @map("status")
+  requestedBy   String?                   @map("requested_by") @db.Uuid
+  createdAt     DateTime                  @default(now()) @map("created_at")
+
+  // Relations
+  items         PurchaseRequisitionItem[]
+
+  @@unique([tenantId, reqNumber])
+  @@index([tenantId])
+  @@map("purchase_requisitions")
+}
+
+model PurchaseRequisitionItem {
+  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requisitionId String              @map("requisition_id") @db.Uuid
+  itemTitle     String              @map("item_title")
+  quantity      Decimal             @map("quantity") @db.Decimal(10, 2)
+  unit          String              @map("unit")
+  createdAt     DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  requisition   PurchaseRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+
+  @@index([requisitionId])
+  @@map("purchase_requisition_items")
+}
+
+model GoodsReceivedNote {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  purchaseId  String    @map("purchase_id") @db.Uuid
+  grnNumber   String    @unique @map("grn_number")
+  receivedDate DateTime @map("received_date") @db.Date
+  receivedBy  String?   @map("received_by") @db.Uuid
+  status      String    @default("inspected") @map("status")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  purchase    Purchase  @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  items       GrnItem[]
+
+  @@index([purchaseId])
+  @@map("goods_received_notes")
+}
+
+model GrnItem {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  grnId       String            @map("grn_id") @db.Uuid
+  itemTitle   String            @map("item_title")
+  qtyOrdered  Decimal           @map("qty_ordered") @db.Decimal(10, 2)
+  qtyReceived Decimal           @map("qty_received") @db.Decimal(10, 2)
+  isDamaged   Boolean           @default(false) @map("is_damaged")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  grn         GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+
+  @@index([grnId])
+  @@map("grn_items")
+}
+
+model VendorPriceAgreement {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String    @map("vendor_id") @db.Uuid
+  productId   String    @map("product_id") @db.Uuid
+  agreedPrice Decimal   @map("agreed_price") @db.Decimal(15, 2)
+  validUntil  DateTime? @map("valid_until") @db.Date
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([vendorId])
+  @@index([productId])
+  @@map("vendor_price_agreements")
+}
