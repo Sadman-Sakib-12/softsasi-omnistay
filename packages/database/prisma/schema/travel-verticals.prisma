@@ -1,0 +1,724 @@
+model Space {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String             @map("tenant_id") @db.Uuid
+  title          String             @map("title")
+  slug           String             @map("slug")
+  venueType      String             @map("venue_type")
+  hourlyPrice    Decimal            @map("hourly_price") @db.Decimal(15, 2)
+  dailyPrice     Decimal?           @map("daily_price") @db.Decimal(15, 2)
+  capacityPax    Int                @map("capacity_pax")
+  squareMeters   Int?               @map("square_meters")
+  cleaningFee    Decimal            @default(0) @map("cleaning_fee") @db.Decimal(10, 2)
+  securityDeposit Decimal           @default(0) @map("security_deposit") @db.Decimal(10, 2)
+  status         String             @default("active") @map("status")
+  deletedAt      DateTime?          @map("deleted_at")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  translations   SpaceTranslation[]
+  terms          SpaceTerm[]
+  dates          SpaceDate[]
+  bookings       SpaceBooking[]
+  amenities      SpaceAmenity[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("spaces")
+}
+
+model SpaceTranslation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  spaceId     String   @map("space_id") @db.Uuid
+  locale      String   @map("locale")
+  title       String   @map("title")
+  description String?  @map("description")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  space       Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@unique([spaceId, locale])
+  @@map("space_translations")
+}
+
+model SpaceTerm {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  spaceId   String   @map("space_id") @db.Uuid
+  termType  String   @map("term_type")
+  value     String   @map("value")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@index([spaceId])
+  @@map("space_terms")
+}
+
+model SpaceDate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  spaceId   String   @map("space_id") @db.Uuid
+  date      DateTime @map("date") @db.Date
+  price     Decimal  @map("price") @db.Decimal(15, 2)
+  isClosed  Boolean  @default(false) @map("is_closed")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@unique([spaceId, date])
+  @@map("space_dates")
+}
+
+model SpaceBooking {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  spaceId       String    @map("space_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  startTime     DateTime  @map("start_time")
+  endTime       DateTime  @map("end_time")
+  totalAmount   Decimal   @map("total_amount") @db.Decimal(15, 2)
+  bookingStatus String    @default("confirmed") @map("booking_status")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  space         Space     @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@index([spaceId])
+  @@index([userId])
+  @@map("space_bookings")
+}
+
+model SpaceAmenity {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  spaceId     String   @map("space_id") @db.Uuid
+  name        String   @map("name")
+  isAddon     Boolean  @default(false) @map("is_addon")
+  price       Decimal  @default(0) @map("price") @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  space       Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@index([spaceId])
+  @@map("space_amenities")
+}
+
+model Tour {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String             @map("tenant_id") @db.Uuid
+  title          String             @map("title")
+  slug           String             @map("slug")
+  durationDays   Int                @default(1) @map("duration_days")
+  durationHours  Int?               @map("duration_hours")
+  minPax         Int                @default(1) @map("min_pax")
+  maxPax         Int                @default(20) @map("max_pax")
+  basePriceAdult Decimal            @map("base_price_adult") @db.Decimal(15, 2)
+  status         String             @default("active") @map("status")
+  deletedAt      DateTime?          @map("deleted_at")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  translations   TourTranslation[]
+  itineraries    TourItinerary[]
+  dates          TourDate[]
+  personTypes    TourPersonType[]
+  bookings       TourBooking[]
+  guides         TourGuide[]
+  inclusions     TourInclusion[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("tours")
+}
+
+model TourTranslation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId      String   @map("tour_id") @db.Uuid
+  locale      String   @map("locale")
+  title       String   @map("title")
+  description String?  @map("description")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([tourId, locale])
+  @@map("tour_translations")
+}
+
+model TourItinerary {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId      String   @map("tour_id") @db.Uuid
+  dayNumber   Int      @map("day_number")
+  title       String   @map("title")
+  description String?  @map("description")
+  lat         Decimal? @map("lat") @db.Decimal(10, 8)
+  lng         Decimal? @map("lng") @db.Decimal(11, 8)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@map("tour_itineraries")
+}
+
+model TourDate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId    String   @map("tour_id") @db.Uuid
+  date      DateTime @map("date") @db.Date
+  price     Decimal  @map("price") @db.Decimal(15, 2)
+  seatsTotal Int     @map("seats_total")
+  seatsBooked Int    @default(0) @map("seats_booked")
+  isClosed  Boolean  @default(false) @map("is_closed")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([tourId, date])
+  @@map("tour_dates")
+}
+
+model TourPersonType {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId    String   @map("tour_id") @db.Uuid
+  name      String   @map("name")
+  price     Decimal  @map("price") @db.Decimal(15, 2)
+  minAge    Int?     @map("min_age")
+  maxAge    Int?     @map("max_age")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@map("tour_person_types")
+}
+
+model TourBooking {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId        String    @map("tour_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  bookingDate   DateTime  @map("booking_date") @db.Date
+  paxAdults     Int       @default(1) @map("pax_adults")
+  paxChildren   Int       @default(0) @map("pax_children")
+  totalAmount   Decimal   @map("total_amount") @db.Decimal(15, 2)
+  bookingStatus String    @default("confirmed") @map("booking_status")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  tour          Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@index([userId])
+  @@map("tour_bookings")
+}
+
+model TourGuide {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId      String   @map("tour_id") @db.Uuid
+  guideName   String   @map("guide_name")
+  phone       String?  @map("phone")
+  languages   String[] @default([]) @map("languages")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@map("tour_guides")
+}
+
+model TourInclusion {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId      String   @map("tour_id") @db.Uuid
+  content     String   @map("content")
+  isInclusion Boolean  @default(true) @map("is_inclusion")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId])
+  @@map("tour_inclusions")
+}
+
+model Car {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String            @map("tenant_id") @db.Uuid
+  title          String            @map("title")
+  slug           String            @map("slug")
+  category       String            @map("category")
+  transmission   String            @default("Automatic") @map("transmission")
+  passengerSeats Int               @default(5) @map("passenger_seats")
+  baggageCount   Int               @default(2) @map("baggage_count")
+  doorCount      Int               @default(4) @map("door_count")
+  fuelType       String            @default("Gasoline") @map("fuel_type")
+  dailyPrice     Decimal           @map("daily_price") @db.Decimal(15, 2)
+  isUnlimitedMileage Boolean       @default(true) @map("is_unlimited_mileage")
+  status         String            @default("available") @map("status")
+  deletedAt      DateTime?         @map("deleted_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  translations   CarTranslation[]
+  specs          CarSpec[]
+  dates          CarDate[]
+  extraServices  CarExtraService[]
+  bookings       CarBooking[]
+  pickupLocations CarPickupLocation[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("cars")
+}
+
+model CarTranslation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  carId       String   @map("car_id") @db.Uuid
+  locale      String   @map("locale")
+  title       String   @map("title")
+  description String?  @map("description")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  car         Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@unique([carId, locale])
+  @@map("car_translations")
+}
+
+model CarSpec {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  carId     String   @map("car_id") @db.Uuid
+  specKey   String   @map("spec_key")
+  specValue String   @map("spec_value")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@map("car_specs")
+}
+
+model CarDate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  carId     String   @map("car_id") @db.Uuid
+  date      DateTime @map("date") @db.Date
+  price     Decimal  @map("price") @db.Decimal(15, 2)
+  isClosed  Boolean  @default(false) @map("is_closed")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@unique([carId, date])
+  @@map("car_dates")
+}
+
+model CarExtraService {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  carId     String   @map("car_id") @db.Uuid
+  name      String   @map("name")
+  price     Decimal  @map("price") @db.Decimal(10, 2)
+  priceType String   @default("per_day") @map("price_type")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@map("car_extra_services")
+}
+
+model CarBooking {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  carId         String    @map("car_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  pickupDate    DateTime  @map("pickup_date")
+  dropoffDate   DateTime  @map("dropoff_date")
+  pickupStation String?   @map("pickup_station")
+  dropoffStation String?  @map("dropoff_station")
+  totalAmount   Decimal   @map("total_amount") @db.Decimal(15, 2)
+  bookingStatus String    @default("confirmed") @map("booking_status")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  car           Car       @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@index([userId])
+  @@map("car_bookings")
+}
+
+model CarPickupLocation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  carId       String   @map("car_id") @db.Uuid
+  stationName String   @map("station_name")
+  stationType String   @default("airport") @map("station_type")
+  dropoffFee  Decimal  @default(0) @map("dropoff_fee") @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  car         Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@map("car_pickup_locations")
+}
+
+model Boat {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String            @map("tenant_id") @db.Uuid
+  title          String            @map("title")
+  slug           String            @map("slug")
+  vesselType     String            @map("vessel_type")
+  lengthMeters   Decimal?          @map("length_meters") @db.Decimal(6, 2)
+  guestCapacity  Int               @map("guest_capacity")
+  berthsCount    Int               @default(2) @map("berths_count")
+  dailyPrice     Decimal           @map("daily_price") @db.Decimal(15, 2)
+  charterType    String            @default("skippered") @map("charter_type")
+  status         String            @default("available") @map("status")
+  deletedAt      DateTime?         @map("deleted_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  translations   BoatTranslation[]
+  specs          BoatSpec[]
+  dates          BoatDate[]
+  crewing        BoatCrewing[]
+  bookings       BoatBooking[]
+  staterooms     BoatStateroom[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("boats")
+}
+
+model BoatTranslation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  boatId      String   @map("boat_id") @db.Uuid
+  locale      String   @map("locale")
+  title       String   @map("title")
+  description String?  @map("description")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  boat        Boat     @relation(fields: [boatId], references: [id], onDelete: Cascade)
+
+  @@unique([boatId, locale])
+  @@map("boat_translations")
+}
+
+model BoatSpec {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  boatId    String   @map("boat_id") @db.Uuid
+  specKey   String   @map("spec_key")
+  specValue String   @map("spec_value")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  boat      Boat     @relation(fields: [boatId], references: [id], onDelete: Cascade)
+
+  @@index([boatId])
+  @@map("boat_specs")
+}
+
+model BoatDate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  boatId    String   @map("boat_id") @db.Uuid
+  date      DateTime @map("date") @db.Date
+  price     Decimal  @map("price") @db.Decimal(15, 2)
+  isClosed  Boolean  @default(false) @map("is_closed")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  boat      Boat     @relation(fields: [boatId], references: [id], onDelete: Cascade)
+
+  @@unique([boatId, date])
+  @@map("boat_dates")
+}
+
+model BoatCrewing {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  boatId      String   @map("boat_id") @db.Uuid
+  role        String   @map("role")
+  crewCount   Int      @default(1) @map("crew_count")
+  isIncluded  Boolean  @default(true) @map("is_included")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  boat        Boat     @relation(fields: [boatId], references: [id], onDelete: Cascade)
+
+  @@index([boatId])
+  @@map("boat_crewing")
+}
+
+model BoatBooking {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  boatId        String    @map("boat_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  charterStart  DateTime  @map("charter_start")
+  charterEnd    DateTime  @map("charter_end")
+  totalAmount   Decimal   @map("total_amount") @db.Decimal(15, 2)
+  bookingStatus String    @default("confirmed") @map("booking_status")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  boat          Boat      @relation(fields: [boatId], references: [id], onDelete: Cascade)
+
+  @@index([boatId])
+  @@index([userId])
+  @@map("boat_bookings")
+}
+
+model BoatStateroom {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  boatId      String   @map("boat_id") @db.Uuid
+  name        String   @map("name")
+  bedType     String   @default("King") @map("bed_type")
+  hasEnSuite  Boolean  @default(true) @map("has_en_suite")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  boat        Boat     @relation(fields: [boatId], references: [id], onDelete: Cascade)
+
+  @@index([boatId])
+  @@map("boat_staterooms")
+}
+
+model Event {
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String                @map("tenant_id") @db.Uuid
+  title          String                @map("title")
+  slug           String                @map("slug")
+  eventType      String                @map("event_type")
+  venueAddress   String                @map("venue_address")
+  startDate      DateTime              @map("start_date")
+  endDate        DateTime              @map("end_date")
+  maxCapacity    Int                   @map("max_capacity")
+  status         String                @default("active") @map("status")
+  deletedAt      DateTime?             @map("deleted_at")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  translations   EventTranslation[]
+  ticketTiers    EventTicketTier[]
+  timeSlots      EventTimeSlot[]
+  qrScans        EventQrScan[]
+  bookings       EventBooking[]
+  seatingTables  EventSeatingTable[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("events")
+}
+
+model EventTranslation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId     String   @map("event_id") @db.Uuid
+  locale      String   @map("locale")
+  title       String   @map("title")
+  description String?  @map("description")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, locale])
+  @@map("event_translations")
+}
+
+model EventTicketTier {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId     String   @map("event_id") @db.Uuid
+  name        String   @map("name")
+  price       Decimal  @map("price") @db.Decimal(15, 2)
+  totalSeats  Int      @map("total_seats")
+  bookedSeats Int      @default(0) @map("booked_seats")
+  salesStart  DateTime? @map("sales_start")
+  salesEnd    DateTime? @map("sales_end")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_ticket_tiers")
+}
+
+model EventTimeSlot {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId     String   @map("event_id") @db.Uuid
+  sessionName String   @map("session_name")
+  startTime   DateTime @map("start_time")
+  endTime     DateTime @map("end_time")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_time_slots")
+}
+
+model EventQrScan {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId     String   @map("event_id") @db.Uuid
+  ticketCode  String   @map("ticket_code")
+  scannedAt   DateTime @default(now()) @map("scanned_at")
+  gateName    String   @default("Main Gate") @map("gate_name")
+  isSuccess   Boolean  @default(true) @map("is_success")
+
+  // Relations
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([ticketCode])
+  @@map("event_qr_scans")
+}
+
+model EventBooking {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId       String    @map("event_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  quantity      Int       @default(1) @map("quantity")
+  totalAmount   Decimal   @map("total_amount") @db.Decimal(15, 2)
+  ticketCode    String    @unique @map("ticket_code")
+  bookingStatus String    @default("confirmed") @map("booking_status")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([userId])
+  @@map("event_bookings")
+}
+
+model EventSeatingTable {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventId     String   @map("event_id") @db.Uuid
+  tableNumber String   @map("table_number")
+  seatCount   Int      @default(10) @map("seat_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_seating_tables")
+}
+
+model Flight {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String            @map("tenant_id") @db.Uuid
+  flightNumber    String            @map("flight_number")
+  airlineId       String            @map("airline_id") @db.Uuid
+  originAirportId String            @map("origin_airport_id") @db.Uuid
+  destAirportId   String            @map("dest_airport_id") @db.Uuid
+  departureTime   DateTime          @map("departure_time")
+  arrivalTime     DateTime          @map("arrival_time")
+  aircraftType    String            @map("aircraft_type")
+  basePrice       Decimal           @map("base_price") @db.Decimal(15, 2)
+  status          String            @default("scheduled") @map("status")
+  deletedAt       DateTime?         @map("deleted_at")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  airline         Airline           @relation(fields: [airlineId], references: [id], onDelete: Restrict)
+  originAirport   Airport           @relation("FlightOrigin", fields: [originAirportId], references: [id], onDelete: Restrict)
+  destAirport     Airport           @relation("FlightDest", fields: [destAirportId], references: [id], onDelete: Restrict)
+  seats           FlightSeat[]
+  passengers      FlightPassenger[]
+  bookings        FlightBooking[]
+
+  @@index([tenantId])
+  @@index([flightNumber])
+  @@map("flights")
+}
+
+model Airline {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @map("name")
+  iataCode  String   @unique @map("iata_code")
+  country   String?  @map("country")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  flights   Flight[]
+
+  @@map("airlines")
+}
+
+model Airport {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  iataCode       String   @unique @map("iata_code")
+  name           String   @map("name")
+  city           String   @map("city")
+  country        String   @map("country")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  departures     Flight[] @relation("FlightOrigin")
+  arrivals       Flight[] @relation("FlightDest")
+
+  @@map("airports")
+}
+
+model FlightSeat {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  flightId    String   @map("flight_id") @db.Uuid
+  seatNumber  String   @map("seat_number")
+  cabinClass  String   @default("Economy") @map("cabin_class")
+  price       Decimal  @map("price") @db.Decimal(15, 2)
+  isBooked    Boolean  @default(false) @map("is_booked")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  flight      Flight   @relation(fields: [flightId], references: [id], onDelete: Cascade)
+
+  @@unique([flightId, seatNumber])
+  @@map("flight_seats")
+}
+
+model FlightPassenger {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  flightId    String   @map("flight_id") @db.Uuid
+  passportNo  String   @map("passport_no")
+  fullName    String   @map("full_name")
+  nationality String   @map("nationality")
+  dateOfBirth DateTime @map("date_of_birth") @db.Date
+  seatNumber  String?  @map("seat_number")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  flight      Flight   @relation(fields: [flightId], references: [id], onDelete: Cascade)
+
+  @@index([flightId])
+  @@map("flight_passengers")
+}
+
+model FlightBooking {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  flightId      String    @map("flight_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  ticketCode    String    @unique @map("ticket_code")
+  totalAmount   Decimal   @map("total_amount") @db.Decimal(15, 2)
+  bookingStatus String    @default("confirmed") @map("booking_status")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  flight        Flight    @relation(fields: [flightId], references: [id], onDelete: Cascade)
+
+  @@index([flightId])
+  @@index([userId])
+  @@map("flight_bookings")
+}
