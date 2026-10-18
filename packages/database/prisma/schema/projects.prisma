@@ -1,0 +1,240 @@
+model Project {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String             @map("tenant_id") @db.Uuid
+  projectName String             @map("project_name")
+  description String?            @map("description")
+  startDate   DateTime?          @map("start_date") @db.Date
+  endDate     DateTime?          @map("end_date") @db.Date
+  status      String             @default("in_progress") @map("status")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  milestones  ProjectMilestone[]
+  tasks       ProjectTask[]
+  budgets     ProjectBudget[]
+  expenses    ProjectExpense[]
+  members     ProjectMember[]
+  agreements  ContractorAgreement[]
+
+  @@index([tenantId])
+  @@map("projects")
+}
+
+model ProjectMilestone {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId   String        @map("project_id") @db.Uuid
+  title       String        @map("title")
+  dueDate     DateTime      @map("due_date") @db.Date
+  status      String        @default("pending") @map("status")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks       ProjectTask[]
+
+  @@index([projectId])
+  @@map("project_milestones")
+}
+
+model ProjectTask {
+  id           String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId    String                  @map("project_id") @db.Uuid
+  milestoneId  String?                 @map("milestone_id") @db.Uuid
+  title        String                  @map("title")
+  description  String?                 @map("description")
+  priority     String                  @default("medium") @map("priority")
+  status       String                  @default("todo") @map("status")
+  dueDate      DateTime?               @map("due_date") @db.Date
+  assignedTo   String?                 @map("assigned_to") @db.Uuid
+  createdAt    DateTime                @default(now()) @map("created_at")
+  updatedAt    DateTime                @updatedAt @map("updated_at")
+
+  // Relations
+  project      Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone    ProjectMilestone?       @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  dependencies ProjectTaskDependency[] @relation("TaskDependencies")
+  dependents   ProjectTaskDependency[] @relation("TaskDependents")
+  timeLogs     TimeTracker[]
+
+  @@index([projectId])
+  @@index([milestoneId])
+  @@map("project_tasks")
+}
+
+model ProjectTaskDependency {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId         String      @map("task_id") @db.Uuid
+  dependsOnTaskId String     @map("depends_on_task_id") @db.Uuid
+
+  // Relations
+  task           ProjectTask @relation("TaskDependencies", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnTask  ProjectTask @relation("TaskDependents", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnTaskId])
+  @@map("project_task_dependencies")
+}
+
+model ProjectBudget {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId   String   @map("project_id") @db.Uuid
+  totalBudget Decimal  @map("total_budget") @db.Decimal(15, 2)
+  spentAmount Decimal  @default(0) @map("spent_amount") @db.Decimal(15, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_budgets")
+}
+
+model ProjectExpense {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId   String   @map("project_id") @db.Uuid
+  itemTitle   String   @map("item_title")
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  expenseDate DateTime @map("expense_date") @db.Date
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_expenses")
+}
+
+model ProjectMember {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId String   @map("project_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  role      String   @default("contributor") @map("role")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model TimeTracker {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId      String?      @map("task_id") @db.Uuid
+  userId      String       @map("user_id") @db.Uuid
+  startTime   DateTime     @map("start_time")
+  endTime     DateTime?    @map("end_time")
+  durationSec Int          @default(0) @map("duration_sec")
+  isBillable  Boolean      @default(true) @map("is_billable")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  task        ProjectTask? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  photos      TrackPhoto[]
+
+  @@index([userId])
+  @@index([taskId])
+  @@map("time_trackers")
+}
+
+model TrackPhoto {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trackerId   String      @map("tracker_id") @db.Uuid
+  photoUrl    String      @map("photo_url")
+  capturedAt  DateTime    @default(now()) @map("captured_at")
+
+  // Relations
+  tracker     TimeTracker @relation(fields: [trackerId], references: [id], onDelete: Cascade)
+
+  @@index([trackerId])
+  @@map("track_photos")
+}
+
+model EmployeeWeeklyTimesheet {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  weekNumber  Int      @map("week_number")
+  year        Int      @map("year")
+  totalHours  Decimal  @map("total_hours") @db.Decimal(5, 2)
+  status      String   @default("submitted") @map("status")
+  submittedAt DateTime @default(now()) @map("submitted_at")
+
+  @@unique([userId, weekNumber, year])
+  @@map("employee_weekly_timesheets")
+}
+
+model Bug {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String       @map("title")
+  description String       @map("description")
+  severity    String       @default("normal") @map("severity")
+  priority    String       @default("normal") @map("priority")
+  statusId    String?      @map("status_id") @db.Uuid
+  reportedBy  String?      @map("reported_by") @db.Uuid
+  assignedTo  String?      @map("assigned_to") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  status      BugStatus?   @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  comments    BugComment[]
+  files       BugFile[]
+
+  @@index([statusId])
+  @@map("bugs")
+}
+
+model BugStatus {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String   @unique @map("name")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  bugs         Bug[]
+
+  @@map("bug_statuses")
+}
+
+model BugComment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bugId     String   @map("bug_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  comment   String   @map("comment")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  bug       Bug      @relation(fields: [bugId], references: [id], onDelete: Cascade)
+
+  @@index([bugId])
+  @@map("bug_comments")
+}
+
+model BugFile {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bugId     String   @map("bug_id") @db.Uuid
+  fileUrl   String   @map("file_url")
+  fileName  String   @map("file_name")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  bug       Bug      @relation(fields: [bugId], references: [id], onDelete: Cascade)
+
+  @@index([bugId])
+  @@map("bug_files")
+}
+
+model ContractorAgreement {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId      String    @map("project_id") @db.Uuid
+  contractorName String    @map("contractor_name")
+  agreedAmount   Decimal   @map("agreed_amount") @db.Decimal(15, 2)
+  signedDate     DateTime? @map("signed_date") @db.Date
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("contractor_agreements")
+}

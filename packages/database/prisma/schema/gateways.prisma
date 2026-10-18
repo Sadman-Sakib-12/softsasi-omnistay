@@ -1,0 +1,95 @@
+model PaymentGatewayConfig {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gatewayCode    String   @unique @map("gateway_code")
+  name           String   @map("name")
+  supportedModes String[] @default([]) @map("supported_modes")
+  isTestMode     Boolean  @default(true) @map("is_test_mode")
+  isEnabled      Boolean  @default(true) @map("is_enabled")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("payment_gateway_configs")
+}
+
+model PaymentGatewayWebhook {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gatewayCode  String   @map("gateway_code")
+  eventType    String   @map("event_type")
+  payload      Json     @map("payload")
+  isProcessed  Boolean  @default(false) @map("is_processed")
+  receivedAt   DateTime @default(now()) @map("received_at")
+
+  @@index([gatewayCode])
+  @@map("payment_gateway_webhooks")
+}
+
+model StripeCustomer {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String   @unique @map("user_id") @db.Uuid
+  stripeCustomerId String   @unique @map("stripe_customer_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("stripe_customers")
+}
+
+model StripePaymentIntent {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  intentId        String   @unique @map("intent_id")
+  amount          Decimal  @map("amount") @db.Decimal(15, 2)
+  currency        String   @default("USD") @map("currency")
+  clientSecret    String   @map("client_secret")
+  status          String   @default("requires_payment_method") @map("status")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("stripe_payment_intents")
+}
+
+model PaypalOrder {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String   @unique @map("order_id")
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  currency    String   @default("USD") @map("currency")
+  status      String   @default("CREATED") @map("status")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("paypal_orders")
+}
+
+model SslcommerzTransaction {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tranId         String   @unique @map("tran_id")
+  valId          String?  @map("val_id")
+  amount         Decimal  @map("amount") @db.Decimal(15, 2)
+  bankTranId     String?  @map("bank_tran_id")
+  cardType       String?  @map("card_type")
+  status         String   @default("PENDING") @map("status")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("sslcommerz_transactions")
+}
+
+model BkashTransaction {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  paymentId       String   @unique @map("payment_id")
+  trxId           String?  @map("trx_id")
+  amount          Decimal  @map("amount") @db.Decimal(15, 2)
+  customerMsisdn  String?  @map("customer_msisdn")
+  status          String   @default("Initiated") @map("status")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("bkash_transactions")
+}
+
+model OfflineBankSlip {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String    @map("booking_id") @db.Uuid
+  bankName    String    @map("bank_name")
+  slipNumber  String    @map("slip_number")
+  slipFileUrl String    @map("slip_file_url")
+  amount      Decimal   @map("amount") @db.Decimal(15, 2)
+  isApproved  Boolean   @default(false) @map("is_approved")
+  approvedBy  String?   @map("approved_by") @db.Uuid
+  submittedAt DateTime  @default(now()) @map("submitted_at")
+
+  @@index([bookingId])
+  @@map("offline_bank_slips")
+}

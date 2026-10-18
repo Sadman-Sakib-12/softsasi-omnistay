@@ -1,0 +1,248 @@
+model AiConciergeConfig {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @unique @map("tenant_id") @db.Uuid
+  agentName      String   @default("OmniBot") @map("agent_name")
+  systemPrompt   String   @map("system_prompt")
+  modelProvider  String   @default("openai") @map("model_provider")
+  modelName      String   @default("gpt-4o-mini") @map("model_name")
+  temperature    Decimal  @default(0.7) @map("temperature") @db.Decimal(3, 2)
+  isEnabled      Boolean  @default(true) @map("is_enabled")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("ai_concierge_configs")
+}
+
+model AiConversation {
+  id          String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String                  @map("tenant_id") @db.Uuid
+  guestId     String?                 @map("guest_id") @db.Uuid
+  sessionId   String                  @unique @map("session_id")
+  channel     String                  @default("web") @map("channel")
+  language    String                  @default("en") @map("language")
+  createdAt   DateTime                @default(now()) @map("created_at")
+
+  // Relations
+  messages    AiConversationMessage[]
+  transactions AiInChatTransaction[]
+
+  @@index([tenantId])
+  @@map("ai_conversations")
+}
+
+model AiConversationMessage {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String         @map("conversation_id") @db.Uuid
+  sender         String         @map("sender")
+  content        String         @map("content")
+  metadata       Json?          @map("metadata")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("ai_conversation_messages")
+}
+
+model AiKnowledgeDocument {
+  id          String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String                 @map("tenant_id") @db.Uuid
+  title       String                 @map("title")
+  content     String                 @map("content")
+  category    String                 @default("property_info") @map("category")
+  createdAt   DateTime               @default(now()) @map("created_at")
+  updatedAt   DateTime               @updatedAt @map("updated_at")
+
+  // Relations
+  embeddings  AiKnowledgeEmbedding[]
+
+  @@index([tenantId])
+  @@map("ai_knowledge_documents")
+}
+
+model AiKnowledgeEmbedding {
+  id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId String              @map("document_id") @db.Uuid
+  chunkText  String              @map("chunk_text")
+  chunkIndex Int                 @map("chunk_index")
+  createdAt  DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  document   AiKnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("ai_knowledge_embeddings")
+}
+
+model AiInChatTransaction {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String         @map("conversation_id") @db.Uuid
+  bookingId      String?        @map("booking_id") @db.Uuid
+  amount         Decimal        @map("amount") @db.Decimal(15, 2)
+  status         String         @default("initiated") @map("status")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("ai_in_chat_transactions")
+}
+
+model AiDynamicPricingLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomTypeId   String   @map("room_type_id") @db.Uuid
+  originalRate Decimal  @map("original_rate") @db.Decimal(15, 2)
+  suggestedRate Decimal @map("suggested_rate") @db.Decimal(15, 2)
+  appliedRate  Decimal  @map("applied_rate") @db.Decimal(15, 2)
+  occupancyPct Decimal  @map("occupancy_pct") @db.Decimal(5, 2)
+  computedAt   DateTime @default(now()) @map("computed_at")
+
+  @@index([roomTypeId])
+  @@map("ai_dynamic_pricing_logs")
+}
+
+model AiMarketingCampaign {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  title       String   @map("title")
+  generatedAd String   @map("generated_ad")
+  targetAudience String @map("target_audience")
+  channel     String   @map("channel")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("ai_marketing_campaigns")
+}
+
+model AiPredictiveForecast {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId   String   @map("property_id") @db.Uuid
+  forecastDate DateTime @map("forecast_date") @db.Date
+  forecastOccupancy Decimal @map("forecast_occupancy") @db.Decimal(5, 2)
+  forecastRevenue Decimal @map("forecast_revenue") @db.Decimal(15, 2)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([propertyId])
+  @@map("ai_predictive_forecasts")
+}
+
+model CompetitorPriceScrape {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId   String   @map("property_id") @db.Uuid
+  competitorName String @map("competitor_name")
+  roomCategory String   @map("room_category")
+  rateObserved Decimal  @map("rate_observed") @db.Decimal(15, 2)
+  scrapedAt    DateTime @default(now()) @map("scraped_at")
+
+  @@index([propertyId])
+  @@map("competitor_price_scrapes")
+}
+
+model IotSmartLock {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId      String            @map("room_id") @db.Uuid
+  lockVendor  String            @default("AssaAbloy") @map("lock_vendor")
+  deviceSerial String           @unique @map("device_serial")
+  batteryLevel Int              @default(100) @map("battery_level")
+  isOnline    Boolean           @default(true) @map("is_online")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  keys        IotSmartLockKey[]
+  accessLogs  IotLockAccessLog[]
+
+  @@index([roomId])
+  @@map("iot_smart_locks")
+}
+
+model IotSmartLockKey {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lockId      String       @map("lock_id") @db.Uuid
+  guestId     String?      @map("guest_id") @db.Uuid
+  keyType     String       @default("BLE") @map("key_type")
+  keyToken    String       @map("key_token")
+  validFrom   DateTime     @map("valid_from")
+  validUntil  DateTime     @map("valid_until")
+  isRevoked   Boolean      @default(false) @map("is_revoked")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  lock        IotSmartLock @relation(fields: [lockId], references: [id], onDelete: Cascade)
+
+  @@index([lockId])
+  @@map("iot_smart_lock_keys")
+}
+
+model IotLockAccessLog {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lockId    String       @map("lock_id") @db.Uuid
+  authMethod String      @map("auth_method")
+  isGranted Boolean      @default(true) @map("is_granted")
+  accessedAt DateTime    @default(now()) @map("accessed_at")
+
+  // Relations
+  lock      IotSmartLock @relation(fields: [lockId], references: [id], onDelete: Cascade)
+
+  @@index([lockId])
+  @@map("iot_lock_access_logs")
+}
+
+model IotThermostat {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId      String         @map("room_id") @db.Uuid
+  deviceBrand String         @default("Honeywell") @map("device_brand")
+  targetTemp  Decimal        @default(21.0) @map("target_temp") @db.Decimal(4, 1)
+  currentTemp Decimal        @default(21.0) @map("current_temp") @db.Decimal(4, 1)
+  ecoMode     Boolean        @default(false) @map("eco_mode")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  energyLogs  IotEnergyLog[]
+
+  @@index([roomId])
+  @@map("iot_thermostats")
+}
+
+model IotEnergyLog {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  thermostatId String        @map("thermostat_id") @db.Uuid
+  kwhConsumed  Decimal       @map("kwh_consumed") @db.Decimal(8, 3)
+  loggedDate   DateTime      @map("logged_date") @db.Date
+
+  // Relations
+  thermostat   IotThermostat @relation(fields: [thermostatId], references: [id], onDelete: Cascade)
+
+  @@index([thermostatId])
+  @@map("iot_energy_logs")
+}
+
+model RoomQrOrder {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId      String            @map("room_id") @db.Uuid
+  orderNumber String            @unique @map("order_number")
+  totalAmount Decimal           @map("total_amount") @db.Decimal(15, 2)
+  status      String            @default("ordered") @map("status")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  items       RoomQrOrderItem[]
+
+  @@index([roomId])
+  @@map("room_qr_orders")
+}
+
+model RoomQrOrderItem {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  qrOrderId   String      @map("qr_order_id") @db.Uuid
+  itemTitle   String      @map("item_title")
+  quantity    Int         @default(1) @map("quantity")
+  price       Decimal     @map("price") @db.Decimal(15, 2)
+
+  // Relations
+  qrOrder     RoomQrOrder @relation(fields: [qrOrderId], references: [id], onDelete: Cascade)
+
+  @@index([qrOrderId])
+  @@map("room_qr_order_items")
+}

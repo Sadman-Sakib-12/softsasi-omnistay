@@ -1,0 +1,176 @@
+model ChatMessage {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromId     String   @map("from_id") @db.Uuid
+  toId       String?  @map("to_id") @db.Uuid
+  channelId  String?  @map("channel_id") @db.Uuid
+  body       String   @map("body")
+  attachment String?  @map("attachment")
+  isSeen     Boolean  @default(false) @map("is_seen")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([fromId])
+  @@index([toId])
+  @@index([channelId])
+  @@map("chat_messages")
+}
+
+model ChatFavorite {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  favoriteId String  @map("favorite_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, favoriteId])
+  @@map("chat_favorites")
+}
+
+model ChatChannel {
+  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String              @map("tenant_id") @db.Uuid
+  channelName String              @map("channel_name")
+  isPrivate   Boolean             @default(false) @map("is_private")
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  members     ChatChannelMember[]
+
+  @@index([tenantId])
+  @@map("chat_channels")
+}
+
+model ChatChannelMember {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channelId String      @map("channel_id") @db.Uuid
+  userId    String      @map("user_id") @db.Uuid
+  role      String      @default("member") @map("role")
+  joinedAt  DateTime    @default(now()) @map("joined_at")
+
+  // Relations
+  channel   ChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@unique([channelId, userId])
+  @@map("chat_channel_members")
+}
+
+model WhatsappMessage {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  recipientNo String   @map("recipient_no")
+  messageBody String   @map("message_body")
+  direction   String   @default("outbound") @map("direction")
+  status      String   @default("sent") @map("status")
+  sentAt      DateTime @default(now()) @map("sent_at")
+
+  @@index([tenantId])
+  @@map("whatsapp_messages")
+}
+
+model WhatsappTemplate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique @map("name")
+  category    String   @map("category")
+  content     String   @map("content")
+  isApproved  Boolean  @default(true) @map("is_approved")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("whatsapp_templates")
+}
+
+model SmsLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  phoneTo   String   @map("phone_to")
+  message   String   @map("message")
+  gateway   String   @default("twilio") @map("gateway")
+  status    String   @default("delivered") @map("status")
+  cost      Decimal  @default(0) @map("cost") @db.Decimal(6, 4)
+  sentAt    DateTime @default(now()) @map("sent_at")
+
+  @@index([phoneTo])
+  @@map("sms_logs")
+}
+
+model SmsGateway {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gatewayKey String   @unique @map("gateway_key")
+  apiKey     String   @map("api_key")
+  apiSecret  String?  @map("api_secret")
+  senderId   String?  @map("sender_id")
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("sms_gateways")
+}
+
+model EmailTemplate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique @map("name")
+  subject     String   @map("subject")
+  htmlBody    String   @map("html_body")
+  mergeTags   String[] @default([]) @map("merge_tags")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("email_templates")
+}
+
+model NotificationTemplate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventKey    String   @unique @map("event_key")
+  title       String   @map("title")
+  content     String   @map("content")
+  channels    String[] @default(["email"]) @map("channels")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("notification_templates")
+}
+
+model EmailCampaign {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  campaignName String  @map("campaign_name")
+  subject     String   @map("subject")
+  recipientCount Int   @default(0) @map("recipient_count")
+  sentCount   Int      @default(0) @map("sent_count")
+  status      String   @default("draft") @map("status")
+  scheduledAt DateTime? @map("scheduled_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("email_campaigns")
+}
+
+model EmailLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  recipient  String   @map("recipient")
+  subject    String   @map("subject")
+  status     String   @default("sent") @map("status")
+  provider   String   @default("smtp") @map("provider")
+  sentAt     DateTime @default(now()) @map("sent_at")
+
+  @@index([recipient])
+  @@map("email_logs")
+}
+
+model PushSubscription {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  endpoint  String   @unique @map("endpoint")
+  authKey   String   @map("auth_key")
+  p256dhKey String   @map("p256dh_key")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+model PushNotification {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  title     String   @map("title")
+  body      String   @map("body")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("push_notifications")
+}

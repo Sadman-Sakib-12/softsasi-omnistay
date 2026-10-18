@@ -1,0 +1,171 @@
+model Vendor {
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String                @map("tenant_id") @db.Uuid
+  userId         String                @map("user_id") @db.Uuid
+  businessName   String                @map("business_name")
+  taxId          String?               @map("tax_id")
+  isVerified     Boolean               @default(false) @map("is_verified")
+  commissionRate Decimal               @default(15.00) @map("commission_rate") @db.Decimal(5, 2)
+  balance        Decimal               @default(0) @map("balance") @db.Decimal(15, 2)
+  status         String                @default("active") @map("status")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  payouts        VendorPayout[]
+  payoutMethods  VendorPayoutMethod[]
+  teamMembers    VendorTeamMember[]
+  kycSubmissions VendorKycSubmission[]
+  commissions    VendorCommission[]
+  withdrawals    VendorWithdrawal[]
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("vendors")
+}
+
+model VendorPlan {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planName    String   @map("plan_name")
+  maxListings Int      @default(10) @map("max_listings")
+  feePercent  Decimal  @default(15.00) @map("fee_percent") @db.Decimal(5, 2)
+  monthlyFee  Decimal  @default(0) @map("monthly_fee") @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("vendor_plans")
+}
+
+model VendorCommission {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId      String   @map("vendor_id") @db.Uuid
+  bookingId     String   @map("booking_id") @db.Uuid
+  grossAmount   Decimal  @map("gross_amount") @db.Decimal(15, 2)
+  commissionAmt Decimal  @map("commission_amt") @db.Decimal(15, 2)
+  netVendorAmt  Decimal  @map("net_vendor_amt") @db.Decimal(15, 2)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  vendor        Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_commissions")
+}
+
+model VendorPayout {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String   @map("vendor_id") @db.Uuid
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  payoutMethod String  @map("payout_method")
+  status      String   @default("pending") @map("status")
+  reference   String?  @map("reference")
+  processedAt DateTime? @map("processed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_payouts")
+}
+
+model VendorPayoutMethod {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String   @map("vendor_id") @db.Uuid
+  methodType  String   @map("method_type")
+  details     Json     @map("details")
+  isDefault   Boolean  @default(true) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_payout_methods")
+}
+
+model VendorTeamMember {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String   @map("vendor_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  role        String   @default("manager") @map("role")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([vendorId, userId])
+  @@map("vendor_team_members")
+}
+
+model VendorKycSubmission {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String    @map("vendor_id") @db.Uuid
+  documentType String   @map("document_type")
+  documentUrl String    @map("document_url")
+  status      String    @default("pending") @map("status")
+  reviewedBy  String?   @map("reviewed_by") @db.Uuid
+  reviewedAt  DateTime? @map("reviewed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  vendor      Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_kyc_submissions")
+}
+
+model GuestReview {
+  id          String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String                 @unique @map("booking_id") @db.Uuid
+  overallScore Decimal               @map("overall_score") @db.Decimal(3, 1)
+  comment     String?                @map("comment")
+  isVerifiedStay Boolean             @default(true) @map("is_verified_stay")
+  createdAt   DateTime               @default(now()) @map("created_at")
+
+  // Relations
+  ratings     ReviewCriteriaRating[]
+  hostReplies ReviewHostReply[]
+
+  @@map("guest_reviews")
+}
+
+model ReviewCriteriaRating {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reviewId    String      @map("review_id") @db.Uuid
+  dimension   String      @map("dimension")
+  score       Int         @map("score")
+
+  // Relations
+  review      GuestReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, dimension])
+  @@map("review_criteria_ratings")
+}
+
+model ReviewHostReply {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reviewId    String      @map("review_id") @db.Uuid
+  replyText   String      @map("reply_text")
+  repliedAt   DateTime    @default(now()) @map("replied_at")
+
+  // Relations
+  review      GuestReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+  @@map("review_host_replies")
+}
+
+model VendorWithdrawal {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendorId    String    @map("vendor_id") @db.Uuid
+  amount      Decimal   @map("amount") @db.Decimal(15, 2)
+  status      String    @default("requested") @map("status")
+  requestedAt DateTime  @default(now()) @map("requested_at")
+  paidAt      DateTime? @map("paid_at")
+
+  // Relations
+  vendor      Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_withdrawals")
+}
