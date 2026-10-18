@@ -1,0 +1,303 @@
+model Lead {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String             @map("tenant_id") @db.Uuid
+  stageId     String?            @map("stage_id") @db.Uuid
+  title       String             @map("title")
+  contactName String             @map("contact_name")
+  email       String?            @map("email")
+  phone       String?            @map("phone")
+  leadScore   Int                @default(50) @map("lead_score")
+  source      String             @default("web_inquiry") @map("source")
+  assignedTo  String?            @map("assigned_to") @db.Uuid
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  stage       LeadStage?         @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  callLogs    LeadCallLog[]
+  notes       LeadActivityNote[]
+
+  @@index([tenantId])
+  @@index([stageId])
+  @@map("leads")
+}
+
+model LeadStage {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  name         String   @map("name")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  leads        Lead[]
+
+  @@unique([tenantId, name])
+  @@map("lead_stages")
+}
+
+model Deal {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String          @map("tenant_id") @db.Uuid
+  stageId        String?         @map("stage_id") @db.Uuid
+  dealName       String          @map("deal_name")
+  dealValue      Decimal         @map("deal_value") @db.Decimal(15, 2)
+  expectedClose  DateTime?       @map("expected_close") @db.Date
+  status         String          @default("open") @map("status")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  stage          DealStage?      @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  proposals      DealProposal[]
+  contracts      BanquetContract[]
+
+  @@index([tenantId])
+  @@index([stageId])
+  @@map("deals")
+}
+
+model DealStage {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  name         String   @map("name")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  deals        Deal[]
+
+  @@unique([tenantId, name])
+  @@map("deal_stages")
+}
+
+model FormBuilder {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String         @map("tenant_id") @db.Uuid
+  formName    String         @map("form_name")
+  formSchema  Json           @map("form_schema")
+  isActive    Boolean        @default(true) @map("is_active")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  responses   FormResponse[]
+
+  @@index([tenantId])
+  @@map("form_builders")
+}
+
+model FormResponse {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  formId      String      @map("form_id") @db.Uuid
+  formData    Json        @map("form_data")
+  submitterIp String?     @map("submitter_ip")
+  submittedAt DateTime    @default(now()) @map("submitted_at")
+
+  // Relations
+  form        FormBuilder @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@map("form_responses")
+}
+
+model LeadCallLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leadId      String   @map("lead_id") @db.Uuid
+  callSubject String   @map("call_subject")
+  callDuration Int     @default(0) @map("call_duration")
+  notes       String?  @map("notes")
+  loggedAt    DateTime @default(now()) @map("logged_at")
+
+  // Relations
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@map("lead_call_logs")
+}
+
+model LeadActivityNote {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  leadId      String   @map("lead_id") @db.Uuid
+  noteContent String   @map("note_content")
+  createdBy   String?  @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@map("lead_activity_notes")
+}
+
+model DealProposal {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dealId      String   @map("deal_id") @db.Uuid
+  proposalRef String   @unique @map("proposal_ref")
+  pdfUrl      String?  @map("pdf_url")
+  amount      Decimal  @map("amount") @db.Decimal(15, 2)
+  status      String   @default("draft") @map("status")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@map("deal_proposals")
+}
+
+model BanquetContract {
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dealId         String              @map("deal_id") @db.Uuid
+  contractNumber String              @unique @map("contract_number")
+  termsContent   String              @map("terms_content")
+  isSigned       Boolean             @default(false) @map("is_signed")
+  createdAt      DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  deal           Deal                @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  signatures     ContractSignature[]
+
+  @@index([dealId])
+  @@map("banquet_contracts")
+}
+
+model ContractSignature {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contractId  String          @map("contract_id") @db.Uuid
+  signerName  String          @map("signer_name")
+  signerIp    String          @map("signer_ip")
+  signatureImg String         @map("signature_img")
+  signedAt    DateTime        @default(now()) @map("signed_at")
+
+  // Relations
+  contract    BanquetContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@map("contract_signatures")
+}
+
+model GuestProfile360 {
+  id              String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String                   @unique @map("user_id") @db.Uuid
+  lifetimeSpend   Decimal                  @default(0) @map("lifetime_spend") @db.Decimal(15, 2)
+  totalNights     Int                      @default(0) @map("total_nights")
+  vipTier         String                   @default("Silver") @map("vip_tier")
+  notes           String?                  @map("notes")
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+
+  // Relations
+  preferences     GuestStayPreference[]
+  dietary         GuestDietaryRestriction[]
+
+  @@map("guest_profiles_360")
+}
+
+model GuestStayPreference {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId      String          @map("profile_id") @db.Uuid
+  preferenceKey  String          @map("preference_key")
+  preferenceVal  String          @map("preference_val")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  // Relations
+  profile        GuestProfile360 @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("guest_stay_preferences")
+}
+
+model GuestDietaryRestriction {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId   String          @map("profile_id") @db.Uuid
+  restriction String          @map("restriction")
+  notes       String?         @map("notes")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  // Relations
+  profile     GuestProfile360 @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("guest_dietary_restrictions")
+}
+
+model SupportTicket {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String               @map("tenant_id") @db.Uuid
+  ticketCode  String               @unique @map("ticket_code")
+  guestName   String               @map("guest_name")
+  guestEmail  String?              @map("guest_email")
+  subject     String               @map("subject")
+  priority    String               @default("normal") @map("priority")
+  status      String               @default("open") @map("status")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+
+  // Relations
+  replies     SupportTicketReply[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SupportTicketReply {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketId    String        @map("ticket_id") @db.Uuid
+  senderType  String        @default("staff") @map("sender_type")
+  message     String        @map("message")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("support_ticket_replies")
+}
+
+model SupportCannedResponse {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shortcut    String   @unique @map("shortcut")
+  title       String   @map("title")
+  response    String   @map("response")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("support_canned_responses")
+}
+
+model SupportKnowledgeBase {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  category  String   @map("category")
+  question  String   @map("question")
+  answer    String   @map("answer")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("support_knowledge_base")
+}
+
+model PostStaySurvey {
+  id          String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String                 @unique @map("booking_id") @db.Uuid
+  ratingScore Int                    @map("rating_score")
+  comments    String?                @map("comments")
+  submittedAt DateTime               @default(now()) @map("submitted_at")
+
+  // Relations
+  answers     GuestFeedbackAnswer[]
+
+  @@map("post_stay_surveys")
+}
+
+model GuestFeedbackAnswer {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  surveyId    String         @map("survey_id") @db.Uuid
+  question    String         @map("question")
+  answerText  String         @map("answer_text")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  survey      PostStaySurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+
+  @@index([surveyId])
+  @@map("guest_feedback_answers")
+}
