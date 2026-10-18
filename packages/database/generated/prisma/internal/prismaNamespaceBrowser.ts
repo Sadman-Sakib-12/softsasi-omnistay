@@ -51,14 +51,325 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  ChartOfAccount: 'ChartOfAccount',
+  JournalEntry: 'JournalEntry',
+  JournalItem: 'JournalItem',
+  Invoice: 'Invoice',
+  InvoiceItem: 'InvoiceItem',
+  InvoicePayment: 'InvoicePayment',
+  Bill: 'Bill',
+  BillItem: 'BillItem',
+  BillPayment: 'BillPayment',
+  BankAccount: 'BankAccount',
+  BankTransfer: 'BankTransfer',
+  BankStatement: 'BankStatement',
+  BankReconciliation: 'BankReconciliation',
+  BankReconciliationMatch: 'BankReconciliationMatch',
+  FiscalYear: 'FiscalYear',
+  AccountingPeriod: 'AccountingPeriod',
+  TaxRate: 'TaxRate',
+  CreditNote: 'CreditNote',
+  CreditNoteItem: 'CreditNoteItem',
+  DebitNote: 'DebitNote',
+  DebitNoteItem: 'DebitNoteItem',
+  DepartmentBudget: 'DepartmentBudget',
+  BudgetItem: 'BudgetItem',
+  CashRegister: 'CashRegister',
+  CashRegisterShift: 'CashRegisterShift',
+  NightAuditRun: 'NightAuditRun',
+  NightAuditSnapshot: 'NightAuditSnapshot',
+  AccountsReceivableAging: 'AccountsReceivableAging',
+  FinancialReportCache: 'FinancialReportCache',
+  JournalEntryTemplate: 'JournalEntryTemplate',
+  AiConciergeConfig: 'AiConciergeConfig',
+  AiConversation: 'AiConversation',
+  AiConversationMessage: 'AiConversationMessage',
+  AiKnowledgeDocument: 'AiKnowledgeDocument',
+  AiKnowledgeEmbedding: 'AiKnowledgeEmbedding',
+  AiInChatTransaction: 'AiInChatTransaction',
+  AiDynamicPricingLog: 'AiDynamicPricingLog',
+  AiMarketingCampaign: 'AiMarketingCampaign',
+  AiPredictiveForecast: 'AiPredictiveForecast',
+  CompetitorPriceScrape: 'CompetitorPriceScrape',
+  IotSmartLock: 'IotSmartLock',
+  IotSmartLockKey: 'IotSmartLockKey',
+  IotLockAccessLog: 'IotLockAccessLog',
+  IotThermostat: 'IotThermostat',
+  IotEnergyLog: 'IotEnergyLog',
+  RoomQrOrder: 'RoomQrOrder',
+  RoomQrOrderItem: 'RoomQrOrderItem',
+  Booking: 'Booking',
+  RatePlan: 'RatePlan',
+  RatePlanModifier: 'RatePlanModifier',
+  SeasonalRate: 'SeasonalRate',
+  BookingItem: 'BookingItem',
+  BookingGuest: 'BookingGuest',
+  Lead: 'Lead',
+  LeadStage: 'LeadStage',
+  Deal: 'Deal',
+  DealStage: 'DealStage',
+  FormBuilder: 'FormBuilder',
+  FormResponse: 'FormResponse',
+  LeadCallLog: 'LeadCallLog',
+  LeadActivityNote: 'LeadActivityNote',
+  DealProposal: 'DealProposal',
+  BanquetContract: 'BanquetContract',
+  ContractSignature: 'ContractSignature',
+  GuestProfile360: 'GuestProfile360',
+  GuestStayPreference: 'GuestStayPreference',
+  GuestDietaryRestriction: 'GuestDietaryRestriction',
+  SupportTicket: 'SupportTicket',
+  SupportTicketReply: 'SupportTicketReply',
+  SupportCannedResponse: 'SupportCannedResponse',
+  SupportKnowledgeBase: 'SupportKnowledgeBase',
+  PostStaySurvey: 'PostStaySurvey',
+  GuestFeedbackAnswer: 'GuestFeedbackAnswer',
+  PaymentGatewayConfig: 'PaymentGatewayConfig',
+  PaymentGatewayWebhook: 'PaymentGatewayWebhook',
+  StripeCustomer: 'StripeCustomer',
+  StripePaymentIntent: 'StripePaymentIntent',
+  PaypalOrder: 'PaypalOrder',
+  SslcommerzTransaction: 'SslcommerzTransaction',
+  BkashTransaction: 'BkashTransaction',
+  OfflineBankSlip: 'OfflineBankSlip',
+  Hotel: 'Hotel',
+  RoomType: 'RoomType',
+  Room: 'Room',
+  RoomBed: 'RoomBed',
+  RoomAvailability: 'RoomAvailability',
+  IcalFeed: 'IcalFeed',
+  GuestFolio: 'GuestFolio',
+  FolioTransaction: 'FolioTransaction',
+  HousekeepingTask: 'HousekeepingTask',
+  HotelTranslation: 'HotelTranslation',
+  Facility: 'Facility',
+  PropertyFacility: 'PropertyFacility',
+  RoomTypeFacility: 'RoomTypeFacility',
+  MealPlan: 'MealPlan',
+  HousekeepingLog: 'HousekeepingLog',
+  MaintenanceAsset: 'MaintenanceAsset',
+  MaintenanceWorkOrder: 'MaintenanceWorkOrder',
+  MaintenanceLog: 'MaintenanceLog',
+  LostAndFoundItem: 'LostAndFoundItem',
+  KeycardLog: 'KeycardLog',
+  PropertySurrounding: 'PropertySurrounding',
+  PropertyPhoto: 'PropertyPhoto',
+  Branch: 'Branch',
+  Department: 'Department',
+  Designation: 'Designation',
+  Employee: 'Employee',
+  EmployeeDocument: 'EmployeeDocument',
+  JoiningLetter: 'JoiningLetter',
+  OfferLetter: 'OfferLetter',
+  ExperienceCertificate: 'ExperienceCertificate',
+  AttendanceEmployee: 'AttendanceEmployee',
+  BiometricDevice: 'BiometricDevice',
+  ShiftSchedule: 'ShiftSchedule',
+  Timesheet: 'Timesheet',
+  SetSalary: 'SetSalary',
+  PaySlip: 'PaySlip',
+  Allowance: 'Allowance',
+  SaturationDeduction: 'SaturationDeduction',
+  Commission: 'Commission',
+  Loan: 'Loan',
+  LoanRepayment: 'LoanRepayment',
+  OvertimeRecord: 'OvertimeRecord',
+  Job: 'Job',
+  JobApplication: 'JobApplication',
+  InterviewSchedule: 'InterviewSchedule',
+  Appraisal: 'Appraisal',
+  Competency: 'Competency',
+  Indicator: 'Indicator',
+  GoalTracking: 'GoalTracking',
+  LeaveType: 'LeaveType',
+  LeaveApplication: 'LeaveApplication',
+  HolidayCalendar: 'HolidayCalendar',
+  EmployeeAward: 'EmployeeAward',
+  EmployeeComplaint: 'EmployeeComplaint',
+  DisciplinaryWarning: 'DisciplinaryWarning',
+  ResignationRequest: 'ResignationRequest',
+  OffboardingChecklist: 'OffboardingChecklist',
+  TrainingProgram: 'TrainingProgram',
+  TrainingAttendee: 'TrainingAttendee',
+  EmployeeCertification: 'EmployeeCertification',
+  ServiceChargePool: 'ServiceChargePool',
+  NightShiftAllowance: 'NightShiftAllowance',
   User: 'User',
-  Organization: 'Organization',
   Role: 'Role',
   Permission: 'Permission',
   RolePermission: 'RolePermission',
+  RefreshToken: 'RefreshToken',
+  TwoFactorChallenge: 'TwoFactorChallenge',
+  UserVerification: 'UserVerification',
+  ActivityLog: 'ActivityLog',
+  IpRestriction: 'IpRestriction',
+  SecurityAuditLog: 'SecurityAuditLog',
+  Warehouse: 'Warehouse',
+  WarehouseTransfer: 'WarehouseTransfer',
+  WarehouseProduct: 'WarehouseProduct',
+  WarehouseBin: 'WarehouseBin',
+  Product: 'Product',
+  ProductCategory: 'ProductCategory',
+  ProductUnit: 'ProductUnit',
+  ProductTax: 'ProductTax',
+  ProductVariant: 'ProductVariant',
+  ProductBarcode: 'ProductBarcode',
+  ProductRecipe: 'ProductRecipe',
+  ProductRecipeItem: 'ProductRecipeItem',
+  InventoryAdjustment: 'InventoryAdjustment',
+  InventoryAdjustmentItem: 'InventoryAdjustmentItem',
+  InventoryStockLog: 'InventoryStockLog',
+  InventoryWastageLog: 'InventoryWastageLog',
+  ReorderThresholdAlert: 'ReorderThresholdAlert',
+  StocktakingAudit: 'StocktakingAudit',
+  Cart: 'Cart',
+  CartItem: 'CartItem',
+  PaymentTransaction: 'PaymentTransaction',
+  PaymentMethod: 'PaymentMethod',
+  Coupon: 'Coupon',
+  CouponUsage: 'CouponUsage',
+  Wallet: 'Wallet',
+  WalletTransaction: 'WalletTransaction',
+  LoyaltyTier: 'LoyaltyTier',
+  LoyaltyMember: 'LoyaltyMember',
+  LoyaltyPointsLedger: 'LoyaltyPointsLedger',
+  GiftCard: 'GiftCard',
+  GiftCardRedemption: 'GiftCardRedemption',
+  ReferralLink: 'ReferralLink',
+  ReferralCommission: 'ReferralCommission',
+  TravelVoucher: 'TravelVoucher',
+  CancellationPolicy: 'CancellationPolicy',
+  RefundTransaction: 'RefundTransaction',
+  CurrencyExchangeRate: 'CurrencyExchangeRate',
+  TaxRule: 'TaxRule',
+  Vendor: 'Vendor',
+  VendorPlan: 'VendorPlan',
+  VendorCommission: 'VendorCommission',
+  VendorPayout: 'VendorPayout',
+  VendorPayoutMethod: 'VendorPayoutMethod',
+  VendorTeamMember: 'VendorTeamMember',
+  VendorKycSubmission: 'VendorKycSubmission',
+  GuestReview: 'GuestReview',
+  ReviewCriteriaRating: 'ReviewCriteriaRating',
+  ReviewHostReply: 'ReviewHostReply',
+  VendorWithdrawal: 'VendorWithdrawal',
+  ChatMessage: 'ChatMessage',
+  ChatFavorite: 'ChatFavorite',
+  ChatChannel: 'ChatChannel',
+  ChatChannelMember: 'ChatChannelMember',
+  WhatsappMessage: 'WhatsappMessage',
+  WhatsappTemplate: 'WhatsappTemplate',
+  SmsLog: 'SmsLog',
+  SmsGateway: 'SmsGateway',
+  EmailTemplate: 'EmailTemplate',
+  NotificationTemplate: 'NotificationTemplate',
+  EmailCampaign: 'EmailCampaign',
+  EmailLog: 'EmailLog',
+  PushSubscription: 'PushSubscription',
+  PushNotification: 'PushNotification',
+  PosOrder: 'PosOrder',
+  PosOrderItem: 'PosOrderItem',
+  PosPayment: 'PosPayment',
+  DiningTable: 'DiningTable',
+  PosTerminal: 'PosTerminal',
+  PosOutlet: 'PosOutlet',
+  DiningFloorPlan: 'DiningFloorPlan',
+  TableReservation: 'TableReservation',
+  PosMenu: 'PosMenu',
+  PosMenuCategory: 'PosMenuCategory',
+  PosMenuItem: 'PosMenuItem',
+  PosItemModifier: 'PosItemModifier',
+  PosOrderModifier: 'PosOrderModifier',
+  PosKitchenOrder: 'PosKitchenOrder',
+  KdsStation: 'KdsStation',
+  PosCashierShift: 'PosCashierShift',
+  PosCashDrop: 'PosCashDrop',
+  PosXReport: 'PosXReport',
+  PosZReport: 'PosZReport',
+  PosRoomChargeLog: 'PosRoomChargeLog',
+  Purchase: 'Purchase',
+  PurchaseProduct: 'PurchaseProduct',
+  PurchasePayment: 'PurchasePayment',
+  PurchaseRequisition: 'PurchaseRequisition',
+  PurchaseRequisitionItem: 'PurchaseRequisitionItem',
+  GoodsReceivedNote: 'GoodsReceivedNote',
+  GrnItem: 'GrnItem',
+  VendorPriceAgreement: 'VendorPriceAgreement',
+  Project: 'Project',
+  ProjectMilestone: 'ProjectMilestone',
+  ProjectTask: 'ProjectTask',
+  ProjectTaskDependency: 'ProjectTaskDependency',
+  ProjectBudget: 'ProjectBudget',
+  ProjectExpense: 'ProjectExpense',
+  ProjectMember: 'ProjectMember',
+  TimeTracker: 'TimeTracker',
+  TrackPhoto: 'TrackPhoto',
+  EmployeeWeeklyTimesheet: 'EmployeeWeeklyTimesheet',
+  Bug: 'Bug',
+  BugStatus: 'BugStatus',
+  BugComment: 'BugComment',
+  BugFile: 'BugFile',
+  ContractorAgreement: 'ContractorAgreement',
+  SystemAuditEvent: 'SystemAuditEvent',
+  SystemHealthMetric: 'SystemHealthMetric',
+  SystemErrorLog: 'SystemErrorLog',
+  SystemLocale: 'SystemLocale',
+  TranslationString: 'TranslationString',
+  TourTranslationExtra: 'TourTranslationExtra',
+  PropertyTranslation: 'PropertyTranslation',
+  SystemFeatureFlag: 'SystemFeatureFlag',
+  SystemScheduledJob: 'SystemScheduledJob',
+  Organization: 'Organization',
   Membership: 'Membership',
-  Hotel: 'Hotel',
-  RefreshToken: 'RefreshToken'
+  TenantSetting: 'TenantSetting',
+  SaasPlan: 'SaasPlan',
+  SubscriptionOrder: 'SubscriptionOrder',
+  PlanRequest: 'PlanRequest',
+  Webhook: 'Webhook',
+  WebhookDelivery: 'WebhookDelivery',
+  SystemSetting: 'SystemSetting',
+  CookieConsent: 'CookieConsent',
+  Space: 'Space',
+  SpaceTranslation: 'SpaceTranslation',
+  SpaceTerm: 'SpaceTerm',
+  SpaceDate: 'SpaceDate',
+  SpaceBooking: 'SpaceBooking',
+  SpaceAmenity: 'SpaceAmenity',
+  Tour: 'Tour',
+  TourTranslation: 'TourTranslation',
+  TourItinerary: 'TourItinerary',
+  TourDate: 'TourDate',
+  TourPersonType: 'TourPersonType',
+  TourBooking: 'TourBooking',
+  TourGuide: 'TourGuide',
+  TourInclusion: 'TourInclusion',
+  Car: 'Car',
+  CarTranslation: 'CarTranslation',
+  CarSpec: 'CarSpec',
+  CarDate: 'CarDate',
+  CarExtraService: 'CarExtraService',
+  CarBooking: 'CarBooking',
+  CarPickupLocation: 'CarPickupLocation',
+  Boat: 'Boat',
+  BoatTranslation: 'BoatTranslation',
+  BoatSpec: 'BoatSpec',
+  BoatDate: 'BoatDate',
+  BoatCrewing: 'BoatCrewing',
+  BoatBooking: 'BoatBooking',
+  BoatStateroom: 'BoatStateroom',
+  Event: 'Event',
+  EventTranslation: 'EventTranslation',
+  EventTicketTier: 'EventTicketTier',
+  EventTimeSlot: 'EventTimeSlot',
+  EventQrScan: 'EventQrScan',
+  EventBooking: 'EventBooking',
+  EventSeatingTable: 'EventSeatingTable',
+  Flight: 'Flight',
+  Airline: 'Airline',
+  Airport: 'Airport',
+  FlightSeat: 'FlightSeat',
+  FlightPassenger: 'FlightPassenger',
+  FlightBooking: 'FlightBooking'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -77,11 +388,1885 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const ChartOfAccountScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  parentId: 'parentId',
+  code: 'code',
+  name: 'name',
+  type: 'type',
+  subType: 'subType',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChartOfAccountScalarFieldEnum = (typeof ChartOfAccountScalarFieldEnum)[keyof typeof ChartOfAccountScalarFieldEnum]
+
+
+export const JournalEntryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  entryNumber: 'entryNumber',
+  date: 'date',
+  reference: 'reference',
+  description: 'description',
+  sourceModule: 'sourceModule',
+  isPosted: 'isPosted',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type JournalEntryScalarFieldEnum = (typeof JournalEntryScalarFieldEnum)[keyof typeof JournalEntryScalarFieldEnum]
+
+
+export const JournalItemScalarFieldEnum = {
+  id: 'id',
+  journalEntryId: 'journalEntryId',
+  accountId: 'accountId',
+  debit: 'debit',
+  credit: 'credit',
+  currency: 'currency',
+  exchangeRate: 'exchangeRate',
+  createdAt: 'createdAt'
+} as const
+
+export type JournalItemScalarFieldEnum = (typeof JournalItemScalarFieldEnum)[keyof typeof JournalItemScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  invoiceNumber: 'invoiceNumber',
+  customerId: 'customerId',
+  issueDate: 'issueDate',
+  dueDate: 'dueDate',
+  subtotal: 'subtotal',
+  taxTotal: 'taxTotal',
+  discountTotal: 'discountTotal',
+  grandTotal: 'grandTotal',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  taxAmount: 'taxAmount',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
+
+
+export const InvoicePaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  paymentDate: 'paymentDate',
+  method: 'method',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type InvoicePaymentScalarFieldEnum = (typeof InvoicePaymentScalarFieldEnum)[keyof typeof InvoicePaymentScalarFieldEnum]
+
+
+export const BillScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  billNumber: 'billNumber',
+  vendorId: 'vendorId',
+  purchaseOrderId: 'purchaseOrderId',
+  billDate: 'billDate',
+  dueDate: 'dueDate',
+  grandTotal: 'grandTotal',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
+
+
+export const BillItemScalarFieldEnum = {
+  id: 'id',
+  billId: 'billId',
+  description: 'description',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  totalCost: 'totalCost',
+  createdAt: 'createdAt'
+} as const
+
+export type BillItemScalarFieldEnum = (typeof BillItemScalarFieldEnum)[keyof typeof BillItemScalarFieldEnum]
+
+
+export const BillPaymentScalarFieldEnum = {
+  id: 'id',
+  billId: 'billId',
+  amount: 'amount',
+  paymentDate: 'paymentDate',
+  method: 'method',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type BillPaymentScalarFieldEnum = (typeof BillPaymentScalarFieldEnum)[keyof typeof BillPaymentScalarFieldEnum]
+
+
+export const BankAccountScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  accountId: 'accountId',
+  accountName: 'accountName',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  currency: 'currency',
+  openingBalance: 'openingBalance',
+  currentBalance: 'currentBalance',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[keyof typeof BankAccountScalarFieldEnum]
+
+
+export const BankTransferScalarFieldEnum = {
+  id: 'id',
+  fromAccountId: 'fromAccountId',
+  toAccountId: 'toAccountId',
+  amount: 'amount',
+  date: 'date',
+  fee: 'fee',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type BankTransferScalarFieldEnum = (typeof BankTransferScalarFieldEnum)[keyof typeof BankTransferScalarFieldEnum]
+
+
+export const BankStatementScalarFieldEnum = {
+  id: 'id',
+  bankAccountId: 'bankAccountId',
+  statementDate: 'statementDate',
+  fileName: 'fileName',
+  fileFormat: 'fileFormat',
+  importedAt: 'importedAt'
+} as const
+
+export type BankStatementScalarFieldEnum = (typeof BankStatementScalarFieldEnum)[keyof typeof BankStatementScalarFieldEnum]
+
+
+export const BankReconciliationScalarFieldEnum = {
+  id: 'id',
+  statementId: 'statementId',
+  status: 'status',
+  reconciledAt: 'reconciledAt',
+  createdAt: 'createdAt'
+} as const
+
+export type BankReconciliationScalarFieldEnum = (typeof BankReconciliationScalarFieldEnum)[keyof typeof BankReconciliationScalarFieldEnum]
+
+
+export const BankReconciliationMatchScalarFieldEnum = {
+  id: 'id',
+  reconciliationId: 'reconciliationId',
+  statementLineRef: 'statementLineRef',
+  ledgerEntryId: 'ledgerEntryId',
+  matchedAmount: 'matchedAmount',
+  matchedAt: 'matchedAt'
+} as const
+
+export type BankReconciliationMatchScalarFieldEnum = (typeof BankReconciliationMatchScalarFieldEnum)[keyof typeof BankReconciliationMatchScalarFieldEnum]
+
+
+export const FiscalYearScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  yearName: 'yearName',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  isClosed: 'isClosed',
+  createdAt: 'createdAt'
+} as const
+
+export type FiscalYearScalarFieldEnum = (typeof FiscalYearScalarFieldEnum)[keyof typeof FiscalYearScalarFieldEnum]
+
+
+export const AccountingPeriodScalarFieldEnum = {
+  id: 'id',
+  fiscalYearId: 'fiscalYearId',
+  periodNumber: 'periodNumber',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  isClosed: 'isClosed',
+  createdAt: 'createdAt'
+} as const
+
+export type AccountingPeriodScalarFieldEnum = (typeof AccountingPeriodScalarFieldEnum)[keyof typeof AccountingPeriodScalarFieldEnum]
+
+
+export const TaxRateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  percentage: 'percentage',
+  type: 'type',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type TaxRateScalarFieldEnum = (typeof TaxRateScalarFieldEnum)[keyof typeof TaxRateScalarFieldEnum]
+
+
+export const CreditNoteScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  noteNumber: 'noteNumber',
+  amount: 'amount',
+  reason: 'reason',
+  issuedDate: 'issuedDate',
+  createdAt: 'createdAt'
+} as const
+
+export type CreditNoteScalarFieldEnum = (typeof CreditNoteScalarFieldEnum)[keyof typeof CreditNoteScalarFieldEnum]
+
+
+export const CreditNoteItemScalarFieldEnum = {
+  id: 'id',
+  creditNoteId: 'creditNoteId',
+  description: 'description',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type CreditNoteItemScalarFieldEnum = (typeof CreditNoteItemScalarFieldEnum)[keyof typeof CreditNoteItemScalarFieldEnum]
+
+
+export const DebitNoteScalarFieldEnum = {
+  id: 'id',
+  billId: 'billId',
+  noteNumber: 'noteNumber',
+  amount: 'amount',
+  reason: 'reason',
+  issuedDate: 'issuedDate',
+  createdAt: 'createdAt'
+} as const
+
+export type DebitNoteScalarFieldEnum = (typeof DebitNoteScalarFieldEnum)[keyof typeof DebitNoteScalarFieldEnum]
+
+
+export const DebitNoteItemScalarFieldEnum = {
+  id: 'id',
+  debitNoteId: 'debitNoteId',
+  description: 'description',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type DebitNoteItemScalarFieldEnum = (typeof DebitNoteItemScalarFieldEnum)[keyof typeof DebitNoteItemScalarFieldEnum]
+
+
+export const DepartmentBudgetScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  departmentName: 'departmentName',
+  fiscalYear: 'fiscalYear',
+  totalBudget: 'totalBudget',
+  createdAt: 'createdAt'
+} as const
+
+export type DepartmentBudgetScalarFieldEnum = (typeof DepartmentBudgetScalarFieldEnum)[keyof typeof DepartmentBudgetScalarFieldEnum]
+
+
+export const BudgetItemScalarFieldEnum = {
+  id: 'id',
+  budgetId: 'budgetId',
+  accountId: 'accountId',
+  month: 'month',
+  allocated: 'allocated',
+  spent: 'spent',
+  createdAt: 'createdAt'
+} as const
+
+export type BudgetItemScalarFieldEnum = (typeof BudgetItemScalarFieldEnum)[keyof typeof BudgetItemScalarFieldEnum]
+
+
+export const CashRegisterScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  registerName: 'registerName',
+  location: 'location',
+  currentFloat: 'currentFloat',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type CashRegisterScalarFieldEnum = (typeof CashRegisterScalarFieldEnum)[keyof typeof CashRegisterScalarFieldEnum]
+
+
+export const CashRegisterShiftScalarFieldEnum = {
+  id: 'id',
+  registerId: 'registerId',
+  cashierId: 'cashierId',
+  openingFloat: 'openingFloat',
+  closingCash: 'closingCash',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt'
+} as const
+
+export type CashRegisterShiftScalarFieldEnum = (typeof CashRegisterShiftScalarFieldEnum)[keyof typeof CashRegisterShiftScalarFieldEnum]
+
+
+export const NightAuditRunScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  auditDate: 'auditDate',
+  executedAt: 'executedAt',
+  roomsAudited: 'roomsAudited',
+  revenuePosted: 'revenuePosted',
+  status: 'status'
+} as const
+
+export type NightAuditRunScalarFieldEnum = (typeof NightAuditRunScalarFieldEnum)[keyof typeof NightAuditRunScalarFieldEnum]
+
+
+export const NightAuditSnapshotScalarFieldEnum = {
+  id: 'id',
+  auditRunId: 'auditRunId',
+  accountCode: 'accountCode',
+  debitTotal: 'debitTotal',
+  creditTotal: 'creditTotal',
+  createdAt: 'createdAt'
+} as const
+
+export type NightAuditSnapshotScalarFieldEnum = (typeof NightAuditSnapshotScalarFieldEnum)[keyof typeof NightAuditSnapshotScalarFieldEnum]
+
+
+export const AccountsReceivableAgingScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  customerId: 'customerId',
+  currentAmount: 'currentAmount',
+  days30: 'days30',
+  days60: 'days60',
+  days90Plus: 'days90Plus',
+  calculatedAt: 'calculatedAt'
+} as const
+
+export type AccountsReceivableAgingScalarFieldEnum = (typeof AccountsReceivableAgingScalarFieldEnum)[keyof typeof AccountsReceivableAgingScalarFieldEnum]
+
+
+export const FinancialReportCacheScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  reportType: 'reportType',
+  periodKey: 'periodKey',
+  reportData: 'reportData',
+  generatedAt: 'generatedAt'
+} as const
+
+export type FinancialReportCacheScalarFieldEnum = (typeof FinancialReportCacheScalarFieldEnum)[keyof typeof FinancialReportCacheScalarFieldEnum]
+
+
+export const JournalEntryTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  templateName: 'templateName',
+  templateData: 'templateData',
+  createdAt: 'createdAt'
+} as const
+
+export type JournalEntryTemplateScalarFieldEnum = (typeof JournalEntryTemplateScalarFieldEnum)[keyof typeof JournalEntryTemplateScalarFieldEnum]
+
+
+export const AiConciergeConfigScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  agentName: 'agentName',
+  systemPrompt: 'systemPrompt',
+  modelProvider: 'modelProvider',
+  modelName: 'modelName',
+  temperature: 'temperature',
+  isEnabled: 'isEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AiConciergeConfigScalarFieldEnum = (typeof AiConciergeConfigScalarFieldEnum)[keyof typeof AiConciergeConfigScalarFieldEnum]
+
+
+export const AiConversationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  guestId: 'guestId',
+  sessionId: 'sessionId',
+  channel: 'channel',
+  language: 'language',
+  createdAt: 'createdAt'
+} as const
+
+export type AiConversationScalarFieldEnum = (typeof AiConversationScalarFieldEnum)[keyof typeof AiConversationScalarFieldEnum]
+
+
+export const AiConversationMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  sender: 'sender',
+  content: 'content',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type AiConversationMessageScalarFieldEnum = (typeof AiConversationMessageScalarFieldEnum)[keyof typeof AiConversationMessageScalarFieldEnum]
+
+
+export const AiKnowledgeDocumentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  content: 'content',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AiKnowledgeDocumentScalarFieldEnum = (typeof AiKnowledgeDocumentScalarFieldEnum)[keyof typeof AiKnowledgeDocumentScalarFieldEnum]
+
+
+export const AiKnowledgeEmbeddingScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  chunkText: 'chunkText',
+  chunkIndex: 'chunkIndex',
+  createdAt: 'createdAt'
+} as const
+
+export type AiKnowledgeEmbeddingScalarFieldEnum = (typeof AiKnowledgeEmbeddingScalarFieldEnum)[keyof typeof AiKnowledgeEmbeddingScalarFieldEnum]
+
+
+export const AiInChatTransactionScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  bookingId: 'bookingId',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type AiInChatTransactionScalarFieldEnum = (typeof AiInChatTransactionScalarFieldEnum)[keyof typeof AiInChatTransactionScalarFieldEnum]
+
+
+export const AiDynamicPricingLogScalarFieldEnum = {
+  id: 'id',
+  roomTypeId: 'roomTypeId',
+  originalRate: 'originalRate',
+  suggestedRate: 'suggestedRate',
+  appliedRate: 'appliedRate',
+  occupancyPct: 'occupancyPct',
+  computedAt: 'computedAt'
+} as const
+
+export type AiDynamicPricingLogScalarFieldEnum = (typeof AiDynamicPricingLogScalarFieldEnum)[keyof typeof AiDynamicPricingLogScalarFieldEnum]
+
+
+export const AiMarketingCampaignScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  generatedAd: 'generatedAd',
+  targetAudience: 'targetAudience',
+  channel: 'channel',
+  createdAt: 'createdAt'
+} as const
+
+export type AiMarketingCampaignScalarFieldEnum = (typeof AiMarketingCampaignScalarFieldEnum)[keyof typeof AiMarketingCampaignScalarFieldEnum]
+
+
+export const AiPredictiveForecastScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  forecastDate: 'forecastDate',
+  forecastOccupancy: 'forecastOccupancy',
+  forecastRevenue: 'forecastRevenue',
+  createdAt: 'createdAt'
+} as const
+
+export type AiPredictiveForecastScalarFieldEnum = (typeof AiPredictiveForecastScalarFieldEnum)[keyof typeof AiPredictiveForecastScalarFieldEnum]
+
+
+export const CompetitorPriceScrapeScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  competitorName: 'competitorName',
+  roomCategory: 'roomCategory',
+  rateObserved: 'rateObserved',
+  scrapedAt: 'scrapedAt'
+} as const
+
+export type CompetitorPriceScrapeScalarFieldEnum = (typeof CompetitorPriceScrapeScalarFieldEnum)[keyof typeof CompetitorPriceScrapeScalarFieldEnum]
+
+
+export const IotSmartLockScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  lockVendor: 'lockVendor',
+  deviceSerial: 'deviceSerial',
+  batteryLevel: 'batteryLevel',
+  isOnline: 'isOnline',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IotSmartLockScalarFieldEnum = (typeof IotSmartLockScalarFieldEnum)[keyof typeof IotSmartLockScalarFieldEnum]
+
+
+export const IotSmartLockKeyScalarFieldEnum = {
+  id: 'id',
+  lockId: 'lockId',
+  guestId: 'guestId',
+  keyType: 'keyType',
+  keyToken: 'keyToken',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  isRevoked: 'isRevoked',
+  createdAt: 'createdAt'
+} as const
+
+export type IotSmartLockKeyScalarFieldEnum = (typeof IotSmartLockKeyScalarFieldEnum)[keyof typeof IotSmartLockKeyScalarFieldEnum]
+
+
+export const IotLockAccessLogScalarFieldEnum = {
+  id: 'id',
+  lockId: 'lockId',
+  authMethod: 'authMethod',
+  isGranted: 'isGranted',
+  accessedAt: 'accessedAt'
+} as const
+
+export type IotLockAccessLogScalarFieldEnum = (typeof IotLockAccessLogScalarFieldEnum)[keyof typeof IotLockAccessLogScalarFieldEnum]
+
+
+export const IotThermostatScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  deviceBrand: 'deviceBrand',
+  targetTemp: 'targetTemp',
+  currentTemp: 'currentTemp',
+  ecoMode: 'ecoMode',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IotThermostatScalarFieldEnum = (typeof IotThermostatScalarFieldEnum)[keyof typeof IotThermostatScalarFieldEnum]
+
+
+export const IotEnergyLogScalarFieldEnum = {
+  id: 'id',
+  thermostatId: 'thermostatId',
+  kwhConsumed: 'kwhConsumed',
+  loggedDate: 'loggedDate'
+} as const
+
+export type IotEnergyLogScalarFieldEnum = (typeof IotEnergyLogScalarFieldEnum)[keyof typeof IotEnergyLogScalarFieldEnum]
+
+
+export const RoomQrOrderScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  orderNumber: 'orderNumber',
+  totalAmount: 'totalAmount',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type RoomQrOrderScalarFieldEnum = (typeof RoomQrOrderScalarFieldEnum)[keyof typeof RoomQrOrderScalarFieldEnum]
+
+
+export const RoomQrOrderItemScalarFieldEnum = {
+  id: 'id',
+  qrOrderId: 'qrOrderId',
+  itemTitle: 'itemTitle',
+  quantity: 'quantity',
+  price: 'price'
+} as const
+
+export type RoomQrOrderItemScalarFieldEnum = (typeof RoomQrOrderItemScalarFieldEnum)[keyof typeof RoomQrOrderItemScalarFieldEnum]
+
+
+export const BookingScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  bookingCode: 'bookingCode',
+  guestId: 'guestId',
+  propertyId: 'propertyId',
+  checkInDate: 'checkInDate',
+  checkOutDate: 'checkOutDate',
+  adults: 'adults',
+  children: 'children',
+  totalAmount: 'totalAmount',
+  depositAmount: 'depositAmount',
+  bookingStatus: 'bookingStatus',
+  paymentStatus: 'paymentStatus',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const RatePlanScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  mealPlan: 'mealPlan',
+  isDefault: 'isDefault',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RatePlanScalarFieldEnum = (typeof RatePlanScalarFieldEnum)[keyof typeof RatePlanScalarFieldEnum]
+
+
+export const RatePlanModifierScalarFieldEnum = {
+  id: 'id',
+  ratePlanId: 'ratePlanId',
+  modifierType: 'modifierType',
+  value: 'value',
+  minStay: 'minStay',
+  createdAt: 'createdAt'
+} as const
+
+export type RatePlanModifierScalarFieldEnum = (typeof RatePlanModifierScalarFieldEnum)[keyof typeof RatePlanModifierScalarFieldEnum]
+
+
+export const SeasonalRateScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  seasonName: 'seasonName',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  multiplier: 'multiplier',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SeasonalRateScalarFieldEnum = (typeof SeasonalRateScalarFieldEnum)[keyof typeof SeasonalRateScalarFieldEnum]
+
+
+export const BookingItemScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  roomTypeId: 'roomTypeId',
+  itemType: 'itemType',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  totalPrice: 'totalPrice',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingItemScalarFieldEnum = (typeof BookingItemScalarFieldEnum)[keyof typeof BookingItemScalarFieldEnum]
+
+
+export const BookingGuestScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  fullName: 'fullName',
+  email: 'email',
+  phone: 'phone',
+  isPrimary: 'isPrimary',
+  passportNo: 'passportNo',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingGuestScalarFieldEnum = (typeof BookingGuestScalarFieldEnum)[keyof typeof BookingGuestScalarFieldEnum]
+
+
+export const LeadScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stageId: 'stageId',
+  title: 'title',
+  contactName: 'contactName',
+  email: 'email',
+  phone: 'phone',
+  leadScore: 'leadScore',
+  source: 'source',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
+
+
+export const LeadStageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type LeadStageScalarFieldEnum = (typeof LeadStageScalarFieldEnum)[keyof typeof LeadStageScalarFieldEnum]
+
+
+export const DealScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stageId: 'stageId',
+  dealName: 'dealName',
+  dealValue: 'dealValue',
+  expectedClose: 'expectedClose',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
+
+
+export const DealStageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type DealStageScalarFieldEnum = (typeof DealStageScalarFieldEnum)[keyof typeof DealStageScalarFieldEnum]
+
+
+export const FormBuilderScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  formName: 'formName',
+  formSchema: 'formSchema',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type FormBuilderScalarFieldEnum = (typeof FormBuilderScalarFieldEnum)[keyof typeof FormBuilderScalarFieldEnum]
+
+
+export const FormResponseScalarFieldEnum = {
+  id: 'id',
+  formId: 'formId',
+  formData: 'formData',
+  submitterIp: 'submitterIp',
+  submittedAt: 'submittedAt'
+} as const
+
+export type FormResponseScalarFieldEnum = (typeof FormResponseScalarFieldEnum)[keyof typeof FormResponseScalarFieldEnum]
+
+
+export const LeadCallLogScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  callSubject: 'callSubject',
+  callDuration: 'callDuration',
+  notes: 'notes',
+  loggedAt: 'loggedAt'
+} as const
+
+export type LeadCallLogScalarFieldEnum = (typeof LeadCallLogScalarFieldEnum)[keyof typeof LeadCallLogScalarFieldEnum]
+
+
+export const LeadActivityNoteScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  noteContent: 'noteContent',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type LeadActivityNoteScalarFieldEnum = (typeof LeadActivityNoteScalarFieldEnum)[keyof typeof LeadActivityNoteScalarFieldEnum]
+
+
+export const DealProposalScalarFieldEnum = {
+  id: 'id',
+  dealId: 'dealId',
+  proposalRef: 'proposalRef',
+  pdfUrl: 'pdfUrl',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type DealProposalScalarFieldEnum = (typeof DealProposalScalarFieldEnum)[keyof typeof DealProposalScalarFieldEnum]
+
+
+export const BanquetContractScalarFieldEnum = {
+  id: 'id',
+  dealId: 'dealId',
+  contractNumber: 'contractNumber',
+  termsContent: 'termsContent',
+  isSigned: 'isSigned',
+  createdAt: 'createdAt'
+} as const
+
+export type BanquetContractScalarFieldEnum = (typeof BanquetContractScalarFieldEnum)[keyof typeof BanquetContractScalarFieldEnum]
+
+
+export const ContractSignatureScalarFieldEnum = {
+  id: 'id',
+  contractId: 'contractId',
+  signerName: 'signerName',
+  signerIp: 'signerIp',
+  signatureImg: 'signatureImg',
+  signedAt: 'signedAt'
+} as const
+
+export type ContractSignatureScalarFieldEnum = (typeof ContractSignatureScalarFieldEnum)[keyof typeof ContractSignatureScalarFieldEnum]
+
+
+export const GuestProfile360ScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  lifetimeSpend: 'lifetimeSpend',
+  totalNights: 'totalNights',
+  vipTier: 'vipTier',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GuestProfile360ScalarFieldEnum = (typeof GuestProfile360ScalarFieldEnum)[keyof typeof GuestProfile360ScalarFieldEnum]
+
+
+export const GuestStayPreferenceScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  preferenceKey: 'preferenceKey',
+  preferenceVal: 'preferenceVal',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestStayPreferenceScalarFieldEnum = (typeof GuestStayPreferenceScalarFieldEnum)[keyof typeof GuestStayPreferenceScalarFieldEnum]
+
+
+export const GuestDietaryRestrictionScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  restriction: 'restriction',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestDietaryRestrictionScalarFieldEnum = (typeof GuestDietaryRestrictionScalarFieldEnum)[keyof typeof GuestDietaryRestrictionScalarFieldEnum]
+
+
+export const SupportTicketScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  ticketCode: 'ticketCode',
+  guestName: 'guestName',
+  guestEmail: 'guestEmail',
+  subject: 'subject',
+  priority: 'priority',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SupportTicketScalarFieldEnum = (typeof SupportTicketScalarFieldEnum)[keyof typeof SupportTicketScalarFieldEnum]
+
+
+export const SupportTicketReplyScalarFieldEnum = {
+  id: 'id',
+  ticketId: 'ticketId',
+  senderType: 'senderType',
+  message: 'message',
+  createdAt: 'createdAt'
+} as const
+
+export type SupportTicketReplyScalarFieldEnum = (typeof SupportTicketReplyScalarFieldEnum)[keyof typeof SupportTicketReplyScalarFieldEnum]
+
+
+export const SupportCannedResponseScalarFieldEnum = {
+  id: 'id',
+  shortcut: 'shortcut',
+  title: 'title',
+  response: 'response',
+  createdAt: 'createdAt'
+} as const
+
+export type SupportCannedResponseScalarFieldEnum = (typeof SupportCannedResponseScalarFieldEnum)[keyof typeof SupportCannedResponseScalarFieldEnum]
+
+
+export const SupportKnowledgeBaseScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  question: 'question',
+  answer: 'answer',
+  createdAt: 'createdAt'
+} as const
+
+export type SupportKnowledgeBaseScalarFieldEnum = (typeof SupportKnowledgeBaseScalarFieldEnum)[keyof typeof SupportKnowledgeBaseScalarFieldEnum]
+
+
+export const PostStaySurveyScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  ratingScore: 'ratingScore',
+  comments: 'comments',
+  submittedAt: 'submittedAt'
+} as const
+
+export type PostStaySurveyScalarFieldEnum = (typeof PostStaySurveyScalarFieldEnum)[keyof typeof PostStaySurveyScalarFieldEnum]
+
+
+export const GuestFeedbackAnswerScalarFieldEnum = {
+  id: 'id',
+  surveyId: 'surveyId',
+  question: 'question',
+  answerText: 'answerText',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestFeedbackAnswerScalarFieldEnum = (typeof GuestFeedbackAnswerScalarFieldEnum)[keyof typeof GuestFeedbackAnswerScalarFieldEnum]
+
+
+export const PaymentGatewayConfigScalarFieldEnum = {
+  id: 'id',
+  gatewayCode: 'gatewayCode',
+  name: 'name',
+  supportedModes: 'supportedModes',
+  isTestMode: 'isTestMode',
+  isEnabled: 'isEnabled',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentGatewayConfigScalarFieldEnum = (typeof PaymentGatewayConfigScalarFieldEnum)[keyof typeof PaymentGatewayConfigScalarFieldEnum]
+
+
+export const PaymentGatewayWebhookScalarFieldEnum = {
+  id: 'id',
+  gatewayCode: 'gatewayCode',
+  eventType: 'eventType',
+  payload: 'payload',
+  isProcessed: 'isProcessed',
+  receivedAt: 'receivedAt'
+} as const
+
+export type PaymentGatewayWebhookScalarFieldEnum = (typeof PaymentGatewayWebhookScalarFieldEnum)[keyof typeof PaymentGatewayWebhookScalarFieldEnum]
+
+
+export const StripeCustomerScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  stripeCustomerId: 'stripeCustomerId',
+  createdAt: 'createdAt'
+} as const
+
+export type StripeCustomerScalarFieldEnum = (typeof StripeCustomerScalarFieldEnum)[keyof typeof StripeCustomerScalarFieldEnum]
+
+
+export const StripePaymentIntentScalarFieldEnum = {
+  id: 'id',
+  intentId: 'intentId',
+  amount: 'amount',
+  currency: 'currency',
+  clientSecret: 'clientSecret',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type StripePaymentIntentScalarFieldEnum = (typeof StripePaymentIntentScalarFieldEnum)[keyof typeof StripePaymentIntentScalarFieldEnum]
+
+
+export const PaypalOrderScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type PaypalOrderScalarFieldEnum = (typeof PaypalOrderScalarFieldEnum)[keyof typeof PaypalOrderScalarFieldEnum]
+
+
+export const SslcommerzTransactionScalarFieldEnum = {
+  id: 'id',
+  tranId: 'tranId',
+  valId: 'valId',
+  amount: 'amount',
+  bankTranId: 'bankTranId',
+  cardType: 'cardType',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type SslcommerzTransactionScalarFieldEnum = (typeof SslcommerzTransactionScalarFieldEnum)[keyof typeof SslcommerzTransactionScalarFieldEnum]
+
+
+export const BkashTransactionScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  trxId: 'trxId',
+  amount: 'amount',
+  customerMsisdn: 'customerMsisdn',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type BkashTransactionScalarFieldEnum = (typeof BkashTransactionScalarFieldEnum)[keyof typeof BkashTransactionScalarFieldEnum]
+
+
+export const OfflineBankSlipScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  bankName: 'bankName',
+  slipNumber: 'slipNumber',
+  slipFileUrl: 'slipFileUrl',
+  amount: 'amount',
+  isApproved: 'isApproved',
+  approvedBy: 'approvedBy',
+  submittedAt: 'submittedAt'
+} as const
+
+export type OfflineBankSlipScalarFieldEnum = (typeof OfflineBankSlipScalarFieldEnum)[keyof typeof OfflineBankSlipScalarFieldEnum]
+
+
+export const HotelScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  code: 'code',
+  timezone: 'timezone',
+  currency: 'currency',
+  propertyType: 'propertyType',
+  starRating: 'starRating',
+  address: 'address',
+  lat: 'lat',
+  lng: 'lng',
+  checkInTime: 'checkInTime',
+  checkOutTime: 'checkOutTime',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelScalarFieldEnum = (typeof HotelScalarFieldEnum)[keyof typeof HotelScalarFieldEnum]
+
+
+export const RoomTypeScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  title: 'title',
+  slug: 'slug',
+  basePrice: 'basePrice',
+  maxAdults: 'maxAdults',
+  maxChildren: 'maxChildren',
+  squareMeters: 'squareMeters',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoomTypeScalarFieldEnum = (typeof RoomTypeScalarFieldEnum)[keyof typeof RoomTypeScalarFieldEnum]
+
+
+export const RoomScalarFieldEnum = {
+  id: 'id',
+  roomTypeId: 'roomTypeId',
+  roomNumber: 'roomNumber',
+  floor: 'floor',
+  building: 'building',
+  cleanlinessStatus: 'cleanlinessStatus',
+  operationalStatus: 'operationalStatus',
+  keycardCode: 'keycardCode',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoomScalarFieldEnum = (typeof RoomScalarFieldEnum)[keyof typeof RoomScalarFieldEnum]
+
+
+export const RoomBedScalarFieldEnum = {
+  id: 'id',
+  roomTypeId: 'roomTypeId',
+  bedType: 'bedType',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoomBedScalarFieldEnum = (typeof RoomBedScalarFieldEnum)[keyof typeof RoomBedScalarFieldEnum]
+
+
+export const RoomAvailabilityScalarFieldEnum = {
+  id: 'id',
+  roomTypeId: 'roomTypeId',
+  targetDate: 'targetDate',
+  price: 'price',
+  totalInventory: 'totalInventory',
+  bookedCount: 'bookedCount',
+  isClosedArrival: 'isClosedArrival',
+  isClosedDeparture: 'isClosedDeparture',
+  minStay: 'minStay',
+  maxStay: 'maxStay',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoomAvailabilityScalarFieldEnum = (typeof RoomAvailabilityScalarFieldEnum)[keyof typeof RoomAvailabilityScalarFieldEnum]
+
+
+export const IcalFeedScalarFieldEnum = {
+  id: 'id',
+  roomTypeId: 'roomTypeId',
+  feedUrl: 'feedUrl',
+  channelName: 'channelName',
+  syncDirection: 'syncDirection',
+  token: 'token',
+  lastSyncedAt: 'lastSyncedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IcalFeedScalarFieldEnum = (typeof IcalFeedScalarFieldEnum)[keyof typeof IcalFeedScalarFieldEnum]
+
+
+export const GuestFolioScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  folioNumber: 'folioNumber',
+  totalCharges: 'totalCharges',
+  totalPayments: 'totalPayments',
+  balanceDue: 'balanceDue',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GuestFolioScalarFieldEnum = (typeof GuestFolioScalarFieldEnum)[keyof typeof GuestFolioScalarFieldEnum]
+
+
+export const FolioTransactionScalarFieldEnum = {
+  id: 'id',
+  folioId: 'folioId',
+  transactionType: 'transactionType',
+  department: 'department',
+  amount: 'amount',
+  journalItemId: 'journalItemId',
+  createdAt: 'createdAt'
+} as const
+
+export type FolioTransactionScalarFieldEnum = (typeof FolioTransactionScalarFieldEnum)[keyof typeof FolioTransactionScalarFieldEnum]
+
+
+export const HousekeepingTaskScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  housekeeperId: 'housekeeperId',
+  taskType: 'taskType',
+  priority: 'priority',
+  status: 'status',
+  completionNotes: 'completionNotes',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HousekeepingTaskScalarFieldEnum = (typeof HousekeepingTaskScalarFieldEnum)[keyof typeof HousekeepingTaskScalarFieldEnum]
+
+
+export const HotelTranslationScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  locale: 'locale',
+  name: 'name',
+  description: 'description',
+  address: 'address',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HotelTranslationScalarFieldEnum = (typeof HotelTranslationScalarFieldEnum)[keyof typeof HotelTranslationScalarFieldEnum]
+
+
+export const FacilityScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  icon: 'icon',
+  category: 'category',
+  createdAt: 'createdAt'
+} as const
+
+export type FacilityScalarFieldEnum = (typeof FacilityScalarFieldEnum)[keyof typeof FacilityScalarFieldEnum]
+
+
+export const PropertyFacilityScalarFieldEnum = {
+  propertyId: 'propertyId',
+  facilityId: 'facilityId',
+  createdAt: 'createdAt'
+} as const
+
+export type PropertyFacilityScalarFieldEnum = (typeof PropertyFacilityScalarFieldEnum)[keyof typeof PropertyFacilityScalarFieldEnum]
+
+
+export const RoomTypeFacilityScalarFieldEnum = {
+  roomTypeId: 'roomTypeId',
+  facilityId: 'facilityId',
+  createdAt: 'createdAt'
+} as const
+
+export type RoomTypeFacilityScalarFieldEnum = (typeof RoomTypeFacilityScalarFieldEnum)[keyof typeof RoomTypeFacilityScalarFieldEnum]
+
+
+export const MealPlanScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  createdAt: 'createdAt'
+} as const
+
+export type MealPlanScalarFieldEnum = (typeof MealPlanScalarFieldEnum)[keyof typeof MealPlanScalarFieldEnum]
+
+
+export const HousekeepingLogScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  staffId: 'staffId',
+  statusFrom: 'statusFrom',
+  statusTo: 'statusTo',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type HousekeepingLogScalarFieldEnum = (typeof HousekeepingLogScalarFieldEnum)[keyof typeof HousekeepingLogScalarFieldEnum]
+
+
+export const MaintenanceAssetScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  assetTag: 'assetTag',
+  name: 'name',
+  category: 'category',
+  serialNo: 'serialNo',
+  purchaseDate: 'purchaseDate',
+  warrantyExpiry: 'warrantyExpiry',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MaintenanceAssetScalarFieldEnum = (typeof MaintenanceAssetScalarFieldEnum)[keyof typeof MaintenanceAssetScalarFieldEnum]
+
+
+export const MaintenanceWorkOrderScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  roomId: 'roomId',
+  assetId: 'assetId',
+  title: 'title',
+  description: 'description',
+  priority: 'priority',
+  status: 'status',
+  slaHours: 'slaHours',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MaintenanceWorkOrderScalarFieldEnum = (typeof MaintenanceWorkOrderScalarFieldEnum)[keyof typeof MaintenanceWorkOrderScalarFieldEnum]
+
+
+export const MaintenanceLogScalarFieldEnum = {
+  id: 'id',
+  workOrderId: 'workOrderId',
+  technicianId: 'technicianId',
+  notes: 'notes',
+  costIncurred: 'costIncurred',
+  createdAt: 'createdAt'
+} as const
+
+export type MaintenanceLogScalarFieldEnum = (typeof MaintenanceLogScalarFieldEnum)[keyof typeof MaintenanceLogScalarFieldEnum]
+
+
+export const LostAndFoundItemScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  roomNumber: 'roomNumber',
+  itemDescription: 'itemDescription',
+  foundLocation: 'foundLocation',
+  foundDate: 'foundDate',
+  status: 'status',
+  claimedBy: 'claimedBy',
+  photoUrl: 'photoUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LostAndFoundItemScalarFieldEnum = (typeof LostAndFoundItemScalarFieldEnum)[keyof typeof LostAndFoundItemScalarFieldEnum]
+
+
+export const KeycardLogScalarFieldEnum = {
+  id: 'id',
+  roomId: 'roomId',
+  keycardCode: 'keycardCode',
+  eventType: 'eventType',
+  guestName: 'guestName',
+  issuedAt: 'issuedAt'
+} as const
+
+export type KeycardLogScalarFieldEnum = (typeof KeycardLogScalarFieldEnum)[keyof typeof KeycardLogScalarFieldEnum]
+
+
+export const PropertySurroundingScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  name: 'name',
+  type: 'type',
+  distanceKm: 'distanceKm',
+  transitMinutes: 'transitMinutes',
+  createdAt: 'createdAt'
+} as const
+
+export type PropertySurroundingScalarFieldEnum = (typeof PropertySurroundingScalarFieldEnum)[keyof typeof PropertySurroundingScalarFieldEnum]
+
+
+export const PropertyPhotoScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  url: 'url',
+  tag: 'tag',
+  isFeatured: 'isFeatured',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type PropertyPhotoScalarFieldEnum = (typeof PropertyPhotoScalarFieldEnum)[keyof typeof PropertyPhotoScalarFieldEnum]
+
+
+export const BranchScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  address: 'address',
+  createdAt: 'createdAt'
+} as const
+
+export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
+
+
+export const DepartmentScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  name: 'name',
+  createdAt: 'createdAt'
+} as const
+
+export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
+
+
+export const DesignationScalarFieldEnum = {
+  id: 'id',
+  departmentId: 'departmentId',
+  name: 'name',
+  createdAt: 'createdAt'
+} as const
+
+export type DesignationScalarFieldEnum = (typeof DesignationScalarFieldEnum)[keyof typeof DesignationScalarFieldEnum]
+
+
+export const EmployeeScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  branchId: 'branchId',
+  departmentId: 'departmentId',
+  designationId: 'designationId',
+  employeeCode: 'employeeCode',
+  fullName: 'fullName',
+  email: 'email',
+  phone: 'phone',
+  joiningDate: 'joiningDate',
+  salaryBasic: 'salaryBasic',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
+
+
+export const EmployeeDocumentScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  docType: 'docType',
+  docUrl: 'docUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type EmployeeDocumentScalarFieldEnum = (typeof EmployeeDocumentScalarFieldEnum)[keyof typeof EmployeeDocumentScalarFieldEnum]
+
+
+export const JoiningLetterScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  letterDate: 'letterDate',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type JoiningLetterScalarFieldEnum = (typeof JoiningLetterScalarFieldEnum)[keyof typeof JoiningLetterScalarFieldEnum]
+
+
+export const OfferLetterScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  letterDate: 'letterDate',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type OfferLetterScalarFieldEnum = (typeof OfferLetterScalarFieldEnum)[keyof typeof OfferLetterScalarFieldEnum]
+
+
+export const ExperienceCertificateScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  letterDate: 'letterDate',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type ExperienceCertificateScalarFieldEnum = (typeof ExperienceCertificateScalarFieldEnum)[keyof typeof ExperienceCertificateScalarFieldEnum]
+
+
+export const AttendanceEmployeeScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  date: 'date',
+  status: 'status',
+  clockIn: 'clockIn',
+  clockOut: 'clockOut',
+  overtimeHours: 'overtimeHours',
+  createdAt: 'createdAt'
+} as const
+
+export type AttendanceEmployeeScalarFieldEnum = (typeof AttendanceEmployeeScalarFieldEnum)[keyof typeof AttendanceEmployeeScalarFieldEnum]
+
+
+export const BiometricDeviceScalarFieldEnum = {
+  id: 'id',
+  deviceName: 'deviceName',
+  ipAddress: 'ipAddress',
+  port: 'port',
+  deviceModel: 'deviceModel',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type BiometricDeviceScalarFieldEnum = (typeof BiometricDeviceScalarFieldEnum)[keyof typeof BiometricDeviceScalarFieldEnum]
+
+
+export const ShiftScheduleScalarFieldEnum = {
+  id: 'id',
+  shiftName: 'shiftName',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  isOvernight: 'isOvernight',
+  createdAt: 'createdAt'
+} as const
+
+export type ShiftScheduleScalarFieldEnum = (typeof ShiftScheduleScalarFieldEnum)[keyof typeof ShiftScheduleScalarFieldEnum]
+
+
+export const TimesheetScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  date: 'date',
+  hoursWorked: 'hoursWorked',
+  taskDesc: 'taskDesc',
+  createdAt: 'createdAt'
+} as const
+
+export type TimesheetScalarFieldEnum = (typeof TimesheetScalarFieldEnum)[keyof typeof TimesheetScalarFieldEnum]
+
+
+export const SetSalaryScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  basicSalary: 'basicSalary',
+  payslipType: 'payslipType',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SetSalaryScalarFieldEnum = (typeof SetSalaryScalarFieldEnum)[keyof typeof SetSalaryScalarFieldEnum]
+
+
+export const PaySlipScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  salaryMonth: 'salaryMonth',
+  basicSalary: 'basicSalary',
+  netSalary: 'netSalary',
+  status: 'status',
+  pdfUrl: 'pdfUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type PaySlipScalarFieldEnum = (typeof PaySlipScalarFieldEnum)[keyof typeof PaySlipScalarFieldEnum]
+
+
+export const AllowanceScalarFieldEnum = {
+  id: 'id',
+  paySlipId: 'paySlipId',
+  title: 'title',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type AllowanceScalarFieldEnum = (typeof AllowanceScalarFieldEnum)[keyof typeof AllowanceScalarFieldEnum]
+
+
+export const SaturationDeductionScalarFieldEnum = {
+  id: 'id',
+  paySlipId: 'paySlipId',
+  title: 'title',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type SaturationDeductionScalarFieldEnum = (typeof SaturationDeductionScalarFieldEnum)[keyof typeof SaturationDeductionScalarFieldEnum]
+
+
+export const CommissionScalarFieldEnum = {
+  id: 'id',
+  paySlipId: 'paySlipId',
+  title: 'title',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type CommissionScalarFieldEnum = (typeof CommissionScalarFieldEnum)[keyof typeof CommissionScalarFieldEnum]
+
+
+export const LoanScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  loanTitle: 'loanTitle',
+  amount: 'amount',
+  monthlyDeduct: 'monthlyDeduct',
+  remainingAmt: 'remainingAmt',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type LoanScalarFieldEnum = (typeof LoanScalarFieldEnum)[keyof typeof LoanScalarFieldEnum]
+
+
+export const LoanRepaymentScalarFieldEnum = {
+  id: 'id',
+  loanId: 'loanId',
+  amountPaid: 'amountPaid',
+  paidAt: 'paidAt'
+} as const
+
+export type LoanRepaymentScalarFieldEnum = (typeof LoanRepaymentScalarFieldEnum)[keyof typeof LoanRepaymentScalarFieldEnum]
+
+
+export const OvertimeRecordScalarFieldEnum = {
+  id: 'id',
+  paySlipId: 'paySlipId',
+  title: 'title',
+  hoursCount: 'hoursCount',
+  ratePerHour: 'ratePerHour',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type OvertimeRecordScalarFieldEnum = (typeof OvertimeRecordScalarFieldEnum)[keyof typeof OvertimeRecordScalarFieldEnum]
+
+
+export const JobScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  branch: 'branch',
+  category: 'category',
+  positionsCount: 'positionsCount',
+  status: 'status',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type JobScalarFieldEnum = (typeof JobScalarFieldEnum)[keyof typeof JobScalarFieldEnum]
+
+
+export const JobApplicationScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  resumeUrl: 'resumeUrl',
+  stage: 'stage',
+  createdAt: 'createdAt'
+} as const
+
+export type JobApplicationScalarFieldEnum = (typeof JobApplicationScalarFieldEnum)[keyof typeof JobApplicationScalarFieldEnum]
+
+
+export const InterviewScheduleScalarFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  roundType: 'roundType',
+  scheduledDate: 'scheduledDate',
+  zoomJoinUrl: 'zoomJoinUrl',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type InterviewScheduleScalarFieldEnum = (typeof InterviewScheduleScalarFieldEnum)[keyof typeof InterviewScheduleScalarFieldEnum]
+
+
+export const AppraisalScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  ratingScore: 'ratingScore',
+  reviewPeriod: 'reviewPeriod',
+  feedback: 'feedback',
+  createdAt: 'createdAt'
+} as const
+
+export type AppraisalScalarFieldEnum = (typeof AppraisalScalarFieldEnum)[keyof typeof AppraisalScalarFieldEnum]
+
+
+export const CompetencyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  createdAt: 'createdAt'
+} as const
+
+export type CompetencyScalarFieldEnum = (typeof CompetencyScalarFieldEnum)[keyof typeof CompetencyScalarFieldEnum]
+
+
+export const IndicatorScalarFieldEnum = {
+  id: 'id',
+  designationName: 'designationName',
+  ratingMetric: 'ratingMetric',
+  targetScore: 'targetScore',
+  createdAt: 'createdAt'
+} as const
+
+export type IndicatorScalarFieldEnum = (typeof IndicatorScalarFieldEnum)[keyof typeof IndicatorScalarFieldEnum]
+
+
+export const GoalTrackingScalarFieldEnum = {
+  id: 'id',
+  goalType: 'goalType',
+  target: 'target',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  progressPct: 'progressPct',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type GoalTrackingScalarFieldEnum = (typeof GoalTrackingScalarFieldEnum)[keyof typeof GoalTrackingScalarFieldEnum]
+
+
+export const LeaveTypeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  daysPerYear: 'daysPerYear',
+  isPaid: 'isPaid',
+  createdAt: 'createdAt'
+} as const
+
+export type LeaveTypeScalarFieldEnum = (typeof LeaveTypeScalarFieldEnum)[keyof typeof LeaveTypeScalarFieldEnum]
+
+
+export const LeaveApplicationScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  leaveTypeId: 'leaveTypeId',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  reason: 'reason',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type LeaveApplicationScalarFieldEnum = (typeof LeaveApplicationScalarFieldEnum)[keyof typeof LeaveApplicationScalarFieldEnum]
+
+
+export const HolidayCalendarScalarFieldEnum = {
+  id: 'id',
+  holidayName: 'holidayName',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt'
+} as const
+
+export type HolidayCalendarScalarFieldEnum = (typeof HolidayCalendarScalarFieldEnum)[keyof typeof HolidayCalendarScalarFieldEnum]
+
+
+export const EmployeeAwardScalarFieldEnum = {
+  id: 'id',
+  awardName: 'awardName',
+  employeeName: 'employeeName',
+  giftPrize: 'giftPrize',
+  cashBonus: 'cashBonus',
+  awardDate: 'awardDate',
+  createdAt: 'createdAt'
+} as const
+
+export type EmployeeAwardScalarFieldEnum = (typeof EmployeeAwardScalarFieldEnum)[keyof typeof EmployeeAwardScalarFieldEnum]
+
+
+export const EmployeeComplaintScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  isResolved: 'isResolved',
+  lodgedAt: 'lodgedAt'
+} as const
+
+export type EmployeeComplaintScalarFieldEnum = (typeof EmployeeComplaintScalarFieldEnum)[keyof typeof EmployeeComplaintScalarFieldEnum]
+
+
+export const DisciplinaryWarningScalarFieldEnum = {
+  id: 'id',
+  warningType: 'warningType',
+  description: 'description',
+  issuedDate: 'issuedDate',
+  createdAt: 'createdAt'
+} as const
+
+export type DisciplinaryWarningScalarFieldEnum = (typeof DisciplinaryWarningScalarFieldEnum)[keyof typeof DisciplinaryWarningScalarFieldEnum]
+
+
+export const ResignationRequestScalarFieldEnum = {
+  id: 'id',
+  noticeDate: 'noticeDate',
+  resignationDate: 'resignationDate',
+  reason: 'reason',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type ResignationRequestScalarFieldEnum = (typeof ResignationRequestScalarFieldEnum)[keyof typeof ResignationRequestScalarFieldEnum]
+
+
+export const OffboardingChecklistScalarFieldEnum = {
+  id: 'id',
+  itemName: 'itemName',
+  isReturned: 'isReturned',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OffboardingChecklistScalarFieldEnum = (typeof OffboardingChecklistScalarFieldEnum)[keyof typeof OffboardingChecklistScalarFieldEnum]
+
+
+export const TrainingProgramScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  trainer: 'trainer',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt'
+} as const
+
+export type TrainingProgramScalarFieldEnum = (typeof TrainingProgramScalarFieldEnum)[keyof typeof TrainingProgramScalarFieldEnum]
+
+
+export const TrainingAttendeeScalarFieldEnum = {
+  id: 'id',
+  trainingId: 'trainingId',
+  attendeeName: 'attendeeName',
+  isCompleted: 'isCompleted',
+  createdAt: 'createdAt'
+} as const
+
+export type TrainingAttendeeScalarFieldEnum = (typeof TrainingAttendeeScalarFieldEnum)[keyof typeof TrainingAttendeeScalarFieldEnum]
+
+
+export const EmployeeCertificationScalarFieldEnum = {
+  id: 'id',
+  certName: 'certName',
+  issuedBy: 'issuedBy',
+  expiryDate: 'expiryDate',
+  createdAt: 'createdAt'
+} as const
+
+export type EmployeeCertificationScalarFieldEnum = (typeof EmployeeCertificationScalarFieldEnum)[keyof typeof EmployeeCertificationScalarFieldEnum]
+
+
+export const ServiceChargePoolScalarFieldEnum = {
+  id: 'id',
+  month: 'month',
+  totalPool: 'totalPool',
+  paxStaff: 'paxStaff',
+  sharePerPax: 'sharePerPax',
+  createdAt: 'createdAt'
+} as const
+
+export type ServiceChargePoolScalarFieldEnum = (typeof ServiceChargePoolScalarFieldEnum)[keyof typeof ServiceChargePoolScalarFieldEnum]
+
+
+export const NightShiftAllowanceScalarFieldEnum = {
+  id: 'id',
+  roleName: 'roleName',
+  stipendNight: 'stipendNight',
+  createdAt: 'createdAt'
+} as const
+
+export type NightShiftAllowanceScalarFieldEnum = (typeof NightShiftAllowanceScalarFieldEnum)[keyof typeof NightShiftAllowanceScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
+  tenantId: 'tenantId',
   name: 'name',
   email: 'email',
   passwordHash: 'passwordHash',
+  phone: 'phone',
+  avatar: 'avatar',
+  isSuperadmin: 'isSuperadmin',
   status: 'status',
   twoFactorSecret: 'twoFactorSecret',
   isTwoFactorEnabled: 'isTwoFactorEnabled',
@@ -95,23 +2280,6 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const OrganizationScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  slug: 'slug',
-  domain: 'domain',
-  subdomain: 'subdomain',
-  status: 'status',
-  deletedAt: 'deletedAt',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {
@@ -151,38 +2319,6 @@ export const RolePermissionScalarFieldEnum = {
 export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
 
 
-export const MembershipScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  organizationId: 'organizationId',
-  roleId: 'roleId',
-  deletedAt: 'deletedAt',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof typeof MembershipScalarFieldEnum]
-
-
-export const HotelScalarFieldEnum = {
-  id: 'id',
-  organizationId: 'organizationId',
-  name: 'name',
-  code: 'code',
-  timezone: 'timezone',
-  currency: 'currency',
-  deletedAt: 'deletedAt',
-  createdBy: 'createdBy',
-  updatedBy: 'updatedBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type HotelScalarFieldEnum = (typeof HotelScalarFieldEnum)[keyof typeof HotelScalarFieldEnum]
-
-
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -198,12 +2334,2242 @@ export const RefreshTokenScalarFieldEnum = {
 export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
+export const TwoFactorChallengeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  challengeToken: 'challengeToken',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type TwoFactorChallengeScalarFieldEnum = (typeof TwoFactorChallengeScalarFieldEnum)[keyof typeof TwoFactorChallengeScalarFieldEnum]
+
+
+export const UserVerificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  idType: 'idType',
+  documentUrl: 'documentUrl',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserVerificationScalarFieldEnum = (typeof UserVerificationScalarFieldEnum)[keyof typeof UserVerificationScalarFieldEnum]
+
+
+export const ActivityLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type ActivityLogScalarFieldEnum = (typeof ActivityLogScalarFieldEnum)[keyof typeof ActivityLogScalarFieldEnum]
+
+
+export const IpRestrictionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  ipAddress: 'ipAddress',
+  description: 'description',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IpRestrictionScalarFieldEnum = (typeof IpRestrictionScalarFieldEnum)[keyof typeof IpRestrictionScalarFieldEnum]
+
+
+export const SecurityAuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  eventType: 'eventType',
+  ipAddress: 'ipAddress',
+  details: 'details',
+  createdAt: 'createdAt'
+} as const
+
+export type SecurityAuditLogScalarFieldEnum = (typeof SecurityAuditLogScalarFieldEnum)[keyof typeof SecurityAuditLogScalarFieldEnum]
+
+
+export const WarehouseScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  code: 'code',
+  address: 'address',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WarehouseScalarFieldEnum = (typeof WarehouseScalarFieldEnum)[keyof typeof WarehouseScalarFieldEnum]
+
+
+export const WarehouseTransferScalarFieldEnum = {
+  id: 'id',
+  fromWarehouseId: 'fromWarehouseId',
+  toWarehouseId: 'toWarehouseId',
+  transferNumber: 'transferNumber',
+  status: 'status',
+  requestedAt: 'requestedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type WarehouseTransferScalarFieldEnum = (typeof WarehouseTransferScalarFieldEnum)[keyof typeof WarehouseTransferScalarFieldEnum]
+
+
+export const WarehouseProductScalarFieldEnum = {
+  id: 'id',
+  warehouseId: 'warehouseId',
+  productId: 'productId',
+  stockQty: 'stockQty',
+  reorderLevel: 'reorderLevel',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WarehouseProductScalarFieldEnum = (typeof WarehouseProductScalarFieldEnum)[keyof typeof WarehouseProductScalarFieldEnum]
+
+
+export const WarehouseBinScalarFieldEnum = {
+  id: 'id',
+  warehouseId: 'warehouseId',
+  binCode: 'binCode',
+  zone: 'zone',
+  createdAt: 'createdAt'
+} as const
+
+export type WarehouseBinScalarFieldEnum = (typeof WarehouseBinScalarFieldEnum)[keyof typeof WarehouseBinScalarFieldEnum]
+
+
+export const ProductScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  categoryId: 'categoryId',
+  unitId: 'unitId',
+  name: 'name',
+  sku: 'sku',
+  barcode: 'barcode',
+  costPrice: 'costPrice',
+  retailPrice: 'retailPrice',
+  isRecipe: 'isRecipe',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const ProductCategoryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  slug: 'slug',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductCategoryScalarFieldEnum = (typeof ProductCategoryScalarFieldEnum)[keyof typeof ProductCategoryScalarFieldEnum]
+
+
+export const ProductUnitScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  shortCode: 'shortCode',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductUnitScalarFieldEnum = (typeof ProductUnitScalarFieldEnum)[keyof typeof ProductUnitScalarFieldEnum]
+
+
+export const ProductTaxScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  rate: 'rate',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductTaxScalarFieldEnum = (typeof ProductTaxScalarFieldEnum)[keyof typeof ProductTaxScalarFieldEnum]
+
+
+export const ProductVariantScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  variantName: 'variantName',
+  sku: 'sku',
+  priceOffset: 'priceOffset',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
+
+
+export const ProductBarcodeScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  barcode: 'barcode',
+  barcodeType: 'barcodeType',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductBarcodeScalarFieldEnum = (typeof ProductBarcodeScalarFieldEnum)[keyof typeof ProductBarcodeScalarFieldEnum]
+
+
+export const ProductRecipeScalarFieldEnum = {
+  id: 'id',
+  recipeName: 'recipeName',
+  yieldServings: 'yieldServings',
+  prepTimeMins: 'prepTimeMins',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductRecipeScalarFieldEnum = (typeof ProductRecipeScalarFieldEnum)[keyof typeof ProductRecipeScalarFieldEnum]
+
+
+export const ProductRecipeItemScalarFieldEnum = {
+  id: 'id',
+  recipeId: 'recipeId',
+  productId: 'productId',
+  quantity: 'quantity',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductRecipeItemScalarFieldEnum = (typeof ProductRecipeItemScalarFieldEnum)[keyof typeof ProductRecipeItemScalarFieldEnum]
+
+
+export const InventoryAdjustmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  reason: 'reason',
+  adjustedDate: 'adjustedDate',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryAdjustmentScalarFieldEnum = (typeof InventoryAdjustmentScalarFieldEnum)[keyof typeof InventoryAdjustmentScalarFieldEnum]
+
+
+export const InventoryAdjustmentItemScalarFieldEnum = {
+  id: 'id',
+  adjustmentId: 'adjustmentId',
+  productId: 'productId',
+  quantityDiff: 'quantityDiff',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryAdjustmentItemScalarFieldEnum = (typeof InventoryAdjustmentItemScalarFieldEnum)[keyof typeof InventoryAdjustmentItemScalarFieldEnum]
+
+
+export const InventoryStockLogScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  warehouseId: 'warehouseId',
+  changeQty: 'changeQty',
+  changeType: 'changeType',
+  reference: 'reference',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryStockLogScalarFieldEnum = (typeof InventoryStockLogScalarFieldEnum)[keyof typeof InventoryStockLogScalarFieldEnum]
+
+
+export const InventoryWastageLogScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  quantity: 'quantity',
+  reason: 'reason',
+  costLost: 'costLost',
+  reportedBy: 'reportedBy',
+  loggedAt: 'loggedAt'
+} as const
+
+export type InventoryWastageLogScalarFieldEnum = (typeof InventoryWastageLogScalarFieldEnum)[keyof typeof InventoryWastageLogScalarFieldEnum]
+
+
+export const ReorderThresholdAlertScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  currentQty: 'currentQty',
+  threshold: 'threshold',
+  isResolved: 'isResolved',
+  alertedAt: 'alertedAt'
+} as const
+
+export type ReorderThresholdAlertScalarFieldEnum = (typeof ReorderThresholdAlertScalarFieldEnum)[keyof typeof ReorderThresholdAlertScalarFieldEnum]
+
+
+export const StocktakingAuditScalarFieldEnum = {
+  id: 'id',
+  warehouseId: 'warehouseId',
+  auditDate: 'auditDate',
+  status: 'status',
+  auditorId: 'auditorId',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type StocktakingAuditScalarFieldEnum = (typeof StocktakingAuditScalarFieldEnum)[keyof typeof StocktakingAuditScalarFieldEnum]
+
+
+export const CartScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  sessionId: 'sessionId',
+  status: 'status',
+  currency: 'currency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CartScalarFieldEnum = (typeof CartScalarFieldEnum)[keyof typeof CartScalarFieldEnum]
+
+
+export const CartItemScalarFieldEnum = {
+  id: 'id',
+  cartId: 'cartId',
+  vertical: 'vertical',
+  entityId: 'entityId',
+  title: 'title',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
+
+
+export const PaymentTransactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  bookingId: 'bookingId',
+  gatewayName: 'gatewayName',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  paymentMethod: 'paymentMethod',
+  rawResponse: 'rawResponse',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentTransactionScalarFieldEnum = (typeof PaymentTransactionScalarFieldEnum)[keyof typeof PaymentTransactionScalarFieldEnum]
+
+
+export const PaymentMethodScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  code: 'code',
+  name: 'name',
+  isEnabled: 'isEnabled',
+  feePercent: 'feePercent',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentMethodScalarFieldEnum = (typeof PaymentMethodScalarFieldEnum)[keyof typeof PaymentMethodScalarFieldEnum]
+
+
+export const CouponScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  code: 'code',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  minSpend: 'minSpend',
+  maxRedemptions: 'maxRedemptions',
+  usedCount: 'usedCount',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof CouponScalarFieldEnum]
+
+
+export const CouponUsageScalarFieldEnum = {
+  id: 'id',
+  couponId: 'couponId',
+  userId: 'userId',
+  bookingId: 'bookingId',
+  discountGot: 'discountGot',
+  usedAt: 'usedAt'
+} as const
+
+export type CouponUsageScalarFieldEnum = (typeof CouponUsageScalarFieldEnum)[keyof typeof CouponUsageScalarFieldEnum]
+
+
+export const WalletScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  balance: 'balance',
+  currency: 'currency',
+  isLocked: 'isLocked',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WalletScalarFieldEnum = (typeof WalletScalarFieldEnum)[keyof typeof WalletScalarFieldEnum]
+
+
+export const WalletTransactionScalarFieldEnum = {
+  id: 'id',
+  walletId: 'walletId',
+  amount: 'amount',
+  type: 'type',
+  description: 'description',
+  referenceId: 'referenceId',
+  createdAt: 'createdAt'
+} as const
+
+export type WalletTransactionScalarFieldEnum = (typeof WalletTransactionScalarFieldEnum)[keyof typeof WalletTransactionScalarFieldEnum]
+
+
+export const LoyaltyTierScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  minPoints: 'minPoints',
+  multiplier: 'multiplier',
+  perks: 'perks',
+  createdAt: 'createdAt'
+} as const
+
+export type LoyaltyTierScalarFieldEnum = (typeof LoyaltyTierScalarFieldEnum)[keyof typeof LoyaltyTierScalarFieldEnum]
+
+
+export const LoyaltyMemberScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tierId: 'tierId',
+  points: 'points',
+  joinedAt: 'joinedAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LoyaltyMemberScalarFieldEnum = (typeof LoyaltyMemberScalarFieldEnum)[keyof typeof LoyaltyMemberScalarFieldEnum]
+
+
+export const LoyaltyPointsLedgerScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  pointsDelta: 'pointsDelta',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type LoyaltyPointsLedgerScalarFieldEnum = (typeof LoyaltyPointsLedgerScalarFieldEnum)[keyof typeof LoyaltyPointsLedgerScalarFieldEnum]
+
+
+export const GiftCardScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  initialVal: 'initialVal',
+  currentVal: 'currentVal',
+  currency: 'currency',
+  senderEmail: 'senderEmail',
+  recipientEmail: 'recipientEmail',
+  isRedeemed: 'isRedeemed',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type GiftCardScalarFieldEnum = (typeof GiftCardScalarFieldEnum)[keyof typeof GiftCardScalarFieldEnum]
+
+
+export const GiftCardRedemptionScalarFieldEnum = {
+  id: 'id',
+  giftCardId: 'giftCardId',
+  userId: 'userId',
+  amountUsed: 'amountUsed',
+  redeemedAt: 'redeemedAt'
+} as const
+
+export type GiftCardRedemptionScalarFieldEnum = (typeof GiftCardRedemptionScalarFieldEnum)[keyof typeof GiftCardRedemptionScalarFieldEnum]
+
+
+export const ReferralLinkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  referralCode: 'referralCode',
+  clicksCount: 'clicksCount',
+  createdAt: 'createdAt'
+} as const
+
+export type ReferralLinkScalarFieldEnum = (typeof ReferralLinkScalarFieldEnum)[keyof typeof ReferralLinkScalarFieldEnum]
+
+
+export const ReferralCommissionScalarFieldEnum = {
+  id: 'id',
+  referralLinkId: 'referralLinkId',
+  bookingId: 'bookingId',
+  commissionAmt: 'commissionAmt',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type ReferralCommissionScalarFieldEnum = (typeof ReferralCommissionScalarFieldEnum)[keyof typeof ReferralCommissionScalarFieldEnum]
+
+
+export const TravelVoucherScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  voucherCode: 'voucherCode',
+  qrCodeUrl: 'qrCodeUrl',
+  pdfUrl: 'pdfUrl',
+  issuedAt: 'issuedAt'
+} as const
+
+export type TravelVoucherScalarFieldEnum = (typeof TravelVoucherScalarFieldEnum)[keyof typeof TravelVoucherScalarFieldEnum]
+
+
+export const CancellationPolicyScalarFieldEnum = {
+  id: 'id',
+  policyName: 'policyName',
+  refundPercent: 'refundPercent',
+  hoursBeforeCheckIn: 'hoursBeforeCheckIn',
+  isNonRefundable: 'isNonRefundable',
+  createdAt: 'createdAt'
+} as const
+
+export type CancellationPolicyScalarFieldEnum = (typeof CancellationPolicyScalarFieldEnum)[keyof typeof CancellationPolicyScalarFieldEnum]
+
+
+export const RefundTransactionScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  amount: 'amount',
+  reason: 'reason',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type RefundTransactionScalarFieldEnum = (typeof RefundTransactionScalarFieldEnum)[keyof typeof RefundTransactionScalarFieldEnum]
+
+
+export const CurrencyExchangeRateScalarFieldEnum = {
+  id: 'id',
+  baseCurrency: 'baseCurrency',
+  targetCurrency: 'targetCurrency',
+  rate: 'rate',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CurrencyExchangeRateScalarFieldEnum = (typeof CurrencyExchangeRateScalarFieldEnum)[keyof typeof CurrencyExchangeRateScalarFieldEnum]
+
+
+export const TaxRuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  taxName: 'taxName',
+  taxRate: 'taxRate',
+  isInclusive: 'isInclusive',
+  appliesTo: 'appliesTo',
+  createdAt: 'createdAt'
+} as const
+
+export type TaxRuleScalarFieldEnum = (typeof TaxRuleScalarFieldEnum)[keyof typeof TaxRuleScalarFieldEnum]
+
+
+export const VendorScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  businessName: 'businessName',
+  taxId: 'taxId',
+  isVerified: 'isVerified',
+  commissionRate: 'commissionRate',
+  balance: 'balance',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VendorScalarFieldEnum = (typeof VendorScalarFieldEnum)[keyof typeof VendorScalarFieldEnum]
+
+
+export const VendorPlanScalarFieldEnum = {
+  id: 'id',
+  planName: 'planName',
+  maxListings: 'maxListings',
+  feePercent: 'feePercent',
+  monthlyFee: 'monthlyFee',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorPlanScalarFieldEnum = (typeof VendorPlanScalarFieldEnum)[keyof typeof VendorPlanScalarFieldEnum]
+
+
+export const VendorCommissionScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  bookingId: 'bookingId',
+  grossAmount: 'grossAmount',
+  commissionAmt: 'commissionAmt',
+  netVendorAmt: 'netVendorAmt',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorCommissionScalarFieldEnum = (typeof VendorCommissionScalarFieldEnum)[keyof typeof VendorCommissionScalarFieldEnum]
+
+
+export const VendorPayoutScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  amount: 'amount',
+  payoutMethod: 'payoutMethod',
+  status: 'status',
+  reference: 'reference',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorPayoutScalarFieldEnum = (typeof VendorPayoutScalarFieldEnum)[keyof typeof VendorPayoutScalarFieldEnum]
+
+
+export const VendorPayoutMethodScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  methodType: 'methodType',
+  details: 'details',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorPayoutMethodScalarFieldEnum = (typeof VendorPayoutMethodScalarFieldEnum)[keyof typeof VendorPayoutMethodScalarFieldEnum]
+
+
+export const VendorTeamMemberScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorTeamMemberScalarFieldEnum = (typeof VendorTeamMemberScalarFieldEnum)[keyof typeof VendorTeamMemberScalarFieldEnum]
+
+
+export const VendorKycSubmissionScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  documentType: 'documentType',
+  documentUrl: 'documentUrl',
+  status: 'status',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorKycSubmissionScalarFieldEnum = (typeof VendorKycSubmissionScalarFieldEnum)[keyof typeof VendorKycSubmissionScalarFieldEnum]
+
+
+export const GuestReviewScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  overallScore: 'overallScore',
+  comment: 'comment',
+  isVerifiedStay: 'isVerifiedStay',
+  createdAt: 'createdAt'
+} as const
+
+export type GuestReviewScalarFieldEnum = (typeof GuestReviewScalarFieldEnum)[keyof typeof GuestReviewScalarFieldEnum]
+
+
+export const ReviewCriteriaRatingScalarFieldEnum = {
+  id: 'id',
+  reviewId: 'reviewId',
+  dimension: 'dimension',
+  score: 'score'
+} as const
+
+export type ReviewCriteriaRatingScalarFieldEnum = (typeof ReviewCriteriaRatingScalarFieldEnum)[keyof typeof ReviewCriteriaRatingScalarFieldEnum]
+
+
+export const ReviewHostReplyScalarFieldEnum = {
+  id: 'id',
+  reviewId: 'reviewId',
+  replyText: 'replyText',
+  repliedAt: 'repliedAt'
+} as const
+
+export type ReviewHostReplyScalarFieldEnum = (typeof ReviewHostReplyScalarFieldEnum)[keyof typeof ReviewHostReplyScalarFieldEnum]
+
+
+export const VendorWithdrawalScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  amount: 'amount',
+  status: 'status',
+  requestedAt: 'requestedAt',
+  paidAt: 'paidAt'
+} as const
+
+export type VendorWithdrawalScalarFieldEnum = (typeof VendorWithdrawalScalarFieldEnum)[keyof typeof VendorWithdrawalScalarFieldEnum]
+
+
+export const ChatMessageScalarFieldEnum = {
+  id: 'id',
+  fromId: 'fromId',
+  toId: 'toId',
+  channelId: 'channelId',
+  body: 'body',
+  attachment: 'attachment',
+  isSeen: 'isSeen',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const ChatFavoriteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  favoriteId: 'favoriteId',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatFavoriteScalarFieldEnum = (typeof ChatFavoriteScalarFieldEnum)[keyof typeof ChatFavoriteScalarFieldEnum]
+
+
+export const ChatChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelName: 'channelName',
+  isPrivate: 'isPrivate',
+  createdAt: 'createdAt'
+} as const
+
+export type ChatChannelScalarFieldEnum = (typeof ChatChannelScalarFieldEnum)[keyof typeof ChatChannelScalarFieldEnum]
+
+
+export const ChatChannelMemberScalarFieldEnum = {
+  id: 'id',
+  channelId: 'channelId',
+  userId: 'userId',
+  role: 'role',
+  joinedAt: 'joinedAt'
+} as const
+
+export type ChatChannelMemberScalarFieldEnum = (typeof ChatChannelMemberScalarFieldEnum)[keyof typeof ChatChannelMemberScalarFieldEnum]
+
+
+export const WhatsappMessageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  recipientNo: 'recipientNo',
+  messageBody: 'messageBody',
+  direction: 'direction',
+  status: 'status',
+  sentAt: 'sentAt'
+} as const
+
+export type WhatsappMessageScalarFieldEnum = (typeof WhatsappMessageScalarFieldEnum)[keyof typeof WhatsappMessageScalarFieldEnum]
+
+
+export const WhatsappTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  category: 'category',
+  content: 'content',
+  isApproved: 'isApproved',
+  createdAt: 'createdAt'
+} as const
+
+export type WhatsappTemplateScalarFieldEnum = (typeof WhatsappTemplateScalarFieldEnum)[keyof typeof WhatsappTemplateScalarFieldEnum]
+
+
+export const SmsLogScalarFieldEnum = {
+  id: 'id',
+  phoneTo: 'phoneTo',
+  message: 'message',
+  gateway: 'gateway',
+  status: 'status',
+  cost: 'cost',
+  sentAt: 'sentAt'
+} as const
+
+export type SmsLogScalarFieldEnum = (typeof SmsLogScalarFieldEnum)[keyof typeof SmsLogScalarFieldEnum]
+
+
+export const SmsGatewayScalarFieldEnum = {
+  id: 'id',
+  gatewayKey: 'gatewayKey',
+  apiKey: 'apiKey',
+  apiSecret: 'apiSecret',
+  senderId: 'senderId',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type SmsGatewayScalarFieldEnum = (typeof SmsGatewayScalarFieldEnum)[keyof typeof SmsGatewayScalarFieldEnum]
+
+
+export const EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  subject: 'subject',
+  htmlBody: 'htmlBody',
+  mergeTags: 'mergeTags',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmailTemplateScalarFieldEnum = (typeof EmailTemplateScalarFieldEnum)[keyof typeof EmailTemplateScalarFieldEnum]
+
+
+export const NotificationTemplateScalarFieldEnum = {
+  id: 'id',
+  eventKey: 'eventKey',
+  title: 'title',
+  content: 'content',
+  channels: 'channels',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationTemplateScalarFieldEnum = (typeof NotificationTemplateScalarFieldEnum)[keyof typeof NotificationTemplateScalarFieldEnum]
+
+
+export const EmailCampaignScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  campaignName: 'campaignName',
+  subject: 'subject',
+  recipientCount: 'recipientCount',
+  sentCount: 'sentCount',
+  status: 'status',
+  scheduledAt: 'scheduledAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailCampaignScalarFieldEnum = (typeof EmailCampaignScalarFieldEnum)[keyof typeof EmailCampaignScalarFieldEnum]
+
+
+export const EmailLogScalarFieldEnum = {
+  id: 'id',
+  recipient: 'recipient',
+  subject: 'subject',
+  status: 'status',
+  provider: 'provider',
+  sentAt: 'sentAt'
+} as const
+
+export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
+
+
+export const PushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  endpoint: 'endpoint',
+  authKey: 'authKey',
+  p256dhKey: 'p256dhKey',
+  createdAt: 'createdAt'
+} as const
+
+export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
+
+
+export const PushNotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  body: 'body',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type PushNotificationScalarFieldEnum = (typeof PushNotificationScalarFieldEnum)[keyof typeof PushNotificationScalarFieldEnum]
+
+
+export const PosOrderScalarFieldEnum = {
+  id: 'id',
+  outletId: 'outletId',
+  terminalId: 'terminalId',
+  tableId: 'tableId',
+  orderNumber: 'orderNumber',
+  guestCount: 'guestCount',
+  subtotal: 'subtotal',
+  taxAmount: 'taxAmount',
+  serviceCharge: 'serviceCharge',
+  totalAmount: 'totalAmount',
+  status: 'status',
+  serverName: 'serverName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PosOrderScalarFieldEnum = (typeof PosOrderScalarFieldEnum)[keyof typeof PosOrderScalarFieldEnum]
+
+
+export const PosOrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  itemName: 'itemName',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  totalPrice: 'totalPrice',
+  notes: 'notes',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type PosOrderItemScalarFieldEnum = (typeof PosOrderItemScalarFieldEnum)[keyof typeof PosOrderItemScalarFieldEnum]
+
+
+export const PosPaymentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  paymentMode: 'paymentMode',
+  amount: 'amount',
+  tipAmount: 'tipAmount',
+  reference: 'reference',
+  paidAt: 'paidAt'
+} as const
+
+export type PosPaymentScalarFieldEnum = (typeof PosPaymentScalarFieldEnum)[keyof typeof PosPaymentScalarFieldEnum]
+
+
+export const DiningTableScalarFieldEnum = {
+  id: 'id',
+  outletId: 'outletId',
+  tableNumber: 'tableNumber',
+  seatingCap: 'seatingCap',
+  status: 'status',
+  posX: 'posX',
+  posY: 'posY',
+  createdAt: 'createdAt'
+} as const
+
+export type DiningTableScalarFieldEnum = (typeof DiningTableScalarFieldEnum)[keyof typeof DiningTableScalarFieldEnum]
+
+
+export const PosTerminalScalarFieldEnum = {
+  id: 'id',
+  outletId: 'outletId',
+  terminalName: 'terminalName',
+  deviceSerial: 'deviceSerial',
+  ipAddress: 'ipAddress',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type PosTerminalScalarFieldEnum = (typeof PosTerminalScalarFieldEnum)[keyof typeof PosTerminalScalarFieldEnum]
+
+
+export const PosOutletScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  outletName: 'outletName',
+  outletType: 'outletType',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type PosOutletScalarFieldEnum = (typeof PosOutletScalarFieldEnum)[keyof typeof PosOutletScalarFieldEnum]
+
+
+export const DiningFloorPlanScalarFieldEnum = {
+  id: 'id',
+  outletId: 'outletId',
+  planName: 'planName',
+  layoutJson: 'layoutJson',
+  createdAt: 'createdAt'
+} as const
+
+export type DiningFloorPlanScalarFieldEnum = (typeof DiningFloorPlanScalarFieldEnum)[keyof typeof DiningFloorPlanScalarFieldEnum]
+
+
+export const TableReservationScalarFieldEnum = {
+  id: 'id',
+  tableId: 'tableId',
+  guestName: 'guestName',
+  guestPhone: 'guestPhone',
+  partySize: 'partySize',
+  reserveTime: 'reserveTime',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type TableReservationScalarFieldEnum = (typeof TableReservationScalarFieldEnum)[keyof typeof TableReservationScalarFieldEnum]
+
+
+export const PosMenuScalarFieldEnum = {
+  id: 'id',
+  outletId: 'outletId',
+  menuName: 'menuName',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type PosMenuScalarFieldEnum = (typeof PosMenuScalarFieldEnum)[keyof typeof PosMenuScalarFieldEnum]
+
+
+export const PosMenuCategoryScalarFieldEnum = {
+  id: 'id',
+  menuId: 'menuId',
+  categoryName: 'categoryName',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type PosMenuCategoryScalarFieldEnum = (typeof PosMenuCategoryScalarFieldEnum)[keyof typeof PosMenuCategoryScalarFieldEnum]
+
+
+export const PosMenuItemScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  itemName: 'itemName',
+  price: 'price',
+  allergens: 'allergens',
+  isAvailable: 'isAvailable',
+  createdAt: 'createdAt'
+} as const
+
+export type PosMenuItemScalarFieldEnum = (typeof PosMenuItemScalarFieldEnum)[keyof typeof PosMenuItemScalarFieldEnum]
+
+
+export const PosItemModifierScalarFieldEnum = {
+  id: 'id',
+  menuItemId: 'menuItemId',
+  modifierName: 'modifierName',
+  priceExtra: 'priceExtra',
+  createdAt: 'createdAt'
+} as const
+
+export type PosItemModifierScalarFieldEnum = (typeof PosItemModifierScalarFieldEnum)[keyof typeof PosItemModifierScalarFieldEnum]
+
+
+export const PosOrderModifierScalarFieldEnum = {
+  id: 'id',
+  orderItemId: 'orderItemId',
+  name: 'name',
+  price: 'price',
+  createdAt: 'createdAt'
+} as const
+
+export type PosOrderModifierScalarFieldEnum = (typeof PosOrderModifierScalarFieldEnum)[keyof typeof PosOrderModifierScalarFieldEnum]
+
+
+export const PosKitchenOrderScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  stationId: 'stationId',
+  ticketNumber: 'ticketNumber',
+  status: 'status',
+  sentAt: 'sentAt',
+  preparedAt: 'preparedAt'
+} as const
+
+export type PosKitchenOrderScalarFieldEnum = (typeof PosKitchenOrderScalarFieldEnum)[keyof typeof PosKitchenOrderScalarFieldEnum]
+
+
+export const KdsStationScalarFieldEnum = {
+  id: 'id',
+  outletId: 'outletId',
+  stationName: 'stationName',
+  stationType: 'stationType',
+  createdAt: 'createdAt'
+} as const
+
+export type KdsStationScalarFieldEnum = (typeof KdsStationScalarFieldEnum)[keyof typeof KdsStationScalarFieldEnum]
+
+
+export const PosCashierShiftScalarFieldEnum = {
+  id: 'id',
+  terminalId: 'terminalId',
+  cashierName: 'cashierName',
+  openingFloat: 'openingFloat',
+  closingCash: 'closingCash',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt'
+} as const
+
+export type PosCashierShiftScalarFieldEnum = (typeof PosCashierShiftScalarFieldEnum)[keyof typeof PosCashierShiftScalarFieldEnum]
+
+
+export const PosCashDropScalarFieldEnum = {
+  id: 'id',
+  shiftId: 'shiftId',
+  amount: 'amount',
+  reason: 'reason',
+  droppedAt: 'droppedAt'
+} as const
+
+export type PosCashDropScalarFieldEnum = (typeof PosCashDropScalarFieldEnum)[keyof typeof PosCashDropScalarFieldEnum]
+
+
+export const PosXReportScalarFieldEnum = {
+  id: 'id',
+  shiftId: 'shiftId',
+  totalSales: 'totalSales',
+  cashTotal: 'cashTotal',
+  cardTotal: 'cardTotal',
+  generatedAt: 'generatedAt'
+} as const
+
+export type PosXReportScalarFieldEnum = (typeof PosXReportScalarFieldEnum)[keyof typeof PosXReportScalarFieldEnum]
+
+
+export const PosZReportScalarFieldEnum = {
+  id: 'id',
+  shiftId: 'shiftId',
+  totalSales: 'totalSales',
+  discrepancy: 'discrepancy',
+  closedAt: 'closedAt'
+} as const
+
+export type PosZReportScalarFieldEnum = (typeof PosZReportScalarFieldEnum)[keyof typeof PosZReportScalarFieldEnum]
+
+
+export const PosRoomChargeLogScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  roomNumber: 'roomNumber',
+  guestName: 'guestName',
+  amount: 'amount',
+  signatureUrl: 'signatureUrl',
+  verifiedAt: 'verifiedAt'
+} as const
+
+export type PosRoomChargeLogScalarFieldEnum = (typeof PosRoomChargeLogScalarFieldEnum)[keyof typeof PosRoomChargeLogScalarFieldEnum]
+
+
+export const PurchaseScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  poNumber: 'poNumber',
+  vendorId: 'vendorId',
+  totalCost: 'totalCost',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PurchaseScalarFieldEnum = (typeof PurchaseScalarFieldEnum)[keyof typeof PurchaseScalarFieldEnum]
+
+
+export const PurchaseProductScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  productId: 'productId',
+  quantity: 'quantity',
+  unitCost: 'unitCost',
+  totalCost: 'totalCost',
+  createdAt: 'createdAt'
+} as const
+
+export type PurchaseProductScalarFieldEnum = (typeof PurchaseProductScalarFieldEnum)[keyof typeof PurchaseProductScalarFieldEnum]
+
+
+export const PurchasePaymentScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  amount: 'amount',
+  paymentDate: 'paymentDate',
+  method: 'method',
+  createdAt: 'createdAt'
+} as const
+
+export type PurchasePaymentScalarFieldEnum = (typeof PurchasePaymentScalarFieldEnum)[keyof typeof PurchasePaymentScalarFieldEnum]
+
+
+export const PurchaseRequisitionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  reqNumber: 'reqNumber',
+  department: 'department',
+  status: 'status',
+  requestedBy: 'requestedBy',
+  createdAt: 'createdAt'
+} as const
+
+export type PurchaseRequisitionScalarFieldEnum = (typeof PurchaseRequisitionScalarFieldEnum)[keyof typeof PurchaseRequisitionScalarFieldEnum]
+
+
+export const PurchaseRequisitionItemScalarFieldEnum = {
+  id: 'id',
+  requisitionId: 'requisitionId',
+  itemTitle: 'itemTitle',
+  quantity: 'quantity',
+  unit: 'unit',
+  createdAt: 'createdAt'
+} as const
+
+export type PurchaseRequisitionItemScalarFieldEnum = (typeof PurchaseRequisitionItemScalarFieldEnum)[keyof typeof PurchaseRequisitionItemScalarFieldEnum]
+
+
+export const GoodsReceivedNoteScalarFieldEnum = {
+  id: 'id',
+  purchaseId: 'purchaseId',
+  grnNumber: 'grnNumber',
+  receivedDate: 'receivedDate',
+  receivedBy: 'receivedBy',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type GoodsReceivedNoteScalarFieldEnum = (typeof GoodsReceivedNoteScalarFieldEnum)[keyof typeof GoodsReceivedNoteScalarFieldEnum]
+
+
+export const GrnItemScalarFieldEnum = {
+  id: 'id',
+  grnId: 'grnId',
+  itemTitle: 'itemTitle',
+  qtyOrdered: 'qtyOrdered',
+  qtyReceived: 'qtyReceived',
+  isDamaged: 'isDamaged',
+  createdAt: 'createdAt'
+} as const
+
+export type GrnItemScalarFieldEnum = (typeof GrnItemScalarFieldEnum)[keyof typeof GrnItemScalarFieldEnum]
+
+
+export const VendorPriceAgreementScalarFieldEnum = {
+  id: 'id',
+  vendorId: 'vendorId',
+  productId: 'productId',
+  agreedPrice: 'agreedPrice',
+  validUntil: 'validUntil',
+  createdAt: 'createdAt'
+} as const
+
+export type VendorPriceAgreementScalarFieldEnum = (typeof VendorPriceAgreementScalarFieldEnum)[keyof typeof VendorPriceAgreementScalarFieldEnum]
+
+
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  projectName: 'projectName',
+  description: 'description',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const ProjectMilestoneScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  dueDate: 'dueDate',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectMilestoneScalarFieldEnum = (typeof ProjectMilestoneScalarFieldEnum)[keyof typeof ProjectMilestoneScalarFieldEnum]
+
+
+export const ProjectTaskScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  milestoneId: 'milestoneId',
+  title: 'title',
+  description: 'description',
+  priority: 'priority',
+  status: 'status',
+  dueDate: 'dueDate',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectTaskScalarFieldEnum = (typeof ProjectTaskScalarFieldEnum)[keyof typeof ProjectTaskScalarFieldEnum]
+
+
+export const ProjectTaskDependencyScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  dependsOnTaskId: 'dependsOnTaskId'
+} as const
+
+export type ProjectTaskDependencyScalarFieldEnum = (typeof ProjectTaskDependencyScalarFieldEnum)[keyof typeof ProjectTaskDependencyScalarFieldEnum]
+
+
+export const ProjectBudgetScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  totalBudget: 'totalBudget',
+  spentAmount: 'spentAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectBudgetScalarFieldEnum = (typeof ProjectBudgetScalarFieldEnum)[keyof typeof ProjectBudgetScalarFieldEnum]
+
+
+export const ProjectExpenseScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  itemTitle: 'itemTitle',
+  amount: 'amount',
+  expenseDate: 'expenseDate',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectExpenseScalarFieldEnum = (typeof ProjectExpenseScalarFieldEnum)[keyof typeof ProjectExpenseScalarFieldEnum]
+
+
+export const ProjectMemberScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt'
+} as const
+
+export type ProjectMemberScalarFieldEnum = (typeof ProjectMemberScalarFieldEnum)[keyof typeof ProjectMemberScalarFieldEnum]
+
+
+export const TimeTrackerScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  durationSec: 'durationSec',
+  isBillable: 'isBillable',
+  createdAt: 'createdAt'
+} as const
+
+export type TimeTrackerScalarFieldEnum = (typeof TimeTrackerScalarFieldEnum)[keyof typeof TimeTrackerScalarFieldEnum]
+
+
+export const TrackPhotoScalarFieldEnum = {
+  id: 'id',
+  trackerId: 'trackerId',
+  photoUrl: 'photoUrl',
+  capturedAt: 'capturedAt'
+} as const
+
+export type TrackPhotoScalarFieldEnum = (typeof TrackPhotoScalarFieldEnum)[keyof typeof TrackPhotoScalarFieldEnum]
+
+
+export const EmployeeWeeklyTimesheetScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  weekNumber: 'weekNumber',
+  year: 'year',
+  totalHours: 'totalHours',
+  status: 'status',
+  submittedAt: 'submittedAt'
+} as const
+
+export type EmployeeWeeklyTimesheetScalarFieldEnum = (typeof EmployeeWeeklyTimesheetScalarFieldEnum)[keyof typeof EmployeeWeeklyTimesheetScalarFieldEnum]
+
+
+export const BugScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  severity: 'severity',
+  priority: 'priority',
+  statusId: 'statusId',
+  reportedBy: 'reportedBy',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BugScalarFieldEnum = (typeof BugScalarFieldEnum)[keyof typeof BugScalarFieldEnum]
+
+
+export const BugStatusScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type BugStatusScalarFieldEnum = (typeof BugStatusScalarFieldEnum)[keyof typeof BugStatusScalarFieldEnum]
+
+
+export const BugCommentScalarFieldEnum = {
+  id: 'id',
+  bugId: 'bugId',
+  userId: 'userId',
+  comment: 'comment',
+  createdAt: 'createdAt'
+} as const
+
+export type BugCommentScalarFieldEnum = (typeof BugCommentScalarFieldEnum)[keyof typeof BugCommentScalarFieldEnum]
+
+
+export const BugFileScalarFieldEnum = {
+  id: 'id',
+  bugId: 'bugId',
+  fileUrl: 'fileUrl',
+  fileName: 'fileName',
+  createdAt: 'createdAt'
+} as const
+
+export type BugFileScalarFieldEnum = (typeof BugFileScalarFieldEnum)[keyof typeof BugFileScalarFieldEnum]
+
+
+export const ContractorAgreementScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  contractorName: 'contractorName',
+  agreedAmount: 'agreedAmount',
+  signedDate: 'signedDate',
+  createdAt: 'createdAt'
+} as const
+
+export type ContractorAgreementScalarFieldEnum = (typeof ContractorAgreementScalarFieldEnum)[keyof typeof ContractorAgreementScalarFieldEnum]
+
+
+export const SystemAuditEventScalarFieldEnum = {
+  id: 'id',
+  eventType: 'eventType',
+  actorId: 'actorId',
+  payload: 'payload',
+  createdAt: 'createdAt'
+} as const
+
+export type SystemAuditEventScalarFieldEnum = (typeof SystemAuditEventScalarFieldEnum)[keyof typeof SystemAuditEventScalarFieldEnum]
+
+
+export const SystemHealthMetricScalarFieldEnum = {
+  id: 'id',
+  metricName: 'metricName',
+  metricValue: 'metricValue',
+  unit: 'unit',
+  recordedAt: 'recordedAt'
+} as const
+
+export type SystemHealthMetricScalarFieldEnum = (typeof SystemHealthMetricScalarFieldEnum)[keyof typeof SystemHealthMetricScalarFieldEnum]
+
+
+export const SystemErrorLogScalarFieldEnum = {
+  id: 'id',
+  errorMessage: 'errorMessage',
+  stackTrace: 'stackTrace',
+  component: 'component',
+  occurredAt: 'occurredAt'
+} as const
+
+export type SystemErrorLogScalarFieldEnum = (typeof SystemErrorLogScalarFieldEnum)[keyof typeof SystemErrorLogScalarFieldEnum]
+
+
+export const SystemLocaleScalarFieldEnum = {
+  id: 'id',
+  localeCode: 'localeCode',
+  localeName: 'localeName',
+  isRtl: 'isRtl',
+  isDefault: 'isDefault',
+  createdAt: 'createdAt'
+} as const
+
+export type SystemLocaleScalarFieldEnum = (typeof SystemLocaleScalarFieldEnum)[keyof typeof SystemLocaleScalarFieldEnum]
+
+
+export const TranslationStringScalarFieldEnum = {
+  id: 'id',
+  locale: 'locale',
+  stringKey: 'stringKey',
+  stringValue: 'stringValue',
+  group: 'group',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TranslationStringScalarFieldEnum = (typeof TranslationStringScalarFieldEnum)[keyof typeof TranslationStringScalarFieldEnum]
+
+
+export const TourTranslationExtraScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  locale: 'locale',
+  extraInfo: 'extraInfo',
+  createdAt: 'createdAt'
+} as const
+
+export type TourTranslationExtraScalarFieldEnum = (typeof TourTranslationExtraScalarFieldEnum)[keyof typeof TourTranslationExtraScalarFieldEnum]
+
+
+export const PropertyTranslationScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  locale: 'locale',
+  title: 'title',
+  description: 'description',
+  policy: 'policy',
+  createdAt: 'createdAt'
+} as const
+
+export type PropertyTranslationScalarFieldEnum = (typeof PropertyTranslationScalarFieldEnum)[keyof typeof PropertyTranslationScalarFieldEnum]
+
+
+export const SystemFeatureFlagScalarFieldEnum = {
+  id: 'id',
+  flagKey: 'flagKey',
+  description: 'description',
+  isEnabled: 'isEnabled',
+  rolloutPct: 'rolloutPct',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemFeatureFlagScalarFieldEnum = (typeof SystemFeatureFlagScalarFieldEnum)[keyof typeof SystemFeatureFlagScalarFieldEnum]
+
+
+export const SystemScheduledJobScalarFieldEnum = {
+  id: 'id',
+  jobName: 'jobName',
+  cronExpr: 'cronExpr',
+  lastRunAt: 'lastRunAt',
+  nextRunAt: 'nextRunAt',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type SystemScheduledJobScalarFieldEnum = (typeof SystemScheduledJobScalarFieldEnum)[keyof typeof SystemScheduledJobScalarFieldEnum]
+
+
+export const OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  domain: 'domain',
+  subdomain: 'subdomain',
+  planId: 'planId',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const MembershipScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  roleId: 'roleId',
+  deletedAt: 'deletedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof typeof MembershipScalarFieldEnum]
+
+
+export const TenantSettingScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  key: 'key',
+  value: 'value',
+  group: 'group',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TenantSettingScalarFieldEnum = (typeof TenantSettingScalarFieldEnum)[keyof typeof TenantSettingScalarFieldEnum]
+
+
+export const SaasPlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  monthlyPrice: 'monthlyPrice',
+  annualPrice: 'annualPrice',
+  maxProperties: 'maxProperties',
+  maxRooms: 'maxRooms',
+  maxOutlets: 'maxOutlets',
+  features: 'features',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SaasPlanScalarFieldEnum = (typeof SaasPlanScalarFieldEnum)[keyof typeof SaasPlanScalarFieldEnum]
+
+
+export const SubscriptionOrderScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  planId: 'planId',
+  orderNumber: 'orderNumber',
+  amount: 'amount',
+  currency: 'currency',
+  paymentMethod: 'paymentMethod',
+  paymentStatus: 'paymentStatus',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionOrderScalarFieldEnum = (typeof SubscriptionOrderScalarFieldEnum)[keyof typeof SubscriptionOrderScalarFieldEnum]
+
+
+export const PlanRequestScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  planId: 'planId',
+  billingCycle: 'billingCycle',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanRequestScalarFieldEnum = (typeof PlanRequestScalarFieldEnum)[keyof typeof PlanRequestScalarFieldEnum]
+
+
+export const WebhookScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  url: 'url',
+  eventTypes: 'eventTypes',
+  secretHash: 'secretHash',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WebhookScalarFieldEnum = (typeof WebhookScalarFieldEnum)[keyof typeof WebhookScalarFieldEnum]
+
+
+export const WebhookDeliveryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  webhookId: 'webhookId',
+  eventType: 'eventType',
+  payload: 'payload',
+  responseStatus: 'responseStatus',
+  responseBody: 'responseBody',
+  attempts: 'attempts',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type WebhookDeliveryScalarFieldEnum = (typeof WebhookDeliveryScalarFieldEnum)[keyof typeof WebhookDeliveryScalarFieldEnum]
+
+
+export const SystemSettingScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  value: 'value',
+  group: 'group',
+  description: 'description',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
+
+
+export const CookieConsentScalarFieldEnum = {
+  id: 'id',
+  visitorIp: 'visitorIp',
+  userAgent: 'userAgent',
+  consentTypes: 'consentTypes',
+  consentedAt: 'consentedAt'
+} as const
+
+export type CookieConsentScalarFieldEnum = (typeof CookieConsentScalarFieldEnum)[keyof typeof CookieConsentScalarFieldEnum]
+
+
+export const SpaceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  slug: 'slug',
+  venueType: 'venueType',
+  hourlyPrice: 'hourlyPrice',
+  dailyPrice: 'dailyPrice',
+  capacityPax: 'capacityPax',
+  squareMeters: 'squareMeters',
+  cleaningFee: 'cleaningFee',
+  securityDeposit: 'securityDeposit',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpaceScalarFieldEnum = (typeof SpaceScalarFieldEnum)[keyof typeof SpaceScalarFieldEnum]
+
+
+export const SpaceTranslationScalarFieldEnum = {
+  id: 'id',
+  spaceId: 'spaceId',
+  locale: 'locale',
+  title: 'title',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type SpaceTranslationScalarFieldEnum = (typeof SpaceTranslationScalarFieldEnum)[keyof typeof SpaceTranslationScalarFieldEnum]
+
+
+export const SpaceTermScalarFieldEnum = {
+  id: 'id',
+  spaceId: 'spaceId',
+  termType: 'termType',
+  value: 'value',
+  createdAt: 'createdAt'
+} as const
+
+export type SpaceTermScalarFieldEnum = (typeof SpaceTermScalarFieldEnum)[keyof typeof SpaceTermScalarFieldEnum]
+
+
+export const SpaceDateScalarFieldEnum = {
+  id: 'id',
+  spaceId: 'spaceId',
+  date: 'date',
+  price: 'price',
+  isClosed: 'isClosed',
+  createdAt: 'createdAt'
+} as const
+
+export type SpaceDateScalarFieldEnum = (typeof SpaceDateScalarFieldEnum)[keyof typeof SpaceDateScalarFieldEnum]
+
+
+export const SpaceBookingScalarFieldEnum = {
+  id: 'id',
+  spaceId: 'spaceId',
+  userId: 'userId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  totalAmount: 'totalAmount',
+  bookingStatus: 'bookingStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type SpaceBookingScalarFieldEnum = (typeof SpaceBookingScalarFieldEnum)[keyof typeof SpaceBookingScalarFieldEnum]
+
+
+export const SpaceAmenityScalarFieldEnum = {
+  id: 'id',
+  spaceId: 'spaceId',
+  name: 'name',
+  isAddon: 'isAddon',
+  price: 'price',
+  createdAt: 'createdAt'
+} as const
+
+export type SpaceAmenityScalarFieldEnum = (typeof SpaceAmenityScalarFieldEnum)[keyof typeof SpaceAmenityScalarFieldEnum]
+
+
+export const TourScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  slug: 'slug',
+  durationDays: 'durationDays',
+  durationHours: 'durationHours',
+  minPax: 'minPax',
+  maxPax: 'maxPax',
+  basePriceAdult: 'basePriceAdult',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TourScalarFieldEnum = (typeof TourScalarFieldEnum)[keyof typeof TourScalarFieldEnum]
+
+
+export const TourTranslationScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  locale: 'locale',
+  title: 'title',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type TourTranslationScalarFieldEnum = (typeof TourTranslationScalarFieldEnum)[keyof typeof TourTranslationScalarFieldEnum]
+
+
+export const TourItineraryScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  dayNumber: 'dayNumber',
+  title: 'title',
+  description: 'description',
+  lat: 'lat',
+  lng: 'lng',
+  createdAt: 'createdAt'
+} as const
+
+export type TourItineraryScalarFieldEnum = (typeof TourItineraryScalarFieldEnum)[keyof typeof TourItineraryScalarFieldEnum]
+
+
+export const TourDateScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  date: 'date',
+  price: 'price',
+  seatsTotal: 'seatsTotal',
+  seatsBooked: 'seatsBooked',
+  isClosed: 'isClosed',
+  createdAt: 'createdAt'
+} as const
+
+export type TourDateScalarFieldEnum = (typeof TourDateScalarFieldEnum)[keyof typeof TourDateScalarFieldEnum]
+
+
+export const TourPersonTypeScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  name: 'name',
+  price: 'price',
+  minAge: 'minAge',
+  maxAge: 'maxAge',
+  createdAt: 'createdAt'
+} as const
+
+export type TourPersonTypeScalarFieldEnum = (typeof TourPersonTypeScalarFieldEnum)[keyof typeof TourPersonTypeScalarFieldEnum]
+
+
+export const TourBookingScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  userId: 'userId',
+  bookingDate: 'bookingDate',
+  paxAdults: 'paxAdults',
+  paxChildren: 'paxChildren',
+  totalAmount: 'totalAmount',
+  bookingStatus: 'bookingStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type TourBookingScalarFieldEnum = (typeof TourBookingScalarFieldEnum)[keyof typeof TourBookingScalarFieldEnum]
+
+
+export const TourGuideScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  guideName: 'guideName',
+  phone: 'phone',
+  languages: 'languages',
+  createdAt: 'createdAt'
+} as const
+
+export type TourGuideScalarFieldEnum = (typeof TourGuideScalarFieldEnum)[keyof typeof TourGuideScalarFieldEnum]
+
+
+export const TourInclusionScalarFieldEnum = {
+  id: 'id',
+  tourId: 'tourId',
+  content: 'content',
+  isInclusion: 'isInclusion',
+  createdAt: 'createdAt'
+} as const
+
+export type TourInclusionScalarFieldEnum = (typeof TourInclusionScalarFieldEnum)[keyof typeof TourInclusionScalarFieldEnum]
+
+
+export const CarScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  slug: 'slug',
+  category: 'category',
+  transmission: 'transmission',
+  passengerSeats: 'passengerSeats',
+  baggageCount: 'baggageCount',
+  doorCount: 'doorCount',
+  fuelType: 'fuelType',
+  dailyPrice: 'dailyPrice',
+  isUnlimitedMileage: 'isUnlimitedMileage',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CarScalarFieldEnum = (typeof CarScalarFieldEnum)[keyof typeof CarScalarFieldEnum]
+
+
+export const CarTranslationScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  locale: 'locale',
+  title: 'title',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type CarTranslationScalarFieldEnum = (typeof CarTranslationScalarFieldEnum)[keyof typeof CarTranslationScalarFieldEnum]
+
+
+export const CarSpecScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  specKey: 'specKey',
+  specValue: 'specValue',
+  createdAt: 'createdAt'
+} as const
+
+export type CarSpecScalarFieldEnum = (typeof CarSpecScalarFieldEnum)[keyof typeof CarSpecScalarFieldEnum]
+
+
+export const CarDateScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  date: 'date',
+  price: 'price',
+  isClosed: 'isClosed',
+  createdAt: 'createdAt'
+} as const
+
+export type CarDateScalarFieldEnum = (typeof CarDateScalarFieldEnum)[keyof typeof CarDateScalarFieldEnum]
+
+
+export const CarExtraServiceScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  name: 'name',
+  price: 'price',
+  priceType: 'priceType',
+  createdAt: 'createdAt'
+} as const
+
+export type CarExtraServiceScalarFieldEnum = (typeof CarExtraServiceScalarFieldEnum)[keyof typeof CarExtraServiceScalarFieldEnum]
+
+
+export const CarBookingScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  userId: 'userId',
+  pickupDate: 'pickupDate',
+  dropoffDate: 'dropoffDate',
+  pickupStation: 'pickupStation',
+  dropoffStation: 'dropoffStation',
+  totalAmount: 'totalAmount',
+  bookingStatus: 'bookingStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type CarBookingScalarFieldEnum = (typeof CarBookingScalarFieldEnum)[keyof typeof CarBookingScalarFieldEnum]
+
+
+export const CarPickupLocationScalarFieldEnum = {
+  id: 'id',
+  carId: 'carId',
+  stationName: 'stationName',
+  stationType: 'stationType',
+  dropoffFee: 'dropoffFee',
+  createdAt: 'createdAt'
+} as const
+
+export type CarPickupLocationScalarFieldEnum = (typeof CarPickupLocationScalarFieldEnum)[keyof typeof CarPickupLocationScalarFieldEnum]
+
+
+export const BoatScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  slug: 'slug',
+  vesselType: 'vesselType',
+  lengthMeters: 'lengthMeters',
+  guestCapacity: 'guestCapacity',
+  berthsCount: 'berthsCount',
+  dailyPrice: 'dailyPrice',
+  charterType: 'charterType',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BoatScalarFieldEnum = (typeof BoatScalarFieldEnum)[keyof typeof BoatScalarFieldEnum]
+
+
+export const BoatTranslationScalarFieldEnum = {
+  id: 'id',
+  boatId: 'boatId',
+  locale: 'locale',
+  title: 'title',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type BoatTranslationScalarFieldEnum = (typeof BoatTranslationScalarFieldEnum)[keyof typeof BoatTranslationScalarFieldEnum]
+
+
+export const BoatSpecScalarFieldEnum = {
+  id: 'id',
+  boatId: 'boatId',
+  specKey: 'specKey',
+  specValue: 'specValue',
+  createdAt: 'createdAt'
+} as const
+
+export type BoatSpecScalarFieldEnum = (typeof BoatSpecScalarFieldEnum)[keyof typeof BoatSpecScalarFieldEnum]
+
+
+export const BoatDateScalarFieldEnum = {
+  id: 'id',
+  boatId: 'boatId',
+  date: 'date',
+  price: 'price',
+  isClosed: 'isClosed',
+  createdAt: 'createdAt'
+} as const
+
+export type BoatDateScalarFieldEnum = (typeof BoatDateScalarFieldEnum)[keyof typeof BoatDateScalarFieldEnum]
+
+
+export const BoatCrewingScalarFieldEnum = {
+  id: 'id',
+  boatId: 'boatId',
+  role: 'role',
+  crewCount: 'crewCount',
+  isIncluded: 'isIncluded',
+  createdAt: 'createdAt'
+} as const
+
+export type BoatCrewingScalarFieldEnum = (typeof BoatCrewingScalarFieldEnum)[keyof typeof BoatCrewingScalarFieldEnum]
+
+
+export const BoatBookingScalarFieldEnum = {
+  id: 'id',
+  boatId: 'boatId',
+  userId: 'userId',
+  charterStart: 'charterStart',
+  charterEnd: 'charterEnd',
+  totalAmount: 'totalAmount',
+  bookingStatus: 'bookingStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type BoatBookingScalarFieldEnum = (typeof BoatBookingScalarFieldEnum)[keyof typeof BoatBookingScalarFieldEnum]
+
+
+export const BoatStateroomScalarFieldEnum = {
+  id: 'id',
+  boatId: 'boatId',
+  name: 'name',
+  bedType: 'bedType',
+  hasEnSuite: 'hasEnSuite',
+  createdAt: 'createdAt'
+} as const
+
+export type BoatStateroomScalarFieldEnum = (typeof BoatStateroomScalarFieldEnum)[keyof typeof BoatStateroomScalarFieldEnum]
+
+
+export const EventScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  slug: 'slug',
+  eventType: 'eventType',
+  venueAddress: 'venueAddress',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  maxCapacity: 'maxCapacity',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
+
+
+export const EventTranslationScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  locale: 'locale',
+  title: 'title',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type EventTranslationScalarFieldEnum = (typeof EventTranslationScalarFieldEnum)[keyof typeof EventTranslationScalarFieldEnum]
+
+
+export const EventTicketTierScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  name: 'name',
+  price: 'price',
+  totalSeats: 'totalSeats',
+  bookedSeats: 'bookedSeats',
+  salesStart: 'salesStart',
+  salesEnd: 'salesEnd',
+  createdAt: 'createdAt'
+} as const
+
+export type EventTicketTierScalarFieldEnum = (typeof EventTicketTierScalarFieldEnum)[keyof typeof EventTicketTierScalarFieldEnum]
+
+
+export const EventTimeSlotScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  sessionName: 'sessionName',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  createdAt: 'createdAt'
+} as const
+
+export type EventTimeSlotScalarFieldEnum = (typeof EventTimeSlotScalarFieldEnum)[keyof typeof EventTimeSlotScalarFieldEnum]
+
+
+export const EventQrScanScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  ticketCode: 'ticketCode',
+  scannedAt: 'scannedAt',
+  gateName: 'gateName',
+  isSuccess: 'isSuccess'
+} as const
+
+export type EventQrScanScalarFieldEnum = (typeof EventQrScanScalarFieldEnum)[keyof typeof EventQrScanScalarFieldEnum]
+
+
+export const EventBookingScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  userId: 'userId',
+  quantity: 'quantity',
+  totalAmount: 'totalAmount',
+  ticketCode: 'ticketCode',
+  bookingStatus: 'bookingStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type EventBookingScalarFieldEnum = (typeof EventBookingScalarFieldEnum)[keyof typeof EventBookingScalarFieldEnum]
+
+
+export const EventSeatingTableScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  tableNumber: 'tableNumber',
+  seatCount: 'seatCount',
+  createdAt: 'createdAt'
+} as const
+
+export type EventSeatingTableScalarFieldEnum = (typeof EventSeatingTableScalarFieldEnum)[keyof typeof EventSeatingTableScalarFieldEnum]
+
+
+export const FlightScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  flightNumber: 'flightNumber',
+  airlineId: 'airlineId',
+  originAirportId: 'originAirportId',
+  destAirportId: 'destAirportId',
+  departureTime: 'departureTime',
+  arrivalTime: 'arrivalTime',
+  aircraftType: 'aircraftType',
+  basePrice: 'basePrice',
+  status: 'status',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FlightScalarFieldEnum = (typeof FlightScalarFieldEnum)[keyof typeof FlightScalarFieldEnum]
+
+
+export const AirlineScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  iataCode: 'iataCode',
+  country: 'country',
+  createdAt: 'createdAt'
+} as const
+
+export type AirlineScalarFieldEnum = (typeof AirlineScalarFieldEnum)[keyof typeof AirlineScalarFieldEnum]
+
+
+export const AirportScalarFieldEnum = {
+  id: 'id',
+  iataCode: 'iataCode',
+  name: 'name',
+  city: 'city',
+  country: 'country',
+  createdAt: 'createdAt'
+} as const
+
+export type AirportScalarFieldEnum = (typeof AirportScalarFieldEnum)[keyof typeof AirportScalarFieldEnum]
+
+
+export const FlightSeatScalarFieldEnum = {
+  id: 'id',
+  flightId: 'flightId',
+  seatNumber: 'seatNumber',
+  cabinClass: 'cabinClass',
+  price: 'price',
+  isBooked: 'isBooked',
+  createdAt: 'createdAt'
+} as const
+
+export type FlightSeatScalarFieldEnum = (typeof FlightSeatScalarFieldEnum)[keyof typeof FlightSeatScalarFieldEnum]
+
+
+export const FlightPassengerScalarFieldEnum = {
+  id: 'id',
+  flightId: 'flightId',
+  passportNo: 'passportNo',
+  fullName: 'fullName',
+  nationality: 'nationality',
+  dateOfBirth: 'dateOfBirth',
+  seatNumber: 'seatNumber',
+  createdAt: 'createdAt'
+} as const
+
+export type FlightPassengerScalarFieldEnum = (typeof FlightPassengerScalarFieldEnum)[keyof typeof FlightPassengerScalarFieldEnum]
+
+
+export const FlightBookingScalarFieldEnum = {
+  id: 'id',
+  flightId: 'flightId',
+  userId: 'userId',
+  ticketCode: 'ticketCode',
+  totalAmount: 'totalAmount',
+  bookingStatus: 'bookingStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type FlightBookingScalarFieldEnum = (typeof FlightBookingScalarFieldEnum)[keyof typeof FlightBookingScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -220,4 +4586,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

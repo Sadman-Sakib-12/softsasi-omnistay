@@ -20,8 +20,22 @@ export type HotelModel = runtime.Types.Result.DefaultSelection<Prisma.$HotelPayl
 
 export type AggregateHotel = {
   _count: HotelCountAggregateOutputType | null
+  _avg: HotelAvgAggregateOutputType | null
+  _sum: HotelSumAggregateOutputType | null
   _min: HotelMinAggregateOutputType | null
   _max: HotelMaxAggregateOutputType | null
+}
+
+export type HotelAvgAggregateOutputType = {
+  starRating: number | null
+  lat: runtime.Decimal | null
+  lng: runtime.Decimal | null
+}
+
+export type HotelSumAggregateOutputType = {
+  starRating: number | null
+  lat: runtime.Decimal | null
+  lng: runtime.Decimal | null
 }
 
 export type HotelMinAggregateOutputType = {
@@ -31,6 +45,14 @@ export type HotelMinAggregateOutputType = {
   code: string | null
   timezone: string | null
   currency: string | null
+  propertyType: string | null
+  starRating: number | null
+  address: string | null
+  lat: runtime.Decimal | null
+  lng: runtime.Decimal | null
+  checkInTime: string | null
+  checkOutTime: string | null
+  status: string | null
   deletedAt: Date | null
   createdBy: string | null
   updatedBy: string | null
@@ -45,6 +67,14 @@ export type HotelMaxAggregateOutputType = {
   code: string | null
   timezone: string | null
   currency: string | null
+  propertyType: string | null
+  starRating: number | null
+  address: string | null
+  lat: runtime.Decimal | null
+  lng: runtime.Decimal | null
+  checkInTime: string | null
+  checkOutTime: string | null
+  status: string | null
   deletedAt: Date | null
   createdBy: string | null
   updatedBy: string | null
@@ -59,6 +89,14 @@ export type HotelCountAggregateOutputType = {
   code: number
   timezone: number
   currency: number
+  propertyType: number
+  starRating: number
+  address: number
+  lat: number
+  lng: number
+  checkInTime: number
+  checkOutTime: number
+  status: number
   deletedAt: number
   createdBy: number
   updatedBy: number
@@ -68,6 +106,18 @@ export type HotelCountAggregateOutputType = {
 }
 
 
+export type HotelAvgAggregateInputType = {
+  starRating?: true
+  lat?: true
+  lng?: true
+}
+
+export type HotelSumAggregateInputType = {
+  starRating?: true
+  lat?: true
+  lng?: true
+}
+
 export type HotelMinAggregateInputType = {
   id?: true
   organizationId?: true
@@ -75,6 +125,14 @@ export type HotelMinAggregateInputType = {
   code?: true
   timezone?: true
   currency?: true
+  propertyType?: true
+  starRating?: true
+  address?: true
+  lat?: true
+  lng?: true
+  checkInTime?: true
+  checkOutTime?: true
+  status?: true
   deletedAt?: true
   createdBy?: true
   updatedBy?: true
@@ -89,6 +147,14 @@ export type HotelMaxAggregateInputType = {
   code?: true
   timezone?: true
   currency?: true
+  propertyType?: true
+  starRating?: true
+  address?: true
+  lat?: true
+  lng?: true
+  checkInTime?: true
+  checkOutTime?: true
+  status?: true
   deletedAt?: true
   createdBy?: true
   updatedBy?: true
@@ -103,6 +169,14 @@ export type HotelCountAggregateInputType = {
   code?: true
   timezone?: true
   currency?: true
+  propertyType?: true
+  starRating?: true
+  address?: true
+  lat?: true
+  lng?: true
+  checkInTime?: true
+  checkOutTime?: true
+  status?: true
   deletedAt?: true
   createdBy?: true
   updatedBy?: true
@@ -149,6 +223,18 @@ export type HotelAggregateArgs<ExtArgs extends runtime.Types.Extensions.Internal
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: HotelAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: HotelSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: HotelMinAggregateInputType
@@ -179,6 +265,8 @@ export type HotelGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   _count?: HotelCountAggregateInputType | true
+  _avg?: HotelAvgAggregateInputType
+  _sum?: HotelSumAggregateInputType
   _min?: HotelMinAggregateInputType
   _max?: HotelMaxAggregateInputType
 }
@@ -190,12 +278,22 @@ export type HotelGroupByOutputType = {
   code: string
   timezone: string
   currency: string
+  propertyType: string | null
+  starRating: number | null
+  address: string | null
+  lat: runtime.Decimal | null
+  lng: runtime.Decimal | null
+  checkInTime: string | null
+  checkOutTime: string | null
+  status: string
   deletedAt: Date | null
   createdBy: string | null
   updatedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: HotelCountAggregateOutputType | null
+  _avg: HotelAvgAggregateOutputType | null
+  _sum: HotelSumAggregateOutputType | null
   _min: HotelMinAggregateOutputType | null
   _max: HotelMaxAggregateOutputType | null
 }
@@ -225,12 +323,30 @@ export type HotelWhereInput = {
   code?: Prisma.StringFilter<"Hotel"> | string
   timezone?: Prisma.StringFilter<"Hotel"> | string
   currency?: Prisma.StringFilter<"Hotel"> | string
+  propertyType?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  starRating?: Prisma.IntNullableFilter<"Hotel"> | number | null
+  address?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  lat?: Prisma.DecimalNullableFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.DecimalNullableFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  checkOutTime?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  status?: Prisma.StringFilter<"Hotel"> | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Hotel"> | Date | string | null
   createdBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   updatedBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  roomTypes?: Prisma.RoomTypeListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
+  translations?: Prisma.HotelTranslationListRelationFilter
+  facilities?: Prisma.PropertyFacilityListRelationFilter
+  ratePlans?: Prisma.RatePlanListRelationFilter
+  seasonalRates?: Prisma.SeasonalRateListRelationFilter
+  maintenanceAssets?: Prisma.MaintenanceAssetListRelationFilter
+  lostAndFound?: Prisma.LostAndFoundItemListRelationFilter
+  surroundings?: Prisma.PropertySurroundingListRelationFilter
+  photos?: Prisma.PropertyPhotoListRelationFilter
 }
 
 export type HotelOrderByWithRelationInput = {
@@ -240,12 +356,30 @@ export type HotelOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  propertyType?: Prisma.SortOrderInput | Prisma.SortOrder
+  starRating?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  lat?: Prisma.SortOrderInput | Prisma.SortOrder
+  lng?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkInTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkOutTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
+  roomTypes?: Prisma.RoomTypeOrderByRelationAggregateInput
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
+  translations?: Prisma.HotelTranslationOrderByRelationAggregateInput
+  facilities?: Prisma.PropertyFacilityOrderByRelationAggregateInput
+  ratePlans?: Prisma.RatePlanOrderByRelationAggregateInput
+  seasonalRates?: Prisma.SeasonalRateOrderByRelationAggregateInput
+  maintenanceAssets?: Prisma.MaintenanceAssetOrderByRelationAggregateInput
+  lostAndFound?: Prisma.LostAndFoundItemOrderByRelationAggregateInput
+  surroundings?: Prisma.PropertySurroundingOrderByRelationAggregateInput
+  photos?: Prisma.PropertyPhotoOrderByRelationAggregateInput
 }
 
 export type HotelWhereUniqueInput = Prisma.AtLeast<{
@@ -259,12 +393,30 @@ export type HotelWhereUniqueInput = Prisma.AtLeast<{
   code?: Prisma.StringFilter<"Hotel"> | string
   timezone?: Prisma.StringFilter<"Hotel"> | string
   currency?: Prisma.StringFilter<"Hotel"> | string
+  propertyType?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  starRating?: Prisma.IntNullableFilter<"Hotel"> | number | null
+  address?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  lat?: Prisma.DecimalNullableFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.DecimalNullableFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  checkOutTime?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  status?: Prisma.StringFilter<"Hotel"> | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Hotel"> | Date | string | null
   createdBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   updatedBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Hotel"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  roomTypes?: Prisma.RoomTypeListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
+  translations?: Prisma.HotelTranslationListRelationFilter
+  facilities?: Prisma.PropertyFacilityListRelationFilter
+  ratePlans?: Prisma.RatePlanListRelationFilter
+  seasonalRates?: Prisma.SeasonalRateListRelationFilter
+  maintenanceAssets?: Prisma.MaintenanceAssetListRelationFilter
+  lostAndFound?: Prisma.LostAndFoundItemListRelationFilter
+  surroundings?: Prisma.PropertySurroundingListRelationFilter
+  photos?: Prisma.PropertyPhotoListRelationFilter
 }, "id" | "organizationId_code">
 
 export type HotelOrderByWithAggregationInput = {
@@ -274,14 +426,24 @@ export type HotelOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  propertyType?: Prisma.SortOrderInput | Prisma.SortOrder
+  starRating?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  lat?: Prisma.SortOrderInput | Prisma.SortOrder
+  lng?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkInTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  checkOutTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.HotelCountOrderByAggregateInput
+  _avg?: Prisma.HotelAvgOrderByAggregateInput
   _max?: Prisma.HotelMaxOrderByAggregateInput
   _min?: Prisma.HotelMinOrderByAggregateInput
+  _sum?: Prisma.HotelSumOrderByAggregateInput
 }
 
 export type HotelScalarWhereWithAggregatesInput = {
@@ -294,6 +456,14 @@ export type HotelScalarWhereWithAggregatesInput = {
   code?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
   timezone?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
   currency?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
+  propertyType?: Prisma.StringNullableWithAggregatesFilter<"Hotel"> | string | null
+  starRating?: Prisma.IntNullableWithAggregatesFilter<"Hotel"> | number | null
+  address?: Prisma.StringNullableWithAggregatesFilter<"Hotel"> | string | null
+  lat?: Prisma.DecimalNullableWithAggregatesFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.DecimalNullableWithAggregatesFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.StringNullableWithAggregatesFilter<"Hotel"> | string | null
+  checkOutTime?: Prisma.StringNullableWithAggregatesFilter<"Hotel"> | string | null
+  status?: Prisma.StringWithAggregatesFilter<"Hotel"> | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Hotel"> | Date | string | null
   createdBy?: Prisma.UuidNullableWithAggregatesFilter<"Hotel"> | string | null
   updatedBy?: Prisma.UuidNullableWithAggregatesFilter<"Hotel"> | string | null
@@ -307,12 +477,30 @@ export type HotelCreateInput = {
   code: string
   timezone?: string
   currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
   updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
 }
 
 export type HotelUncheckedCreateInput = {
@@ -322,11 +510,29 @@ export type HotelUncheckedCreateInput = {
   code: string
   timezone?: string
   currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
   updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
 }
 
 export type HotelUpdateInput = {
@@ -335,12 +541,30 @@ export type HotelUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
 }
 
 export type HotelUncheckedUpdateInput = {
@@ -350,11 +574,29 @@ export type HotelUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
 }
 
 export type HotelCreateManyInput = {
@@ -364,6 +606,14 @@ export type HotelCreateManyInput = {
   code: string
   timezone?: string
   currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
   updatedBy?: string | null
@@ -377,6 +627,14 @@ export type HotelUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -391,6 +649,14 @@ export type HotelUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -398,14 +664,9 @@ export type HotelUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type HotelListRelationFilter = {
-  every?: Prisma.HotelWhereInput
-  some?: Prisma.HotelWhereInput
-  none?: Prisma.HotelWhereInput
-}
-
-export type HotelOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type HotelScalarRelationFilter = {
+  is?: Prisma.HotelWhereInput
+  isNot?: Prisma.HotelWhereInput
 }
 
 export type HotelOrganizationIdCodeCompoundUniqueInput = {
@@ -420,11 +681,25 @@ export type HotelCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  propertyType?: Prisma.SortOrder
+  starRating?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lng?: Prisma.SortOrder
+  checkInTime?: Prisma.SortOrder
+  checkOutTime?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type HotelAvgOrderByAggregateInput = {
+  starRating?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lng?: Prisma.SortOrder
 }
 
 export type HotelMaxOrderByAggregateInput = {
@@ -434,6 +709,14 @@ export type HotelMaxOrderByAggregateInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  propertyType?: Prisma.SortOrder
+  starRating?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lng?: Prisma.SortOrder
+  checkInTime?: Prisma.SortOrder
+  checkOutTime?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
@@ -448,11 +731,175 @@ export type HotelMinOrderByAggregateInput = {
   code?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  propertyType?: Prisma.SortOrder
+  starRating?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lng?: Prisma.SortOrder
+  checkInTime?: Prisma.SortOrder
+  checkOutTime?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type HotelSumOrderByAggregateInput = {
+  starRating?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lng?: Prisma.SortOrder
+}
+
+export type HotelListRelationFilter = {
+  every?: Prisma.HotelWhereInput
+  some?: Prisma.HotelWhereInput
+  none?: Prisma.HotelWhereInput
+}
+
+export type HotelOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type HotelCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutBookingsInput, Prisma.HotelUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutBookingsInput, Prisma.HotelUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.HotelUpsertWithoutBookingsInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutBookingsInput, Prisma.HotelUpdateWithoutBookingsInput>, Prisma.HotelUncheckedUpdateWithoutBookingsInput>
+}
+
+export type HotelCreateNestedOneWithoutRatePlansInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutRatePlansInput, Prisma.HotelUncheckedCreateWithoutRatePlansInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutRatePlansInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutRatePlansNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutRatePlansInput, Prisma.HotelUncheckedCreateWithoutRatePlansInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutRatePlansInput
+  upsert?: Prisma.HotelUpsertWithoutRatePlansInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutRatePlansInput, Prisma.HotelUpdateWithoutRatePlansInput>, Prisma.HotelUncheckedUpdateWithoutRatePlansInput>
+}
+
+export type HotelCreateNestedOneWithoutSeasonalRatesInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutSeasonalRatesInput, Prisma.HotelUncheckedCreateWithoutSeasonalRatesInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutSeasonalRatesInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutSeasonalRatesNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutSeasonalRatesInput, Prisma.HotelUncheckedCreateWithoutSeasonalRatesInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutSeasonalRatesInput
+  upsert?: Prisma.HotelUpsertWithoutSeasonalRatesInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutSeasonalRatesInput, Prisma.HotelUpdateWithoutSeasonalRatesInput>, Prisma.HotelUncheckedUpdateWithoutSeasonalRatesInput>
+}
+
+export type HotelCreateNestedOneWithoutRoomTypesInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutRoomTypesInput, Prisma.HotelUncheckedCreateWithoutRoomTypesInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutRoomTypesInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutRoomTypesNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutRoomTypesInput, Prisma.HotelUncheckedCreateWithoutRoomTypesInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutRoomTypesInput
+  upsert?: Prisma.HotelUpsertWithoutRoomTypesInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutRoomTypesInput, Prisma.HotelUpdateWithoutRoomTypesInput>, Prisma.HotelUncheckedUpdateWithoutRoomTypesInput>
+}
+
+export type HotelCreateNestedOneWithoutTranslationsInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutTranslationsInput, Prisma.HotelUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutTranslationsInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutTranslationsNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutTranslationsInput, Prisma.HotelUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutTranslationsInput
+  upsert?: Prisma.HotelUpsertWithoutTranslationsInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutTranslationsInput, Prisma.HotelUpdateWithoutTranslationsInput>, Prisma.HotelUncheckedUpdateWithoutTranslationsInput>
+}
+
+export type HotelCreateNestedOneWithoutFacilitiesInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutFacilitiesInput, Prisma.HotelUncheckedCreateWithoutFacilitiesInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutFacilitiesInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutFacilitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutFacilitiesInput, Prisma.HotelUncheckedCreateWithoutFacilitiesInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutFacilitiesInput
+  upsert?: Prisma.HotelUpsertWithoutFacilitiesInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutFacilitiesInput, Prisma.HotelUpdateWithoutFacilitiesInput>, Prisma.HotelUncheckedUpdateWithoutFacilitiesInput>
+}
+
+export type HotelCreateNestedOneWithoutMaintenanceAssetsInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutMaintenanceAssetsInput, Prisma.HotelUncheckedCreateWithoutMaintenanceAssetsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutMaintenanceAssetsInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutMaintenanceAssetsNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutMaintenanceAssetsInput, Prisma.HotelUncheckedCreateWithoutMaintenanceAssetsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutMaintenanceAssetsInput
+  upsert?: Prisma.HotelUpsertWithoutMaintenanceAssetsInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutMaintenanceAssetsInput, Prisma.HotelUpdateWithoutMaintenanceAssetsInput>, Prisma.HotelUncheckedUpdateWithoutMaintenanceAssetsInput>
+}
+
+export type HotelCreateNestedOneWithoutLostAndFoundInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutLostAndFoundInput, Prisma.HotelUncheckedCreateWithoutLostAndFoundInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutLostAndFoundInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutLostAndFoundNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutLostAndFoundInput, Prisma.HotelUncheckedCreateWithoutLostAndFoundInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutLostAndFoundInput
+  upsert?: Prisma.HotelUpsertWithoutLostAndFoundInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutLostAndFoundInput, Prisma.HotelUpdateWithoutLostAndFoundInput>, Prisma.HotelUncheckedUpdateWithoutLostAndFoundInput>
+}
+
+export type HotelCreateNestedOneWithoutSurroundingsInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutSurroundingsInput, Prisma.HotelUncheckedCreateWithoutSurroundingsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutSurroundingsInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutSurroundingsNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutSurroundingsInput, Prisma.HotelUncheckedCreateWithoutSurroundingsInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutSurroundingsInput
+  upsert?: Prisma.HotelUpsertWithoutSurroundingsInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutSurroundingsInput, Prisma.HotelUpdateWithoutSurroundingsInput>, Prisma.HotelUncheckedUpdateWithoutSurroundingsInput>
+}
+
+export type HotelCreateNestedOneWithoutPhotosInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutPhotosInput, Prisma.HotelUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutPhotosInput
+  connect?: Prisma.HotelWhereUniqueInput
+}
+
+export type HotelUpdateOneRequiredWithoutPhotosNestedInput = {
+  create?: Prisma.XOR<Prisma.HotelCreateWithoutPhotosInput, Prisma.HotelUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.HotelCreateOrConnectWithoutPhotosInput
+  upsert?: Prisma.HotelUpsertWithoutPhotosInput
+  connect?: Prisma.HotelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HotelUpdateToOneWithWhereWithoutPhotosInput, Prisma.HotelUpdateWithoutPhotosInput>, Prisma.HotelUncheckedUpdateWithoutPhotosInput>
 }
 
 export type HotelCreateNestedManyWithoutOrganizationInput = {
@@ -497,17 +944,1435 @@ export type HotelUncheckedUpdateManyWithoutOrganizationNestedInput = {
   deleteMany?: Prisma.HotelScalarWhereInput | Prisma.HotelScalarWhereInput[]
 }
 
+export type HotelCreateWithoutBookingsInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutBookingsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutBookingsInput, Prisma.HotelUncheckedCreateWithoutBookingsInput>
+}
+
+export type HotelUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutBookingsInput, Prisma.HotelUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutBookingsInput, Prisma.HotelUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutBookingsInput, Prisma.HotelUncheckedUpdateWithoutBookingsInput>
+}
+
+export type HotelUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutRatePlansInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutRatePlansInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutRatePlansInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutRatePlansInput, Prisma.HotelUncheckedCreateWithoutRatePlansInput>
+}
+
+export type HotelUpsertWithoutRatePlansInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutRatePlansInput, Prisma.HotelUncheckedUpdateWithoutRatePlansInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutRatePlansInput, Prisma.HotelUncheckedCreateWithoutRatePlansInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutRatePlansInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutRatePlansInput, Prisma.HotelUncheckedUpdateWithoutRatePlansInput>
+}
+
+export type HotelUpdateWithoutRatePlansInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutRatePlansInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutSeasonalRatesInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutSeasonalRatesInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutSeasonalRatesInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutSeasonalRatesInput, Prisma.HotelUncheckedCreateWithoutSeasonalRatesInput>
+}
+
+export type HotelUpsertWithoutSeasonalRatesInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutSeasonalRatesInput, Prisma.HotelUncheckedUpdateWithoutSeasonalRatesInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutSeasonalRatesInput, Prisma.HotelUncheckedCreateWithoutSeasonalRatesInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutSeasonalRatesInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutSeasonalRatesInput, Prisma.HotelUncheckedUpdateWithoutSeasonalRatesInput>
+}
+
+export type HotelUpdateWithoutSeasonalRatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutSeasonalRatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutRoomTypesInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutRoomTypesInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutRoomTypesInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutRoomTypesInput, Prisma.HotelUncheckedCreateWithoutRoomTypesInput>
+}
+
+export type HotelUpsertWithoutRoomTypesInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutRoomTypesInput, Prisma.HotelUncheckedUpdateWithoutRoomTypesInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutRoomTypesInput, Prisma.HotelUncheckedCreateWithoutRoomTypesInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutRoomTypesInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutRoomTypesInput, Prisma.HotelUncheckedUpdateWithoutRoomTypesInput>
+}
+
+export type HotelUpdateWithoutRoomTypesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutRoomTypesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutTranslationsInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutTranslationsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutTranslationsInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutTranslationsInput, Prisma.HotelUncheckedCreateWithoutTranslationsInput>
+}
+
+export type HotelUpsertWithoutTranslationsInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutTranslationsInput, Prisma.HotelUncheckedUpdateWithoutTranslationsInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutTranslationsInput, Prisma.HotelUncheckedCreateWithoutTranslationsInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutTranslationsInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutTranslationsInput, Prisma.HotelUncheckedUpdateWithoutTranslationsInput>
+}
+
+export type HotelUpdateWithoutTranslationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutTranslationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutFacilitiesInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutFacilitiesInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutFacilitiesInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutFacilitiesInput, Prisma.HotelUncheckedCreateWithoutFacilitiesInput>
+}
+
+export type HotelUpsertWithoutFacilitiesInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutFacilitiesInput, Prisma.HotelUncheckedUpdateWithoutFacilitiesInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutFacilitiesInput, Prisma.HotelUncheckedCreateWithoutFacilitiesInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutFacilitiesInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutFacilitiesInput, Prisma.HotelUncheckedUpdateWithoutFacilitiesInput>
+}
+
+export type HotelUpdateWithoutFacilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutFacilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutMaintenanceAssetsInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutMaintenanceAssetsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutMaintenanceAssetsInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutMaintenanceAssetsInput, Prisma.HotelUncheckedCreateWithoutMaintenanceAssetsInput>
+}
+
+export type HotelUpsertWithoutMaintenanceAssetsInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutMaintenanceAssetsInput, Prisma.HotelUncheckedUpdateWithoutMaintenanceAssetsInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutMaintenanceAssetsInput, Prisma.HotelUncheckedCreateWithoutMaintenanceAssetsInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutMaintenanceAssetsInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutMaintenanceAssetsInput, Prisma.HotelUncheckedUpdateWithoutMaintenanceAssetsInput>
+}
+
+export type HotelUpdateWithoutMaintenanceAssetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutMaintenanceAssetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutLostAndFoundInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutLostAndFoundInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutLostAndFoundInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutLostAndFoundInput, Prisma.HotelUncheckedCreateWithoutLostAndFoundInput>
+}
+
+export type HotelUpsertWithoutLostAndFoundInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutLostAndFoundInput, Prisma.HotelUncheckedUpdateWithoutLostAndFoundInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutLostAndFoundInput, Prisma.HotelUncheckedCreateWithoutLostAndFoundInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutLostAndFoundInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutLostAndFoundInput, Prisma.HotelUncheckedUpdateWithoutLostAndFoundInput>
+}
+
+export type HotelUpdateWithoutLostAndFoundInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutLostAndFoundInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutSurroundingsInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutSurroundingsInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutSurroundingsInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutSurroundingsInput, Prisma.HotelUncheckedCreateWithoutSurroundingsInput>
+}
+
+export type HotelUpsertWithoutSurroundingsInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutSurroundingsInput, Prisma.HotelUncheckedUpdateWithoutSurroundingsInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutSurroundingsInput, Prisma.HotelUncheckedCreateWithoutSurroundingsInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutSurroundingsInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutSurroundingsInput, Prisma.HotelUncheckedUpdateWithoutSurroundingsInput>
+}
+
+export type HotelUpdateWithoutSurroundingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutSurroundingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelCreateWithoutPhotosInput = {
+  id?: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutHotelsInput
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelUncheckedCreateWithoutPhotosInput = {
+  id?: string
+  organizationId: string
+  name: string
+  code: string
+  timezone?: string
+  currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+}
+
+export type HotelCreateOrConnectWithoutPhotosInput = {
+  where: Prisma.HotelWhereUniqueInput
+  create: Prisma.XOR<Prisma.HotelCreateWithoutPhotosInput, Prisma.HotelUncheckedCreateWithoutPhotosInput>
+}
+
+export type HotelUpsertWithoutPhotosInput = {
+  update: Prisma.XOR<Prisma.HotelUpdateWithoutPhotosInput, Prisma.HotelUncheckedUpdateWithoutPhotosInput>
+  create: Prisma.XOR<Prisma.HotelCreateWithoutPhotosInput, Prisma.HotelUncheckedCreateWithoutPhotosInput>
+  where?: Prisma.HotelWhereInput
+}
+
+export type HotelUpdateToOneWithWhereWithoutPhotosInput = {
+  where?: Prisma.HotelWhereInput
+  data: Prisma.XOR<Prisma.HotelUpdateWithoutPhotosInput, Prisma.HotelUncheckedUpdateWithoutPhotosInput>
+}
+
+export type HotelUpdateWithoutPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutHotelsNestedInput
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+}
+
+export type HotelUncheckedUpdateWithoutPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+}
+
 export type HotelCreateWithoutOrganizationInput = {
   id?: string
   name: string
   code: string
   timezone?: string
   currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
   updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoCreateNestedManyWithoutPropertyInput
 }
 
 export type HotelUncheckedCreateWithoutOrganizationInput = {
@@ -516,11 +2381,29 @@ export type HotelUncheckedCreateWithoutOrganizationInput = {
   code: string
   timezone?: string
   currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
   updatedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedCreateNestedManyWithoutPropertyInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutPropertyInput
+  translations?: Prisma.HotelTranslationUncheckedCreateNestedManyWithoutPropertyInput
+  facilities?: Prisma.PropertyFacilityUncheckedCreateNestedManyWithoutPropertyInput
+  ratePlans?: Prisma.RatePlanUncheckedCreateNestedManyWithoutPropertyInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedCreateNestedManyWithoutPropertyInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedCreateNestedManyWithoutPropertyInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedCreateNestedManyWithoutPropertyInput
+  surroundings?: Prisma.PropertySurroundingUncheckedCreateNestedManyWithoutPropertyInput
+  photos?: Prisma.PropertyPhotoUncheckedCreateNestedManyWithoutPropertyInput
 }
 
 export type HotelCreateOrConnectWithoutOrganizationInput = {
@@ -559,6 +2442,14 @@ export type HotelScalarWhereInput = {
   code?: Prisma.StringFilter<"Hotel"> | string
   timezone?: Prisma.StringFilter<"Hotel"> | string
   currency?: Prisma.StringFilter<"Hotel"> | string
+  propertyType?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  starRating?: Prisma.IntNullableFilter<"Hotel"> | number | null
+  address?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  lat?: Prisma.DecimalNullableFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.DecimalNullableFilter<"Hotel"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  checkOutTime?: Prisma.StringNullableFilter<"Hotel"> | string | null
+  status?: Prisma.StringFilter<"Hotel"> | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Hotel"> | Date | string | null
   createdBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
   updatedBy?: Prisma.UuidNullableFilter<"Hotel"> | string | null
@@ -572,6 +2463,14 @@ export type HotelCreateManyOrganizationInput = {
   code: string
   timezone?: string
   currency?: string
+  propertyType?: string | null
+  starRating?: number | null
+  address?: string | null
+  lat?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: string | null
+  checkOutTime?: string | null
+  status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
   updatedBy?: string | null
@@ -585,11 +2484,29 @@ export type HotelUpdateWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUpdateManyWithoutPropertyNestedInput
 }
 
 export type HotelUncheckedUpdateWithoutOrganizationInput = {
@@ -598,11 +2515,29 @@ export type HotelUncheckedUpdateWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roomTypes?: Prisma.RoomTypeUncheckedUpdateManyWithoutPropertyNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutPropertyNestedInput
+  translations?: Prisma.HotelTranslationUncheckedUpdateManyWithoutPropertyNestedInput
+  facilities?: Prisma.PropertyFacilityUncheckedUpdateManyWithoutPropertyNestedInput
+  ratePlans?: Prisma.RatePlanUncheckedUpdateManyWithoutPropertyNestedInput
+  seasonalRates?: Prisma.SeasonalRateUncheckedUpdateManyWithoutPropertyNestedInput
+  maintenanceAssets?: Prisma.MaintenanceAssetUncheckedUpdateManyWithoutPropertyNestedInput
+  lostAndFound?: Prisma.LostAndFoundItemUncheckedUpdateManyWithoutPropertyNestedInput
+  surroundings?: Prisma.PropertySurroundingUncheckedUpdateManyWithoutPropertyNestedInput
+  photos?: Prisma.PropertyPhotoUncheckedUpdateManyWithoutPropertyNestedInput
 }
 
 export type HotelUncheckedUpdateManyWithoutOrganizationInput = {
@@ -611,6 +2546,14 @@ export type HotelUncheckedUpdateManyWithoutOrganizationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  starRating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  lng?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  checkInTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  checkOutTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -618,6 +2561,116 @@ export type HotelUncheckedUpdateManyWithoutOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type HotelCountOutputType
+ */
+
+export type HotelCountOutputType = {
+  roomTypes: number
+  bookings: number
+  translations: number
+  facilities: number
+  ratePlans: number
+  seasonalRates: number
+  maintenanceAssets: number
+  lostAndFound: number
+  surroundings: number
+  photos: number
+}
+
+export type HotelCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  roomTypes?: boolean | HotelCountOutputTypeCountRoomTypesArgs
+  bookings?: boolean | HotelCountOutputTypeCountBookingsArgs
+  translations?: boolean | HotelCountOutputTypeCountTranslationsArgs
+  facilities?: boolean | HotelCountOutputTypeCountFacilitiesArgs
+  ratePlans?: boolean | HotelCountOutputTypeCountRatePlansArgs
+  seasonalRates?: boolean | HotelCountOutputTypeCountSeasonalRatesArgs
+  maintenanceAssets?: boolean | HotelCountOutputTypeCountMaintenanceAssetsArgs
+  lostAndFound?: boolean | HotelCountOutputTypeCountLostAndFoundArgs
+  surroundings?: boolean | HotelCountOutputTypeCountSurroundingsArgs
+  photos?: boolean | HotelCountOutputTypeCountPhotosArgs
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelCountOutputType
+   */
+  select?: Prisma.HotelCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountRoomTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoomTypeWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountTranslationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HotelTranslationWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountFacilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PropertyFacilityWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountRatePlansArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RatePlanWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountSeasonalRatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SeasonalRateWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountMaintenanceAssetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaintenanceAssetWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountLostAndFoundArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LostAndFoundItemWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountSurroundingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PropertySurroundingWhereInput
+}
+
+/**
+ * HotelCountOutputType without action
+ */
+export type HotelCountOutputTypeCountPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PropertyPhotoWhereInput
+}
 
 
 export type HotelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -627,12 +2680,31 @@ export type HotelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  propertyType?: boolean
+  starRating?: boolean
+  address?: boolean
+  lat?: boolean
+  lng?: boolean
+  checkInTime?: boolean
+  checkOutTime?: boolean
+  status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  roomTypes?: boolean | Prisma.Hotel$roomTypesArgs<ExtArgs>
+  bookings?: boolean | Prisma.Hotel$bookingsArgs<ExtArgs>
+  translations?: boolean | Prisma.Hotel$translationsArgs<ExtArgs>
+  facilities?: boolean | Prisma.Hotel$facilitiesArgs<ExtArgs>
+  ratePlans?: boolean | Prisma.Hotel$ratePlansArgs<ExtArgs>
+  seasonalRates?: boolean | Prisma.Hotel$seasonalRatesArgs<ExtArgs>
+  maintenanceAssets?: boolean | Prisma.Hotel$maintenanceAssetsArgs<ExtArgs>
+  lostAndFound?: boolean | Prisma.Hotel$lostAndFoundArgs<ExtArgs>
+  surroundings?: boolean | Prisma.Hotel$surroundingsArgs<ExtArgs>
+  photos?: boolean | Prisma.Hotel$photosArgs<ExtArgs>
+  _count?: boolean | Prisma.HotelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["hotel"]>
 
 export type HotelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -642,6 +2714,14 @@ export type HotelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  propertyType?: boolean
+  starRating?: boolean
+  address?: boolean
+  lat?: boolean
+  lng?: boolean
+  checkInTime?: boolean
+  checkOutTime?: boolean
+  status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
@@ -657,6 +2737,14 @@ export type HotelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  propertyType?: boolean
+  starRating?: boolean
+  address?: boolean
+  lat?: boolean
+  lng?: boolean
+  checkInTime?: boolean
+  checkOutTime?: boolean
+  status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
@@ -672,6 +2760,14 @@ export type HotelSelectScalar = {
   code?: boolean
   timezone?: boolean
   currency?: boolean
+  propertyType?: boolean
+  starRating?: boolean
+  address?: boolean
+  lat?: boolean
+  lng?: boolean
+  checkInTime?: boolean
+  checkOutTime?: boolean
+  status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
   updatedBy?: boolean
@@ -679,9 +2775,20 @@ export type HotelSelectScalar = {
   updatedAt?: boolean
 }
 
-export type HotelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "code" | "timezone" | "currency" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["hotel"]>
+export type HotelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "code" | "timezone" | "currency" | "propertyType" | "starRating" | "address" | "lat" | "lng" | "checkInTime" | "checkOutTime" | "status" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["hotel"]>
 export type HotelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  roomTypes?: boolean | Prisma.Hotel$roomTypesArgs<ExtArgs>
+  bookings?: boolean | Prisma.Hotel$bookingsArgs<ExtArgs>
+  translations?: boolean | Prisma.Hotel$translationsArgs<ExtArgs>
+  facilities?: boolean | Prisma.Hotel$facilitiesArgs<ExtArgs>
+  ratePlans?: boolean | Prisma.Hotel$ratePlansArgs<ExtArgs>
+  seasonalRates?: boolean | Prisma.Hotel$seasonalRatesArgs<ExtArgs>
+  maintenanceAssets?: boolean | Prisma.Hotel$maintenanceAssetsArgs<ExtArgs>
+  lostAndFound?: boolean | Prisma.Hotel$lostAndFoundArgs<ExtArgs>
+  surroundings?: boolean | Prisma.Hotel$surroundingsArgs<ExtArgs>
+  photos?: boolean | Prisma.Hotel$photosArgs<ExtArgs>
+  _count?: boolean | Prisma.HotelCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HotelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
@@ -694,6 +2801,16 @@ export type $HotelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Hotel"
   objects: {
     organization: Prisma.$OrganizationPayload<ExtArgs>
+    roomTypes: Prisma.$RoomTypePayload<ExtArgs>[]
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
+    translations: Prisma.$HotelTranslationPayload<ExtArgs>[]
+    facilities: Prisma.$PropertyFacilityPayload<ExtArgs>[]
+    ratePlans: Prisma.$RatePlanPayload<ExtArgs>[]
+    seasonalRates: Prisma.$SeasonalRatePayload<ExtArgs>[]
+    maintenanceAssets: Prisma.$MaintenanceAssetPayload<ExtArgs>[]
+    lostAndFound: Prisma.$LostAndFoundItemPayload<ExtArgs>[]
+    surroundings: Prisma.$PropertySurroundingPayload<ExtArgs>[]
+    photos: Prisma.$PropertyPhotoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -702,6 +2819,14 @@ export type $HotelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     code: string
     timezone: string
     currency: string
+    propertyType: string | null
+    starRating: number | null
+    address: string | null
+    lat: runtime.Decimal | null
+    lng: runtime.Decimal | null
+    checkInTime: string | null
+    checkOutTime: string | null
+    status: string
     deletedAt: Date | null
     createdBy: string | null
     updatedBy: string | null
@@ -1102,6 +3227,16 @@ readonly fields: HotelFieldRefs;
 export interface Prisma__HotelClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  roomTypes<T extends Prisma.Hotel$roomTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$roomTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoomTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookings<T extends Prisma.Hotel$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  translations<T extends Prisma.Hotel$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  facilities<T extends Prisma.Hotel$facilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$facilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PropertyFacilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ratePlans<T extends Prisma.Hotel$ratePlansArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$ratePlansArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RatePlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  seasonalRates<T extends Prisma.Hotel$seasonalRatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$seasonalRatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SeasonalRatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  maintenanceAssets<T extends Prisma.Hotel$maintenanceAssetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$maintenanceAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaintenanceAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  lostAndFound<T extends Prisma.Hotel$lostAndFoundArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$lostAndFoundArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LostAndFoundItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  surroundings<T extends Prisma.Hotel$surroundingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$surroundingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PropertySurroundingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  photos<T extends Prisma.Hotel$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hotel$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PropertyPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1137,6 +3272,14 @@ export interface HotelFieldRefs {
   readonly code: Prisma.FieldRef<"Hotel", 'String'>
   readonly timezone: Prisma.FieldRef<"Hotel", 'String'>
   readonly currency: Prisma.FieldRef<"Hotel", 'String'>
+  readonly propertyType: Prisma.FieldRef<"Hotel", 'String'>
+  readonly starRating: Prisma.FieldRef<"Hotel", 'Int'>
+  readonly address: Prisma.FieldRef<"Hotel", 'String'>
+  readonly lat: Prisma.FieldRef<"Hotel", 'Decimal'>
+  readonly lng: Prisma.FieldRef<"Hotel", 'Decimal'>
+  readonly checkInTime: Prisma.FieldRef<"Hotel", 'String'>
+  readonly checkOutTime: Prisma.FieldRef<"Hotel", 'String'>
+  readonly status: Prisma.FieldRef<"Hotel", 'String'>
   readonly deletedAt: Prisma.FieldRef<"Hotel", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"Hotel", 'String'>
   readonly updatedBy: Prisma.FieldRef<"Hotel", 'String'>
@@ -1540,6 +3683,246 @@ export type HotelDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Hotels to delete.
    */
   limit?: number
+}
+
+/**
+ * Hotel.roomTypes
+ */
+export type Hotel$roomTypesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RoomType
+   */
+  select?: Prisma.RoomTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RoomType
+   */
+  omit?: Prisma.RoomTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoomTypeInclude<ExtArgs> | null
+  where?: Prisma.RoomTypeWhereInput
+  orderBy?: Prisma.RoomTypeOrderByWithRelationInput | Prisma.RoomTypeOrderByWithRelationInput[]
+  cursor?: Prisma.RoomTypeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoomTypeScalarFieldEnum | Prisma.RoomTypeScalarFieldEnum[]
+}
+
+/**
+ * Hotel.bookings
+ */
+export type Hotel$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * Hotel.translations
+ */
+export type Hotel$translationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HotelTranslation
+   */
+  select?: Prisma.HotelTranslationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HotelTranslation
+   */
+  omit?: Prisma.HotelTranslationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HotelTranslationInclude<ExtArgs> | null
+  where?: Prisma.HotelTranslationWhereInput
+  orderBy?: Prisma.HotelTranslationOrderByWithRelationInput | Prisma.HotelTranslationOrderByWithRelationInput[]
+  cursor?: Prisma.HotelTranslationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HotelTranslationScalarFieldEnum | Prisma.HotelTranslationScalarFieldEnum[]
+}
+
+/**
+ * Hotel.facilities
+ */
+export type Hotel$facilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PropertyFacility
+   */
+  select?: Prisma.PropertyFacilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PropertyFacility
+   */
+  omit?: Prisma.PropertyFacilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PropertyFacilityInclude<ExtArgs> | null
+  where?: Prisma.PropertyFacilityWhereInput
+  orderBy?: Prisma.PropertyFacilityOrderByWithRelationInput | Prisma.PropertyFacilityOrderByWithRelationInput[]
+  cursor?: Prisma.PropertyFacilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PropertyFacilityScalarFieldEnum | Prisma.PropertyFacilityScalarFieldEnum[]
+}
+
+/**
+ * Hotel.ratePlans
+ */
+export type Hotel$ratePlansArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RatePlan
+   */
+  select?: Prisma.RatePlanSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RatePlan
+   */
+  omit?: Prisma.RatePlanOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RatePlanInclude<ExtArgs> | null
+  where?: Prisma.RatePlanWhereInput
+  orderBy?: Prisma.RatePlanOrderByWithRelationInput | Prisma.RatePlanOrderByWithRelationInput[]
+  cursor?: Prisma.RatePlanWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RatePlanScalarFieldEnum | Prisma.RatePlanScalarFieldEnum[]
+}
+
+/**
+ * Hotel.seasonalRates
+ */
+export type Hotel$seasonalRatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SeasonalRate
+   */
+  select?: Prisma.SeasonalRateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SeasonalRate
+   */
+  omit?: Prisma.SeasonalRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SeasonalRateInclude<ExtArgs> | null
+  where?: Prisma.SeasonalRateWhereInput
+  orderBy?: Prisma.SeasonalRateOrderByWithRelationInput | Prisma.SeasonalRateOrderByWithRelationInput[]
+  cursor?: Prisma.SeasonalRateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SeasonalRateScalarFieldEnum | Prisma.SeasonalRateScalarFieldEnum[]
+}
+
+/**
+ * Hotel.maintenanceAssets
+ */
+export type Hotel$maintenanceAssetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaintenanceAsset
+   */
+  select?: Prisma.MaintenanceAssetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaintenanceAsset
+   */
+  omit?: Prisma.MaintenanceAssetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaintenanceAssetInclude<ExtArgs> | null
+  where?: Prisma.MaintenanceAssetWhereInput
+  orderBy?: Prisma.MaintenanceAssetOrderByWithRelationInput | Prisma.MaintenanceAssetOrderByWithRelationInput[]
+  cursor?: Prisma.MaintenanceAssetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaintenanceAssetScalarFieldEnum | Prisma.MaintenanceAssetScalarFieldEnum[]
+}
+
+/**
+ * Hotel.lostAndFound
+ */
+export type Hotel$lostAndFoundArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LostAndFoundItem
+   */
+  select?: Prisma.LostAndFoundItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LostAndFoundItem
+   */
+  omit?: Prisma.LostAndFoundItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LostAndFoundItemInclude<ExtArgs> | null
+  where?: Prisma.LostAndFoundItemWhereInput
+  orderBy?: Prisma.LostAndFoundItemOrderByWithRelationInput | Prisma.LostAndFoundItemOrderByWithRelationInput[]
+  cursor?: Prisma.LostAndFoundItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LostAndFoundItemScalarFieldEnum | Prisma.LostAndFoundItemScalarFieldEnum[]
+}
+
+/**
+ * Hotel.surroundings
+ */
+export type Hotel$surroundingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PropertySurrounding
+   */
+  select?: Prisma.PropertySurroundingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PropertySurrounding
+   */
+  omit?: Prisma.PropertySurroundingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PropertySurroundingInclude<ExtArgs> | null
+  where?: Prisma.PropertySurroundingWhereInput
+  orderBy?: Prisma.PropertySurroundingOrderByWithRelationInput | Prisma.PropertySurroundingOrderByWithRelationInput[]
+  cursor?: Prisma.PropertySurroundingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PropertySurroundingScalarFieldEnum | Prisma.PropertySurroundingScalarFieldEnum[]
+}
+
+/**
+ * Hotel.photos
+ */
+export type Hotel$photosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PropertyPhoto
+   */
+  select?: Prisma.PropertyPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PropertyPhoto
+   */
+  omit?: Prisma.PropertyPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PropertyPhotoInclude<ExtArgs> | null
+  where?: Prisma.PropertyPhotoWhereInput
+  orderBy?: Prisma.PropertyPhotoOrderByWithRelationInput | Prisma.PropertyPhotoOrderByWithRelationInput[]
+  cursor?: Prisma.PropertyPhotoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PropertyPhotoScalarFieldEnum | Prisma.PropertyPhotoScalarFieldEnum[]
 }
 
 /**

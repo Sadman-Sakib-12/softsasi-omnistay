@@ -30,6 +30,7 @@ export type OrganizationMinAggregateOutputType = {
   slug: string | null
   domain: string | null
   subdomain: string | null
+  planId: string | null
   status: string | null
   deletedAt: Date | null
   createdBy: string | null
@@ -44,6 +45,7 @@ export type OrganizationMaxAggregateOutputType = {
   slug: string | null
   domain: string | null
   subdomain: string | null
+  planId: string | null
   status: string | null
   deletedAt: Date | null
   createdBy: string | null
@@ -58,6 +60,7 @@ export type OrganizationCountAggregateOutputType = {
   slug: number
   domain: number
   subdomain: number
+  planId: number
   status: number
   deletedAt: number
   createdBy: number
@@ -74,6 +77,7 @@ export type OrganizationMinAggregateInputType = {
   slug?: true
   domain?: true
   subdomain?: true
+  planId?: true
   status?: true
   deletedAt?: true
   createdBy?: true
@@ -88,6 +92,7 @@ export type OrganizationMaxAggregateInputType = {
   slug?: true
   domain?: true
   subdomain?: true
+  planId?: true
   status?: true
   deletedAt?: true
   createdBy?: true
@@ -102,6 +107,7 @@ export type OrganizationCountAggregateInputType = {
   slug?: true
   domain?: true
   subdomain?: true
+  planId?: true
   status?: true
   deletedAt?: true
   createdBy?: true
@@ -189,6 +195,7 @@ export type OrganizationGroupByOutputType = {
   slug: string
   domain: string | null
   subdomain: string | null
+  planId: string | null
   status: string
   deletedAt: Date | null
   createdBy: string | null
@@ -224,6 +231,7 @@ export type OrganizationWhereInput = {
   slug?: Prisma.StringFilter<"Organization"> | string
   domain?: Prisma.StringNullableFilter<"Organization"> | string | null
   subdomain?: Prisma.StringNullableFilter<"Organization"> | string | null
+  planId?: Prisma.UuidNullableFilter<"Organization"> | string | null
   status?: Prisma.StringFilter<"Organization"> | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
   createdBy?: Prisma.UuidNullableFilter<"Organization"> | string | null
@@ -233,6 +241,21 @@ export type OrganizationWhereInput = {
   memberships?: Prisma.MembershipListRelationFilter
   roles?: Prisma.RoleListRelationFilter
   hotels?: Prisma.HotelListRelationFilter
+  users?: Prisma.UserListRelationFilter
+  activityLogs?: Prisma.ActivityLogListRelationFilter
+  ipRestrictions?: Prisma.IpRestrictionListRelationFilter
+  webhooks?: Prisma.WebhookListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
+  chartOfAccounts?: Prisma.ChartOfAccountListRelationFilter
+  journalEntries?: Prisma.JournalEntryListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
+  bills?: Prisma.BillListRelationFilter
+  bankAccounts?: Prisma.BankAccountListRelationFilter
+  webhookDeliveries?: Prisma.WebhookDeliveryListRelationFilter
+  planRequests?: Prisma.PlanRequestListRelationFilter
+  subscriptionOrders?: Prisma.SubscriptionOrderListRelationFilter
+  tenantSettings?: Prisma.TenantSettingListRelationFilter
+  securityAuditLogs?: Prisma.SecurityAuditLogListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -241,6 +264,7 @@ export type OrganizationOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrderInput | Prisma.SortOrder
   subdomain?: Prisma.SortOrderInput | Prisma.SortOrder
+  planId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -250,6 +274,21 @@ export type OrganizationOrderByWithRelationInput = {
   memberships?: Prisma.MembershipOrderByRelationAggregateInput
   roles?: Prisma.RoleOrderByRelationAggregateInput
   hotels?: Prisma.HotelOrderByRelationAggregateInput
+  users?: Prisma.UserOrderByRelationAggregateInput
+  activityLogs?: Prisma.ActivityLogOrderByRelationAggregateInput
+  ipRestrictions?: Prisma.IpRestrictionOrderByRelationAggregateInput
+  webhooks?: Prisma.WebhookOrderByRelationAggregateInput
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
+  chartOfAccounts?: Prisma.ChartOfAccountOrderByRelationAggregateInput
+  journalEntries?: Prisma.JournalEntryOrderByRelationAggregateInput
+  invoices?: Prisma.InvoiceOrderByRelationAggregateInput
+  bills?: Prisma.BillOrderByRelationAggregateInput
+  bankAccounts?: Prisma.BankAccountOrderByRelationAggregateInput
+  webhookDeliveries?: Prisma.WebhookDeliveryOrderByRelationAggregateInput
+  planRequests?: Prisma.PlanRequestOrderByRelationAggregateInput
+  subscriptionOrders?: Prisma.SubscriptionOrderOrderByRelationAggregateInput
+  tenantSettings?: Prisma.TenantSettingOrderByRelationAggregateInput
+  securityAuditLogs?: Prisma.SecurityAuditLogOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -261,6 +300,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Organization"> | string
   domain?: Prisma.StringNullableFilter<"Organization"> | string | null
   subdomain?: Prisma.StringNullableFilter<"Organization"> | string | null
+  planId?: Prisma.UuidNullableFilter<"Organization"> | string | null
   status?: Prisma.StringFilter<"Organization"> | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
   createdBy?: Prisma.UuidNullableFilter<"Organization"> | string | null
@@ -270,6 +310,21 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   memberships?: Prisma.MembershipListRelationFilter
   roles?: Prisma.RoleListRelationFilter
   hotels?: Prisma.HotelListRelationFilter
+  users?: Prisma.UserListRelationFilter
+  activityLogs?: Prisma.ActivityLogListRelationFilter
+  ipRestrictions?: Prisma.IpRestrictionListRelationFilter
+  webhooks?: Prisma.WebhookListRelationFilter
+  bookings?: Prisma.BookingListRelationFilter
+  chartOfAccounts?: Prisma.ChartOfAccountListRelationFilter
+  journalEntries?: Prisma.JournalEntryListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
+  bills?: Prisma.BillListRelationFilter
+  bankAccounts?: Prisma.BankAccountListRelationFilter
+  webhookDeliveries?: Prisma.WebhookDeliveryListRelationFilter
+  planRequests?: Prisma.PlanRequestListRelationFilter
+  subscriptionOrders?: Prisma.SubscriptionOrderListRelationFilter
+  tenantSettings?: Prisma.TenantSettingListRelationFilter
+  securityAuditLogs?: Prisma.SecurityAuditLogListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -278,6 +333,7 @@ export type OrganizationOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrderInput | Prisma.SortOrder
   subdomain?: Prisma.SortOrderInput | Prisma.SortOrder
+  planId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -298,6 +354,7 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   domain?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   subdomain?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
+  planId?: Prisma.UuidNullableWithAggregatesFilter<"Organization"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
   createdBy?: Prisma.UuidNullableWithAggregatesFilter<"Organization"> | string | null
@@ -312,6 +369,7 @@ export type OrganizationCreateInput = {
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -321,6 +379,21 @@ export type OrganizationCreateInput = {
   memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
   roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
   hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -329,6 +402,7 @@ export type OrganizationUncheckedCreateInput = {
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -338,6 +412,21 @@ export type OrganizationUncheckedCreateInput = {
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
   hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
 }
 
 export type OrganizationUpdateInput = {
@@ -346,6 +435,7 @@ export type OrganizationUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -355,6 +445,21 @@ export type OrganizationUpdateInput = {
   memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
   roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
   hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -363,6 +468,7 @@ export type OrganizationUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -372,6 +478,21 @@ export type OrganizationUncheckedUpdateInput = {
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
   roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
   hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -380,6 +501,7 @@ export type OrganizationCreateManyInput = {
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -394,6 +516,7 @@ export type OrganizationUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -408,6 +531,7 @@ export type OrganizationUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -416,12 +540,23 @@ export type OrganizationUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type OrganizationScalarRelationFilter = {
+  is?: Prisma.OrganizationWhereInput
+  isNot?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationNullableScalarRelationFilter = {
+  is?: Prisma.OrganizationWhereInput | null
+  isNot?: Prisma.OrganizationWhereInput | null
+}
+
 export type OrganizationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrder
   subdomain?: Prisma.SortOrder
+  planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -436,6 +571,7 @@ export type OrganizationMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrder
   subdomain?: Prisma.SortOrder
+  planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -450,6 +586,7 @@ export type OrganizationMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   domain?: Prisma.SortOrder
   subdomain?: Prisma.SortOrder
+  planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
@@ -458,37 +595,88 @@ export type OrganizationMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type OrganizationScalarRelationFilter = {
-  is?: Prisma.OrganizationWhereInput
-  isNot?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationCreateNestedOneWithoutRolesInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutRolesInput
+export type OrganizationCreateNestedOneWithoutChartOfAccountsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutChartOfAccountsInput, Prisma.OrganizationUncheckedCreateWithoutChartOfAccountsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutChartOfAccountsInput
   connect?: Prisma.OrganizationWhereUniqueInput
 }
 
-export type OrganizationUpdateOneRequiredWithoutRolesNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutRolesInput
-  upsert?: Prisma.OrganizationUpsertWithoutRolesInput
+export type OrganizationUpdateOneRequiredWithoutChartOfAccountsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutChartOfAccountsInput, Prisma.OrganizationUncheckedCreateWithoutChartOfAccountsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutChartOfAccountsInput
+  upsert?: Prisma.OrganizationUpsertWithoutChartOfAccountsInput
   connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutRolesInput, Prisma.OrganizationUpdateWithoutRolesInput>, Prisma.OrganizationUncheckedUpdateWithoutRolesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutChartOfAccountsInput, Prisma.OrganizationUpdateWithoutChartOfAccountsInput>, Prisma.OrganizationUncheckedUpdateWithoutChartOfAccountsInput>
 }
 
-export type OrganizationCreateNestedOneWithoutMembershipsInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembershipsInput
+export type OrganizationCreateNestedOneWithoutJournalEntriesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutJournalEntriesInput, Prisma.OrganizationUncheckedCreateWithoutJournalEntriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutJournalEntriesInput
   connect?: Prisma.OrganizationWhereUniqueInput
 }
 
-export type OrganizationUpdateOneRequiredWithoutMembershipsNestedInput = {
-  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
-  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembershipsInput
-  upsert?: Prisma.OrganizationUpsertWithoutMembershipsInput
+export type OrganizationUpdateOneRequiredWithoutJournalEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutJournalEntriesInput, Prisma.OrganizationUncheckedCreateWithoutJournalEntriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutJournalEntriesInput
+  upsert?: Prisma.OrganizationUpsertWithoutJournalEntriesInput
   connect?: Prisma.OrganizationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutMembershipsInput, Prisma.OrganizationUpdateWithoutMembershipsInput>, Prisma.OrganizationUncheckedUpdateWithoutMembershipsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutJournalEntriesInput, Prisma.OrganizationUpdateWithoutJournalEntriesInput>, Prisma.OrganizationUncheckedUpdateWithoutJournalEntriesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvoicesInput, Prisma.OrganizationUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutInvoicesInput, Prisma.OrganizationUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.OrganizationUpsertWithoutInvoicesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvoicesInput, Prisma.OrganizationUpdateWithoutInvoicesInput>, Prisma.OrganizationUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutBillsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBillsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutBillsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBillsInput
+  upsert?: Prisma.OrganizationUpsertWithoutBillsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBillsInput, Prisma.OrganizationUpdateWithoutBillsInput>, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutBankAccountsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBankAccountsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutBankAccountsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBankAccountsInput
+  upsert?: Prisma.OrganizationUpsertWithoutBankAccountsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBankAccountsInput, Prisma.OrganizationUpdateWithoutBankAccountsInput>, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBookingsInput, Prisma.OrganizationUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutBookingsInput, Prisma.OrganizationUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.OrganizationUpsertWithoutBookingsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutBookingsInput, Prisma.OrganizationUpdateWithoutBookingsInput>, Prisma.OrganizationUncheckedUpdateWithoutBookingsInput>
 }
 
 export type OrganizationCreateNestedOneWithoutHotelsInput = {
@@ -505,12 +693,171 @@ export type OrganizationUpdateOneRequiredWithoutHotelsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutHotelsInput, Prisma.OrganizationUpdateWithoutHotelsInput>, Prisma.OrganizationUncheckedUpdateWithoutHotelsInput>
 }
 
-export type OrganizationCreateWithoutRolesInput = {
+export type OrganizationCreateNestedOneWithoutUsersInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutUsersInput, Prisma.OrganizationUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutUsersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneWithoutUsersNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutUsersInput, Prisma.OrganizationUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutUsersInput
+  upsert?: Prisma.OrganizationUpsertWithoutUsersInput
+  disconnect?: Prisma.OrganizationWhereInput | boolean
+  delete?: Prisma.OrganizationWhereInput | boolean
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutUsersInput, Prisma.OrganizationUpdateWithoutUsersInput>, Prisma.OrganizationUncheckedUpdateWithoutUsersInput>
+}
+
+export type OrganizationCreateNestedOneWithoutRolesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutRolesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutRolesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutRolesInput
+  upsert?: Prisma.OrganizationUpsertWithoutRolesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutRolesInput, Prisma.OrganizationUpdateWithoutRolesInput>, Prisma.OrganizationUncheckedUpdateWithoutRolesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutActivityLogsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutActivityLogsInput, Prisma.OrganizationUncheckedCreateWithoutActivityLogsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutActivityLogsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutActivityLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutActivityLogsInput, Prisma.OrganizationUncheckedCreateWithoutActivityLogsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutActivityLogsInput
+  upsert?: Prisma.OrganizationUpsertWithoutActivityLogsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutActivityLogsInput, Prisma.OrganizationUpdateWithoutActivityLogsInput>, Prisma.OrganizationUncheckedUpdateWithoutActivityLogsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutIpRestrictionsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutIpRestrictionsInput, Prisma.OrganizationUncheckedCreateWithoutIpRestrictionsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutIpRestrictionsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutIpRestrictionsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutIpRestrictionsInput, Prisma.OrganizationUncheckedCreateWithoutIpRestrictionsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutIpRestrictionsInput
+  upsert?: Prisma.OrganizationUpsertWithoutIpRestrictionsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutIpRestrictionsInput, Prisma.OrganizationUpdateWithoutIpRestrictionsInput>, Prisma.OrganizationUncheckedUpdateWithoutIpRestrictionsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutSecurityAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSecurityAuditLogsInput, Prisma.OrganizationUncheckedCreateWithoutSecurityAuditLogsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSecurityAuditLogsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneWithoutSecurityAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSecurityAuditLogsInput, Prisma.OrganizationUncheckedCreateWithoutSecurityAuditLogsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSecurityAuditLogsInput
+  upsert?: Prisma.OrganizationUpsertWithoutSecurityAuditLogsInput
+  disconnect?: Prisma.OrganizationWhereInput | boolean
+  delete?: Prisma.OrganizationWhereInput | boolean
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutSecurityAuditLogsInput, Prisma.OrganizationUpdateWithoutSecurityAuditLogsInput>, Prisma.OrganizationUncheckedUpdateWithoutSecurityAuditLogsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutMembershipsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembershipsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembershipsInput
+  upsert?: Prisma.OrganizationUpsertWithoutMembershipsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutMembershipsInput, Prisma.OrganizationUpdateWithoutMembershipsInput>, Prisma.OrganizationUncheckedUpdateWithoutMembershipsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutTenantSettingsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTenantSettingsInput, Prisma.OrganizationUncheckedCreateWithoutTenantSettingsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTenantSettingsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutTenantSettingsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTenantSettingsInput, Prisma.OrganizationUncheckedCreateWithoutTenantSettingsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTenantSettingsInput
+  upsert?: Prisma.OrganizationUpsertWithoutTenantSettingsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTenantSettingsInput, Prisma.OrganizationUpdateWithoutTenantSettingsInput>, Prisma.OrganizationUncheckedUpdateWithoutTenantSettingsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutSubscriptionOrdersInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSubscriptionOrdersInput, Prisma.OrganizationUncheckedCreateWithoutSubscriptionOrdersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSubscriptionOrdersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutSubscriptionOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSubscriptionOrdersInput, Prisma.OrganizationUncheckedCreateWithoutSubscriptionOrdersInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSubscriptionOrdersInput
+  upsert?: Prisma.OrganizationUpsertWithoutSubscriptionOrdersInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutSubscriptionOrdersInput, Prisma.OrganizationUpdateWithoutSubscriptionOrdersInput>, Prisma.OrganizationUncheckedUpdateWithoutSubscriptionOrdersInput>
+}
+
+export type OrganizationCreateNestedOneWithoutPlanRequestsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlanRequestsInput, Prisma.OrganizationUncheckedCreateWithoutPlanRequestsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlanRequestsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutPlanRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlanRequestsInput, Prisma.OrganizationUncheckedCreateWithoutPlanRequestsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlanRequestsInput
+  upsert?: Prisma.OrganizationUpsertWithoutPlanRequestsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPlanRequestsInput, Prisma.OrganizationUpdateWithoutPlanRequestsInput>, Prisma.OrganizationUncheckedUpdateWithoutPlanRequestsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutWebhooksInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhooksInput, Prisma.OrganizationUncheckedCreateWithoutWebhooksInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutWebhooksInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutWebhooksNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhooksInput, Prisma.OrganizationUncheckedCreateWithoutWebhooksInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutWebhooksInput
+  upsert?: Prisma.OrganizationUpsertWithoutWebhooksInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutWebhooksInput, Prisma.OrganizationUpdateWithoutWebhooksInput>, Prisma.OrganizationUncheckedUpdateWithoutWebhooksInput>
+}
+
+export type OrganizationCreateNestedOneWithoutWebhookDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhookDeliveriesInput, Prisma.OrganizationUncheckedCreateWithoutWebhookDeliveriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutWebhookDeliveriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutWebhookDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhookDeliveriesInput, Prisma.OrganizationUncheckedCreateWithoutWebhookDeliveriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutWebhookDeliveriesInput
+  upsert?: Prisma.OrganizationUpsertWithoutWebhookDeliveriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutWebhookDeliveriesInput, Prisma.OrganizationUpdateWithoutWebhookDeliveriesInput>, Prisma.OrganizationUncheckedUpdateWithoutWebhookDeliveriesInput>
+}
+
+export type OrganizationCreateWithoutChartOfAccountsInput = {
   id?: string
   name: string
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -518,15 +865,31 @@ export type OrganizationCreateWithoutRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
   hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
 }
 
-export type OrganizationUncheckedCreateWithoutRolesInput = {
+export type OrganizationUncheckedCreateWithoutChartOfAccountsInput = {
   id?: string
   name: string
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -534,31 +897,47 @@ export type OrganizationUncheckedCreateWithoutRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
   hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
 }
 
-export type OrganizationCreateOrConnectWithoutRolesInput = {
+export type OrganizationCreateOrConnectWithoutChartOfAccountsInput = {
   where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutChartOfAccountsInput, Prisma.OrganizationUncheckedCreateWithoutChartOfAccountsInput>
 }
 
-export type OrganizationUpsertWithoutRolesInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutRolesInput, Prisma.OrganizationUncheckedUpdateWithoutRolesInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
+export type OrganizationUpsertWithoutChartOfAccountsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutChartOfAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutChartOfAccountsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutChartOfAccountsInput, Prisma.OrganizationUncheckedCreateWithoutChartOfAccountsInput>
   where?: Prisma.OrganizationWhereInput
 }
 
-export type OrganizationUpdateToOneWithWhereWithoutRolesInput = {
+export type OrganizationUpdateToOneWithWhereWithoutChartOfAccountsInput = {
   where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutRolesInput, Prisma.OrganizationUncheckedUpdateWithoutRolesInput>
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutChartOfAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutChartOfAccountsInput>
 }
 
-export type OrganizationUpdateWithoutRolesInput = {
+export type OrganizationUpdateWithoutChartOfAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -566,15 +945,31 @@ export type OrganizationUpdateWithoutRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
   hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
 }
 
-export type OrganizationUncheckedUpdateWithoutRolesInput = {
+export type OrganizationUncheckedUpdateWithoutChartOfAccountsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -582,87 +977,742 @@ export type OrganizationUncheckedUpdateWithoutRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
-  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationCreateWithoutMembershipsInput = {
-  id?: string
-  name: string
-  slug: string
-  domain?: string | null
-  subdomain?: string | null
-  status?: string
-  deletedAt?: Date | string | null
-  createdBy?: string | null
-  updatedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
-  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationUncheckedCreateWithoutMembershipsInput = {
-  id?: string
-  name: string
-  slug: string
-  domain?: string | null
-  subdomain?: string | null
-  status?: string
-  deletedAt?: Date | string | null
-  createdBy?: string | null
-  updatedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
-  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
-}
-
-export type OrganizationCreateOrConnectWithoutMembershipsInput = {
-  where: Prisma.OrganizationWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
-}
-
-export type OrganizationUpsertWithoutMembershipsInput = {
-  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutMembershipsInput, Prisma.OrganizationUncheckedUpdateWithoutMembershipsInput>
-  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
-  where?: Prisma.OrganizationWhereInput
-}
-
-export type OrganizationUpdateToOneWithWhereWithoutMembershipsInput = {
-  where?: Prisma.OrganizationWhereInput
-  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutMembershipsInput, Prisma.OrganizationUncheckedUpdateWithoutMembershipsInput>
-}
-
-export type OrganizationUpdateWithoutMembershipsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
-  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
-}
-
-export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
   hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutJournalEntriesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutJournalEntriesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutJournalEntriesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutJournalEntriesInput, Prisma.OrganizationUncheckedCreateWithoutJournalEntriesInput>
+}
+
+export type OrganizationUpsertWithoutJournalEntriesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutJournalEntriesInput, Prisma.OrganizationUncheckedUpdateWithoutJournalEntriesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutJournalEntriesInput, Prisma.OrganizationUncheckedCreateWithoutJournalEntriesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutJournalEntriesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutJournalEntriesInput, Prisma.OrganizationUncheckedUpdateWithoutJournalEntriesInput>
+}
+
+export type OrganizationUpdateWithoutJournalEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutJournalEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutInvoicesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutInvoicesInput, Prisma.OrganizationUncheckedCreateWithoutInvoicesInput>
+}
+
+export type OrganizationUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutInvoicesInput, Prisma.OrganizationUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutInvoicesInput, Prisma.OrganizationUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutInvoicesInput, Prisma.OrganizationUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type OrganizationUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutBillsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutBillsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutBillsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+}
+
+export type OrganizationUpsertWithoutBillsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBillsInput, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBillsInput, Prisma.OrganizationUncheckedCreateWithoutBillsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutBillsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBillsInput, Prisma.OrganizationUncheckedUpdateWithoutBillsInput>
+}
+
+export type OrganizationUpdateWithoutBillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutBillsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutBankAccountsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutBankAccountsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutBankAccountsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
+}
+
+export type OrganizationUpsertWithoutBankAccountsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBankAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBankAccountsInput, Prisma.OrganizationUncheckedCreateWithoutBankAccountsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutBankAccountsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBankAccountsInput, Prisma.OrganizationUncheckedUpdateWithoutBankAccountsInput>
+}
+
+export type OrganizationUpdateWithoutBankAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutBankAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutBookingsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutBookingsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBookingsInput, Prisma.OrganizationUncheckedCreateWithoutBookingsInput>
+}
+
+export type OrganizationUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutBookingsInput, Prisma.OrganizationUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutBookingsInput, Prisma.OrganizationUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutBookingsInput, Prisma.OrganizationUncheckedUpdateWithoutBookingsInput>
+}
+
+export type OrganizationUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 export type OrganizationCreateWithoutHotelsInput = {
@@ -671,6 +1721,7 @@ export type OrganizationCreateWithoutHotelsInput = {
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -679,6 +1730,21 @@ export type OrganizationCreateWithoutHotelsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
   roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
 }
 
 export type OrganizationUncheckedCreateWithoutHotelsInput = {
@@ -687,6 +1753,7 @@ export type OrganizationUncheckedCreateWithoutHotelsInput = {
   slug: string
   domain?: string | null
   subdomain?: string | null
+  planId?: string | null
   status?: string
   deletedAt?: Date | string | null
   createdBy?: string | null
@@ -695,6 +1762,21 @@ export type OrganizationUncheckedCreateWithoutHotelsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
 }
 
 export type OrganizationCreateOrConnectWithoutHotelsInput = {
@@ -719,6 +1801,7 @@ export type OrganizationUpdateWithoutHotelsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -727,6 +1810,21 @@ export type OrganizationUpdateWithoutHotelsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
   roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutHotelsInput = {
@@ -735,6 +1833,7 @@ export type OrganizationUncheckedUpdateWithoutHotelsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -743,6 +1842,1605 @@ export type OrganizationUncheckedUpdateWithoutHotelsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
   roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutUsersInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutUsersInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutUsersInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutUsersInput, Prisma.OrganizationUncheckedCreateWithoutUsersInput>
+}
+
+export type OrganizationUpsertWithoutUsersInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutUsersInput, Prisma.OrganizationUncheckedUpdateWithoutUsersInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutUsersInput, Prisma.OrganizationUncheckedCreateWithoutUsersInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutUsersInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutUsersInput, Prisma.OrganizationUncheckedUpdateWithoutUsersInput>
+}
+
+export type OrganizationUpdateWithoutUsersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutUsersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutRolesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutRolesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutRolesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
+}
+
+export type OrganizationUpsertWithoutRolesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutRolesInput, Prisma.OrganizationUncheckedUpdateWithoutRolesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutRolesInput, Prisma.OrganizationUncheckedCreateWithoutRolesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutRolesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutRolesInput, Prisma.OrganizationUncheckedUpdateWithoutRolesInput>
+}
+
+export type OrganizationUpdateWithoutRolesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutRolesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutActivityLogsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutActivityLogsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutActivityLogsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutActivityLogsInput, Prisma.OrganizationUncheckedCreateWithoutActivityLogsInput>
+}
+
+export type OrganizationUpsertWithoutActivityLogsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutActivityLogsInput, Prisma.OrganizationUncheckedUpdateWithoutActivityLogsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutActivityLogsInput, Prisma.OrganizationUncheckedCreateWithoutActivityLogsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutActivityLogsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutActivityLogsInput, Prisma.OrganizationUncheckedUpdateWithoutActivityLogsInput>
+}
+
+export type OrganizationUpdateWithoutActivityLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutActivityLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutIpRestrictionsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutIpRestrictionsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutIpRestrictionsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutIpRestrictionsInput, Prisma.OrganizationUncheckedCreateWithoutIpRestrictionsInput>
+}
+
+export type OrganizationUpsertWithoutIpRestrictionsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutIpRestrictionsInput, Prisma.OrganizationUncheckedUpdateWithoutIpRestrictionsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutIpRestrictionsInput, Prisma.OrganizationUncheckedCreateWithoutIpRestrictionsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutIpRestrictionsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutIpRestrictionsInput, Prisma.OrganizationUncheckedUpdateWithoutIpRestrictionsInput>
+}
+
+export type OrganizationUpdateWithoutIpRestrictionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutIpRestrictionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutSecurityAuditLogsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutSecurityAuditLogsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutSecurityAuditLogsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSecurityAuditLogsInput, Prisma.OrganizationUncheckedCreateWithoutSecurityAuditLogsInput>
+}
+
+export type OrganizationUpsertWithoutSecurityAuditLogsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutSecurityAuditLogsInput, Prisma.OrganizationUncheckedUpdateWithoutSecurityAuditLogsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSecurityAuditLogsInput, Prisma.OrganizationUncheckedCreateWithoutSecurityAuditLogsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutSecurityAuditLogsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutSecurityAuditLogsInput, Prisma.OrganizationUncheckedUpdateWithoutSecurityAuditLogsInput>
+}
+
+export type OrganizationUpdateWithoutSecurityAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutSecurityAuditLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutMembershipsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutMembershipsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutMembershipsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
+}
+
+export type OrganizationUpsertWithoutMembershipsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutMembershipsInput, Prisma.OrganizationUncheckedUpdateWithoutMembershipsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutMembershipsInput, Prisma.OrganizationUncheckedCreateWithoutMembershipsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutMembershipsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutMembershipsInput, Prisma.OrganizationUncheckedUpdateWithoutMembershipsInput>
+}
+
+export type OrganizationUpdateWithoutMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutTenantSettingsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutTenantSettingsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutTenantSettingsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTenantSettingsInput, Prisma.OrganizationUncheckedCreateWithoutTenantSettingsInput>
+}
+
+export type OrganizationUpsertWithoutTenantSettingsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTenantSettingsInput, Prisma.OrganizationUncheckedUpdateWithoutTenantSettingsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTenantSettingsInput, Prisma.OrganizationUncheckedCreateWithoutTenantSettingsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTenantSettingsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTenantSettingsInput, Prisma.OrganizationUncheckedUpdateWithoutTenantSettingsInput>
+}
+
+export type OrganizationUpdateWithoutTenantSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTenantSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutSubscriptionOrdersInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutSubscriptionOrdersInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutSubscriptionOrdersInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSubscriptionOrdersInput, Prisma.OrganizationUncheckedCreateWithoutSubscriptionOrdersInput>
+}
+
+export type OrganizationUpsertWithoutSubscriptionOrdersInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutSubscriptionOrdersInput, Prisma.OrganizationUncheckedUpdateWithoutSubscriptionOrdersInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSubscriptionOrdersInput, Prisma.OrganizationUncheckedCreateWithoutSubscriptionOrdersInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutSubscriptionOrdersInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutSubscriptionOrdersInput, Prisma.OrganizationUncheckedUpdateWithoutSubscriptionOrdersInput>
+}
+
+export type OrganizationUpdateWithoutSubscriptionOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutSubscriptionOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutPlanRequestsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutPlanRequestsInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutPlanRequestsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlanRequestsInput, Prisma.OrganizationUncheckedCreateWithoutPlanRequestsInput>
+}
+
+export type OrganizationUpsertWithoutPlanRequestsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlanRequestsInput, Prisma.OrganizationUncheckedUpdateWithoutPlanRequestsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlanRequestsInput, Prisma.OrganizationUncheckedCreateWithoutPlanRequestsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPlanRequestsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlanRequestsInput, Prisma.OrganizationUncheckedUpdateWithoutPlanRequestsInput>
+}
+
+export type OrganizationUpdateWithoutPlanRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPlanRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutWebhooksInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutWebhooksInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutWebhooksInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhooksInput, Prisma.OrganizationUncheckedCreateWithoutWebhooksInput>
+}
+
+export type OrganizationUpsertWithoutWebhooksInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutWebhooksInput, Prisma.OrganizationUncheckedUpdateWithoutWebhooksInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhooksInput, Prisma.OrganizationUncheckedCreateWithoutWebhooksInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutWebhooksInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutWebhooksInput, Prisma.OrganizationUncheckedUpdateWithoutWebhooksInput>
+}
+
+export type OrganizationUpdateWithoutWebhooksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutWebhooksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  webhookDeliveries?: Prisma.WebhookDeliveryUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationCreateWithoutWebhookDeliveriesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationUncheckedCreateWithoutWebhookDeliveriesInput = {
+  id?: string
+  name: string
+  slug: string
+  domain?: string | null
+  subdomain?: string | null
+  planId?: string | null
+  status?: string
+  deletedAt?: Date | string | null
+  createdBy?: string | null
+  updatedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutOrganizationInput
+  hotels?: Prisma.HotelUncheckedCreateNestedManyWithoutOrganizationInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutTenantInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedCreateNestedManyWithoutTenantInput
+  webhooks?: Prisma.WebhookUncheckedCreateNestedManyWithoutTenantInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutTenantInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedCreateNestedManyWithoutTenantInput
+  journalEntries?: Prisma.JournalEntryUncheckedCreateNestedManyWithoutTenantInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
+  bills?: Prisma.BillUncheckedCreateNestedManyWithoutTenantInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutTenantInput
+  planRequests?: Prisma.PlanRequestUncheckedCreateNestedManyWithoutTenantInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedCreateNestedManyWithoutTenantInput
+  tenantSettings?: Prisma.TenantSettingUncheckedCreateNestedManyWithoutTenantInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type OrganizationCreateOrConnectWithoutWebhookDeliveriesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhookDeliveriesInput, Prisma.OrganizationUncheckedCreateWithoutWebhookDeliveriesInput>
+}
+
+export type OrganizationUpsertWithoutWebhookDeliveriesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutWebhookDeliveriesInput, Prisma.OrganizationUncheckedUpdateWithoutWebhookDeliveriesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutWebhookDeliveriesInput, Prisma.OrganizationUncheckedCreateWithoutWebhookDeliveriesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutWebhookDeliveriesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutWebhookDeliveriesInput, Prisma.OrganizationUncheckedUpdateWithoutWebhookDeliveriesInput>
+}
+
+export type OrganizationUpdateWithoutWebhookDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUpdateManyWithoutTenantNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutWebhookDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subdomain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutOrganizationNestedInput
+  hotels?: Prisma.HotelUncheckedUpdateManyWithoutOrganizationNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutTenantNestedInput
+  ipRestrictions?: Prisma.IpRestrictionUncheckedUpdateManyWithoutTenantNestedInput
+  webhooks?: Prisma.WebhookUncheckedUpdateManyWithoutTenantNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutTenantNestedInput
+  chartOfAccounts?: Prisma.ChartOfAccountUncheckedUpdateManyWithoutTenantNestedInput
+  journalEntries?: Prisma.JournalEntryUncheckedUpdateManyWithoutTenantNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+  bills?: Prisma.BillUncheckedUpdateManyWithoutTenantNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutTenantNestedInput
+  planRequests?: Prisma.PlanRequestUncheckedUpdateManyWithoutTenantNestedInput
+  subscriptionOrders?: Prisma.SubscriptionOrderUncheckedUpdateManyWithoutTenantNestedInput
+  tenantSettings?: Prisma.TenantSettingUncheckedUpdateManyWithoutTenantNestedInput
+  securityAuditLogs?: Prisma.SecurityAuditLogUncheckedUpdateManyWithoutTenantNestedInput
 }
 
 
@@ -754,12 +3452,42 @@ export type OrganizationCountOutputType = {
   memberships: number
   roles: number
   hotels: number
+  users: number
+  activityLogs: number
+  ipRestrictions: number
+  webhooks: number
+  bookings: number
+  chartOfAccounts: number
+  journalEntries: number
+  invoices: number
+  bills: number
+  bankAccounts: number
+  webhookDeliveries: number
+  planRequests: number
+  subscriptionOrders: number
+  tenantSettings: number
+  securityAuditLogs: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | OrganizationCountOutputTypeCountMembershipsArgs
   roles?: boolean | OrganizationCountOutputTypeCountRolesArgs
   hotels?: boolean | OrganizationCountOutputTypeCountHotelsArgs
+  users?: boolean | OrganizationCountOutputTypeCountUsersArgs
+  activityLogs?: boolean | OrganizationCountOutputTypeCountActivityLogsArgs
+  ipRestrictions?: boolean | OrganizationCountOutputTypeCountIpRestrictionsArgs
+  webhooks?: boolean | OrganizationCountOutputTypeCountWebhooksArgs
+  bookings?: boolean | OrganizationCountOutputTypeCountBookingsArgs
+  chartOfAccounts?: boolean | OrganizationCountOutputTypeCountChartOfAccountsArgs
+  journalEntries?: boolean | OrganizationCountOutputTypeCountJournalEntriesArgs
+  invoices?: boolean | OrganizationCountOutputTypeCountInvoicesArgs
+  bills?: boolean | OrganizationCountOutputTypeCountBillsArgs
+  bankAccounts?: boolean | OrganizationCountOutputTypeCountBankAccountsArgs
+  webhookDeliveries?: boolean | OrganizationCountOutputTypeCountWebhookDeliveriesArgs
+  planRequests?: boolean | OrganizationCountOutputTypeCountPlanRequestsArgs
+  subscriptionOrders?: boolean | OrganizationCountOutputTypeCountSubscriptionOrdersArgs
+  tenantSettings?: boolean | OrganizationCountOutputTypeCountTenantSettingsArgs
+  securityAuditLogs?: boolean | OrganizationCountOutputTypeCountSecurityAuditLogsArgs
 }
 
 /**
@@ -793,6 +3521,111 @@ export type OrganizationCountOutputTypeCountHotelsArgs<ExtArgs extends runtime.T
   where?: Prisma.HotelWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountActivityLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ActivityLogWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountIpRestrictionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IpRestrictionWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountWebhooksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WebhookWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountChartOfAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChartOfAccountWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountJournalEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JournalEntryWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountBillsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BillWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountBankAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BankAccountWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountWebhookDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WebhookDeliveryWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountPlanRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlanRequestWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountSubscriptionOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SubscriptionOrderWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountTenantSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TenantSettingWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountSecurityAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SecurityAuditLogWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -800,6 +3633,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   slug?: boolean
   domain?: boolean
   subdomain?: boolean
+  planId?: boolean
   status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
@@ -809,6 +3643,21 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   memberships?: boolean | Prisma.Organization$membershipsArgs<ExtArgs>
   roles?: boolean | Prisma.Organization$rolesArgs<ExtArgs>
   hotels?: boolean | Prisma.Organization$hotelsArgs<ExtArgs>
+  users?: boolean | Prisma.Organization$usersArgs<ExtArgs>
+  activityLogs?: boolean | Prisma.Organization$activityLogsArgs<ExtArgs>
+  ipRestrictions?: boolean | Prisma.Organization$ipRestrictionsArgs<ExtArgs>
+  webhooks?: boolean | Prisma.Organization$webhooksArgs<ExtArgs>
+  bookings?: boolean | Prisma.Organization$bookingsArgs<ExtArgs>
+  chartOfAccounts?: boolean | Prisma.Organization$chartOfAccountsArgs<ExtArgs>
+  journalEntries?: boolean | Prisma.Organization$journalEntriesArgs<ExtArgs>
+  invoices?: boolean | Prisma.Organization$invoicesArgs<ExtArgs>
+  bills?: boolean | Prisma.Organization$billsArgs<ExtArgs>
+  bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
+  webhookDeliveries?: boolean | Prisma.Organization$webhookDeliveriesArgs<ExtArgs>
+  planRequests?: boolean | Prisma.Organization$planRequestsArgs<ExtArgs>
+  subscriptionOrders?: boolean | Prisma.Organization$subscriptionOrdersArgs<ExtArgs>
+  tenantSettings?: boolean | Prisma.Organization$tenantSettingsArgs<ExtArgs>
+  securityAuditLogs?: boolean | Prisma.Organization$securityAuditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -818,6 +3667,7 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   slug?: boolean
   domain?: boolean
   subdomain?: boolean
+  planId?: boolean
   status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
@@ -832,6 +3682,7 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   slug?: boolean
   domain?: boolean
   subdomain?: boolean
+  planId?: boolean
   status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
@@ -846,6 +3697,7 @@ export type OrganizationSelectScalar = {
   slug?: boolean
   domain?: boolean
   subdomain?: boolean
+  planId?: boolean
   status?: boolean
   deletedAt?: boolean
   createdBy?: boolean
@@ -854,11 +3706,26 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "subdomain" | "status" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "domain" | "subdomain" | "planId" | "status" | "deletedAt" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.Organization$membershipsArgs<ExtArgs>
   roles?: boolean | Prisma.Organization$rolesArgs<ExtArgs>
   hotels?: boolean | Prisma.Organization$hotelsArgs<ExtArgs>
+  users?: boolean | Prisma.Organization$usersArgs<ExtArgs>
+  activityLogs?: boolean | Prisma.Organization$activityLogsArgs<ExtArgs>
+  ipRestrictions?: boolean | Prisma.Organization$ipRestrictionsArgs<ExtArgs>
+  webhooks?: boolean | Prisma.Organization$webhooksArgs<ExtArgs>
+  bookings?: boolean | Prisma.Organization$bookingsArgs<ExtArgs>
+  chartOfAccounts?: boolean | Prisma.Organization$chartOfAccountsArgs<ExtArgs>
+  journalEntries?: boolean | Prisma.Organization$journalEntriesArgs<ExtArgs>
+  invoices?: boolean | Prisma.Organization$invoicesArgs<ExtArgs>
+  bills?: boolean | Prisma.Organization$billsArgs<ExtArgs>
+  bankAccounts?: boolean | Prisma.Organization$bankAccountsArgs<ExtArgs>
+  webhookDeliveries?: boolean | Prisma.Organization$webhookDeliveriesArgs<ExtArgs>
+  planRequests?: boolean | Prisma.Organization$planRequestsArgs<ExtArgs>
+  subscriptionOrders?: boolean | Prisma.Organization$subscriptionOrdersArgs<ExtArgs>
+  tenantSettings?: boolean | Prisma.Organization$tenantSettingsArgs<ExtArgs>
+  securityAuditLogs?: boolean | Prisma.Organization$securityAuditLogsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -870,6 +3737,21 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     memberships: Prisma.$MembershipPayload<ExtArgs>[]
     roles: Prisma.$RolePayload<ExtArgs>[]
     hotels: Prisma.$HotelPayload<ExtArgs>[]
+    users: Prisma.$UserPayload<ExtArgs>[]
+    activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
+    ipRestrictions: Prisma.$IpRestrictionPayload<ExtArgs>[]
+    webhooks: Prisma.$WebhookPayload<ExtArgs>[]
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
+    chartOfAccounts: Prisma.$ChartOfAccountPayload<ExtArgs>[]
+    journalEntries: Prisma.$JournalEntryPayload<ExtArgs>[]
+    invoices: Prisma.$InvoicePayload<ExtArgs>[]
+    bills: Prisma.$BillPayload<ExtArgs>[]
+    bankAccounts: Prisma.$BankAccountPayload<ExtArgs>[]
+    webhookDeliveries: Prisma.$WebhookDeliveryPayload<ExtArgs>[]
+    planRequests: Prisma.$PlanRequestPayload<ExtArgs>[]
+    subscriptionOrders: Prisma.$SubscriptionOrderPayload<ExtArgs>[]
+    tenantSettings: Prisma.$TenantSettingPayload<ExtArgs>[]
+    securityAuditLogs: Prisma.$SecurityAuditLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -877,6 +3759,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     slug: string
     domain: string | null
     subdomain: string | null
+    planId: string | null
     status: string
     deletedAt: Date | null
     createdBy: string | null
@@ -1280,6 +4163,21 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   memberships<T extends Prisma.Organization$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   roles<T extends Prisma.Organization$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hotels<T extends Prisma.Organization$hotelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$hotelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HotelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  users<T extends Prisma.Organization$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  activityLogs<T extends Prisma.Organization$activityLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ipRestrictions<T extends Prisma.Organization$ipRestrictionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$ipRestrictionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IpRestrictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  webhooks<T extends Prisma.Organization$webhooksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$webhooksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WebhookPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookings<T extends Prisma.Organization$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  chartOfAccounts<T extends Prisma.Organization$chartOfAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$chartOfAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChartOfAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  journalEntries<T extends Prisma.Organization$journalEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$journalEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JournalEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.Organization$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bills<T extends Prisma.Organization$billsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$billsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bankAccounts<T extends Prisma.Organization$bankAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$bankAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  webhookDeliveries<T extends Prisma.Organization$webhookDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$webhookDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WebhookDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  planRequests<T extends Prisma.Organization$planRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$planRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlanRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subscriptionOrders<T extends Prisma.Organization$subscriptionOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$subscriptionOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tenantSettings<T extends Prisma.Organization$tenantSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$tenantSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantSettingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  securityAuditLogs<T extends Prisma.Organization$securityAuditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$securityAuditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SecurityAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1314,6 +4212,7 @@ export interface OrganizationFieldRefs {
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
   readonly domain: Prisma.FieldRef<"Organization", 'String'>
   readonly subdomain: Prisma.FieldRef<"Organization", 'String'>
+  readonly planId: Prisma.FieldRef<"Organization", 'String'>
   readonly status: Prisma.FieldRef<"Organization", 'String'>
   readonly deletedAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly createdBy: Prisma.FieldRef<"Organization", 'String'>
@@ -1782,6 +4681,366 @@ export type Organization$hotelsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.HotelScalarFieldEnum | Prisma.HotelScalarFieldEnum[]
+}
+
+/**
+ * Organization.users
+ */
+export type Organization$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
+  cursor?: Prisma.UserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * Organization.activityLogs
+ */
+export type Organization$activityLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ActivityLog
+   */
+  select?: Prisma.ActivityLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ActivityLog
+   */
+  omit?: Prisma.ActivityLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ActivityLogInclude<ExtArgs> | null
+  where?: Prisma.ActivityLogWhereInput
+  orderBy?: Prisma.ActivityLogOrderByWithRelationInput | Prisma.ActivityLogOrderByWithRelationInput[]
+  cursor?: Prisma.ActivityLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ActivityLogScalarFieldEnum | Prisma.ActivityLogScalarFieldEnum[]
+}
+
+/**
+ * Organization.ipRestrictions
+ */
+export type Organization$ipRestrictionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IpRestriction
+   */
+  select?: Prisma.IpRestrictionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IpRestriction
+   */
+  omit?: Prisma.IpRestrictionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IpRestrictionInclude<ExtArgs> | null
+  where?: Prisma.IpRestrictionWhereInput
+  orderBy?: Prisma.IpRestrictionOrderByWithRelationInput | Prisma.IpRestrictionOrderByWithRelationInput[]
+  cursor?: Prisma.IpRestrictionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IpRestrictionScalarFieldEnum | Prisma.IpRestrictionScalarFieldEnum[]
+}
+
+/**
+ * Organization.webhooks
+ */
+export type Organization$webhooksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Webhook
+   */
+  select?: Prisma.WebhookSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Webhook
+   */
+  omit?: Prisma.WebhookOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookInclude<ExtArgs> | null
+  where?: Prisma.WebhookWhereInput
+  orderBy?: Prisma.WebhookOrderByWithRelationInput | Prisma.WebhookOrderByWithRelationInput[]
+  cursor?: Prisma.WebhookWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WebhookScalarFieldEnum | Prisma.WebhookScalarFieldEnum[]
+}
+
+/**
+ * Organization.bookings
+ */
+export type Organization$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * Organization.chartOfAccounts
+ */
+export type Organization$chartOfAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChartOfAccount
+   */
+  select?: Prisma.ChartOfAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChartOfAccount
+   */
+  omit?: Prisma.ChartOfAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChartOfAccountInclude<ExtArgs> | null
+  where?: Prisma.ChartOfAccountWhereInput
+  orderBy?: Prisma.ChartOfAccountOrderByWithRelationInput | Prisma.ChartOfAccountOrderByWithRelationInput[]
+  cursor?: Prisma.ChartOfAccountWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChartOfAccountScalarFieldEnum | Prisma.ChartOfAccountScalarFieldEnum[]
+}
+
+/**
+ * Organization.journalEntries
+ */
+export type Organization$journalEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the JournalEntry
+   */
+  select?: Prisma.JournalEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the JournalEntry
+   */
+  omit?: Prisma.JournalEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JournalEntryInclude<ExtArgs> | null
+  where?: Prisma.JournalEntryWhereInput
+  orderBy?: Prisma.JournalEntryOrderByWithRelationInput | Prisma.JournalEntryOrderByWithRelationInput[]
+  cursor?: Prisma.JournalEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.JournalEntryScalarFieldEnum | Prisma.JournalEntryScalarFieldEnum[]
+}
+
+/**
+ * Organization.invoices
+ */
+export type Organization$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
+}
+
+/**
+ * Organization.bills
+ */
+export type Organization$billsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Bill
+   */
+  select?: Prisma.BillSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Bill
+   */
+  omit?: Prisma.BillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BillInclude<ExtArgs> | null
+  where?: Prisma.BillWhereInput
+  orderBy?: Prisma.BillOrderByWithRelationInput | Prisma.BillOrderByWithRelationInput[]
+  cursor?: Prisma.BillWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BillScalarFieldEnum | Prisma.BillScalarFieldEnum[]
+}
+
+/**
+ * Organization.bankAccounts
+ */
+export type Organization$bankAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BankAccount
+   */
+  select?: Prisma.BankAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BankAccount
+   */
+  omit?: Prisma.BankAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BankAccountInclude<ExtArgs> | null
+  where?: Prisma.BankAccountWhereInput
+  orderBy?: Prisma.BankAccountOrderByWithRelationInput | Prisma.BankAccountOrderByWithRelationInput[]
+  cursor?: Prisma.BankAccountWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BankAccountScalarFieldEnum | Prisma.BankAccountScalarFieldEnum[]
+}
+
+/**
+ * Organization.webhookDeliveries
+ */
+export type Organization$webhookDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WebhookDelivery
+   */
+  select?: Prisma.WebhookDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WebhookDelivery
+   */
+  omit?: Prisma.WebhookDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WebhookDeliveryInclude<ExtArgs> | null
+  where?: Prisma.WebhookDeliveryWhereInput
+  orderBy?: Prisma.WebhookDeliveryOrderByWithRelationInput | Prisma.WebhookDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.WebhookDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WebhookDeliveryScalarFieldEnum | Prisma.WebhookDeliveryScalarFieldEnum[]
+}
+
+/**
+ * Organization.planRequests
+ */
+export type Organization$planRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlanRequest
+   */
+  select?: Prisma.PlanRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlanRequest
+   */
+  omit?: Prisma.PlanRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlanRequestInclude<ExtArgs> | null
+  where?: Prisma.PlanRequestWhereInput
+  orderBy?: Prisma.PlanRequestOrderByWithRelationInput | Prisma.PlanRequestOrderByWithRelationInput[]
+  cursor?: Prisma.PlanRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlanRequestScalarFieldEnum | Prisma.PlanRequestScalarFieldEnum[]
+}
+
+/**
+ * Organization.subscriptionOrders
+ */
+export type Organization$subscriptionOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SubscriptionOrder
+   */
+  select?: Prisma.SubscriptionOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SubscriptionOrder
+   */
+  omit?: Prisma.SubscriptionOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubscriptionOrderInclude<ExtArgs> | null
+  where?: Prisma.SubscriptionOrderWhereInput
+  orderBy?: Prisma.SubscriptionOrderOrderByWithRelationInput | Prisma.SubscriptionOrderOrderByWithRelationInput[]
+  cursor?: Prisma.SubscriptionOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SubscriptionOrderScalarFieldEnum | Prisma.SubscriptionOrderScalarFieldEnum[]
+}
+
+/**
+ * Organization.tenantSettings
+ */
+export type Organization$tenantSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TenantSetting
+   */
+  select?: Prisma.TenantSettingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TenantSetting
+   */
+  omit?: Prisma.TenantSettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TenantSettingInclude<ExtArgs> | null
+  where?: Prisma.TenantSettingWhereInput
+  orderBy?: Prisma.TenantSettingOrderByWithRelationInput | Prisma.TenantSettingOrderByWithRelationInput[]
+  cursor?: Prisma.TenantSettingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TenantSettingScalarFieldEnum | Prisma.TenantSettingScalarFieldEnum[]
+}
+
+/**
+ * Organization.securityAuditLogs
+ */
+export type Organization$securityAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SecurityAuditLog
+   */
+  select?: Prisma.SecurityAuditLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SecurityAuditLog
+   */
+  omit?: Prisma.SecurityAuditLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SecurityAuditLogInclude<ExtArgs> | null
+  where?: Prisma.SecurityAuditLogWhereInput
+  orderBy?: Prisma.SecurityAuditLogOrderByWithRelationInput | Prisma.SecurityAuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.SecurityAuditLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SecurityAuditLogScalarFieldEnum | Prisma.SecurityAuditLogScalarFieldEnum[]
 }
 
 /**
