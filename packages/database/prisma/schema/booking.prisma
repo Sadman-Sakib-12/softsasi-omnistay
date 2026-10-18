@@ -1,0 +1,126 @@
+model Booking {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String       @map("tenant_id") @db.Uuid
+  bookingCode   String       @unique @map("booking_code")
+  guestId       String       @map("guest_id") @db.Uuid
+  propertyId    String       @map("property_id") @db.Uuid
+  checkInDate   DateTime     @map("check_in_date") @db.Date
+  checkOutDate  DateTime     @map("check_out_date") @db.Date
+  adults        Int          @default(1) @map("adults")
+  children      Int          @default(0) @map("children")
+  totalAmount   Decimal      @map("total_amount") @db.Decimal(15, 2)
+  depositAmount Decimal      @default(0) @map("deposit_amount") @db.Decimal(15, 2)
+  bookingStatus String       @default("confirmed") @map("booking_status")
+  paymentStatus String       @default("unpaid") @map("payment_status")
+  deletedAt     DateTime?    @map("deleted_at")
+  createdBy     String?      @map("created_by") @db.Uuid
+  updatedBy     String?      @map("updated_by") @db.Uuid
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  tenant        Organization @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  guest         User         @relation(fields: [guestId], references: [id], onDelete: Restrict)
+  property      Hotel        @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  folios        GuestFolio[]
+  bookingItems  BookingItem[]
+  bookingGuests BookingGuest[]
+
+  @@index([tenantId])
+  @@index([guestId])
+  @@index([propertyId])
+  @@index([bookingStatus])
+  @@index([checkInDate, checkOutDate])
+  @@index([deletedAt])
+  @@map("bookings")
+}
+
+model RatePlan {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId  String             @map("property_id") @db.Uuid
+  name        String             @map("name")
+  code        String             @map("code")
+  description String?            @map("description")
+  mealPlan    String             @default("EP") @map("meal_plan")
+  isDefault   Boolean            @default(false) @map("is_default")
+  isActive    Boolean            @default(true) @map("is_active")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  property    Hotel              @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  modifiers   RatePlanModifier[]
+
+  @@unique([propertyId, code])
+  @@index([propertyId])
+  @@map("rate_plans")
+}
+
+model RatePlanModifier {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ratePlanId  String   @map("rate_plan_id") @db.Uuid
+  modifierType String  @map("modifier_type")
+  value       Decimal  @map("value") @db.Decimal(10, 2)
+  minStay     Int?     @map("min_stay")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  ratePlan    RatePlan @relation(fields: [ratePlanId], references: [id], onDelete: Cascade)
+
+  @@index([ratePlanId])
+  @@map("rate_plan_modifiers")
+}
+
+model SeasonalRate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId  String   @map("property_id") @db.Uuid
+  seasonName  String   @map("season_name")
+  startDate   DateTime @map("start_date") @db.Date
+  endDate     DateTime @map("end_date") @db.Date
+  multiplier  Decimal  @default(1.00) @map("multiplier") @db.Decimal(5, 2)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  property    Hotel    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("seasonal_rates")
+}
+
+model BookingItem {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String    @map("booking_id") @db.Uuid
+  roomTypeId  String?   @map("room_type_id") @db.Uuid
+  itemType    String    @default("room") @map("item_type")
+  quantity    Int       @default(1) @map("quantity")
+  unitPrice   Decimal   @map("unit_price") @db.Decimal(15, 2)
+  totalPrice  Decimal   @map("total_price") @db.Decimal(15, 2)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  roomType    RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@index([roomTypeId])
+  @@map("booking_items")
+}
+
+model BookingGuest {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bookingId   String   @map("booking_id") @db.Uuid
+  fullName    String   @map("full_name")
+  email       String?  @map("email")
+  phone       String?  @map("phone")
+  isPrimary   Boolean  @default(false) @map("is_primary")
+  passportNo  String?  @map("passport_no")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@map("booking_guests")
+}
