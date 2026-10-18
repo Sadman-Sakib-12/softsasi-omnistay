@@ -1,0 +1,202 @@
+model Organization {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  slug            String           @unique
+  domain          String?          @map("domain")
+  subdomain       String?          @map("subdomain")
+  planId          String?          @map("plan_id") @db.Uuid
+  status          String           @default("active")
+  deletedAt       DateTime?        @map("deleted_at")
+  createdBy       String?          @map("created_by") @db.Uuid
+  updatedBy       String?          @map("updated_by") @db.Uuid
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  memberships     Membership[]
+  roles           Role[]
+  hotels          Hotel[]
+  users           User[]           @relation("TenantUsers")
+  activityLogs    ActivityLog[]
+  ipRestrictions  IpRestriction[]
+  webhooks        Webhook[]
+  bookings        Booking[]
+  chartOfAccounts ChartOfAccount[]
+  journalEntries  JournalEntry[]
+  invoices        Invoice[]
+  bills           Bill[]
+  bankAccounts    BankAccount[]
+  webhookDeliveries WebhookDelivery[]
+  planRequests    PlanRequest[]
+  subscriptionOrders SubscriptionOrder[]
+  tenantSettings  TenantSetting[]
+  securityAuditLogs SecurityAuditLog[]
+
+  @@index([deletedAt])
+  @@map("tenants")
+}
+
+model Membership {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  roleId         String       @map("role_id") @db.Uuid
+  deletedAt      DateTime?    @map("deleted_at")
+  createdBy      String?      @map("created_by") @db.Uuid
+  updatedBy      String?      @map("updated_by") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([deletedAt])
+  @@map("memberships")
+}
+
+model TenantSetting {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String       @map("tenant_id") @db.Uuid
+  key         String       @map("key")
+  value       String       @map("value")
+  group       String       @default("general") @map("group")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  tenant      Organization @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@map("tenant_settings")
+}
+
+model SaasPlan {
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String              @map("name")
+  code           String              @unique @map("code")
+  monthlyPrice   Decimal             @map("monthly_price") @db.Decimal(15, 2)
+  annualPrice    Decimal             @map("annual_price") @db.Decimal(15, 2)
+  maxProperties  Int                 @default(1) @map("max_properties")
+  maxRooms       Int                 @default(15) @map("max_rooms")
+  maxOutlets     Int                 @default(1) @map("max_outlets")
+  features       Json?               @map("features")
+  isActive       Boolean             @default(true) @map("is_active")
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  planRequests   PlanRequest[]
+  orders         SubscriptionOrder[]
+
+  @@map("saas_plans")
+}
+
+model SubscriptionOrder {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String       @map("tenant_id") @db.Uuid
+  planId      String       @map("plan_id") @db.Uuid
+  orderNumber String       @unique @map("order_number")
+  amount      Decimal      @map("amount") @db.Decimal(15, 2)
+  currency    String       @default("USD") @map("currency")
+  paymentMethod String     @default("stripe") @map("payment_method")
+  paymentStatus String     @default("pending") @map("payment_status")
+  startDate   DateTime     @map("start_date")
+  endDate     DateTime     @map("end_date")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  tenant      Organization @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan        SaasPlan     @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([planId])
+  @@map("subscription_orders")
+}
+
+model PlanRequest {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String       @map("tenant_id") @db.Uuid
+  planId      String       @map("plan_id") @db.Uuid
+  billingCycle String      @default("monthly") @map("billing_cycle")
+  status      String       @default("pending") @map("status")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  tenant      Organization @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan        SaasPlan     @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([planId])
+  @@map("plan_requests")
+}
+
+model Webhook {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String            @map("tenant_id") @db.Uuid
+  url         String            @map("url")
+  eventTypes  Json              @map("event_types")
+  secretHash  String            @map("secret_hash")
+  isActive    Boolean           @default(true) @map("is_active")
+  deletedAt   DateTime?         @map("deleted_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  tenant      Organization      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  deliveries  WebhookDelivery[]
+
+  @@index([tenantId])
+  @@index([deletedAt])
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  webhookId      String    @map("webhook_id") @db.Uuid
+  eventType      String    @map("event_type")
+  payload        Json      @map("payload")
+  responseStatus Int?      @map("response_status")
+  responseBody   String?   @map("response_body")
+  attempts       Int       @default(1) @map("attempts")
+  status         String    @default("pending") @map("status")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  tenant         Organization @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  webhook        Webhook      @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([webhookId])
+  @@index([status])
+  @@map("webhook_deliveries")
+}
+
+model SystemSetting {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key         String    @unique @map("key")
+  value       String    @map("value")
+  group       String    @default("general") @map("group")
+  description String?   @map("description")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
+model CookieConsent {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  visitorIp   String    @map("visitor_ip")
+  userAgent   String?   @map("user_agent")
+  consentTypes Json     @map("consent_types")
+  consentedAt DateTime  @default(now()) @map("consented_at")
+
+  @@index([visitorIp])
+  @@map("cookie_consents")
+}
