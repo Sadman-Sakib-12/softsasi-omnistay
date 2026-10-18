@@ -1,0 +1,103 @@
+model SystemAuditEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  eventType String   @map("event_type")
+  actorId   String?  @map("actor_id") @db.Uuid
+  payload   Json?    @map("payload")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([eventType])
+  @@map("system_audit_events")
+}
+
+model SystemHealthMetric {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  metricName  String   @map("metric_name")
+  metricValue Decimal  @map("metric_value") @db.Decimal(12, 4)
+  unit        String   @map("unit")
+  recordedAt  DateTime @default(now()) @map("recorded_at")
+
+  @@index([metricName])
+  @@map("system_health_metrics")
+}
+
+model SystemErrorLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  errorMessage String   @map("error_message")
+  stackTrace   String?  @map("stack_trace")
+  component    String   @map("component")
+  occurredAt   DateTime @default(now()) @map("occurred_at")
+
+  @@index([component])
+  @@map("system_error_logs")
+}
+
+model SystemLocale {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  localeCode  String   @unique @map("locale_code")
+  localeName  String   @map("locale_name")
+  isRtl       Boolean  @default(false) @map("is_rtl")
+  isDefault   Boolean  @default(false) @map("is_default")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("system_locales")
+}
+
+model TranslationString {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  locale      String   @map("locale")
+  stringKey   String   @map("string_key")
+  stringValue String   @map("string_value")
+  group       String   @default("common") @map("group")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([locale, stringKey])
+  @@index([locale])
+  @@map("translation_strings")
+}
+
+model TourTranslationExtra {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tourId      String   @map("tour_id") @db.Uuid
+  locale      String   @map("locale")
+  extraInfo   Json     @map("extra_info")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([tourId, locale])
+  @@map("tour_translations_extra")
+}
+
+model PropertyTranslation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  propertyId  String   @map("property_id") @db.Uuid
+  locale      String   @map("locale")
+  title       String   @map("title")
+  description String?  @map("description")
+  policy      String?  @map("policy")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([propertyId, locale])
+  @@map("property_translations")
+}
+
+model SystemFeatureFlag {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  flagKey     String   @unique @map("flag_key")
+  description String?  @map("description")
+  isEnabled   Boolean  @default(false) @map("is_enabled")
+  rolloutPct  Int      @default(100) @map("rollout_pct")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("system_feature_flags")
+}
+
+model SystemScheduledJob {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jobName     String    @unique @map("job_name")
+  cronExpr    String    @map("cron_expr")
+  lastRunAt   DateTime? @map("last_run_at")
+  nextRunAt   DateTime? @map("next_run_at")
+  status      String    @default("idle") @map("status")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("system_scheduled_jobs")
+}
