@@ -236,9 +236,18 @@ importers:
       '@nestjs/swagger':
         specifier: ^12.0.2
         version: 12.0.2(@nestjs/common@12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.1.3)(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(typescript@6.0.3)
+      '@omnistay/backend-common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@omnistay/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@omnistay/infrastructure':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure
+      '@omnistay/security':
+        specifier: workspace:*
+        version: link:../../packages/security
       '@omnistay/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -389,6 +398,40 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/common:
+    dependencies:
+      '@nestjs/common':
+        specifier: ^12.0.1
+        version: 12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
+      '@nestjs/core':
+        specifier: ^12.0.1
+        version: 12.1.3(@nestjs/common@12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/platform-express@12.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/passport':
+        specifier: ^12.0.0
+        version: 12.0.0(@nestjs/common@12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(passport@0.7.0)
+      '@omnistay/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      passport:
+        specifier: ^0.7.0
+        version: 0.7.0
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.2
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.0
+        version: 5.0.6
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.3
+
   packages/config:
     devDependencies:
       '@types/node':
@@ -428,6 +471,71 @@ importers:
       prisma:
         specifier: 7.10.0
         version: 7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.3
+
+  packages/infrastructure:
+    dependencies:
+      '@nestjs/common':
+        specifier: ^12.0.1
+        version: 12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
+      '@nestjs/core':
+        specifier: ^12.0.1
+        version: 12.1.3(@nestjs/common@12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/platform-express@12.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@omnistay/config':
+        specifier: workspace:*
+        version: link:../config
+      bullmq:
+        specifier: ^6.3.15
+        version: 6.3.15(ioredis@6.0.0(supports-color@7.2.0))(pg@8.23.1)
+      ioredis:
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.2
+    devDependencies:
+      '@types/ioredis':
+        specifier: ^5.0.0
+        version: 5.0.0(supports-color@7.2.0)
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.3
+
+  packages/security:
+    dependencies:
+      '@nestjs/common':
+        specifier: ^12.0.1
+        version: 12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
+      '@nestjs/core':
+        specifier: ^12.0.1
+        version: 12.1.3(@nestjs/common@12.1.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/platform-express@12.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      bcryptjs:
+        specifier: ^3.0.3
+        version: 3.0.3
+      otplib:
+        specifier: ^13.5.0
+        version: 13.5.0
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.2
+    devDependencies:
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.19.2
       typescript:
         specifier: ^6.0.2
         version: 6.0.3

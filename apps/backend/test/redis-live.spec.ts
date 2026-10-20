@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { RedisService } from '../src/infrastructure/redis/redis.service.js';
+import { RedisService, NotificationProcessor, JOB_NAMES, TwoFactorAlertJobPayload } from '@omnistay/infrastructure';
 import { RateLimiterService } from '../src/domains/auth/services/rate-limiter.service.js';
-import { NotificationProcessor } from '../src/infrastructure/queue/notification.processor.js';
-import { JOB_NAMES, TwoFactorAlertJobPayload } from '../src/infrastructure/queue/queue.constants.js';
 import { Queue, Worker, Job } from 'bullmq';
 import net from 'node:net';
 

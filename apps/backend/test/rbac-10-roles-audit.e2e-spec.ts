@@ -4,11 +4,10 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '@omnistay/database';
-import { TotpService } from '../src/domains/auth/services/totp.service.js';
-import { CryptoService } from '../src/domains/auth/services/crypto.service.js';
+import { TotpService, CryptoService } from '@omnistay/security';
 import { SmsService } from '../src/domains/auth/services/sms.service.js';
-import { RedisService } from '../src/infrastructure/redis/redis.service.js';
-import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter.js';
+import { RedisService } from '@omnistay/infrastructure';
+import { HttpExceptionFilter } from '@omnistay/backend-common';
 import bcrypt from 'bcryptjs';
 
 describe('Project Titan — 10 Personas / Roles RBAC & Auth Audit (e2e)', () => {

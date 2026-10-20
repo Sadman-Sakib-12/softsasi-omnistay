@@ -1,13 +1,13 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service.js';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
-import { RolesGuard } from './common/guards/roles.guard.js';
-import { PermissionsGuard } from './common/guards/permissions.guard.js';
-import { TenantGuard } from './common/guards/tenant.guard.js';
-import { Roles } from './common/decorators/roles.decorator.js';
-import { RequirePermissions } from './common/decorators/permissions.decorator.js';
-import { CurrentUser } from './common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from './common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { RolesGuard } from '@omnistay/backend-common';
+import { PermissionsGuard } from '@omnistay/backend-common';
+import { TenantGuard } from '@omnistay/backend-common';
+import { Roles } from '@omnistay/backend-common';
+import { RequirePermissions } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Controller()
 export class AppController {

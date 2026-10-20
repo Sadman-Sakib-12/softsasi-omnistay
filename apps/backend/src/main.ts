@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule, ObserveInstrument } from './app.module.js';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
+import { HttpExceptionFilter } from '@omnistay/backend-common';
+import { LoggingInterceptor } from '@omnistay/backend-common';
 import { setupSwagger } from './setup-swagger.js';
 
 async function bootstrap() {
