@@ -26,9 +26,9 @@ import {
   UpdateHousekeepingTaskStatusDto,
 } from '../dto/housekeeping.dto.js';
 import { UpdateRoomStatusDto } from '../dto/create-room.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Housekeeping & Room Cleanliness Operations')
 @ApiBearerAuth('JWT-Auth')

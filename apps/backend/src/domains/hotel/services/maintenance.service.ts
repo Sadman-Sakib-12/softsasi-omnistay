@@ -11,7 +11,7 @@ import {
 } from '../dto/maintenance.dto.js';
 import { HotelService } from './hotel.service.js';
 import { RoomService } from './room.service.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
 export class MaintenanceService {

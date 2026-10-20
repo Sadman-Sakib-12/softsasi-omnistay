@@ -23,9 +23,9 @@ import {
 import { HotelService } from '../services/hotel.service.js';
 import { CreateHotelDto } from '../dto/create-hotel.dto.js';
 import { UpdateHotelDto } from '../dto/update-hotel.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Properties & Hotels')
 @ApiBearerAuth('JWT-Auth')

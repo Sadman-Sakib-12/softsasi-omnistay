@@ -21,8 +21,8 @@ import {
 } from '@nestjs/swagger';
 import { CartService } from '../services/cart.service.js';
 import { AddToCartDto, CheckoutCartDto, UpdateCartItemDto } from '../dto/cart.dto.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Universal Booking Cart & Bundling')
 @Controller('api/v1/cart')

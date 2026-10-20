@@ -13,7 +13,7 @@ import {
 } from '../dto/rate-calendar.dto.js';
 import { HotelService } from './hotel.service.js';
 import { RoomTypeService } from './room-type.service.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
 export class RateCalendarService {

@@ -22,9 +22,9 @@ import {
 } from '@nestjs/swagger';
 import { BoatService } from '../services/boat.service.js';
 import { BookBoatDto, CreateBoatDto, UpdateBoatDto } from '../dto/boat.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Boat & Yacht Charters')
 @Controller('api/v1/boats')

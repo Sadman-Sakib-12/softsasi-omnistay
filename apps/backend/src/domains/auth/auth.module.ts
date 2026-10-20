@@ -4,15 +4,15 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '@omnistay/database';
 import { AuthController } from './controllers/auth.controller.js';
 import { AuthService } from './services/auth.service.js';
-import { CryptoService } from './services/crypto.service.js';
-import { TotpService } from './services/totp.service.js';
+import { CryptoService } from '@omnistay/security';
+import { TotpService } from '@omnistay/security';
 import { RateLimiterService } from './services/rate-limiter.service.js';
 import { SmsService } from './services/sms.service.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
-import { RolesGuard } from '../../common/guards/roles.guard.js';
-import { PermissionsGuard } from '../../common/guards/permissions.guard.js';
-import { TenantGuard } from '../../common/guards/tenant.guard.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { RolesGuard } from '@omnistay/backend-common';
+import { PermissionsGuard } from '@omnistay/backend-common';
+import { TenantGuard } from '@omnistay/backend-common';
 
 @Module({
   imports: [

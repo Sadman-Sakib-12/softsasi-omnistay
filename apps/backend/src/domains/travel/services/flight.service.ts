@@ -12,7 +12,7 @@ import {
   CreateAirportDto,
   CreateFlightDto,
 } from '../dto/flight.dto.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
 export class FlightService {

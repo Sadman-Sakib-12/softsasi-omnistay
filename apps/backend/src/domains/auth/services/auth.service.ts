@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '@omnistay/database';
-import { RedisService } from '../../../infrastructure/redis/redis.service.js';
-import { NotificationProducer } from '../../../infrastructure/queue/notification.producer.js';
-import { CryptoService } from './crypto.service.js';
-import { TotpService } from './totp.service.js';
+import { RedisService } from '@omnistay/infrastructure';
+import { NotificationProducer } from '@omnistay/infrastructure';
+import { CryptoService } from '@omnistay/security';
+import { TotpService } from '@omnistay/security';
 import { RateLimiterService } from './rate-limiter.service.js';
 import { LoginDto } from '../dto/login.dto.js';
 import { Verify2faDto } from '../dto/verify-2fa.dto.js';

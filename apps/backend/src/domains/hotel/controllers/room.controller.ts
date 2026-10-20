@@ -22,9 +22,9 @@ import {
 } from '@nestjs/swagger';
 import { RoomService } from '../services/room.service.js';
 import { CreateRoomDto, UpdateRoomDto, UpdateRoomStatusDto } from '../dto/create-room.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Physical Rooms & Room Inventory')
 @ApiBearerAuth('JWT-Auth')

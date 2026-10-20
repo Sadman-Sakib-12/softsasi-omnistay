@@ -22,9 +22,9 @@ import {
 } from '@nestjs/swagger';
 import { EventService } from '../services/event.service.js';
 import { BookEventDto, CreateEventDto, ScanQrTicketDto, UpdateEventDto } from '../dto/event.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Event Ticketing & Conferences')
 @Controller('api/v1/events')

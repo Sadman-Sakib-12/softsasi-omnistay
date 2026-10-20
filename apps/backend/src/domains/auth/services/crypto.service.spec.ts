@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CryptoService } from './crypto.service.js';
+import { CryptoService } from '@omnistay/security';
 
 describe('CryptoService', () => {
   let service: CryptoService;

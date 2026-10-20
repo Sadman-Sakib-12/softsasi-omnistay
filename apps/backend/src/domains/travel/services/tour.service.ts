@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
 import { BookTourDto, CreateTourDto, UpdateTourDto } from '../dto/tour.dto.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
 export class TourService {

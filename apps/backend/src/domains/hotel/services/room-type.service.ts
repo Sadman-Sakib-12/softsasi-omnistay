@@ -8,7 +8,7 @@ import { PrismaService } from '@omnistay/database';
 import { CreateRoomTypeDto, UpdateRoomTypeDto } from '../dto/create-room-type.dto.js';
 import { CreateRoomBedDto } from '../dto/create-room-bed.dto.js';
 import { HotelService } from './hotel.service.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
 export class RoomTypeService {

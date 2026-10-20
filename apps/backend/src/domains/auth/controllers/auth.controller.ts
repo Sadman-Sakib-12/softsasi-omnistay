@@ -23,10 +23,10 @@ import { Disable2faDto } from '../dto/disable-2fa.dto.js';
 import { RefreshTokenDto } from '../dto/refresh-token.dto.js';
 import { PasswordResetRequestDto } from '../dto/password-reset-request.dto.js';
 import { PasswordResetConfirmDto } from '../dto/password-reset-confirm.dto.js';
-import { Public } from '../../../common/decorators/public.decorator.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
+import { Public } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
+import { JwtAuthGuard } from '@omnistay/backend-common';
 
 @ApiTags('Authentication & Identity')
 @Controller('api/v1/auth')

@@ -18,9 +18,9 @@ import {
 } from '@nestjs/swagger';
 import { FolioService } from '../services/folio.service.js';
 import { AddFolioChargeDto, AddFolioPaymentDto } from '../dto/folio.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Guest Folios & Billing Transactions')
 @ApiBearerAuth('JWT-Auth')

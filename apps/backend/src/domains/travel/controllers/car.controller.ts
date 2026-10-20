@@ -22,9 +22,9 @@ import {
 } from '@nestjs/swagger';
 import { CarService } from '../services/car.service.js';
 import { BookCarDto, CreateCarDto, UpdateCarDto } from '../dto/car.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Car Rentals & Fleet')
 @Controller('api/v1/cars')

@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '@omnistay/database';
 import { randomBytes, createHmac } from 'crypto';
 import { AddToCartDto, CheckoutCartDto, UpdateCartItemDto } from '../dto/cart.dto.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
 export class CartService {

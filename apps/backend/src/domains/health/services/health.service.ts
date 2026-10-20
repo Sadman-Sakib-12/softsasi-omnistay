@@ -1,6 +1,6 @@
 import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
-import { RedisService } from '../../../infrastructure/redis/redis.service.js';
+import { RedisService } from '@omnistay/infrastructure';
 
 @Injectable()
 export class HealthService {

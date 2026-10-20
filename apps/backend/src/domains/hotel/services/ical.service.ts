@@ -7,7 +7,7 @@ import {
 import { PrismaService } from '@omnistay/database';
 import { CreateIcalFeedDto } from '../dto/ical.dto.js';
 import { RoomTypeService } from './room-type.service.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 import crypto from 'node:crypto';
 
 @Injectable()

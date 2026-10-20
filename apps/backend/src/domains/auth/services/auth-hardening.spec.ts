@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
-import { CryptoService } from './crypto.service.js';
-import { TotpService } from './totp.service.js';
+import { CryptoService } from '@omnistay/security';
+import { TotpService } from '@omnistay/security';
 
 describe('AuthService Security Hardening & Password Reset', () => {
   let authService: AuthService;

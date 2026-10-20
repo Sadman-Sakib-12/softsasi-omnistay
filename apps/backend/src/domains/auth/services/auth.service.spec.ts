@@ -6,8 +6,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
-import { CryptoService } from './crypto.service.js';
-import { TotpService } from './totp.service.js';
+import { CryptoService } from '@omnistay/security';
+import { TotpService } from '@omnistay/security';
 import bcrypt from 'bcryptjs';
 
 describe('AuthService Core Authentication Suite', () => {

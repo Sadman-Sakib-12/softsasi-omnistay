@@ -21,9 +21,9 @@ import {
 import { RoomTypeService } from '../services/room-type.service.js';
 import { CreateRoomTypeDto, UpdateRoomTypeDto } from '../dto/create-room-type.dto.js';
 import { CreateRoomBedDto } from '../dto/create-room-bed.dto.js';
-import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser } from '@omnistay/backend-common';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Room Types & Bed Configurations')
 @ApiBearerAuth('JWT-Auth')

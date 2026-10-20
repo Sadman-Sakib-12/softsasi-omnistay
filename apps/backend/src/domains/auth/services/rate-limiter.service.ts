@@ -4,7 +4,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { RedisService } from '../../../infrastructure/redis/redis.service.js';
+import { RedisService } from '@omnistay/infrastructure';
 
 interface InMemoryRateLimitRecord {
   count: number;

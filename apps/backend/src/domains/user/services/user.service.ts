@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
 import { UpdateUserDto } from '../dto/update-user.dto.js';
-import type { AuthenticatedUserPayload } from '../../../common/decorators/current-user.decorator.js';
+import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 import bcrypt from 'bcryptjs';
 
 @Injectable()
