@@ -14,6 +14,7 @@ import { TravelModule } from './domains/travel/travel.module.js';
 import { AccountingModule } from './domains/accounting/accounting.module.js';
 import { PosModule } from './domains/pos/pos.module.js';
 import { InventoryModule } from './domains/inventory/inventory.module.js';
+import { HrmModule } from './domains/hrm/hrm.module.js';
 import { CorrelationIdMiddleware } from '@omnistay/backend-common';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
@@ -37,6 +38,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AccountingModule,
     PosModule,
     InventoryModule,
+    HrmModule,
   ],
   controllers: [AppController],
   providers: [AppService],
