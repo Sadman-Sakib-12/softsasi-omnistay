@@ -8,3 +8,8 @@ export * from './permissions.js';
 export * from './tenant.js';
 export * from './auth.js';
 export * from './common.js';
+export * from './hospitality.js';
+export * from './travel.js';
+export * from './accounting.js';
+export * from './pos.js';
+export * from './inventory.js';
