@@ -13,3 +13,4 @@ export * from './travel.js';
 export * from './accounting.js';
 export * from './pos.js';
 export * from './inventory.js';
+export * from './hrm.js';
