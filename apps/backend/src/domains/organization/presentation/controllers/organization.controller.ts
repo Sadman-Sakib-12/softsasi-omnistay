@@ -16,7 +16,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { OrganizationService } from '../services/organization.service.js';
+import { OrganizationService } from '../../application/services/organization.service.js';
 import { CreateOrganizationDto } from '../dto/create-organization.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

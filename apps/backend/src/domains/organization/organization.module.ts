@@ -1,14 +1,31 @@
 import { Module } from '@nestjs/common';
-import { OrganizationController } from './controllers/organization.controller.js';
-import { OrganizationService } from './services/organization.service.js';
 import { PrismaModule } from '@omnistay/database';
+
+// Repositories
+import { ORGANIZATION_REPOSITORY_TOKEN } from './domain/repositories/organization.repository.interface.js';
+import { PrismaOrganizationRepository } from './infrastructure/repositories/prisma-organization.repository.js';
+
+// Controllers
+import { OrganizationController } from './presentation/controllers/organization.controller.js';
+
+// Services
+import { OrganizationService } from './application/services/organization.service.js';
 
 @Module({
   imports: [PrismaModule],
   controllers: [OrganizationController],
-  providers: [OrganizationService],
-  exports: [OrganizationService],
+  providers: [
+    {
+      provide: ORGANIZATION_REPOSITORY_TOKEN,
+      useClass: PrismaOrganizationRepository,
+    },
+    PrismaOrganizationRepository,
+    OrganizationService,
+  ],
+  exports: [
+    ORGANIZATION_REPOSITORY_TOKEN,
+    PrismaOrganizationRepository,
+    OrganizationService,
+  ],
 })
-export class OrganizationModule { }
-
-export const OrganizationsModule = OrganizationModule;
+export class OrganizationModule {}
