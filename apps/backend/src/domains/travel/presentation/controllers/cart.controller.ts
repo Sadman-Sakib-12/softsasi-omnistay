@@ -19,7 +19,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CartService } from '../services/cart.service.js';
+import { CartService } from '../../application/services/cart.service.js';
 import { AddToCartDto, CheckoutCartDto, UpdateCartItemDto } from '../dto/cart.dto.js';
 import { CurrentUser } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';

@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FlightService } from '../services/flight.service.js';
+import { FlightService } from '../../application/services/flight.service.js';
 import {
   BookFlightDto,
   CreateAirlineDto,

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
 import { randomBytes, createHmac } from 'crypto';
-import { BookEventDto, CreateEventDto, ScanQrTicketDto, UpdateEventDto } from '../dto/event.dto.js';
+import { BookEventDto, CreateEventDto, ScanQrTicketDto, UpdateEventDto } from '../../presentation/dto/event.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()

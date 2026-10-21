@@ -11,7 +11,7 @@ import {
   CreateAirlineDto,
   CreateAirportDto,
   CreateFlightDto,
-} from '../dto/flight.dto.js';
+} from '../../presentation/dto/flight.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()

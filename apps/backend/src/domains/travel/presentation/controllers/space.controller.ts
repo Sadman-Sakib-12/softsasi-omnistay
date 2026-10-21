@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { SpaceService } from '../services/space.service.js';
+import { SpaceService } from '../../application/services/space.service.js';
 import { BookSpaceDto, CreateSpaceDto, UpdateSpaceDto } from '../dto/space.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

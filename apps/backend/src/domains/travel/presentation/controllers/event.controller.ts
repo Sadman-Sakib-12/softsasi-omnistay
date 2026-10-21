@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { EventService } from '../services/event.service.js';
+import { EventService } from '../../application/services/event.service.js';
 import { BookEventDto, CreateEventDto, ScanQrTicketDto, UpdateEventDto } from '../dto/event.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

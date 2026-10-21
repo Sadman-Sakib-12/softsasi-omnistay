@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { TourService } from '../services/tour.service.js';
+import { TourService } from '../../application/services/tour.service.js';
 import { BookTourDto, CreateTourDto, UpdateTourDto } from '../dto/tour.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

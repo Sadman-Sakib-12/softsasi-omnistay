@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { BoatService } from '../services/boat.service.js';
+import { BoatService } from '../../application/services/boat.service.js';
 import { BookBoatDto, CreateBoatDto, UpdateBoatDto } from '../dto/boat.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

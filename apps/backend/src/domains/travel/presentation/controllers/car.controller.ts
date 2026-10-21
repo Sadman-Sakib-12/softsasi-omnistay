@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CarService } from '../services/car.service.js';
+import { CarService } from '../../application/services/car.service.js';
 import { BookCarDto, CreateCarDto, UpdateCarDto } from '../dto/car.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

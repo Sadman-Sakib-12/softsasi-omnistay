@@ -1,23 +1,27 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@omnistay/database';
 
+// Repositories
+import { TRAVEL_REPOSITORY_TOKEN } from './domain/repositories/travel.repository.interface.js';
+import { PrismaTravelRepository } from './infrastructure/repositories/prisma-travel.repository.js';
+
 // Controllers
-import { SpaceController } from './controllers/space.controller.js';
-import { TourController } from './controllers/tour.controller.js';
-import { CarController } from './controllers/car.controller.js';
-import { BoatController } from './controllers/boat.controller.js';
-import { EventController } from './controllers/event.controller.js';
-import { FlightController } from './controllers/flight.controller.js';
-import { CartController } from './controllers/cart.controller.js';
+import { SpaceController } from './presentation/controllers/space.controller.js';
+import { TourController } from './presentation/controllers/tour.controller.js';
+import { CarController } from './presentation/controllers/car.controller.js';
+import { BoatController } from './presentation/controllers/boat.controller.js';
+import { EventController } from './presentation/controllers/event.controller.js';
+import { FlightController } from './presentation/controllers/flight.controller.js';
+import { CartController } from './presentation/controllers/cart.controller.js';
 
 // Services
-import { SpaceService } from './services/space.service.js';
-import { TourService } from './services/tour.service.js';
-import { CarService } from './services/car.service.js';
-import { BoatService } from './services/boat.service.js';
-import { EventService } from './services/event.service.js';
-import { FlightService } from './services/flight.service.js';
-import { CartService } from './services/cart.service.js';
+import { SpaceService } from './application/services/space.service.js';
+import { TourService } from './application/services/tour.service.js';
+import { CarService } from './application/services/car.service.js';
+import { BoatService } from './application/services/boat.service.js';
+import { EventService } from './application/services/event.service.js';
+import { FlightService } from './application/services/flight.service.js';
+import { CartService } from './application/services/cart.service.js';
 
 @Module({
   imports: [PrismaModule],
@@ -31,6 +35,11 @@ import { CartService } from './services/cart.service.js';
     CartController,
   ],
   providers: [
+    {
+      provide: TRAVEL_REPOSITORY_TOKEN,
+      useClass: PrismaTravelRepository,
+    },
+    PrismaTravelRepository,
     SpaceService,
     TourService,
     CarService,
@@ -40,6 +49,8 @@ import { CartService } from './services/cart.service.js';
     CartService,
   ],
   exports: [
+    TRAVEL_REPOSITORY_TOKEN,
+    PrismaTravelRepository,
     SpaceService,
     TourService,
     CarService,

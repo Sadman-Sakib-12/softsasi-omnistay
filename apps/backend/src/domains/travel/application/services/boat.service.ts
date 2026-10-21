@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
-import { BookBoatDto, CreateBoatDto, UpdateBoatDto } from '../dto/boat.dto.js';
+import { BookBoatDto, CreateBoatDto, UpdateBoatDto } from '../../presentation/dto/boat.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()
