@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@ne
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { LeaveService } from '../services/leave.service.js';
+import { LeaveApplicationService } from '../../application/services/leave.application-service.js';
 import { CreateLeaveApplicationDto, ReviewLeaveApplicationDto } from '../dto/leave.dto.js';
 
 @ApiTags('HRM - Leave Management & Approvals')
@@ -10,7 +10,7 @@ import { CreateLeaveApplicationDto, ReviewLeaveApplicationDto } from '../dto/lea
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/hrm/leaves')
 export class LeaveController {
-  constructor(private readonly leaveService: LeaveService) {}
+  constructor(private readonly leaveService: LeaveApplicationService) {}
 
   @Get('types')
   @ApiOperation({ summary: 'List all leave types (Annual, Sick, Casual, Maternity, Unpaid)' })

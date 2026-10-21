@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Public, Roles, RolesGuard } from '@omnistay/backend-common';
-import { RecruitmentService } from '../services/recruitment.service.js';
+import { RecruitmentApplicationService } from '../../application/services/recruitment.application-service.js';
 import {
   CreateJobPostDto,
   ScheduleInterviewDto,
@@ -13,7 +13,7 @@ import {
 @ApiTags('HRM - Recruitment ATS & Talent Lifecycle')
 @Controller('api/v1/hrm/recruitment')
 export class RecruitmentController {
-  constructor(private readonly recruitmentService: RecruitmentService) {}
+  constructor(private readonly recruitmentService: RecruitmentApplicationService) {}
 
   @Post('jobs')
   @ApiBearerAuth()

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { EmployeeService } from '../services/employee.service.js';
+import { EmployeeApplicationService } from '../../application/services/employee.application-service.js';
 import {
   CreateBranchDto,
   CreateDepartmentDto,
@@ -15,7 +15,7 @@ import {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/hrm/employees')
 export class EmployeeController {
-  constructor(private readonly employeeService: EmployeeService) {}
+  constructor(private readonly employeeService: EmployeeApplicationService) {}
 
   @Post('branches')
   @Roles('SuperAdmin', 'Company Owner/GM', 'HR Director')

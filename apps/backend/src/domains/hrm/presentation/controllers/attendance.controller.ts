@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Public, Roles, RolesGuard } from '@omnistay/backend-common';
-import { AttendanceService } from '../services/attendance.service.js';
+import { AttendanceApplicationService } from '../../application/services/attendance.application-service.js';
 import {
   BiometricHardwarePunchDto,
   CreateShiftScheduleDto,
@@ -11,7 +11,7 @@ import {
 @ApiTags('HRM - Attendance, Biometrics & Shifts')
 @Controller('api/v1/hrm/attendance')
 export class AttendanceController {
-  constructor(private readonly attendanceService: AttendanceService) {}
+  constructor(private readonly attendanceService: AttendanceApplicationService) {}
 
   @Post('biometric-punch')
   @Public()

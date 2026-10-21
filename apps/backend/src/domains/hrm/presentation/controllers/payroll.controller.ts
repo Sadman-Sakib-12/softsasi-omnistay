@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { PayrollService } from '../services/payroll.service.js';
+import { PayrollApplicationService } from '../../application/services/payroll.application-service.js';
 import { CreateServiceChargePoolDto, RunMonthlyPayrollDto, SetSalaryDto } from '../dto/payroll.dto.js';
 
 @ApiTags('HRM - Payroll & Compensation')
@@ -10,7 +10,7 @@ import { CreateServiceChargePoolDto, RunMonthlyPayrollDto, SetSalaryDto } from '
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/hrm/payroll')
 export class PayrollController {
-  constructor(private readonly payrollService: PayrollService) {}
+  constructor(private readonly payrollService: PayrollApplicationService) {}
 
   @Post('salary-setup')
   @Roles('SuperAdmin', 'Company Owner/GM', 'HR Director')
