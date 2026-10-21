@@ -15,7 +15,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthService } from '../services/auth.service.js';
+import { AuthService } from '../../application/services/auth.service.js';
 import { LoginDto } from '../dto/login.dto.js';
 import { Verify2faDto } from '../dto/verify-2fa.dto.js';
 import { ConfirmEnrollmentDto } from '../dto/confirm-enrollment.dto.js';

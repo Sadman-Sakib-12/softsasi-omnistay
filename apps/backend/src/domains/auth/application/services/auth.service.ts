@@ -15,22 +15,14 @@ import { NotificationProducer } from '@omnistay/infrastructure';
 import { CryptoService } from '@omnistay/security';
 import { TotpService } from '@omnistay/security';
 import { RateLimiterService } from './rate-limiter.service.js';
-import { LoginDto } from '../dto/login.dto.js';
-import { Verify2faDto } from '../dto/verify-2fa.dto.js';
-import { Disable2faDto } from '../dto/disable-2fa.dto.js';
-import { PasswordResetConfirmDto } from '../dto/password-reset-confirm.dto.js';
+import { LoginDto } from '../../presentation/dto/login.dto.js';
+import { Verify2faDto } from '../../presentation/dto/verify-2fa.dto.js';
+import { Disable2faDto } from '../../presentation/dto/disable-2fa.dto.js';
+import { PasswordResetConfirmDto } from '../../presentation/dto/password-reset-confirm.dto.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 
-export const MANDATORY_2FA_ROLES = [
-  'SuperAdmin',
-  'Platform SuperAdmin',
-  'Company Owner/GM',
-  'Company Owner / GM',
-  'General Manager (GM)',
-  'Financial Accountant',
-  'Chief Financial Officer / Accountant',
-];
+import { MANDATORY_2FA_ROLES } from '../../domain/rules/auth.rule.js';
 
 @Injectable()
 export class AuthService {
