@@ -14,7 +14,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserService } from '../services/user.service.js';
+import { UserService } from '../../application/services/user.service.js';
 import { UpdateUserDto } from '../dto/update-user.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

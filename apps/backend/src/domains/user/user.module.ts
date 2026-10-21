@@ -1,14 +1,31 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './controllers/user.controller.js';
-import { UserService } from './services/user.service.js';
 import { PrismaModule } from '@omnistay/database';
+
+// Repositories
+import { USER_REPOSITORY_TOKEN } from './domain/repositories/user.repository.interface.js';
+import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository.js';
+
+// Controllers
+import { UserController } from './presentation/controllers/user.controller.js';
+
+// Services
+import { UserService } from './application/services/user.service.js';
 
 @Module({
   imports: [PrismaModule],
   controllers: [UserController],
-  providers: [UserService],
-  exports: [UserService],
+  providers: [
+    {
+      provide: USER_REPOSITORY_TOKEN,
+      useClass: PrismaUserRepository,
+    },
+    PrismaUserRepository,
+    UserService,
+  ],
+  exports: [
+    USER_REPOSITORY_TOKEN,
+    PrismaUserRepository,
+    UserService,
+  ],
 })
-export class UserModule { }
-
-export const UsersModule = UserModule;
+export class UserModule {}
