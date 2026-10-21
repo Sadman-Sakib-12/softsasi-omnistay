@@ -12,7 +12,7 @@ import {
   ImportStatementDto,
   OpenRegisterShiftDto,
   ReconcileStatementDto,
-} from '../dto/bank.dto.js';
+} from '../../presentation/dto/bank.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()

@@ -11,7 +11,7 @@ import {
   CreateDebitNoteDto,
   RecordBillPaymentDto,
   ThreeWayMatchDto,
-} from '../dto/ap-vendor.dto.js';
+} from '../../presentation/dto/ap-vendor.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()

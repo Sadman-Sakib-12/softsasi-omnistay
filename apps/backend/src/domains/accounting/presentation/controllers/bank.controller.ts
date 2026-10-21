@@ -14,7 +14,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { BankAndTreasuryService } from '../services/bank.service.js';
+import { BankAndTreasuryService } from '../../application/services/bank.service.js';
 import {
   BankTransferDto,
   CloseRegisterShiftDto,

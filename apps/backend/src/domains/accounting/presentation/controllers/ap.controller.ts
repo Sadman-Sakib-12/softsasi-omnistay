@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AccountsPayableService } from '../services/ap.service.js';
+import { AccountsPayableService } from '../../application/services/ap.service.js';
 import {
   CreateBillDto,
   CreateDebitNoteDto,

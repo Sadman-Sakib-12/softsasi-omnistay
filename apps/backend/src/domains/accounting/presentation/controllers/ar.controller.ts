@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AccountsReceivableService } from '../services/ar.service.js';
+import { AccountsReceivableService } from '../../application/services/ar.service.js';
 import { CreateInvoiceDto, RecordInvoicePaymentDto } from '../dto/ar-billing.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

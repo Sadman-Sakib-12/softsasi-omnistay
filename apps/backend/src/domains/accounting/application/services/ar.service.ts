@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
 import { randomBytes } from 'crypto';
-import { CreateInvoiceDto, RecordInvoicePaymentDto } from '../dto/ar-billing.dto.js';
+import { CreateInvoiceDto, RecordInvoicePaymentDto } from '../../presentation/dto/ar-billing.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()

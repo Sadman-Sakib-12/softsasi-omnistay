@@ -14,7 +14,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { NightAuditService } from '../services/night-audit.service.js';
+import { NightAuditService } from '../../application/services/night-audit.service.js';
 import { RunNightAuditDto } from '../dto/night-audit.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

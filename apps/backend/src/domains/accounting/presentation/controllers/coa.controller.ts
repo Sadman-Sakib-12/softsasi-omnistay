@@ -19,7 +19,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ChartOfAccountsService } from '../services/coa.service.js';
+import { ChartOfAccountsService } from '../../application/services/coa.service.js';
 import { CreateAccountDto, UpdateAccountDto } from '../dto/coa.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

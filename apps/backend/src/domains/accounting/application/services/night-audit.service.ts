@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '@omnistay/database';
 import { ChartOfAccountsService } from './coa.service.js';
 import { JournalService } from './journal.service.js';
-import { RunNightAuditDto } from '../dto/night-audit.dto.js';
+import { RunNightAuditDto } from '../../presentation/dto/night-audit.dto.js';
 
 @Injectable()
 export class NightAuditService {

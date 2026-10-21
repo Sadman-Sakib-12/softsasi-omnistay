@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JournalService } from '../services/journal.service.js';
+import { JournalService } from '../../application/services/journal.service.js';
 import { CreateJournalEntryDto } from '../dto/journal.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

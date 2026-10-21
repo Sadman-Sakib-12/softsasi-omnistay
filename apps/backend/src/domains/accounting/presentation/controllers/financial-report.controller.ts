@@ -9,7 +9,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { FinancialReportService } from '../services/financial-report.service.js';
+import { FinancialReportService } from '../../application/services/financial-report.service.js';
 import { DateRangeQueryDto } from '../dto/financial-reports.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
 import { ChartOfAccountsService } from './coa.service.js';
-import { DateRangeQueryDto } from '../dto/financial-reports.dto.js';
+import { DateRangeQueryDto } from '../../presentation/dto/financial-reports.dto.js';
 
 @Injectable()
 export class FinancialReportService {

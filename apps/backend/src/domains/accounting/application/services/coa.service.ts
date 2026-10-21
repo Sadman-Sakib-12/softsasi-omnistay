@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
-import { CreateAccountDto, UpdateAccountDto } from '../dto/coa.dto.js';
+import { CreateAccountDto, UpdateAccountDto } from '../../presentation/dto/coa.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 export const USALI_DEFAULT_ACCOUNTS = [
