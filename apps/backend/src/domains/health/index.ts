@@ -1,3 +1,4 @@
 export * from './health.module.js';
-export * from './controllers/health.controller.js';
-export * from './services/health.service.js';
+export * from './domain/rules/health.rule.js';
+export * from './application/services/health.service.js';
+export * from './presentation/controllers/health.controller.js';

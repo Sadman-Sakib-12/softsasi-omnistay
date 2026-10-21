@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { HealthService } from '../services/health.service.js';
+import { HealthService } from '../../application/services/health.service.js';
 import { Public } from '@omnistay/backend-common';
 
 @ApiTags('System & Health')

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { HealthController } from './controllers/health.controller.js';
-import { HealthService } from './services/health.service.js';
+import { HealthController } from './presentation/controllers/health.controller.js';
+import { HealthService } from './application/services/health.service.js';
 import { PrismaModule } from '@omnistay/database';
 
 @Module({
@@ -9,4 +9,4 @@ import { PrismaModule } from '@omnistay/database';
   providers: [HealthService],
   exports: [HealthService],
 })
-export class HealthModule { }
+export class HealthModule {}
