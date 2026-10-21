@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
-import { PosRoomChargeService } from '../services/pos-room-charge.service.js';
+import { JwtAuthGuard, RolesGuard } from '@omnistay/backend-common';
+import { PosRoomChargeApplicationService } from '../../application/services/pos-room-charge.application-service.js';
 import { ChargeToRoomDto } from '../dto/room-charge.dto.js';
 
 @ApiTags('POS - Room Charge & Guest Folio Integration')
@@ -9,7 +9,7 @@ import { ChargeToRoomDto } from '../dto/room-charge.dto.js';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/pos/room-charge')
 export class PosRoomChargeController {
-  constructor(private readonly roomChargeService: PosRoomChargeService) {}
+  constructor(private readonly roomChargeService: PosRoomChargeApplicationService) {}
 
   @Get('verify/:propertyId/:roomNumber')
   @ApiOperation({ summary: 'Two-way check: verify room occupancy, guest name, and credit limit' })

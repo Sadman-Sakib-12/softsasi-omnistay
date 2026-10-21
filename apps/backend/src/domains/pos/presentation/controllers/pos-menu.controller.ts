@@ -1,14 +1,14 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
-import { PosMenuService } from '../services/pos-menu.service.js';
+import { PosMenuApplicationService } from '../../application/services/pos-menu.application-service.js';
 
 @ApiTags('POS - Menus & Catalog Items')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/pos/menus')
 export class PosMenuController {
-  constructor(private readonly menuService: PosMenuService) {}
+  constructor(private readonly menuService: PosMenuApplicationService) {}
 
   @Post(':outletId')
   @Roles('SuperAdmin', 'Company Owner/GM', 'Property General Manager', 'F&B Director', 'Executive Chef')

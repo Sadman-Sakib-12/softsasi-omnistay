@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
-import { KdsService } from '../services/kds.service.js';
+import { KdsApplicationService } from '../../application/services/kds.application-service.js';
 import { CreateKdsStationDto, UpdateKdsOrderStatusDto } from '../dto/kds.dto.js';
 
 @ApiTags('POS - Kitchen Display System (KDS)')
@@ -9,7 +9,7 @@ import { CreateKdsStationDto, UpdateKdsOrderStatusDto } from '../dto/kds.dto.js'
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/pos/kds')
 export class KdsController {
-  constructor(private readonly kdsService: KdsService) {}
+  constructor(private readonly kdsService: KdsApplicationService) {}
 
   @Post(':outletId/stations')
   @Roles('SuperAdmin', 'Company Owner/GM', 'Property General Manager', 'F&B Director', 'Executive Chef')

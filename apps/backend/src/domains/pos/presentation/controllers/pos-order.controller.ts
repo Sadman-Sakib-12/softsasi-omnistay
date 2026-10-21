@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
+import { CurrentUser, JwtAuthGuard, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { PosOrderService } from '../services/pos-order.service.js';
+import { PosOrderApplicationService } from '../../application/services/pos-order.application-service.js';
 import { CreatePosOrderDto, SettlePosOrderDto, SplitCheckDto } from '../dto/pos-order.dto.js';
 
 @ApiTags('POS - Orders & Checkout')
@@ -10,7 +10,7 @@ import { CreatePosOrderDto, SettlePosOrderDto, SplitCheckDto } from '../dto/pos-
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/pos/orders')
 export class PosOrderController {
-  constructor(private readonly orderService: PosOrderService) {}
+  constructor(private readonly orderService: PosOrderApplicationService) {}
 
   @Post()
   @ApiOperation({ summary: 'Ring up new POS order with course items and service charges' })

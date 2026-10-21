@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/co
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { PosOutletService } from '../services/pos-outlet.service.js';
+import { PosOutletApplicationService } from '../../application/services/pos-outlet.application-service.js';
 import {
   CreateDiningTableDto,
   CreatePosOutletDto,
@@ -16,7 +16,7 @@ import {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/pos/outlets')
 export class PosOutletController {
-  constructor(private readonly outletService: PosOutletService) {}
+  constructor(private readonly outletService: PosOutletApplicationService) {}
 
   @Post()
   @Roles('SuperAdmin', 'Company Owner/GM', 'Property General Manager', 'F&B Director')

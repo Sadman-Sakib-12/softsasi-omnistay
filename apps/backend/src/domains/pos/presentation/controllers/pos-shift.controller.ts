@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
-import { PosShiftService } from '../services/pos-shift.service.js';
+import { PosShiftApplicationService } from '../../application/services/pos-shift.application-service.js';
 import { CloseCashierShiftDto, OpenCashierShiftDto, RecordCashDropDto } from '../dto/pos-shift.dto.js';
 
 @ApiTags('POS - Cashier Shifts & X/Z Balancing')
@@ -9,7 +9,7 @@ import { CloseCashierShiftDto, OpenCashierShiftDto, RecordCashDropDto } from '..
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/pos/shifts')
 export class PosShiftController {
-  constructor(private readonly shiftService: PosShiftService) {}
+  constructor(private readonly shiftService: PosShiftApplicationService) {}
 
   @Post('open')
   @ApiOperation({ summary: 'Open new cashier shift with starting cash float ($500)' })
