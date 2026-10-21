@@ -5,7 +5,7 @@ import { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '@omnistay/database';
 import { TotpService, CryptoService } from '@omnistay/security';
-import { SmsService } from '../src/domains/auth/services/sms.service.js';
+import { SmsService } from '../src/domains/auth/index.js';
 import { RedisService } from '@omnistay/infrastructure';
 import { HttpExceptionFilter } from '@omnistay/backend-common';
 import bcrypt from 'bcryptjs';
