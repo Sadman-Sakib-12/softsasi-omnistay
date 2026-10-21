@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RateCalendarService } from '../services/rate-calendar.service.js';
+import { RateCalendarService } from '../../application/services/rate-calendar.service.js';
 import {
   CreateRatePlanDto,
   CreateSeasonalRateDto,

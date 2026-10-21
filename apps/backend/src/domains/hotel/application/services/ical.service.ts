@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
-import { CreateIcalFeedDto } from '../dto/ical.dto.js';
+import { CreateIcalFeedDto } from '../../presentation/dto/ical.dto.js';
 import { RoomTypeService } from './room-type.service.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 import crypto from 'node:crypto';

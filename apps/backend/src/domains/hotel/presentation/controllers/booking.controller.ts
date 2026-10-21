@@ -19,7 +19,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { BookingService } from '../services/booking.service.js';
+import { BookingService } from '../../application/services/booking.service.js';
 import { CreateBookingDto } from '../dto/create-booking.dto.js';
 import { CheckInDto, CheckOutDto } from '../dto/check-in-out.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';

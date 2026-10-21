@@ -17,7 +17,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { IcalService } from '../services/ical.service.js';
+import { IcalService } from '../../application/services/ical.service.js';
 import { CreateIcalFeedDto } from '../dto/ical.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { Public } from '@omnistay/backend-common';

@@ -19,7 +19,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { MaintenanceService } from '../services/maintenance.service.js';
+import { MaintenanceService } from '../../application/services/maintenance.service.js';
 import {
   CreateMaintenanceWorkOrderDto,
   UpdateMaintenanceWorkOrderStatusDto,

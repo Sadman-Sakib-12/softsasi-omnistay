@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RoomService } from '../services/room.service.js';
+import { RoomService } from '../../application/services/room.service.js';
 import { CreateRoomDto, UpdateRoomDto, UpdateRoomStatusDto } from '../dto/create-room.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

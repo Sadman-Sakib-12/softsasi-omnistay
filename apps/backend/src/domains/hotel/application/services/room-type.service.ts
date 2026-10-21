@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
-import { CreateRoomTypeDto, UpdateRoomTypeDto } from '../dto/create-room-type.dto.js';
-import { CreateRoomBedDto } from '../dto/create-room-bed.dto.js';
+import { CreateRoomTypeDto, UpdateRoomTypeDto } from '../../presentation/dto/create-room-type.dto.js';
+import { CreateRoomBedDto } from '../../presentation/dto/create-room-bed.dto.js';
 import { HotelService } from './hotel.service.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 

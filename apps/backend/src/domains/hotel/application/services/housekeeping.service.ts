@@ -8,7 +8,7 @@ import { PrismaService } from '@omnistay/database';
 import {
   CreateHousekeepingTaskDto,
   UpdateHousekeepingTaskStatusDto,
-} from '../dto/housekeeping.dto.js';
+} from '../../presentation/dto/housekeeping.dto.js';
 import { RoomService } from './room.service.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 

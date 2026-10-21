@@ -19,8 +19,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { HousekeepingService } from '../services/housekeeping.service.js';
-import { RoomService } from '../services/room.service.js';
+import { HousekeepingService } from '../../application/services/housekeeping.service.js';
+import { RoomService } from '../../application/services/room.service.js';
 import {
   CreateHousekeepingTaskDto,
   UpdateHousekeepingTaskStatusDto,

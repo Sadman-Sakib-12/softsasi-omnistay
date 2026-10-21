@@ -5,8 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
-import { CreateHotelDto } from '../dto/create-hotel.dto.js';
-import { UpdateHotelDto } from '../dto/update-hotel.dto.js';
+import { CreateHotelDto } from '../../presentation/dto/create-hotel.dto.js';
+import { UpdateHotelDto } from '../../presentation/dto/update-hotel.dto.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @Injectable()

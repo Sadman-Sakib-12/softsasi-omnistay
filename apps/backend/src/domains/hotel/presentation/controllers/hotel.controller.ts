@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { HotelService } from '../services/hotel.service.js';
+import { HotelService } from '../../application/services/hotel.service.js';
 import { CreateHotelDto } from '../dto/create-hotel.dto.js';
 import { UpdateHotelDto } from '../dto/update-hotel.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';

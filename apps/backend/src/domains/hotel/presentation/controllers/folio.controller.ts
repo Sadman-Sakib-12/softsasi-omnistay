@@ -16,7 +16,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FolioService } from '../services/folio.service.js';
+import { FolioService } from '../../application/services/folio.service.js';
 import { AddFolioChargeDto, AddFolioPaymentDto } from '../dto/folio.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';

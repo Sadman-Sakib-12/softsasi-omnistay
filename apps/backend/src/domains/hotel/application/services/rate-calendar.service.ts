@@ -10,7 +10,7 @@ import {
   CreateRatePlanDto,
   CreateSeasonalRateDto,
   SetRoomAvailabilityDto,
-} from '../dto/rate-calendar.dto.js';
+} from '../../presentation/dto/rate-calendar.dto.js';
 import { HotelService } from './hotel.service.js';
 import { RoomTypeService } from './room-type.service.js';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';

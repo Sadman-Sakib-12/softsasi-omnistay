@@ -18,7 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RoomTypeService } from '../services/room-type.service.js';
+import { RoomTypeService } from '../../application/services/room-type.service.js';
 import { CreateRoomTypeDto, UpdateRoomTypeDto } from '../dto/create-room-type.dto.js';
 import { CreateRoomBedDto } from '../dto/create-room-bed.dto.js';
 import { JwtAuthGuard } from '@omnistay/backend-common';
