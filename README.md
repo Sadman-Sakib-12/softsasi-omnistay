@@ -11,11 +11,15 @@ softsasi-omnistay/
 ├── apps/
 │   ├── web/        # Next.js customer-facing booking & stay portal
 │   ├── admin/      # Next.js admin dashboard & property management console
-│   └── backend/    # NestJS REST/GraphQL API server with Vitest & TypeScript
+│   └── backend/    # NestJS REST API server (Clean DDD Modular Monolith)
+├── packages/       # Shared workspace libraries (database, infrastructure, security, common)
+├── docs/           # Comprehensive Architecture, Domain Models & Backend Guides
 ├── package.json    # Root scripts and workspace orchestration
 ├── pnpm-workspace.yaml
 └── pnpm-lock.yaml
 ```
+
+📖 **Full Documentation:** Visit the [OmniStay Documentation Portal](docs/README.md) for in-depth architecture, domain models, and developer guides.
 
 ---
 
