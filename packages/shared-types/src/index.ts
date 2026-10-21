@@ -14,3 +14,6 @@ export * from './accounting.js';
 export * from './pos.js';
 export * from './inventory.js';
 export * from './hrm.js';
+export * from './crm.js';
+export * from './marketplace.js';
+export * from './loyalty.js';
