@@ -2,15 +2,19 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { WarehouseService } from '../services/warehouse.service.js';
-import { CreateWarehouseBinDto, CreateWarehouseDto, InitiateStockTransferDto } from '../dto/warehouse.dto.js';
+import { WarehouseApplicationService } from '../../application/services/warehouse.application-service.js';
+import {
+  CreateWarehouseBinDto,
+  CreateWarehouseDto,
+  InitiateStockTransferDto,
+} from '../dto/warehouse.dto.js';
 
 @ApiTags('Supply Chain - Multi-Warehouse Inventory')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/inventory/warehouses')
 export class WarehouseController {
-  constructor(private readonly warehouseService: WarehouseService) {}
+  constructor(private readonly warehouseService: WarehouseApplicationService) {}
 
   @Post()
   @Roles('SuperAdmin', 'Company Owner/GM', 'Property General Manager', 'Purchasing Manager')

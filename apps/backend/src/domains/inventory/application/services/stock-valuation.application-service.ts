@@ -1,46 +1,43 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@omnistay/database';
-import { PhysicalStocktakeAdjustmentDto, RecordWastageDto } from '../dto/stock-audit.dto.js';
-import { WarehouseService } from './warehouse.service.js';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  INVENTORY_REPOSITORY_TOKEN,
+  type IInventoryRepository,
+} from '../../domain/repositories/inventory.repository.interface.js';
+import { calculateInventoryValuation } from '../../domain/rules/inventory.rule.js';
+import type {
+  PhysicalStocktakeAdjustmentDto,
+  RecordWastageDto,
+} from '../../presentation/dto/stock-audit.dto.js';
+import { WarehouseApplicationService } from './warehouse.application-service.js';
 
 @Injectable()
-export class StockValuationService {
+export class StockValuationApplicationService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly warehouseService: WarehouseService,
+    @Inject(INVENTORY_REPOSITORY_TOKEN)
+    private readonly repo: IInventoryRepository,
+    private readonly warehouseService: WarehouseApplicationService,
   ) {}
 
   async calculateInventoryValuation(warehouseId: string, method: 'FIFO' | 'WAC' = 'FIFO') {
-    const products = await this.prisma.warehouseProduct.findMany({
-      where: { warehouseId },
-      include: { product: true, warehouse: true },
-    });
+    const products = await this.repo.findWarehouseProductsForValuation(warehouseId);
 
-    let totalValuation = 0;
-    const items = products.map((wp) => {
-      const qty = Number(wp.stockQty);
-      const cost = Number(wp.product.costPrice);
-      const lineValuation = Number((qty * cost).toFixed(2));
-      totalValuation += lineValuation;
+    const items = products.map((wp: any) => ({
+      productId: wp.productId,
+      name: wp.product.name,
+      sku: wp.product.sku,
+      stockQty: Number(wp.stockQty),
+      unitCost: Number(wp.product.costPrice),
+    }));
 
-      return {
-        productId: wp.productId,
-        name: wp.product.name,
-        sku: wp.product.sku,
-        stockQty: qty,
-        unitCost: cost,
-        lineValuation,
-        valuationMethod: method,
-      };
-    });
+    const valuationResult = calculateInventoryValuation(items, method);
 
     return {
       warehouseId,
       valuationMethod: method,
       calculatedAt: new Date(),
-      totalItemCount: items.length,
-      totalInventoryAssetValue: Number(totalValuation.toFixed(2)),
-      inventoryItems: items,
+      totalItemCount: valuationResult.totalItemCount,
+      totalInventoryAssetValue: valuationResult.totalInventoryAssetValue,
+      inventoryItems: valuationResult.items,
     };
   }
 
@@ -52,12 +49,9 @@ export class StockValuationService {
     const deductions = [];
 
     for (const item of recipeItems) {
-      const product = await this.prisma.product.findUnique({
-        where: { id: item.productId },
-        include: { recipeItems: true },
-      });
+      const product = await this.repo.findProductById(item.productId);
 
-      if (product && product.isRecipe && product.recipeItems.length > 0) {
+      if (product && product.isRecipe && product.recipeItems && product.recipeItems.length > 0) {
         for (const ing of product.recipeItems) {
           const totalQtyToDeduct = Number(ing.quantity) * item.quantity;
           const updated = await this.warehouseService.updateStock(
@@ -85,12 +79,11 @@ export class StockValuationService {
   }
 
   async recordWastage(warehouseId: string, dto: RecordWastageDto, reportedBy?: string) {
-    const product = await this.prisma.product.findUnique({ where: { id: dto.productId } });
+    const product = await this.repo.findProductById(dto.productId);
     if (!product) throw new NotFoundException('Product not found');
 
     const costLost = dto.costLost || Number(dto.quantity) * Number(product.costPrice);
 
-    // 1. Deduct stock from warehouse
     await this.warehouseService.updateStock(
       warehouseId,
       dto.productId,
@@ -99,15 +92,12 @@ export class StockValuationService {
       dto.reason,
     );
 
-    // 2. Log in wastage registry
-    const wastage = await this.prisma.inventoryWastageLog.create({
-      data: {
-        productId: dto.productId,
-        quantity: dto.quantity,
-        reason: dto.reason,
-        costLost,
-        reportedBy,
-      },
+    const wastage = await this.repo.createWastageLog({
+      productId: dto.productId,
+      quantity: dto.quantity,
+      reason: dto.reason,
+      costLost,
+      reportedBy,
     });
 
     return {
@@ -121,26 +111,15 @@ export class StockValuationService {
   }
 
   async checkReorderThresholds(tenantId: string) {
-    const lowStockItems = await this.prisma.warehouseProduct.findMany({
-      where: {
-        warehouse: { tenantId },
-        stockQty: { lte: 10 }, // Below or at reorder level
-      },
-      include: {
-        product: true,
-        warehouse: true,
-      },
-    });
+    const lowStockItems = await this.repo.findLowStockWarehouseProducts(tenantId, 10);
 
     const alerts = [];
     for (const item of lowStockItems) {
-      const alert = await this.prisma.reorderThresholdAlert.create({
-        data: {
-          productId: item.productId,
-          currentQty: item.stockQty,
-          threshold: item.reorderLevel,
-          isResolved: false,
-        },
+      const alert = await this.repo.createReorderAlert({
+        productId: item.productId,
+        currentQty: item.stockQty,
+        threshold: item.reorderLevel,
+        isResolved: false,
       });
 
       alerts.push({
@@ -165,26 +144,21 @@ export class StockValuationService {
     const bookQty = Number(currentRecord.stockQty);
     const variance = dto.physicalCount - bookQty;
 
-    // Create adjustment
-    const adjustment = await this.prisma.inventoryAdjustment.create({
-      data: {
-        tenantId,
-        reason: dto.reason || 'Physical Count Reconciliation',
-        adjustedDate: new Date(),
-        status: 'approved',
-        items: {
-          create: [
-            {
-              productId: dto.productId,
-              quantityDiff: variance,
-            },
-          ],
-        },
+    const adjustment = await this.repo.createInventoryAdjustment({
+      tenantId,
+      reason: dto.reason || 'Physical Count Reconciliation',
+      adjustedDate: new Date(),
+      status: 'approved',
+      items: {
+        create: [
+          {
+            productId: dto.productId,
+            quantityDiff: variance,
+          },
+        ],
       },
-      include: { items: true },
     });
 
-    // Update stock to match physical count
     if (variance !== 0) {
       await this.warehouseService.updateStock(
         dto.warehouseId,

@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { ProcurementService } from '../services/procurement.service.js';
+import { ProcurementApplicationService } from '../../application/services/procurement.application-service.js';
 import { CreateGoodsReceivedNoteDto, CreatePurchaseOrderDto, ThreeWayMatchDto } from '../dto/procurement.dto.js';
 
 @ApiTags('Supply Chain - Procurement & 3-Way Matching')
@@ -10,7 +10,7 @@ import { CreateGoodsReceivedNoteDto, CreatePurchaseOrderDto, ThreeWayMatchDto } 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/inventory/procurement')
 export class ProcurementController {
-  constructor(private readonly procurementService: ProcurementService) {}
+  constructor(private readonly procurementService: ProcurementApplicationService) {}
 
   @Post('orders')
   @Roles('SuperAdmin', 'Company Owner/GM', 'Property General Manager', 'Purchasing Manager', 'Executive Chef')

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { ProductCatalogService } from '../services/product-catalog.service.js';
+import { ProductCatalogApplicationService } from '../../application/services/product-catalog.application-service.js';
 import { CreateProductDto } from '../dto/product.dto.js';
 
 @ApiTags('Supply Chain - Product Master Catalog')
@@ -10,7 +10,7 @@ import { CreateProductDto } from '../dto/product.dto.js';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/inventory/products')
 export class ProductCatalogController {
-  constructor(private readonly catalogService: ProductCatalogService) {}
+  constructor(private readonly catalogService: ProductCatalogApplicationService) {}
 
   @Post()
   @Roles('SuperAdmin', 'Company Owner/GM', 'Property General Manager', 'F&B Director', 'Purchasing Manager')

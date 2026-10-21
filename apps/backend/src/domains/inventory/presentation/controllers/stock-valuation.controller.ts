@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/co
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
-import { StockValuationService } from '../services/stock-valuation.service.js';
+import { StockValuationApplicationService } from '../../application/services/stock-valuation.application-service.js';
 import { PhysicalStocktakeAdjustmentDto, RecordWastageDto } from '../dto/stock-audit.dto.js';
 
 @ApiTags('Supply Chain - Stock Valuation & Audits')
@@ -10,7 +10,7 @@ import { PhysicalStocktakeAdjustmentDto, RecordWastageDto } from '../dto/stock-a
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/v1/inventory/valuation')
 export class StockValuationController {
-  constructor(private readonly valuationService: StockValuationService) {}
+  constructor(private readonly valuationService: StockValuationApplicationService) {}
 
   @Get('warehouse/:warehouseId')
   @ApiQuery({ name: 'method', enum: ['FIFO', 'WAC'], required: false, description: 'Valuation method (FIFO or WAC)' })

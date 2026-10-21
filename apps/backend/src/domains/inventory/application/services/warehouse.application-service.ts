@@ -1,57 +1,48 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@omnistay/database';
-import { CreateWarehouseBinDto, CreateWarehouseDto, InitiateStockTransferDto } from '../dto/warehouse.dto.js';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  INVENTORY_REPOSITORY_TOKEN,
+  type IInventoryRepository,
+} from '../../domain/repositories/inventory.repository.interface.js';
+import type {
+  CreateWarehouseBinDto,
+  CreateWarehouseDto,
+  InitiateStockTransferDto,
+} from '../../presentation/dto/warehouse.dto.js';
 
 @Injectable()
-export class WarehouseService {
-  constructor(private readonly prisma: PrismaService) {}
+export class WarehouseApplicationService {
+  constructor(
+    @Inject(INVENTORY_REPOSITORY_TOKEN)
+    private readonly repo: IInventoryRepository,
+  ) {}
 
   async createWarehouse(tenantId: string, dto: CreateWarehouseDto) {
-    return this.prisma.warehouse.create({
-      data: {
-        tenantId,
-        name: dto.name,
-        code: dto.code,
-        address: dto.address,
-        isActive: dto.isActive ?? true,
-      },
-      include: {
-        bins: true,
-        products: true,
-      },
+    return this.repo.createWarehouse({
+      tenantId,
+      name: dto.name,
+      code: dto.code,
+      address: dto.address,
+      isActive: dto.isActive ?? true,
     });
   }
 
   async getWarehouses(tenantId: string) {
-    return this.prisma.warehouse.findMany({
-      where: { tenantId },
-      include: {
-        bins: true,
-        products: {
-          include: { product: true },
-        },
-      },
-    });
+    return this.repo.findWarehouses(tenantId);
   }
 
   async createBin(warehouseId: string, dto: CreateWarehouseBinDto) {
-    const wh = await this.prisma.warehouse.findUnique({ where: { id: warehouseId } });
+    const wh = await this.repo.findWarehouseById(warehouseId);
     if (!wh) throw new NotFoundException('Warehouse not found');
 
-    return this.prisma.warehouseBin.create({
-      data: {
-        warehouseId,
-        binCode: dto.binCode,
-        zone: dto.zone,
-      },
+    return this.repo.createBin({
+      warehouseId,
+      binCode: dto.binCode,
+      zone: dto.zone,
     });
   }
 
   async getStockLevel(warehouseId: string, productId: string) {
-    const record = await this.prisma.warehouseProduct.findUnique({
-      where: { warehouseId_productId: { warehouseId, productId } },
-      include: { product: true, warehouse: true },
-    });
+    const record = await this.repo.findWarehouseProduct(warehouseId, productId);
     return record || { warehouseId, productId, stockQty: 0, reorderLevel: 10 };
   }
 
@@ -62,9 +53,7 @@ export class WarehouseService {
     changeType: string,
     reference?: string,
   ) {
-    const current = await this.prisma.warehouseProduct.findUnique({
-      where: { warehouseId_productId: { warehouseId, productId } },
-    });
+    const current = await this.repo.findWarehouseProduct(warehouseId, productId);
 
     const newQty = (current ? Number(current.stockQty) : 0) + quantityDelta;
     if (newQty < 0) {
@@ -73,26 +62,14 @@ export class WarehouseService {
       );
     }
 
-    const updated = await this.prisma.warehouseProduct.upsert({
-      where: { warehouseId_productId: { warehouseId, productId } },
-      update: { stockQty: newQty },
-      create: {
-        warehouseId,
-        productId,
-        stockQty: Math.max(0, newQty),
-        reorderLevel: 10,
-      },
-    });
+    const updated = await this.repo.upsertWarehouseProduct(warehouseId, productId, newQty);
 
-    // Record Stock Movement Log
-    await this.prisma.inventoryStockLog.create({
-      data: {
-        warehouseId,
-        productId,
-        changeQty: quantityDelta,
-        changeType,
-        reference,
-      },
+    await this.repo.createStockLog({
+      warehouseId,
+      productId,
+      changeQty: quantityDelta,
+      changeType,
+      reference,
     });
 
     return updated;
@@ -103,7 +80,6 @@ export class WarehouseService {
       throw new BadRequestException('Origin and destination warehouses cannot be the same');
     }
 
-    // Verify origin stock
     const originStock = await this.getStockLevel(dto.fromWarehouseId, dto.productId);
     if (Number(originStock.stockQty) < dto.quantity) {
       throw new BadRequestException(
@@ -132,14 +108,12 @@ export class WarehouseService {
     );
 
     // 3. Create Transfer record
-    const transfer = await this.prisma.warehouseTransfer.create({
-      data: {
-        fromWarehouseId: dto.fromWarehouseId,
-        toWarehouseId: dto.toWarehouseId,
-        transferNumber,
-        status: 'completed',
-        completedAt: new Date(),
-      },
+    const transfer = await this.repo.createWarehouseTransfer({
+      fromWarehouseId: dto.fromWarehouseId,
+      toWarehouseId: dto.toWarehouseId,
+      transferNumber,
+      status: 'completed',
+      completedAt: new Date(),
     });
 
     return {
