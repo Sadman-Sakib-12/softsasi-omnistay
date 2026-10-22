@@ -18,6 +18,11 @@ import { HrmModule } from './domains/hrm/hrm.module.js';
 import { CrmModule } from './domains/crm/crm.module.js';
 import { MarketplaceModule } from './domains/marketplace/marketplace.module.js';
 import { LoyaltyModule } from './domains/loyalty/loyalty.module.js';
+import { AiModule } from './domains/ai/ai.module.js';
+import { CommunicationModule } from './domains/communication/communication.module.js';
+import { IotModule } from './domains/iot/iot.module.js';
+import { ProjectModule } from './domains/project/project.module.js';
+import { PaymentModule } from './domains/payment/payment.module.js';
 import { CorrelationIdMiddleware } from '@omnistay/backend-common';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
@@ -45,6 +50,11 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     CrmModule,
     MarketplaceModule,
     LoyaltyModule,
+    AiModule,
+    CommunicationModule,
+    IotModule,
+    ProjectModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

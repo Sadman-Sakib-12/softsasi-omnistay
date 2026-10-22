@@ -23,7 +23,11 @@ Welcome to the central technical documentation portal for **OmniStay 360**. This
 - [Guest CRM & Sales Pipeline](domain-models/crm.md) — Lead scoring, sales pipelines, deals, and activity tracking.
 - [Guest Loyalty & Rewards](domain-models/loyalty.md) — Wallets, tier progression (Bronze to Platinum), and points burn.
 - [Vendor Marketplace](domain-models/marketplace.md) — Multi-vendor listings, commission splits, and escrow payouts.
+- [AI Suite & Omnichannel Communications](domain-models/ai-omnichannel.md) — RAG AI concierge, in-chat commerce, dynamic yield pricing, WhatsApp Business API, and SMS.
 - [Identity, Access Management & Tenancy](domain-models/auth-iam.md) — Global authentication, user profiles, and organization memberships.
+- **IoT Smart Room & Contactless Hospitality** — BLE digital keycard, Assa Abloy / Salto locks, smart HVAC thermostats, and in-room QR dining.
+- **Project & Asset Management / Bug Tracking** — Hotel renovations, Gantt charts, desktop time tracker with screenshot proof, and defect lifecycle.
+- **Global Payment Gateways Orchestrator** — Strategy pattern abstraction supporting Stripe, PayPal, SSLCommerz, bKash, Razorpay, and manual bank wire slips.
 
 ### 3. [Backend Engineering & Developer Guides](backend/api-conventions.md)
 - [API Conventions & Standards](backend/api-conventions.md) — REST URL patterns, HTTP methods, status codes, and OpenAPI 3.1.
@@ -39,7 +43,7 @@ Welcome to the central technical documentation portal for **OmniStay 360**. This
 # 1. Install workspace dependencies
 pnpm install
 
-# 2. Run the complete backend test suite (194 tests)
+# 2. Run the complete backend test suite (236 tests across 29 test suites)
 pnpm --filter @omnistay/backend test
 
 # 3. Build the backend server
