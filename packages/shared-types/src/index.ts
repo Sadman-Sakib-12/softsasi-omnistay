@@ -17,3 +17,5 @@ export * from './hrm.js';
 export * from './crm.js';
 export * from './marketplace.js';
 export * from './loyalty.js';
+export * from './ai.js';
+export * from './communication.js';
