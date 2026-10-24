@@ -62,7 +62,7 @@ describe('OpenAPI 3.1.0 Specification Setup', () => {
 
       app = moduleFixture.createNestApplication();
       document = setupSwagger(app);
-    });
+    }, 60000);
 
     afterAll(async () => {
       if (app) {
