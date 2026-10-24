@@ -3,44 +3,30 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, ArrowRight, Loader2, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { loginSchema, LoginFormData } from '../schemas/login.schema';
 import { useAuth } from '../hooks/use-auth';
 
-const DEMO_PRESETS = [
-  { label: 'SuperAdmin', email: 'superadmin@omnistay.com', roleDesc: 'Root Admin' },
-  { label: 'General Manager', email: 'gm@grandresort.com', roleDesc: 'Property GM' },
-  { label: 'Front Desk', email: 'frontdesk@grandresort.com', roleDesc: 'Reception' },
-  { label: 'Accountant', email: 'finance@grandresort.com', roleDesc: 'Finance' },
-];
-
 export function LoginForm() {
   const { login, isLoggingIn, loginError } = useAuth();
-  const [showDemoPresets, setShowDemoPresets] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema) as any,
     defaultValues: {
-      email: 'superadmin@omnistay.com',
-      password: 'Password@123',
+      email: '',
+      password: '',
       rememberMe: true,
     },
   });
 
   const onSubmit = (data: LoginFormData) => {
     login(data);
-  };
-
-  const applyDemoPreset = (email: string) => {
-    setValue('email', email, { shouldValidate: true });
-    setValue('password', 'Password@123', { shouldValidate: true });
   };
 
   return (
@@ -62,7 +48,7 @@ export function LoginForm() {
             <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="email"
-              placeholder="operator@omnistay.com"
+              placeholder="admin@omnistay.com"
               {...register('email')}
               className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
             />
@@ -144,33 +130,6 @@ export function LoginForm() {
           </Link>
         </div>
       </form>
-
-      {/* Demo Credentials Drawer */}
-      <div className="pt-3 border-t border-slate-100">
-        <button
-          type="button"
-          onClick={() => setShowDemoPresets(!showDemoPresets)}
-          className="w-full text-[11px] text-slate-500 hover:text-slate-800 font-medium text-center flex items-center justify-center gap-1.5 cursor-pointer"
-        >
-          <span>{showDemoPresets ? 'Hide Demo Logins' : 'Quick Fill Demo Credentials'}</span>
-        </button>
-
-        {showDemoPresets && (
-          <div className="grid grid-cols-2 gap-2 mt-3 animate-in fade-in duration-200">
-            {DEMO_PRESETS.map((demo) => (
-              <button
-                key={demo.label}
-                type="button"
-                onClick={() => applyDemoPreset(demo.email)}
-                className="p-2 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-blue-50/80 hover:border-blue-200 text-left transition-all cursor-pointer"
-              >
-                <div className="text-[11px] font-bold text-slate-800">{demo.label}</div>
-                <div className="text-[10px] text-slate-500 truncate">{demo.roleDesc}</div>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }

@@ -14,21 +14,19 @@ export default function AvailabilityCalendarPage() {
 
   const selectedHotelName = properties[0]?.name || 'Hotel Stanford';
 
-  const defaultRoomsList = rooms.length > 0
-    ? rooms.map((r, i) => ({
-        id: r.id,
-        label: `#${rooms.length - i} - ${r.name}`,
-        price: r.pricePerNight || r.basePrice || 350,
-        inventory: r.numberOfBeds || 5,
-      }))
-    : [
-        { id: '4', label: '#4 - Standard Double Room', price: 350, inventory: 5 },
-        { id: '3', label: '#3 - Double Room With Town View', price: 350, inventory: 5 },
-        { id: '2', label: '#2 - Room Sheraton Hotel', price: 350, inventory: 5 },
-        { id: '1', label: '#1 - Room Kerama Islands', price: 350, inventory: 5 },
-      ];
+  const defaultRoomsList = rooms.map((r, i) => ({
+    id: r.id,
+    label: `#${rooms.length - i} - ${r.name}`,
+    price: r.pricePerNight || r.basePrice || 350,
+    inventory: r.numberOfBeds || 5,
+  }));
 
-  const currentRoom = defaultRoomsList[selectedRoomIndex] || defaultRoomsList[0];
+  const currentRoom = defaultRoomsList[selectedRoomIndex] || defaultRoomsList[0] || {
+    id: '',
+    label: 'No Room Selected',
+    price: 0,
+    inventory: 0,
+  };
 
   // Calendar dates matrix for October 2026 matching Figure 4.3 (Starts Thursday Oct 1)
   const calendarCells = [
@@ -117,24 +115,30 @@ export default function AvailabilityCalendarPage() {
             <h2 className="text-xs font-bold text-slate-700">Availability</h2>
           </div>
           <div className="divide-y divide-slate-100">
-            {defaultRoomsList.map((roomItem, idx) => {
-              const isSelected = selectedRoomIndex === idx;
+            {defaultRoomsList.length > 0 ? (
+              defaultRoomsList.map((roomItem, idx) => {
+                const isSelected = selectedRoomIndex === idx;
 
-              return (
-                <button
-                  key={roomItem.id}
-                  type="button"
-                  onClick={() => setSelectedRoomIndex(idx)}
-                  className={`w-full text-left p-3.5 text-xs transition-colors cursor-pointer flex items-center justify-between ${
-                    isSelected
-                      ? 'bg-blue-50/80 font-bold text-blue-600 border-l-4 border-blue-500'
-                      : 'text-blue-500 hover:bg-slate-50/80 font-medium'
-                  }`}
-                >
-                  <span>{roomItem.label}</span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={roomItem.id}
+                    type="button"
+                    onClick={() => setSelectedRoomIndex(idx)}
+                    className={`w-full text-left p-3.5 text-xs transition-colors cursor-pointer flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-blue-50/80 font-bold text-blue-600 border-l-4 border-blue-500'
+                        : 'text-blue-500 hover:bg-slate-50/80 font-medium'
+                    }`}
+                  >
+                    <span>{roomItem.label}</span>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="p-6 text-center text-slate-400 text-xs">
+                No rooms configured for this hotel yet.
+              </div>
+            )}
           </div>
         </div>
 
