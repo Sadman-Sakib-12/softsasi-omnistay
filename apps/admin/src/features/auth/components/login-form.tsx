@@ -3,23 +3,22 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, ArrowRight, Loader2, AlertCircle, Sparkles, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { loginSchema, LoginFormData } from '../schemas/login.schema';
 import { useAuth } from '../hooks/use-auth';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 const DEMO_PRESETS = [
-  { label: 'SuperAdmin', email: 'superadmin@omnistay.com', roleDesc: 'Full Root Access' },
-  { label: 'General Manager', email: 'gm@grandresort.com', roleDesc: 'Property & Financial Control' },
-  { label: 'Front Desk', email: 'frontdesk@grandresort.com', roleDesc: 'Tape Chart & Check-In' },
-  { label: 'Accountant', email: 'finance@grandresort.com', roleDesc: 'Night Audit & Ledger' },
+  { label: 'SuperAdmin', email: 'superadmin@omnistay.com', roleDesc: 'Root Admin' },
+  { label: 'General Manager', email: 'gm@grandresort.com', roleDesc: 'Property GM' },
+  { label: 'Front Desk', email: 'frontdesk@grandresort.com', roleDesc: 'Reception' },
+  { label: 'Accountant', email: 'finance@grandresort.com', roleDesc: 'Finance' },
 ];
 
 export function LoginForm() {
   const { login, isLoggingIn, loginError } = useAuth();
   const [showDemoPresets, setShowDemoPresets] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -45,123 +44,128 @@ export function LoginForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {loginError && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2.5">
+          <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{loginError.message || 'Authentication failed. Please verify your credentials.'}</span>
+            <span>{loginError.message || 'Authentication failed. Please verify credentials.'}</span>
           </div>
         )}
 
         {/* Business Email */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-slate-300">Work / Operator Email</label>
-          <Input
-            type="email"
-            placeholder="admin@omnistay.com"
-            icon={<Mail className="w-4 h-4" />}
-            {...register('email')}
-          />
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold text-slate-700">
+            Work / Operator Email
+          </label>
+          <div className="relative">
+            <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="email"
+              placeholder="operator@omnistay.com"
+              {...register('email')}
+              className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+            />
+          </div>
           {errors.email && (
-            <p className="text-[11px] text-rose-400 mt-1">{errors.email.message}</p>
+            <p className="text-[11px] text-rose-500">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-slate-300">Password</label>
+            <label className="block text-xs font-semibold text-slate-700">
+              Password
+            </label>
             <Link
               href="/forgot-password"
-              className="text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="text-[11px] text-blue-600 hover:underline font-medium"
             >
               Forgot password?
             </Link>
           </div>
-          <Input
-            type="password"
-            placeholder="••••••••••••"
-            icon={<Lock className="w-4 h-4" />}
-            {...register('password')}
-          />
+          <div className="relative">
+            <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              {...register('password')}
+              className="w-full h-9 pl-9 pr-8 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </button>
+          </div>
           {errors.password && (
-            <p className="text-[11px] text-rose-400 mt-1">{errors.password.message}</p>
+            <p className="text-[11px] text-rose-500">{errors.password.message}</p>
           )}
         </div>
 
-        {/* Remember me & Security */}
-        <div className="flex items-center justify-between pt-1 text-xs text-slate-400">
-          <label className="flex items-center gap-2 cursor-pointer select-none">
+        {/* Remember me */}
+        <div className="flex items-center justify-between text-xs pt-0.5">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-slate-600">
             <input
               type="checkbox"
               {...register('rememberMe')}
-              className="rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500/30"
+              className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
             />
-            <span>Remember this device</span>
+            <span>Remember session on this device</span>
           </label>
-          <span className="text-[11px] text-slate-500 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> 2FA Protected
-          </span>
         </div>
 
         {/* Submit Button */}
-        <Button
+        <button
           type="submit"
-          variant="glow"
-          className="w-full mt-2 h-11 text-xs font-semibold tracking-wide"
           disabled={isLoggingIn}
+          className="w-full h-10 px-4 text-xs font-bold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {isLoggingIn ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin mr-2" /> Authenticating Session...
+              <Loader2 className="w-4 h-4 animate-spin" /> Verifying Credentials...
             </>
           ) : (
             <>
-              Sign In to PMS Console <ArrowRight className="w-4 h-4 ml-1.5" />
+              <span>Sign In to Admin</span>
+              <ArrowRight className="w-4 h-4" />
             </>
           )}
-        </Button>
+        </button>
 
-        {/* Link to Register */}
-        <div className="text-center pt-2">
-          <span className="text-xs text-slate-400">
-            Need a new property workspace?{' '}
-            <Link href="/register" className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-4">
-              Register Hotel Property
-            </Link>
-          </span>
+        {/* Register link */}
+        <div className="text-center pt-2 text-xs text-slate-500">
+          Need a new hotel property workspace?{' '}
+          <Link href="/register" className="text-blue-600 font-bold hover:underline">
+            Register Property
+          </Link>
         </div>
       </form>
 
-      {/* Quick Demo Preset Selector for Evaluation */}
-      <div className="pt-3 border-t border-slate-800/80">
+      {/* Demo Credentials Drawer */}
+      <div className="pt-3 border-t border-slate-100">
         <button
           type="button"
           onClick={() => setShowDemoPresets(!showDemoPresets)}
-          className="w-full flex items-center justify-between text-[11px] text-slate-500 hover:text-slate-300 transition-colors py-1"
+          className="w-full text-[11px] text-slate-500 hover:text-slate-800 font-medium text-center flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            Demo Evaluation Accounts
-          </span>
-          <span className="text-[10px] text-slate-600 font-mono">
-            {showDemoPresets ? 'Hide' : 'Quick Autofill'}
-          </span>
+          <span>{showDemoPresets ? 'Hide Demo Logins' : 'Quick Fill Demo Credentials'}</span>
         </button>
 
         {showDemoPresets && (
-          <div className="grid grid-cols-2 gap-2 mt-2 pt-1 animate-in fade-in duration-200">
-            {DEMO_PRESETS.map((p) => (
+          <div className="grid grid-cols-2 gap-2 mt-3 animate-in fade-in duration-200">
+            {DEMO_PRESETS.map((demo) => (
               <button
-                key={p.label}
+                key={demo.label}
                 type="button"
-                onClick={() => applyDemoPreset(p.email)}
-                className="text-left p-2 rounded-xl border border-slate-800 bg-slate-900/60 hover:border-emerald-500/40 hover:bg-slate-800/80 transition-all"
+                onClick={() => applyDemoPreset(demo.email)}
+                className="p-2 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-blue-50/80 hover:border-blue-200 text-left transition-all cursor-pointer"
               >
-                <div className="text-xs font-semibold text-white">{p.label}</div>
-                <div className="text-[10px] text-slate-400 truncate">{p.email}</div>
-                <div className="text-[9px] text-emerald-400/80 mt-0.5">{p.roleDesc}</div>
+                <div className="text-[11px] font-bold text-slate-800">{demo.label}</div>
+                <div className="text-[10px] text-slate-500 truncate">{demo.roleDesc}</div>
               </button>
             ))}
           </div>
