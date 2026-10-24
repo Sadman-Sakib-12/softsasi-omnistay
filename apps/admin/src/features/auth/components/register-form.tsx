@@ -10,8 +10,6 @@ import {
   Lock,
   User,
   Phone,
-  Hotel,
-  ArrowRight,
   Loader2,
   CheckCircle2,
   ShieldCheck,
@@ -55,6 +53,7 @@ export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -110,7 +109,7 @@ export function RegisterForm() {
       setSuccess(true);
       setTimeout(() => {
         router.push('/dashboard');
-      }, 1500);
+      }, 1200);
     } catch (err: any) {
       alert(err.message || 'Registration failed');
     } finally {
@@ -120,213 +119,213 @@ export function RegisterForm() {
 
   if (success) {
     return (
-      <div className="text-center py-8 space-y-4 animate-in fade-in zoom-in duration-300">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200">
-          <CheckCircle2 className="w-10 h-10" />
+      <div className="text-center py-6 space-y-4 animate-in fade-in zoom-in duration-300">
+        <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center border border-emerald-200 shadow-sm">
+          <CheckCircle2 className="w-9 h-9" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Hotel Property Registered!</h2>
+        <h2 className="text-xl font-bold text-slate-900">Account Created!</h2>
         <p className="text-xs text-slate-500 max-w-sm mx-auto">
-          Welcome to SoftSasi OmniStay. Your General Manager master account and property workspace have been created successfully.
+          Welcome to SoftSasi OmniStay. Your administrator account and hotel workspace have been initialized successfully.
         </p>
-        <div className="flex items-center justify-center gap-2 text-xs text-blue-600 pt-2 font-medium">
-          <Loader2 className="w-4 h-4 animate-spin text-blue-500" /> Redirecting to Master PMS Dashboard...
+        <div className="flex items-center justify-center gap-2 text-xs text-[#00a8ff] pt-2 font-medium">
+          <Loader2 className="w-4 h-4 animate-spin text-[#00a8ff]" /> Redirecting to Dashboard...
         </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* Full Name & Business Email */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-1">
+    <div className="w-full">
+      {/* Top Shield Icon Badge */}
+      <div className="w-14 h-14 rounded-2xl bg-[#00a8ff] text-white flex items-center justify-center mx-auto mb-5 shadow-md shadow-blue-500/20">
+        <ShieldCheck className="w-7 h-7 text-white stroke-[2.2]" />
+      </div>
+
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create Account</h1>
+        <p className="text-xs text-slate-500 mt-1.5 font-normal">Enter your details to create admin workspace</p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
+        {/* Full Name */}
+        <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">
             Full Name <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="e.g. John Doe"
+              placeholder="John Doe"
               {...register('fullName')}
-              className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="w-full h-11 pl-10 pr-3.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff] transition-all"
             />
           </div>
           {errors.fullName && (
-            <p className="text-[11px] text-rose-500">{errors.fullName.message}</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">{errors.fullName.message}</p>
           )}
         </div>
 
-        <div className="space-y-1">
+        {/* Work Email */}
+        <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">
-            Work Email <span className="text-rose-500">*</span>
+            Email Address <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="email"
               placeholder="admin@hotel.com"
               {...register('email')}
-              className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="w-full h-11 pl-10 pr-3.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff] transition-all"
             />
           </div>
           {errors.email && (
-            <p className="text-[11px] text-rose-500">{errors.email.message}</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">{errors.email.message}</p>
           )}
         </div>
-      </div>
 
-      {/* Phone Number & Hotel Name */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-1">
+        {/* Phone Number */}
+        <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">
             Phone Number <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="+880 1700 000000"
               {...register('phone')}
-              className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="w-full h-11 pl-10 pr-3.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff] transition-all"
             />
           </div>
           {errors.phone && (
-            <p className="text-[11px] text-rose-500">{errors.phone.message}</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">{errors.phone.message}</p>
           )}
         </div>
 
-        <div className="space-y-1">
+        {/* Property Name */}
+        <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">
-            Hotel / Property Name <span className="text-rose-500">*</span>
+            Property Name <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <Hotel className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="e.g. Hotel Stanford"
+              placeholder="Grand Palace Hotel"
               {...register('companyName')}
-              className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="w-full h-11 pl-10 pr-3.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff] transition-all"
             />
           </div>
           {errors.companyName && (
-            <p className="text-[11px] text-rose-500">{errors.companyName.message}</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">{errors.companyName.message}</p>
           )}
         </div>
-      </div>
 
-      {/* Property Classification */}
-      <div className="space-y-1">
-        <label className="block text-xs font-semibold text-slate-700">
-          Property Type
-        </label>
-        <select
-          {...register('propertyType')}
-          className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-        >
-          <option value="hotel">Commercial Hotel</option>
-          <option value="resort">Luxury Beach Resort & Spa</option>
-          <option value="boutique">Boutique Hotel & Suites</option>
-          <option value="villa">Private Villa Collection</option>
-          <option value="apartments">Serviced Apartments</option>
-        </select>
-      </div>
-
-      {/* Password & Confirm Password */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-1">
+        {/* Password */}
+        <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">
             Password <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               {...register('password')}
-              className="w-full h-9 pl-9 pr-8 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="w-full h-11 pl-10 pr-10 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff] transition-all tracking-wider font-mono"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
-              {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-[11px] text-rose-500">{errors.password.message}</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">{errors.password.message}</p>
           )}
         </div>
 
-        <div className="space-y-1">
+        {/* Confirm Password */}
+        <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">
             Confirm Password <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? 'text' : 'password'}
               placeholder="••••••••"
               {...register('confirmPassword')}
-              className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="w-full h-11 pl-10 pr-10 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff] transition-all tracking-wider font-mono"
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-[11px] text-rose-500">{errors.confirmPassword.message}</p>
+            <p className="text-[11px] text-rose-500 mt-0.5">{errors.confirmPassword.message}</p>
           )}
         </div>
-      </div>
 
-      {/* Terms Checkbox */}
-      <div className="pt-1">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            {...register('agreeTerms')}
-            className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
-          />
-          <span className="text-xs text-slate-600">
-            I agree to the{' '}
-            <span className="text-blue-600 font-semibold hover:underline">
-              Terms of Service
-            </span>{' '}
-            and{' '}
-            <span className="text-blue-600 font-semibold hover:underline">
-              Privacy Policy
+        {/* Terms Checkbox */}
+        <div className="pt-1">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              {...register('agreeTerms')}
+              className="rounded border-slate-300 text-[#00a8ff] focus:ring-0 cursor-pointer"
+            />
+            <span className="text-xs text-slate-600">
+              I agree to the{' '}
+              <span className="text-[#00a8ff] font-semibold hover:underline">
+                Terms of Service
+              </span>{' '}
+              and{' '}
+              <span className="text-[#00a8ff] font-semibold hover:underline">
+                Privacy Policy
+              </span>
             </span>
-          </span>
-        </label>
-        {errors.agreeTerms && (
-          <p className="text-[11px] text-rose-500 mt-1">{errors.agreeTerms.message}</p>
-        )}
-      </div>
+          </label>
+          {errors.agreeTerms && (
+            <p className="text-[11px] text-rose-500 mt-1">{errors.agreeTerms.message}</p>
+          )}
+        </div>
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full h-10 px-4 text-xs font-bold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2"
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" /> Provisioning Hotel Workspace...
-          </>
-        ) : (
-          <>
-            <span>Register Hotel Property</span>
-            <ArrowRight className="w-4 h-4" />
-          </>
-        )}
-      </button>
+        {/* Submit Button */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-11 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-bold rounded-xl shadow-2xs transition-colors flex items-center justify-center cursor-pointer disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Creating Account...</span>
+              </div>
+            ) : (
+              'Create Account'
+            )}
+          </button>
+        </div>
 
-      {/* Sign In Link */}
-      <div className="text-center pt-2 text-xs text-slate-500">
-        Already have an account?{' '}
-        <Link href="/login" className="text-blue-600 font-bold hover:underline">
-          Sign In here
-        </Link>
-      </div>
-    </form>
+        {/* Sign In Link */}
+        <p className="text-center text-xs text-slate-500 pt-3">
+          Already have an account?{' '}
+          <Link href="/login" className="text-[#00a8ff] font-bold hover:underline ml-1">
+            Sign In
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }
