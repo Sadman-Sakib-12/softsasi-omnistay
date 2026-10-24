@@ -19,7 +19,7 @@ export default function AdminLayout({
 
   if (!mounted) {
     return (
-      <div className="h-screen w-screen bg-slate-950 flex items-center justify-center text-slate-500 text-xs">
+      <div className="h-screen w-screen bg-[#f8fafc] flex items-center justify-center text-slate-500 text-xs font-medium">
         Loading OmniStay Admin Shell...
       </div>
     );

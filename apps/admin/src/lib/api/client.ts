@@ -41,8 +41,11 @@ apiClient.interceptors.response.use(
       'Backend service request failed';
 
     if (statusCode === 401 && typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-      sessionManager.clear();
-      window.location.href = '/login';
+      const token = sessionManager.getToken();
+      if (!token) {
+        sessionManager.clear();
+        window.location.href = '/login';
+      }
     }
 
     return Promise.reject(new ApiError(message, statusCode, error.response?.data));
