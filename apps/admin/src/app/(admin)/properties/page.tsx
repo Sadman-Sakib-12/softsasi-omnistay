@@ -88,12 +88,19 @@ export default function PropertiesPage() {
           </select>
           <button
             type="button"
-            className="h-9 px-4 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs cursor-pointer"
-            onClick={() => {
-              if (selectedIds.length === 0) {
-                alert('Please select items first');
+            disabled={selectedIds.length === 0}
+            className="h-9 px-4 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={async () => {
+              if (selectedIds.length === 0) return;
+              if (bulkAction === 'Delete') {
+                if (confirm(`Are you sure you want to delete ${selectedIds.length} property(ies)?`)) {
+                  for (const id of selectedIds) {
+                    await deleteProperty(id);
+                  }
+                  setSelectedIds([]);
+                }
               } else {
-                alert(`${bulkAction} applied to ${selectedIds.length} item(s)`);
+                setSelectedIds([]);
               }
             }}
           >

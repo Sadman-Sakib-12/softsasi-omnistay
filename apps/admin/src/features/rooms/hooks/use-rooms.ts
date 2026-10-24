@@ -27,6 +27,14 @@ export function useRooms() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, dto }: { id: string; dto: Partial<CreateRoomDto> }) =>
+      roomsService.update(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+    },
+  });
+
   return {
     rooms: roomsQuery.data || [],
     isLoading: roomsQuery.isLoading,
@@ -34,5 +42,7 @@ export function useRooms() {
     createRoom: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
     deleteRoom: deleteMutation.mutateAsync,
+    updateRoom: updateMutation.mutateAsync,
+    isUpdating: updateMutation.isPending,
   };
 }

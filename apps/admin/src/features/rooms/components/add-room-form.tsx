@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
+import { Image as ImageIcon, Upload, Loader2, X, Plus } from 'lucide-react';
 import { useRooms } from '../hooks/use-rooms';
 import { useProperties } from '@/features/properties/hooks/use-properties';
 
@@ -23,6 +23,9 @@ export function AddRoomForm() {
   const { createRoom, isCreating } = useRooms();
   const { properties } = useProperties();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const featureInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -38,6 +41,22 @@ export function AddRoomForm() {
     },
   });
 
+  const handleFeatureImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setImagePreview(url);
+    }
+  };
+
+  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newUrls = Array.from(files).map((f) => URL.createObjectURL(f));
+      setGalleryPreviews((prev) => [...prev, ...newUrls]);
+    }
+  };
+
   const onSubmit = async (data: RoomFormData) => {
     try {
       await createRoom({
@@ -47,6 +66,7 @@ export function AddRoomForm() {
       });
       reset();
       setImagePreview(null);
+      setGalleryPreviews([]);
     } catch (e) {
       console.error(e);
     }
@@ -95,32 +115,90 @@ export function AddRoomForm() {
         {/* Feature Image Upload Matching Figure 3.1 */}
         <div className="space-y-1">
           <label className="block text-slate-700 font-semibold">Feature Image</label>
-          <div className="border border-dashed border-slate-200 rounded p-4 text-center bg-slate-50/40">
-            <div className="w-16 h-16 mx-auto mb-2 bg-white border border-slate-200 rounded flex items-center justify-center text-slate-300">
-              <ImageIcon className="w-8 h-8" />
+          <input
+            type="file"
+            accept="image/*"
+            ref={featureInputRef}
+            onChange={handleFeatureImageChange}
+            className="hidden"
+          />
+          <div className="border border-dashed border-slate-200 rounded p-4 text-center bg-slate-50/40 relative">
+            {imagePreview ? (
+              <div className="relative inline-block mb-2">
+                <img
+                  src={imagePreview}
+                  alt="Feature Preview"
+                  className="w-24 h-20 object-cover rounded border border-slate-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setImagePreview(null)}
+                  className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-0.5 shadow-sm hover:bg-rose-600 cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="w-16 h-16 mx-auto mb-2 bg-white border border-slate-200 rounded flex items-center justify-center text-slate-300">
+                <ImageIcon className="w-8 h-8" />
+              </div>
+            )}
+            <div>
+              <button
+                type="button"
+                className="px-3 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1 cursor-pointer"
+                onClick={() => featureInputRef.current?.click()}
+              >
+                <Upload className="w-3 h-3" />
+                {imagePreview ? 'Change image' : 'Upload image'}
+              </button>
             </div>
-            <button
-              type="button"
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1 cursor-pointer"
-              onClick={() => alert('Feature image selector opened')}
-            >
-              <Upload className="w-3 h-3" />
-              Upload image
-            </button>
           </div>
         </div>
 
         {/* Gallery Select Images Button Matching Figure 3.1 */}
         <div className="space-y-1">
           <label className="block text-slate-700 font-semibold">Gallery</label>
-          <div>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            ref={galleryInputRef}
+            onChange={handleGalleryChange}
+            className="hidden"
+          />
+          <div className="space-y-2">
             <button
               type="button"
               className="px-3 py-1.5 text-xs font-semibold text-white bg-[#00b894] hover:bg-[#00a383] rounded transition-colors shadow-2xs inline-flex items-center gap-1 cursor-pointer"
-              onClick={() => alert('Gallery selector opened')}
+              onClick={() => galleryInputRef.current?.click()}
             >
+              <Plus className="w-3 h-3" />
               Select images
             </button>
+
+            {galleryPreviews.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {galleryPreviews.map((url, idx) => (
+                  <div key={idx} className="relative group">
+                    <img
+                      src={url}
+                      alt={`Gallery ${idx + 1}`}
+                      className="w-14 h-12 object-cover rounded border border-slate-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setGalleryPreviews((prev) => prev.filter((_, i) => i !== idx))
+                      }
+                      className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full p-0.5 shadow-sm hover:bg-rose-600 cursor-pointer"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

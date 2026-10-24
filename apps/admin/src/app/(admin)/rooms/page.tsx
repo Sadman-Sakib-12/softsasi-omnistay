@@ -7,14 +7,20 @@ import { AddRoomForm } from '@/features/rooms/components/add-room-form';
 import { useRooms } from '@/features/rooms/hooks/use-rooms';
 import { useProperties } from '@/features/properties/hooks/use-properties';
 import { Room } from '@/features/rooms/services/rooms.service';
-import { Calendar, ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { Calendar, ArrowLeft, Edit, Trash2, X, Save, Loader2 } from 'lucide-react';
 
 export default function RoomManagementPage() {
   const router = useRouter();
-  const { rooms, isLoading, deleteRoom } = useRooms();
+  const { rooms, isLoading, deleteRoom, updateRoom, isUpdating } = useRooms();
   const { properties } = useProperties();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState('Bulk Actions');
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    pricePerNight: 350,
+    numberOfBeds: 1,
+  });
 
   const selectedHotelName = properties[0]?.name || 'Hotel Stanford';
 
@@ -30,6 +36,24 @@ export default function RoomManagementPage() {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingRoom) return;
+    try {
+      await updateRoom({
+        id: editingRoom.id,
+        dto: {
+          name: editFormData.name,
+          pricePerNight: Number(editFormData.pricePerNight),
+          numberOfBeds: Number(editFormData.numberOfBeds),
+        },
+      });
+      setEditingRoom(null);
+    } catch (err) {
+      console.error(err);
+      setEditingRoom(null);
+    }
   };
 
   return (
@@ -181,7 +205,14 @@ export default function RoomManagementPage() {
                               <button
                                 type="button"
                                 className="px-3 py-1 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors inline-flex items-center gap-1 cursor-pointer"
-                                onClick={() => alert(`Editing room: ${room.name}`)}
+                                onClick={() => {
+                                  setEditingRoom(room);
+                                  setEditFormData({
+                                    name: room.name,
+                                    pricePerNight: room.pricePerNight || room.basePrice || 350,
+                                    numberOfBeds: room.numberOfBeds || 1,
+                                  });
+                                }}
                               >
                                 <Edit className="w-3 h-3" />
                                 Edit
@@ -218,6 +249,83 @@ export default function RoomManagementPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Room Dialog Modal */}
+      {editingRoom && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Edit className="w-4 h-4 text-[#00a8ff]" /> Edit Room Details
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingRoom(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="block text-slate-700 font-semibold">Room Name</label>
+                <input
+                  type="text"
+                  value={editFormData.name}
+                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                  className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Price Per Night ($)</label>
+                  <input
+                    type="number"
+                    value={editFormData.pricePerNight}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, pricePerNight: Number(e.target.value) })
+                    }
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Number of Beds</label>
+                  <input
+                    type="number"
+                    value={editFormData.numberOfBeds}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, numberOfBeds: Number(e.target.value) })
+                    }
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setEditingRoom(null)}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isUpdating}
+                onClick={handleSaveEdit}
+                className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

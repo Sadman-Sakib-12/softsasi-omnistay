@@ -1,236 +1,512 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import {
   Settings,
-  CreditCard,
-  Mail,
-  Shield,
-  Bot,
-  Globe,
-  Save,
+  Upload,
   CheckCircle2,
-  DollarSign,
+  ExternalLink,
+  MapPin,
+  Save,
+  Globe,
+  CreditCard,
+  Calendar,
+  Users,
+  Shield,
+  Layers,
+  Sparkles,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
-const categories = [
-  { id: 'general', title: 'General & Localization', icon: Globe },
-  { id: 'payment', title: 'Payment Gateways (35+)', icon: CreditCard },
-  { id: 'email', title: 'Email & SMTP', icon: Mail },
-  { id: 'security', title: 'Security & 2FA', icon: Shield },
-  { id: 'ai', title: 'AI Concierge & LLM', icon: Bot },
+interface LanguageTab {
+  id: string;
+  label: string;
+  flag: string;
+}
+
+const languageTabs: LanguageTab[] = [
+  { id: 'en', label: 'English', flag: '🇬🇧' },
+  { id: 'ja', label: 'Japanese', flag: '🇯🇵' },
+  { id: 'eg', label: 'Egyptian', flag: '🇪🇬' },
 ];
 
-export default function SettingsPage() {
-  const [activeCategory, setActiveCategory] = useState('general');
-  const [saved, setSaved] = useState(false);
+interface MainSettingItem {
+  id: string;
+  label: string;
+  isPro?: boolean;
+}
+
+const mainSettingsList: MainSettingItem[] = [
+  { id: 'general', label: 'General Settings' },
+  { id: 'hotel', label: 'Hotel Settings' },
+  { id: 'space', label: 'Space Settings' },
+  { id: 'car', label: 'Car Settings' },
+  { id: 'event', label: 'Event Settings' },
+  { id: 'tour', label: 'Tour Settings' },
+  { id: 'flight', label: 'Flight Settings' },
+  { id: 'boat', label: 'Boat Settings' },
+  { id: 'news', label: 'News Settings' },
+  { id: 'booking', label: 'Booking Settings' },
+  { id: 'inquiry', label: 'Inquiry Settings' },
+  { id: 'user', label: 'User Settings' },
+  { id: 'wallet', label: 'Wallet Settings', isPro: true },
+  { id: 'vendor', label: 'Vendor Settings' },
+  { id: 'user-plans', label: 'User Plans Settings' },
+  { id: 'payment', label: 'Payment Settings' },
+  { id: 'style', label: 'Style Settings' },
+  { id: 'advanced', label: 'Advanced Settings' },
+];
+
+export default function HotelSettingsPage() {
+  const [activeTab, setActiveTab] = useState<string>('hotel');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('en');
+  const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+
+  // Form State for Hotel Settings (Figure 2.1)
+  const [titlePage, setTitlePage] = useState('Search for hotel');
+  const [layoutSearch, setLayoutSearch] = useState('Normal Layout');
+  const [locationSearchStyle, setLocationSearchStyle] = useState('Normal');
+  const [limitItemPerPage, setLimitItemPerPage] = useState('9');
+  const [layoutItemHotel, setLayoutItemHotel] = useState('List Item');
+  const [attributeToShow, setAttributeToShow] = useState('Facilities');
+  const [layoutMapOption, setLayoutMapOption] = useState('Map Left');
+  const [mapLatDefault, setMapLatDefault] = useState('21.030513');
+  const [mapLngDefault, setMapLngDefault] = useState('105.840565');
+  const [mapZoomDefault, setMapZoomDefault] = useState('13');
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setSavedSuccess(true);
+    setTimeout(() => {
+      setSavedSuccess(false);
+    }, 3000);
   };
 
+  const currentActiveSetting = mainSettingsList.find((s) => s.id === activeTab);
+
   return (
-    <div className="space-y-6">
-      {/* Header (PDF Figure 2.1 Global Configuration Hub) */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Settings className="w-6 h-6 text-blue-600" /> Global Configuration Hub
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Enterprise system parameters, multi-gateway payment processing, and AI concierge configurations (PDF Figure 2.1).
-          </p>
-        </div>
-        {saved && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Parameters Saved Successfully
+    <div className="space-y-4 animate-in fade-in duration-200">
+      {/* Breadcrumb Matching Figure 2.1 in PDF */}
+      <div className="flex items-center gap-1.5 text-xs text-slate-500">
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
+        <span>/</span>
+        <span className="text-slate-500">{currentActiveSetting?.label || 'Hotel Settings'}</span>
+      </div>
+
+      {/* Page Title Matching Figure 2.1 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          {currentActiveSetting?.label || 'Hotel Settings'}
+        </h1>
+
+        {savedSuccess && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <span>Settings saved successfully!</span>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Category Sidebar */}
-        <div className="lg:col-span-4 space-y-2">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            const isActive = activeCategory === cat.id;
+      {/* Main Settings Architecture Matching Figure 2.1 */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Left Column: Main Settings Subnav (Figure 2.1) */}
+        <div className="lg:col-span-3">
+          <div className="bg-white rounded border border-slate-200 overflow-hidden shadow-2xs">
+            {/* Header: Gear Icon + Main Settings */}
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/60">
+              <Settings className="w-4 h-4 text-slate-600" />
+              <span className="text-xs font-bold text-slate-800 tracking-wide">Main Settings</span>
+            </div>
 
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold text-left transition-all ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-xs'
-                    : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                <span>{cat.title}</span>
-              </button>
-            );
-          })}
+            {/* List of 18 Settings Tabs */}
+            <div className="p-1.5 space-y-0.5">
+              {mainSettingsList.map((item) => {
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-medium rounded transition-colors text-left cursor-pointer ${
+                      isActive
+                        ? 'bg-[#00a8ff] text-white font-semibold shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {item.isPro && (
+                      <span className="px-1.5 py-0.5 text-[9px] font-black uppercase rounded bg-[#fbc531] text-slate-900 leading-none">
+                        PRO
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        {/* Right Settings Form */}
-        <div className="lg:col-span-8">
-          <Card>
-            <form onSubmit={handleSave}>
-              {activeCategory === 'general' && (
-                <>
-                  <CardHeader>
-                    <CardTitle>System & Localization Parameters</CardTitle>
-                    <CardDescription>
-                      Configure hotel operating currency, tax rates, and check-in window policies.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 pt-2">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">Default Currency</label>
-                      <Input defaultValue="USD - United States Dollar ($)" />
+        {/* Right Column: Active Setting Panel (Figure 2.1 Hotel Settings) */}
+        <div className="lg:col-span-9 space-y-4">
+          {/* Language Selector Tabs Matching Figure 2.1 */}
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+            {languageTabs.map((lang) => {
+              const isLangSelected = selectedLanguage === lang.id;
+              return (
+                <button
+                  key={lang.id}
+                  onClick={() => setSelectedLanguage(lang.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs font-medium transition-colors cursor-pointer ${
+                    isLangSelected
+                      ? 'bg-white border border-slate-300 text-slate-800 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="text-sm">{lang.flag}</span>
+                  <span>{lang.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Form Content: Figure 2.1 Hotel Settings */}
+          {activeTab === 'hotel' ? (
+            <div className="bg-white rounded border border-slate-200 p-6 shadow-2xs">
+              <form onSubmit={handleSave} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                  {/* Left Sub-Column: Page Search Info */}
+                  <div className="md:col-span-4 space-y-1">
+                    <h3 className="text-sm font-bold text-slate-800">Page Search</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Config page search of your website
+                    </p>
+                  </div>
+
+                  {/* Right Sub-Column: General Options Form */}
+                  <div className="md:col-span-8 space-y-5">
+                    <div className="border-b border-slate-100 pb-2">
+                      <h4 className="text-xs font-bold text-slate-800">General Options</h4>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-700">City Tax / VAT (%)</label>
-                        <Input type="number" defaultValue="15" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-700">System Timezone</label>
-                        <Input defaultValue="Asia/Dhaka (GMT+6)" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-700">Standard Check-In Time</label>
-                        <Input defaultValue="14:00" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-700">Standard Check-Out Time</label>
-                        <Input defaultValue="11:00" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </>
-              )}
-
-              {activeCategory === 'payment' && (
-                <>
-                  <CardHeader>
-                    <CardTitle>Enterprise Payment Gateways (35+)</CardTitle>
-                    <CardDescription>
-                      Active merchant payment processors for automated folio settlement and guest checkout.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 pt-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {[
-                        'Stripe Connect',
-                        'bKash Merchant Checkout',
-                        'Nagad Payment Gateway',
-                        'SSLCommerz',
-                        'PayPal Commerce',
-                        'Adyen Hospitality',
-                        'Authorize.Net',
-                        'Square Terminal POS',
-                      ].map((gw) => (
-                        <div
-                          key={gw}
-                          className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between"
-                        >
-                          <span className="text-xs font-bold text-slate-800">{gw}</span>
-                          <Badge variant="outline" className="text-[10px] border-emerald-300 text-emerald-700 bg-emerald-50">
-                            Enabled
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </>
-              )}
-
-              {activeCategory === 'ai' && (
-                <>
-                  <CardHeader>
-                    <CardTitle>AI Concierge & RAG Configuration</CardTitle>
-                    <CardDescription>
-                      Configure autonomous guest chat agent, vector knowledge stores, and temperature (PDF Figure 14.1).
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 pt-2">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">AI Concierge Model</label>
-                      <Input defaultValue="gemini-1.5-flash / gpt-4o-mini" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">Concierge Persona / System Prompt</label>
-                      <textarea
-                        className="w-full h-24 rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 shadow-xs"
-                        defaultValue="You are the luxury 24/7 AI Concierge for OmniStay 360. Assist guests with room bookings, restaurant reservations, amenities, and room service."
+                    {/* Field 1: Title Page */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-slate-700">Title Page</label>
+                      <input
+                        type="text"
+                        value={titlePage}
+                        onChange={(e) => setTitlePage(e.target.value)}
+                        className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                        placeholder="Search for hotel"
                       />
                     </div>
-                  </CardContent>
-                </>
-              )}
 
-              {activeCategory === 'email' && (
-                <>
-                  <CardHeader>
-                    <CardTitle>SMTP & Notification Gateway</CardTitle>
-                    <CardDescription>Transactional emails for reservation confirmations and invoices.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 pt-2">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">SMTP Host</label>
-                      <Input defaultValue="smtp.sendgrid.net" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-700">Port</label>
-                        <Input defaultValue="587" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-slate-700">From Name</label>
-                        <Input defaultValue="OmniStay Reservations" />
+                    {/* Field 2: Banner Page (With Preview & Upload) */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-slate-700">Banner Page</label>
+                      <div className="space-y-2">
+                        <div className="relative w-full max-w-sm h-32 rounded border border-slate-200 overflow-hidden bg-slate-50 shadow-2xs">
+                          <Image
+                            src="/images/hotel-banner.jpg"
+                            alt="Hotel Banner Preview"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded cursor-pointer transition-colors shadow-2xs">
+                            <Upload className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Upload image</span>
+                            <input type="file" className="hidden" accept="image/*" />
+                          </label>
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </>
-              )}
 
-              {activeCategory === 'security' && (
-                <>
-                  <CardHeader>
-                    <CardTitle>Enterprise Security & Compliance</CardTitle>
-                    <CardDescription>Enforce 2FA TOTP challenges and session timeouts.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 pt-2">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200">
-                      <div>
-                        <p className="text-xs font-bold text-slate-800">Enforce 2FA for Administrators</p>
-                        <p className="text-[11px] text-slate-500">Require TOTP authenticator token on sign in</p>
-                      </div>
-                      <Badge variant="success">Active</Badge>
+                    {/* Field 3: Layout Search */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-slate-700">Layout Search</label>
+                      <select
+                        value={layoutSearch}
+                        onChange={(e) => setLayoutSearch(e.target.value)}
+                        className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                      >
+                        <option>Normal Layout</option>
+                        <option>Grid Layout</option>
+                        <option>Full Width Layout</option>
+                      </select>
                     </div>
-                  </CardContent>
-                </>
-              )}
 
-              <div className="p-5 pt-2 flex items-center justify-end border-t border-slate-100 mt-4">
-                <Button type="submit" variant="default" className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Save className="w-4 h-4 mr-2" /> Save Parameters
-                </Button>
+                    {/* Field 4 & 5: Location Search Style & Limit item per Page */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-700">
+                          Location Search Style
+                        </label>
+                        <select
+                          value={locationSearchStyle}
+                          onChange={(e) => setLocationSearchStyle(e.target.value)}
+                          className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                        >
+                          <option>Normal</option>
+                          <option>Autocomplete</option>
+                          <option>Dropdown</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-700">
+                          Limit item per Page
+                        </label>
+                        <input
+                          type="number"
+                          value={limitItemPerPage}
+                          onChange={(e) => setLimitItemPerPage(e.target.value)}
+                          className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Field 6 & 7: Layout Item Hotel & Attribute to show */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-700">
+                          Layout Item Hotel in Page Search
+                        </label>
+                        <select
+                          value={layoutItemHotel}
+                          onChange={(e) => setLayoutItemHotel(e.target.value)}
+                          className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                        >
+                          <option>List Item</option>
+                          <option>Grid Item</option>
+                          <option>Card Item</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-700">
+                          Which attribute show in listing page?
+                        </label>
+                        <select
+                          value={attributeToShow}
+                          onChange={(e) => setAttributeToShow(e.target.value)}
+                          className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                        >
+                          <option>Facilities</option>
+                          <option>Amenities</option>
+                          <option>Services</option>
+                          <option>Policies</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Field 8: Layout Map Option */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-slate-700">Layout Map Option</label>
+                      <select
+                        value={layoutMapOption}
+                        onChange={(e) => setLayoutMapOption(e.target.value)}
+                        className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                      >
+                        <option>Map Left</option>
+                        <option>Map Right</option>
+                        <option>Map Top</option>
+                        <option>No Map</option>
+                      </select>
+                    </div>
+
+                    {/* Field 9, 10, 11: Map Coordinates & Zoom */}
+                    <div className="space-y-1.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-medium text-slate-700">
+                            Map Lat Default
+                          </label>
+                          <input
+                            type="text"
+                            value={mapLatDefault}
+                            onChange={(e) => setMapLatDefault(e.target.value)}
+                            className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-xs font-medium text-slate-700">
+                            Map Lng Default
+                          </label>
+                          <input
+                            type="text"
+                            value={mapLngDefault}
+                            onChange={(e) => setMapLngDefault(e.target.value)}
+                            className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-xs font-medium text-slate-700">
+                            Map Zoom Default
+                          </label>
+                          <input
+                            type="text"
+                            value={mapZoomDefault}
+                            onChange={(e) => setMapZoomDefault(e.target.value)}
+                            className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff] shadow-2xs"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Helper link matching Figure 2.1 */}
+                      <p className="text-[11px] text-slate-500 pt-1">
+                        Get lat - lng in here{' '}
+                        <a
+                          href="https://www.latlong.net"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#00a8ff] hover:underline"
+                        >
+                          https://www.latlong.net
+                        </a>
+                      </p>
+                    </div>
+
+                    {/* Field 12: Icon Marker in Map */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-slate-700">
+                        Icon Marker in Map
+                      </label>
+                      <div className="w-24 h-24 rounded border border-dashed border-slate-300 flex flex-col items-center justify-center p-2 text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
+                        <MapPin className="w-6 h-6 text-slate-400 mb-1" />
+                        <span className="text-[10px] text-slate-500 font-medium">Select Icon</span>
+                      </div>
+                    </div>
+
+                    {/* Save Changes Button Matching Figure 2.1 */}
+                    <div className="pt-4 border-t border-slate-100 flex justify-end">
+                      <button
+                        type="submit"
+                        className="h-9 px-6 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        <span>Save Changes</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          ) : activeTab === 'general' ? (
+            /* General Settings Panel */
+            <div className="bg-white rounded border border-slate-200 p-6 shadow-2xs space-y-5">
+              <div className="border-b border-slate-100 pb-2">
+                <h4 className="text-xs font-bold text-slate-800">Site Identity & Localization</h4>
               </div>
-            </form>
-          </Card>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-700">Site Title</label>
+                  <input
+                    type="text"
+                    defaultValue="OmniStay 360"
+                    className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-700">Site Description</label>
+                  <input
+                    type="text"
+                    defaultValue="Enterprise Multi-Tenant Hospitality Platform"
+                    className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-700">Admin Email</label>
+                    <input
+                      type="email"
+                      defaultValue="admin@omnistay.com"
+                      className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-700">Default Currency</label>
+                    <input
+                      type="text"
+                      defaultValue="USD ($)"
+                      className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+                <div className="pt-4 border-t border-slate-100 flex justify-end">
+                  <button
+                    onClick={handleSave}
+                    className="h-9 px-6 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>Save Changes</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : activeTab === 'payment' ? (
+            /* Payment Settings Panel */
+            <div className="bg-white rounded border border-slate-200 p-6 shadow-2xs space-y-5">
+              <div className="border-b border-slate-100 pb-2">
+                <h4 className="text-xs font-bold text-slate-800">Enterprise Payment Processors</h4>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { name: 'Stripe Connect', status: 'Active', desc: 'Credit / Debit Cards, Apple Pay' },
+                  { name: 'bKash Merchant', status: 'Active', desc: 'Automated Tokenized Checkout' },
+                  { name: 'Nagad Gateway', status: 'Active', desc: 'Direct Merchant Settlement' },
+                  { name: 'SSLCommerz', status: 'Active', desc: 'Multi-Gateway Aggregator' },
+                  { name: 'PayPal Commerce', status: 'Active', desc: 'International Guest Payments' },
+                  { name: 'Adyen Hospitality', status: 'Active', desc: 'Front Desk POS Terminal' },
+                ].map((p) => (
+                  <div key={p.name} className="p-3.5 rounded border border-slate-200 bg-slate-50/50 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900">{p.name}</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {p.status}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">{p.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-4 border-t border-slate-100 flex justify-end">
+                <button
+                  onClick={handleSave}
+                  className="h-9 px-6 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Generic Settings Panel for other tabs */
+            <div className="bg-white rounded border border-slate-200 p-6 shadow-2xs space-y-5">
+              <div className="border-b border-slate-100 pb-2">
+                <h4 className="text-xs font-bold text-slate-800">
+                  {currentActiveSetting?.label} Options
+                </h4>
+              </div>
+              <div className="py-8 text-center text-slate-500 space-y-2">
+                <Settings className="w-8 h-8 text-slate-300 mx-auto" />
+                <p className="text-xs">
+                  Configuration parameters for {currentActiveSetting?.label} are managed by OmniStay enterprise engine.
+                </p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 flex justify-end">
+                <button
+                  onClick={handleSave}
+                  className="h-9 px-6 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -41,4 +41,8 @@ export const roomsService = {
   delete: async (id: string): Promise<void> => {
     await api.delete(`/api/v1/rooms/${id}`);
   },
+
+  update: async (id: string, dto: Partial<CreateRoomDto>): Promise<Room> => {
+    return await api.patch<Room>(`/api/v1/rooms/${id}`, dto);
+  },
 };
