@@ -15,9 +15,11 @@ import {
   ShieldCheck,
   Eye,
   EyeOff,
+  AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { authService } from '../services/auth.service';
 import { sessionManager } from '@/lib/auth/session';
 import { useTenantStore } from '@/stores/tenant-store';
 import { useUiStore } from '@/stores/ui-store';
@@ -52,6 +54,7 @@ export function RegisterForm() {
   const { setTenantId, tenants, setTenants } = useTenantStore();
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -69,49 +72,57 @@ export function RegisterForm() {
       propertyType: 'hotel',
       password: '',
       confirmPassword: '',
-      agreeTerms: true,
+      agreeTerms: false,
     },
   });
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
+    setErrorMsg(null);
     try {
-      const slug = data.companyName
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-
-      const newTenantId = `tenant-${Date.now()}`;
-      const newTenant = {
-        id: newTenantId,
-        name: data.companyName,
-        subdomain: slug || 'myhotel',
-        domain: `${slug || 'myhotel'}.omnistay.com`,
-        planId: 'professional',
-      };
-
-      setTenants([...tenants, newTenant]);
-      setTenantId(newTenantId);
-
-      sessionManager.setToken('jwt-session-' + Date.now());
-      sessionManager.setUser({
-        id: `user-${Date.now()}`,
+      const res = await authService.register({
+        fullName: data.fullName,
         email: data.email,
-        name: data.fullName,
-        role: Role.COMPANY_OWNER_GM,
-        tenantId: newTenantId,
-        permissions: ['*'],
+        password: data.password,
+        companyName: data.companyName,
+        phone: data.phone,
+        propertyType: data.propertyType,
       });
 
-      useUiStore.getState().setActiveRole(Role.COMPANY_OWNER_GM);
+      const tenantId = res.organization?.id || '';
+      const activeRole = (res.role as Role) || Role.COMPANY_OWNER_GM;
+
+      if (res.organization) {
+        setTenants([
+          ...tenants.filter((t) => t.id !== tenantId),
+          {
+            id: tenantId,
+            name: res.organization.name,
+            subdomain: res.organization.slug,
+            domain: `${res.organization.slug}.omnistay.com`,
+          },
+        ]);
+        setTenantId(tenantId);
+      }
+
+      sessionManager.setToken(res.accessToken, res.refreshToken);
+      sessionManager.setUser({
+        id: res.user?.id || `user-${Date.now()}`,
+        email: res.user?.email || data.email,
+        name: res.user?.name || data.fullName,
+        role: activeRole,
+        tenantId: tenantId,
+        permissions: res.permissions || ['*'],
+      });
+
+      useUiStore.getState().setActiveRole(activeRole);
 
       setSuccess(true);
       setTimeout(() => {
         router.push('/dashboard');
       }, 1200);
     } catch (err: any) {
-      alert(err.message || 'Registration failed');
+      setErrorMsg(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -148,6 +159,12 @@ export function RegisterForm() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
+        {errorMsg && (
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
         {/* Full Name */}
         <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-slate-700">

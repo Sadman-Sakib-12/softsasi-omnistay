@@ -15,53 +15,11 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      try {
-        return await authService.login(data);
-      } catch (err: any) {
-        // Fallback for seamless local evaluation if credentials or network fail
-        const emailLower = data.email.toLowerCase();
-        let detectedRole = Role.COMPANY_OWNER_GM;
-        if (
-          emailLower.includes('superadmin') ||
-          emailLower === 'admin@omnistay.com' ||
-          emailLower === 'admin@unseengadget.com' ||
-          emailLower.startsWith('admin@')
-        ) {
-          detectedRole = Role.PLATFORM_SUPERADMIN;
-        } else if (emailLower.includes('frontdesk')) {
-          detectedRole = Role.FRONT_DESK_AGENT;
-        } else if (emailLower.includes('finance') || emailLower.includes('accountant') || emailLower.includes('cfo')) {
-          detectedRole = Role.CFO_ACCOUNTANT;
-        } else if (emailLower.includes('housekeep')) {
-          detectedRole = Role.HOUSEKEEPING_SUPERVISOR;
-        } else if (emailLower.includes('pos') || emailLower.includes('cashier')) {
-          detectedRole = Role.POS_CASHIER;
-        } else if (emailLower.includes('hr')) {
-          detectedRole = Role.HR_DIRECTOR;
-        }
-
-        return {
-          accessToken: 'jwt-auth-' + Date.now(),
-          refreshToken: 'refresh-auth-' + Date.now(),
-          requires2fa: false,
-          user: {
-            id: 'usr-' + Date.now(),
-            email: data.email,
-            name: data.email.split('@')[0].toUpperCase(),
-            role: detectedRole,
-            tenantId: 'omnistay-hq',
-          },
-          organization: {
-            id: 'omnistay-hq',
-            name: 'OmniStay Global HQ',
-          },
-          role: detectedRole,
-        } as LoginResponse;
-      }
+      return await authService.login(data);
     },
     onSuccess: (res: any) => {
       if (res.requires2fa || res.requires2FA) {
-        const token = res.tempToken || res.challengeToken;
+        const token = res.tempToken || res.challengeToken || res.accessToken;
         if (token) {
           sessionManager.setToken(token);
         }
@@ -70,19 +28,23 @@ export function useAuth() {
       }
 
       const activeRole = (res.role as Role) || (res.user?.role as Role) || Role.PLATFORM_SUPERADMIN;
-      const tenantId = res.organization?.id || res.user?.tenantId || 'omnistay-hq';
+      const tenantId = res.organization?.id || res.user?.tenantId || '';
 
       sessionManager.setToken(res.accessToken, res.refreshToken);
       sessionManager.setUser({
-        id: res.user?.id || 'usr-master',
-        email: res.user?.email || 'superadmin@omnistay.com',
-        name: res.user?.name || 'Super Administrator',
+        id: res.user?.id || '',
+        email: res.user?.email || '',
+        name: res.user?.name || '',
         role: activeRole,
         tenantId: tenantId,
-        permissions: res.permissions || ['*'],
+        organizationName: res.organization?.name || '',
+        organizationSlug: res.organization?.slug || '',
+        permissions: res.permissions || res.user?.permissions || [],
       });
 
-      setTenantId(tenantId);
+      if (tenantId) {
+        setTenantId(tenantId);
+      }
       useUiStore.getState().setActiveRole(activeRole);
       router.push('/dashboard');
     },
@@ -102,16 +64,24 @@ export function useAuth() {
 
   const verify2faMutation = useMutation({
     mutationFn: (data: Verify2faFormData) => authService.verify2fa(data),
-    onSuccess: (res: LoginResponse) => {
+    onSuccess: (res: any) => {
+      const activeRole = (res.role as Role) || (res.user?.role as Role) || Role.PLATFORM_SUPERADMIN;
+      const tenantId = res.organization?.id || res.user?.tenantId || '';
+
       sessionManager.setToken(res.accessToken, res.refreshToken);
       sessionManager.setUser({
-        id: res.user.id,
-        email: res.user.email,
-        name: res.user.name,
-        role: res.user.role || Role.PLATFORM_SUPERADMIN,
-        tenantId: res.user.tenantId,
-        permissions: ['*'],
+        id: res.user?.id || '',
+        email: res.user?.email || '',
+        name: res.user?.name || '',
+        role: activeRole,
+        tenantId: tenantId,
+        permissions: res.permissions || ['*'],
       });
+
+      if (tenantId) {
+        setTenantId(tenantId);
+      }
+      useUiStore.getState().setActiveRole(activeRole);
       router.push('/dashboard');
     },
   });

@@ -17,16 +17,16 @@ export const organizationsService = {
       const res = await api.get<any>('/api/v1/organizations');
       const data = Array.isArray(res) ? res : res?.data || [];
       return data.map((org: any) => ({
-        id: org.id,
+        id: org.id || org.organizationId || org._id,
         name: org.name,
         slug: org.slug,
         subdomain: org.slug || org.subdomain,
-        domain: org.domain || (org.slug ? `${org.slug}.omnistay.com` : 'omnistay.com'),
-        planId: org.planId || 'professional',
+        domain: org.domain || (org.slug ? `${org.slug}.omnistay.com` : ''),
+        planId: org.planId || '',
         status: org.status || 'ACTIVE',
-        createdAt: org.createdAt || new Date().toISOString(),
+        createdAt: org.createdAt || '',
       }));
-    } catch {
+    } catch (error) {
       return [];
     }
   },

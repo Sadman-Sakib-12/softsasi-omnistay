@@ -19,9 +19,9 @@ export function LoginForm() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema) as any,
     defaultValues: {
-      email: 'admin@unseengadget.com',
-      password: 'Password@123',
-      rememberMe: true,
+      email: '',
+      password: '',
+      rememberMe: false,
     },
   });
 

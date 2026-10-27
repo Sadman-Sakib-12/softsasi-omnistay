@@ -17,8 +17,10 @@ export interface InviteUserDto {
 }
 
 export const usersService = {
-  getAll: async (): Promise<User[]> => {
-    const res = await api.get<any>('/api/v1/users');
+  getAll: async (orgId?: string): Promise<User[]> => {
+    const res = await api.get<any>('/api/v1/users', {
+      params: orgId ? { organizationId: orgId } : undefined,
+    });
     return Array.isArray(res) ? res : res?.data || [];
   },
 
@@ -27,6 +29,10 @@ export const usersService = {
   },
 
   invite: async (dto: InviteUserDto): Promise<User> => {
-    return await api.post<User>('/api/v1/users/invite', dto);
+    try {
+      return await api.post<User>('/api/v1/users/invite', dto);
+    } catch {
+      return await api.post<User>('/api/v1/users', dto);
+    }
   },
 };
