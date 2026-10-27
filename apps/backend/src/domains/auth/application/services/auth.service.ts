@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -16,6 +17,7 @@ import { CryptoService } from '@omnistay/security';
 import { TotpService } from '@omnistay/security';
 import { RateLimiterService } from './rate-limiter.service.js';
 import { LoginDto } from '../../presentation/dto/login.dto.js';
+import { RegisterDto } from '../../presentation/dto/register.dto.js';
 import { Verify2faDto } from '../../presentation/dto/verify-2fa.dto.js';
 import { Disable2faDto } from '../../presentation/dto/disable-2fa.dto.js';
 import { PasswordResetConfirmDto } from '../../presentation/dto/password-reset-confirm.dto.js';
@@ -39,6 +41,79 @@ export class AuthService {
     @Optional() private readonly redisService?: RedisService,
     @Optional() private readonly notificationProducer?: NotificationProducer,
   ) { }
+
+  /**
+   * Registers a new property / company organization and primary administrator user.
+   * Assigns the Company Owner / General Manager role per Sakib Project Plan.
+   */
+  async register(dto: RegisterDto, ip: string = '127.0.0.1') {
+    const rateLimitKey = `register:${ip}:${dto.email.toLowerCase()}`;
+    await this.rateLimiter.consume(rateLimitKey, 5, 60000);
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase() },
+    });
+    if (existingUser) {
+      throw new ConflictException('An account with this email address already exists');
+    }
+
+    const baseSlug = dto.companyName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '') || 'hotel';
+
+    let slug = baseSlug;
+    const existingOrg = await this.prisma.organization.findUnique({ where: { slug } });
+    if (existingOrg) {
+      slug = `${baseSlug}-${crypto.randomBytes(3).toString('hex')}`;
+    }
+
+    const passwordHash = await bcrypt.hash(dto.password, 12);
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const organization = await tx.organization.create({
+        data: {
+          name: dto.companyName,
+          slug,
+          status: 'active',
+        },
+      });
+
+      const role = await tx.role.create({
+        data: {
+          organizationId: organization.id,
+          name: 'Company Owner / General Manager',
+          description: 'Primary property owner and general manager',
+          isSystemRole: true,
+          permissions: ['*'],
+        },
+      });
+
+      const user = await tx.user.create({
+        data: {
+          name: dto.fullName,
+          email: dto.email.toLowerCase(),
+          passwordHash,
+          phone: dto.phone,
+          tenantId: organization.id,
+          status: 'ACTIVE',
+        },
+      });
+
+      await tx.membership.create({
+        data: {
+          userId: user.id,
+          organizationId: organization.id,
+          roleId: role.id,
+        },
+      });
+
+      return { user, organization, role };
+    });
+
+    return this.issueFullSession(result.user, result.organization, result.role, ['*'], false);
+  }
 
   /**
    * Authenticates user credentials.
@@ -79,7 +154,7 @@ export class AuthService {
     );
 
     const isMandatory2faRole = activeRole && MANDATORY_2FA_ROLES.includes(activeRole.name);
-    const requires2fa = user.isTwoFactorEnabled || (isMandatory2faRole && process.env.ENABLE_MANDATORY_2FA === 'true');
+    const requires2fa = user.isTwoFactorEnabled || (isMandatory2faRole && process.env.ENABLE_MANDATORY_2FA !== 'false');
 
     if (requires2fa) {
       // If user has not yet enrolled their secret, provision a fresh secret for enrollment

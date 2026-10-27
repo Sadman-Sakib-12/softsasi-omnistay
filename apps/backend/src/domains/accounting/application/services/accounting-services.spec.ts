@@ -132,7 +132,7 @@ describe('Phase 4: Double-Entry Financial Accounting & Treasury', () => {
     });
 
     it('should successfully post balanced journal entry when Debits equal Credits', async () => {
-      mockPrisma.journalEntry.create.mockImplementation(({ data }) => Promise.resolve({ id: 'je-1', ...data }));
+      mockPrisma.journalEntry.create.mockImplementation(({ data }: any) => Promise.resolve({ id: 'je-1', ...data }));
 
       const caller: any = { isSuperAdmin: true, permissions: [] };
       const entry = await service.createJournalEntry(
@@ -211,7 +211,7 @@ describe('Phase 4: Double-Entry Financial Accounting & Treasury', () => {
     it('should automatically post room revenue accrual, release advances, and reconcile trial balance to zero', async () => {
       // Setup COA accounts
       mockPrisma.chartOfAccount.count.mockResolvedValue(20);
-      mockPrisma.chartOfAccount.findFirst.mockImplementation(({ where }) => {
+      mockPrisma.chartOfAccount.findFirst.mockImplementation(({ where }: any) => {
         return Promise.resolve({ id: `acc-uuid-${where.code}`, code: where.code, name: `Account ${where.code}` });
       });
       mockPrisma.nightAuditRun.findFirst.mockResolvedValue(null);
@@ -281,7 +281,7 @@ describe('Phase 4: Double-Entry Financial Accounting & Treasury', () => {
     });
 
     it('should create corporate invoice with sequential number and tax computation', async () => {
-      mockPrisma.invoice.create.mockImplementation(({ data }) => Promise.resolve({ id: 'inv-1', ...data }));
+      mockPrisma.invoice.create.mockImplementation(({ data }: any) => Promise.resolve({ id: 'inv-1', ...data }));
 
       const caller: any = { role: 'Chief Financial Officer / Accountant', permissions: [] };
       const invoice = await service.createInvoice(

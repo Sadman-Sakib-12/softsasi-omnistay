@@ -451,7 +451,7 @@ describe('Phase 3: Multi-Vertical Travel Engine & Universal Cart', () => {
         ticketTiers: [{ id: 'tier-vip', name: 'VIP', price: 250, totalSeats: 100, bookedSeats: 10 }],
       });
       mockPrisma.eventTicketTier.update.mockResolvedValue({});
-      mockPrisma.eventBooking.create.mockImplementation(({ data }) => Promise.resolve({ id: 'eb-1', ...data }));
+      mockPrisma.eventBooking.create.mockImplementation(({ data }: any) => Promise.resolve({ id: 'eb-1', ...data }));
 
       const result = await service.bookEvent(
         {

@@ -17,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from '../../application/services/auth.service.js';
 import { LoginDto } from '../dto/login.dto.js';
+import { RegisterDto } from '../dto/register.dto.js';
 import { Verify2faDto } from '../dto/verify-2fa.dto.js';
 import { ConfirmEnrollmentDto } from '../dto/confirm-enrollment.dto.js';
 import { Disable2faDto } from '../dto/disable-2fa.dto.js';
@@ -32,6 +33,23 @@ import { JwtAuthGuard } from '@omnistay/backend-common';
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Public()
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Register a new tenant organization and primary administrator user',
+    description:
+      'Creates a new hotel/resort organization, sets up the owner as Company Owner / General Manager, and generates access tokens.',
+  })
+  @ApiResponse({ status: 201, description: 'Organization and administrator account registered successfully' })
+  @ApiResponse({ status: 409, description: 'An account with this email already exists' })
+  async register(
+    @Body(new ValidationPipe({ whitelist: true })) dto: RegisterDto,
+    @Ip() ip: string,
+  ) {
+    return this.authService.register(dto, ip || '127.0.0.1');
+  }
 
   @Public()
   @Post('login')
