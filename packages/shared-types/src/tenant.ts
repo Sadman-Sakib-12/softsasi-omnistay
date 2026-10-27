@@ -44,3 +44,21 @@ export interface MembershipSummary {
   permissions: string[];
   joinedAt: Date | string;
 }
+
+export interface Tenant {
+  id: string;
+  name: string;
+  domain?: string | null;
+  subdomain?: string | null;
+  createdAt?: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  tenantId: string;
+  status?: string;
+  createdAt: string;
+}
