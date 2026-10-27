@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
+  Param,
   Patch,
+  Post,
   Query,
   UseGuards,
   ValidationPipe,
@@ -63,9 +66,53 @@ export class UserController {
   async getTenantUsers(
     @CurrentUser() user: AuthenticatedUserPayload,
     @Query('organizationId') queryOrgId?: string,
+    @Headers('x-tenant-id') headerOrgId?: string,
   ) {
-    const targetOrgId = queryOrgId || user.organizationId;
+    const targetOrgId = queryOrgId || headerOrgId || user.organizationId;
     return this.userService.getTenantUsers(targetOrgId || '', user);
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get user profile by ID',
+    description: 'Retrieves user profile and role details by user UUID.',
+  })
+  @ApiResponse({ status: 200, description: 'User profile returned' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async getUserById(@Param('id') id: string) {
+    return this.userService.getUserById(id);
+  }
+
+  @Post('invite')
+  @ApiOperation({
+    summary: 'Invite staff user',
+    description: 'Provisions a new staff user and assigns role membership in the organization.',
+  })
+  @ApiResponse({ status: 201, description: 'Staff user invited successfully' })
+  async inviteUser(
+    @CurrentUser() user: AuthenticatedUserPayload,
+    @Body() dto: { email: string; name: string; role: string },
+    @Query('organizationId') queryOrgId?: string,
+    @Headers('x-tenant-id') headerOrgId?: string,
+  ) {
+    const targetOrgId = queryOrgId || user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    return this.userService.inviteUser(dto, targetOrgId, user);
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: 'Create staff user',
+    description: 'Provisions a new staff user and assigns role membership in the organization.',
+  })
+  @ApiResponse({ status: 201, description: 'Staff user created successfully' })
+  async createUser(
+    @CurrentUser() user: AuthenticatedUserPayload,
+    @Body() dto: { email: string; name: string; role: string },
+    @Query('organizationId') queryOrgId?: string,
+    @Headers('x-tenant-id') headerOrgId?: string,
+  ) {
+    const targetOrgId = queryOrgId || user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    return this.userService.inviteUser(dto, targetOrgId, user);
   }
 }
 
