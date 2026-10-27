@@ -4,6 +4,8 @@ export interface UserSession {
   name: string;
   role: string;
   tenantId: string;
+  organizationName?: string;
+  organizationSlug?: string;
   permissions: string[];
 }
 
@@ -27,18 +29,22 @@ export const sessionManager = {
   },
 
   getTenantId(): string {
-    if (typeof window === 'undefined') {
-      return '0646902b-6163-4729-9901-6282ad7236e3';
+    if (typeof window === 'undefined') return '';
+    const stored = localStorage.getItem(TENANT_KEY);
+    if (stored && stored !== '0646902b-6163-4729-9901-6282ad7236e3') {
+      return stored;
     }
-    return (
-      localStorage.getItem(TENANT_KEY) ||
-      '0646902b-6163-4729-9901-6282ad7236e3'
-    );
+    const user = this.getUser();
+    return user?.tenantId || '';
   },
 
   setTenantId(tenantId: string): void {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(TENANT_KEY, tenantId);
+    if (tenantId) {
+      localStorage.setItem(TENANT_KEY, tenantId);
+    } else {
+      localStorage.removeItem(TENANT_KEY);
+    }
   },
 
   getUser(): UserSession | null {

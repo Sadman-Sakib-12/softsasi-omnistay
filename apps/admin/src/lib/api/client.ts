@@ -57,6 +57,8 @@ export const api = {
     apiClient.get(url, config) as unknown as Promise<T>,
   post: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
     apiClient.post(url, data, config) as unknown as Promise<T>,
+  put: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
+    apiClient.put(url, data, config) as unknown as Promise<T>,
   patch: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> =>
     apiClient.patch(url, data, config) as unknown as Promise<T>,
   delete: <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
