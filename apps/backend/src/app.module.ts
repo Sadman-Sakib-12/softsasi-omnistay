@@ -23,6 +23,7 @@ import { CommunicationModule } from './domains/communication/communication.modul
 import { IotModule } from './domains/iot/iot.module.js';
 import { ProjectModule } from './domains/project/project.module.js';
 import { PaymentModule } from './domains/payment/payment.module.js';
+import { SystemModule } from './domains/system/system.module.js';
 import { CorrelationIdMiddleware } from '@omnistay/backend-common';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
@@ -55,6 +56,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     IotModule,
     ProjectModule,
     PaymentModule,
+    SystemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

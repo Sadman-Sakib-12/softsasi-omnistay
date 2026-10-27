@@ -10,11 +10,19 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
 
-  // Enable CORS for Next.js web and admin frontends
+  // Enable CORS for Next.js web and admin frontends across all tenant subdomains
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(',')
-      : ['http://localhost:3000', 'http://localhost:3001'],
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin) return callback(null, true);
+      if (
+        origin.includes('localhost') ||
+        origin.includes('omnistay.com') ||
+        origin.includes('127.0.0.1')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   });
 
