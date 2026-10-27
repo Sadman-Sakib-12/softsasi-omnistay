@@ -37,7 +37,7 @@ export class OrganizationController {
   @ApiResponse({ status: 200, description: 'List of tenant organizations' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getMyOrganizations(@CurrentUser() user: AuthenticatedUserPayload) {
-    return this.organizationService.getUserOrganizations(user.userId);
+    return this.organizationService.getUserOrganizations(user);
   }
 
   @Get(':id')

@@ -15,7 +15,48 @@ export class OrganizationService {
   /**
    * Retrieves all organizations where the authenticated user has verified membership.
    */
-  async getUserOrganizations(userId: string) {
+  async getUserOrganizations(userParam: AuthenticatedUserPayload | string) {
+    const userId = typeof userParam === 'string' ? userParam : userParam.userId;
+
+    let isSuperAdmin = false;
+    if (typeof userParam !== 'string') {
+      isSuperAdmin =
+        Boolean(userParam.isSuperAdmin) ||
+        userParam.role === 'SuperAdmin' ||
+        userParam.role === 'Platform SuperAdmin';
+    }
+
+    if (!isSuperAdmin && userId) {
+      const dbUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { isSuperadmin: true },
+      });
+      if (dbUser?.isSuperadmin) {
+        isSuperAdmin = true;
+      }
+    }
+
+    if (isSuperAdmin) {
+      const allOrgs = await this.prisma.organization.findMany({
+        where: { deletedAt: null },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      return allOrgs.map((org) => ({
+        id: org.id,
+        organizationId: org.id,
+        name: org.name,
+        slug: org.slug,
+        domain: org.domain,
+        subdomain: org.subdomain,
+        planId: org.planId,
+        role: 'Platform SuperAdmin',
+        permissions: ['*'],
+        joinedAt: org.createdAt,
+        createdAt: org.createdAt,
+      }));
+    }
+
     const memberships = await this.prisma.membership.findMany({
       where: { userId },
       include: {
@@ -26,12 +67,17 @@ export class OrganizationService {
     });
 
     return memberships.map((m) => ({
+      id: m.organization.id,
       organizationId: m.organization.id,
       name: m.organization.name,
       slug: m.organization.slug,
+      domain: m.organization.domain,
+      subdomain: m.organization.subdomain,
+      planId: m.organization.planId,
       role: m.role.name,
       permissions: m.role.permissions,
       joinedAt: m.createdAt,
+      createdAt: m.organization.createdAt,
     }));
   }
 
