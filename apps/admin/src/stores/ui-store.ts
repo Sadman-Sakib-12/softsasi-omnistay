@@ -17,7 +17,7 @@ interface UiState {
 export const useUiStore = create<UiState>((set) => ({
   sidebarCollapsed: false,
   theme: 'dark',
-  activeRole: Role.PLATFORM_SUPERADMIN,
+  activeRole: Role.COMPANY_OWNER_GM,
   isCommandPaletteOpen: false,
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
