@@ -23,7 +23,6 @@ import {
   Layers,
   Menu as MenuIcon,
   DollarSign,
-  Palette,
   Settings,
   UtensilsCrossed,
   Bot,
@@ -35,6 +34,15 @@ import {
   ChevronRight,
   ChevronDown,
   LogOut,
+  ConciergeBell,
+  CalendarDays,
+  Sparkles,
+  Warehouse,
+  Briefcase,
+  Store,
+  BarChart3,
+  History,
+  Building,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import { sessionManager } from '@/lib/auth/session';
@@ -49,7 +57,7 @@ interface SubNavItem {
 interface NavItem {
   title: string;
   href?: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   hasSubmenu?: boolean;
   submenu?: SubNavItem[];
   badge?: string;
@@ -62,9 +70,11 @@ interface NavSection {
 
 export const navigationSections: NavSection[] = [
   {
+    section: 'HOSPITALITY PMS',
     items: [
       { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-      { title: 'Location', href: '/locations', icon: MapPin, hasSubmenu: true },
+      { title: 'Front Desk', href: '/front-desk', icon: ConciergeBell },
+      { title: 'Reservations', href: '/reservations', icon: CalendarDays },
       {
         title: 'Hotel',
         icon: Building2,
@@ -79,38 +89,58 @@ export const navigationSections: NavSection[] = [
           { title: 'Recovery', href: '/properties/recovery' },
         ],
       },
-      { title: 'Tour', href: '/tours', icon: Compass, hasSubmenu: true },
-      { title: 'Space', href: '/spaces', icon: Home, hasSubmenu: true },
-      { title: 'Flight', href: '/flights', icon: Plane, hasSubmenu: true },
-      { title: 'Car', href: '/cars', icon: Car, hasSubmenu: true },
-      { title: 'Boat', href: '/boats', icon: Ship, hasSubmenu: true },
-      { title: 'Event', href: '/events', icon: CalendarCheck, hasSubmenu: true },
-      { title: 'Coupon', href: '/coupons', icon: TicketPercent },
-      { title: 'Reviews', href: '/reviews', icon: MessageSquare },
+      { title: 'Housekeeping', href: '/housekeeping', icon: Sparkles },
     ],
   },
   {
-    section: 'CONTENT',
+    section: 'TRAVEL & PACKAGES',
     items: [
-      { title: 'News', href: '/news', icon: Newspaper, hasSubmenu: true },
-      { title: 'Page', href: '/pages', icon: FileText },
-      { title: 'Media', href: '/media', icon: ImageIcon },
+      { title: 'Destinations', href: '/locations', icon: MapPin },
+      { title: 'Tour Packages', href: '/tours', icon: Compass },
+      { title: 'Spaces & Villas', href: '/spaces', icon: Home },
+      { title: 'Flights', href: '/flights', icon: Plane },
+      { title: 'Car Rentals', href: '/cars', icon: Car },
+      { title: 'Boat Rentals', href: '/boats', icon: Ship },
+      { title: 'Events & Banquets', href: '/events', icon: CalendarCheck },
     ],
   },
   {
     section: 'OPERATIONS & SUITE',
     items: [
       { title: 'Point of Sale (POS)', href: '/pos', icon: UtensilsCrossed },
-      { title: 'AI Concierge Studio', href: '/ai', icon: Bot },
+      { title: 'Warehouse Inventory', href: '/inventory', icon: Warehouse },
       { title: 'IoT Smart Rooms', href: '/iot', icon: KeyRound },
-      { title: 'Projects & Bugs', href: '/projects', icon: Hammer },
+      { title: 'AI Concierge Studio', href: '/ai', icon: Bot },
       { title: 'Live Messenger', href: '/messages', icon: MessageCircle },
-      { title: 'Digital Wallet', href: '/wallet', icon: Wallet },
+      { title: 'Projects & Bugs', href: '/projects', icon: Hammer },
     ],
   },
   {
-    section: 'SYSTEM',
+    section: 'FINANCE & CRM',
     items: [
+      { title: 'Accounting & Night Audit', href: '/finance', icon: DollarSign },
+      { title: 'Guest CRM & Banquets', href: '/crm', icon: Briefcase },
+      { title: 'HR & Payroll', href: '/hrm', icon: Users },
+      { title: 'Vendor Marketplace', href: '/marketplace', icon: Store },
+      { title: 'Digital Wallet', href: '/wallet', icon: Wallet },
+      { title: 'Coupons & Promos', href: '/coupons', icon: TicketPercent },
+      { title: 'Guest Reviews', href: '/reviews', icon: MessageSquare },
+    ],
+  },
+  {
+    section: 'CONTENT & CMS',
+    items: [
+      { title: 'News', href: '/news', icon: Newspaper },
+      { title: 'Page', href: '/pages', icon: FileText },
+      { title: 'Media', href: '/media', icon: ImageIcon },
+      { title: 'Popup Modals', href: '/popup', icon: Layers },
+      { title: 'Menu Builder', href: '/menu', icon: MenuIcon },
+    ],
+  },
+  {
+    section: 'SYSTEM & GOVERNANCE',
+    items: [
+      { title: 'Organizations', href: '/organizations', icon: Building },
       {
         title: 'Users',
         icon: Users,
@@ -120,12 +150,9 @@ export const navigationSections: NavSection[] = [
           { title: 'Role Permissions', href: '/roles' },
         ],
       },
-      { title: 'User Plans', href: '/roles', icon: ShieldCheck },
-      { title: 'Popup', href: '/popup', icon: Layers },
-      { title: 'Menu', href: '/menu', icon: MenuIcon },
-      { title: 'Payouts', href: '/finance', icon: DollarSign },
-      { title: 'Themes', href: '/themes', icon: Palette },
-      { title: 'Setting', href: '/settings', icon: Settings, hasSubmenu: true },
+      { title: 'Reports & Analytics', href: '/reports', icon: BarChart3 },
+      { title: 'Audit Trail', href: '/audit-logs', icon: History },
+      { title: 'Settings', href: '/settings', icon: Settings },
     ],
   },
 ];
@@ -193,14 +220,18 @@ export function AdminSidebar() {
   return (
     <aside
       className={cn(
-        'relative flex flex-col border-r border-[#1b263b] bg-[#162032] text-slate-300 transition-all duration-200 z-30 select-none shadow-sm shrink-0',
+        'relative flex flex-col border-r border-[#1b263b] text-slate-300 transition-all duration-200 z-30 select-none shadow-sm shrink-0',
         sidebarCollapsed ? 'w-16' : 'w-60'
       )}
+      style={{ backgroundColor: 'var(--brand-bg, #162032)' }}
     >
       {/* Brand Header Matching PDF Figures */}
-      <div className="flex h-14 items-center justify-between px-3 border-b border-[#212f45] bg-[#111927]">
+      <div className="flex h-14 items-center justify-between px-3 border-b border-[#212f45]" style={{ backgroundColor: 'var(--brand-bg, #111927)' }}>
         <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
-          <div className="w-8 h-8 rounded bg-[#00a8ff] flex items-center justify-center font-black text-white text-xs shadow-xs shrink-0 tracking-wider">
+          <div
+            className="w-8 h-8 rounded flex items-center justify-center font-black text-white text-xs shadow-xs shrink-0 tracking-wider transition-colors"
+            style={{ backgroundColor: 'var(--brand-primary, #00a8ff)' }}
+          >
             OS
           </div>
           {!sidebarCollapsed && (
@@ -254,7 +285,10 @@ export function AdminSidebar() {
                       )}
                     >
                       <div className="flex items-center gap-2.5 truncate">
-                        <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-[#00a8ff]' : 'text-slate-400')} />
+                        <Icon
+                          className={cn('w-4 h-4 shrink-0', isActive ? 'text-white' : 'text-slate-400')}
+                          style={isActive ? { color: 'var(--brand-primary, #00a8ff)' } : {}}
+                        />
                         {!sidebarCollapsed && <span className="truncate">{item.title}</span>}
                       </div>
                       {!sidebarCollapsed && (
@@ -280,9 +314,10 @@ export function AdminSidebar() {
                               className={cn(
                                 'block px-3 py-1.5 rounded text-[11px] transition-colors',
                                 isSubSelected
-                                  ? 'bg-[#00a8ff] text-white font-semibold'
+                                  ? 'text-white font-semibold shadow-2xs'
                                   : 'text-slate-400 hover:text-white hover:bg-[#1a2538]'
                               )}
+                              style={isSubSelected ? { backgroundColor: 'var(--brand-primary, #00a8ff)' } : {}}
                             >
                               {sub.title}
                             </Link>
@@ -302,9 +337,10 @@ export function AdminSidebar() {
                   className={cn(
                     'group flex items-center justify-between px-3 py-2 rounded text-xs font-medium transition-colors',
                     isActive
-                      ? 'bg-[#00a8ff] text-white font-semibold shadow-xs'
+                      ? 'text-white font-semibold shadow-xs'
                       : 'text-slate-300 hover:text-white hover:bg-[#1a2538]'
                   )}
+                  style={isActive ? { backgroundColor: 'var(--brand-primary, #00a8ff)' } : {}}
                 >
                   <div className="flex items-center gap-2.5 truncate">
                     <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-white' : 'text-slate-400')} />

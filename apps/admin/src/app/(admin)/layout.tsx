@@ -5,7 +5,12 @@ import { useRouter, usePathname } from 'next/navigation';
 import { ShieldAlert, ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdminShell } from '@/components/layout/admin-shell';
 import { useUiStore } from '@/stores/ui-store';
-import { isRouteAllowedForRole, ROLE_LABELS } from '@/lib/auth/permissions';
+import { isRouteAllowedForRole, ROLE_LABELS, Role } from '@/lib/auth/permissions';
+import { sessionManager } from '@/lib/auth/session';
+import { useQuery } from '@tanstack/react-query';
+import { contentService } from '@/features/content/services/content.service';
+
+import { applyThemeStyles } from './themes/page';
 
 export default function AdminLayout({
   children,
@@ -17,9 +22,32 @@ export default function AdminLayout({
   const { activeRole } = useUiStore();
   const [mounted, setMounted] = useState(false);
 
+  const { data: themeConfig } = useQuery({
+    queryKey: ['systemTheme'],
+    queryFn: () => contentService.getThemeConfig(),
+  });
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!sessionManager.isAuthenticated()) {
+      router.push('/login');
+      return;
+    }
+    const sessionUser = sessionManager.getUser();
+    if (sessionUser?.role && sessionUser.role !== activeRole) {
+      useUiStore.getState().setActiveRole(sessionUser.role as Role);
+    }
+  }, [mounted, router, activeRole]);
+
+  useEffect(() => {
+    if (themeConfig?.activeThemeId) {
+      applyThemeStyles(themeConfig.activeThemeId);
+    }
+  }, [themeConfig]);
 
   if (!mounted) {
     return (
@@ -42,13 +70,13 @@ export default function AdminLayout({
             Module Access Restricted (RBAC)
           </h2>
           <p className="text-xs text-slate-600 mb-6 leading-relaxed max-w-md mx-auto">
-            Your currently simulated role{' '}
+            Your assigned role{' '}
             <span className="font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
               {ROLE_LABELS[activeRole] || activeRole}
             </span>{' '}
             does not have permission to view this module (
             <code className="text-amber-600 font-mono text-xs">{pathname}</code>
-            ). Switch your persona in the top navigation bar or return to your allowed dashboard.
+            ). Please contact your administrator or return to your allowed dashboard.
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
