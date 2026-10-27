@@ -1,26 +1,47 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MessageSquare, Phone, Mail, Send, CheckCircle2, User, Clock, ShieldCheck } from 'lucide-react';
+import { MessageSquare, Phone, Mail, Send, CheckCircle2, User, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { messagesService, ChatMessageItem, ChatChannelItem } from '@/features/messages/services/messages.service';
 
 export default function OmnichannelMessagesPage() {
-  const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'internal' | 'sms'>('whatsapp');
-  const [messages, setMessages] = useState([
-    { id: 1, sender: 'Guest (Room 302 - Alexander)', text: 'Hello, could we get 2 extra down feather pillows delivered to Room 302 please?', time: '10:14 AM', isStaff: false },
-    { id: 2, sender: 'AI Concierge (Autonomous)', text: 'Certainly, Mr. Alexander! A dispatch request has been forwarded to Housekeeping. Your pillows will arrive in approximately 8 minutes.', time: '10:14 AM', isStaff: true },
-    { id: 3, sender: 'Housekeeping (Elena)', text: 'Delivered and confirmed with guest.', time: '10:21 AM', isStaff: true },
-  ]);
+  const queryClient = useQueryClient();
+  const [activeChannelType, setActiveChannelType] = useState<'whatsapp' | 'internal' | 'sms'>('whatsapp');
+  const [selectedChannelId, setSelectedChannelId] = useState<string>('');
   const [replyText, setReplyText] = useState('');
 
-  const handleSend = (e: React.FormEvent) => {
+  const { data: channels = [] } = useQuery<ChatChannelItem[]>({
+    queryKey: ['chatChannels'],
+    queryFn: () => messagesService.getChannels(),
+  });
+
+  const activeChannel = selectedChannelId || channels[0]?.id || '';
+
+  const { data: messages = [], isLoading } = useQuery<ChatMessageItem[]>({
+    queryKey: ['chatMessages', activeChannel],
+    queryFn: () => (activeChannel ? messagesService.getMessages(activeChannel) : Promise.resolve([])),
+    enabled: !!activeChannel,
+    refetchInterval: 5000,
+  });
+
+  const sendMutation = useMutation({
+    mutationFn: (text: string) =>
+      messagesService.sendMessage({
+        channelId: selectedChannelId,
+        body: text,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chatMessages', selectedChannelId] });
+      setReplyText('');
+    },
+  });
+
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyText) return;
-    setMessages([
-      ...messages,
-      { id: Date.now(), sender: 'Front Desk Agent (You)', text: replyText, time: 'Just now', isStaff: true },
-    ]);
-    setReplyText('');
+    if (!replyText.trim()) return;
+    await sendMutation.mutateAsync(replyText.trim());
   };
 
   return (
@@ -43,81 +64,118 @@ export default function OmnichannelMessagesPage() {
 
         <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
           <button
-            onClick={() => setActiveChannel('whatsapp')}
+            onClick={() => setActiveChannelType('whatsapp')}
             className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activeChannel === 'whatsapp' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              activeChannelType === 'whatsapp' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             WhatsApp Business
           </button>
           <button
-            onClick={() => setActiveChannel('internal')}
+            onClick={() => setActiveChannelType('internal')}
             className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activeChannel === 'internal' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              activeChannelType === 'internal' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Internal Staff Chat
           </button>
           <button
-            onClick={() => setActiveChannel('sms')}
+            onClick={() => setActiveChannelType('sms')}
             className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activeChannel === 'sms' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              activeChannelType === 'sms' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Twilio SMS Alerts
+            SMS Gateways
           </button>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-hidden flex flex-col h-[520px]">
-        {/* Chat Header */}
-        <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">
-              WA
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-900">Room 302: Alexander Wright (+1-415-***-9021)</p>
-              <p className="text-[10px] text-emerald-600 font-semibold">Active WhatsApp Session · In-House VIP</p>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        {/* Left Channels List */}
+        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-2xs space-y-3">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            {activeChannelType === 'whatsapp' ? 'Guest Inquiries' : activeChannelType === 'internal' ? 'Staff Channels' : 'Carrier Logs'}
+          </span>
+          <div className="space-y-1.5">
+            {channels.length === 0 ? (
+              <p className="text-xs text-slate-400 py-4 text-center">No active channels</p>
+            ) : (
+              channels.map((ch) => (
+                <button
+                  key={ch.id}
+                  onClick={() => setSelectedChannelId(ch.id)}
+                  className={`w-full text-left p-2.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                    activeChannel === ch.id
+                      ? 'bg-blue-50 text-[#00a8ff] font-bold'
+                      : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  #{ch.channelName}
+                </button>
+              ))
+            )}
           </div>
-          <span className="text-[10px] text-slate-400">Checkout: 25 Oct 2026</span>
         </div>
 
-        {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-slate-50/40">
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex flex-col ${m.isStaff ? 'items-end' : 'items-start'}`}
-            >
-              <span className="text-[10px] text-slate-400 mb-0.5 px-1">{m.sender} · {m.time}</span>
-              <div
-                className={`max-w-md p-3 rounded-lg text-xs leading-relaxed shadow-2xs ${
-                  m.isStaff
-                    ? 'bg-[#00a8ff] text-white rounded-br-none'
-                    : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'
-                }`}
-              >
-                {m.text}
-              </div>
+        {/* Right Active Chat Box */}
+        <div className="md:col-span-3 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col h-[520px]">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span className="font-bold text-slate-900 text-xs">
+                Active Feed — #{channels.find((c) => c.id === activeChannel)?.channelName || 'General'}
+              </span>
             </div>
-          ))}
-        </div>
+            <span className="text-[11px] text-slate-400 font-mono">Real-Time WebSocket & REST Stream</span>
+          </div>
 
-        {/* Input Bar */}
-        <form onSubmit={handleSend} className="p-3 border-t border-slate-200 bg-white flex items-center gap-2">
-          <input
-            type="text"
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-            placeholder="Type your message or WhatsApp template reply..."
-            className="flex-1 h-10 px-4 text-xs bg-slate-50 border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
-          />
-          <Button type="submit" size="sm" className="h-10 px-4 bg-[#00a8ff] hover:bg-[#0097e6] text-white">
-            <Send className="w-4 h-4 mr-1.5" /> Send Message
-          </Button>
-        </form>
+          <div className="flex-1 p-4 overflow-y-auto space-y-3">
+            {isLoading ? (
+              <div className="h-full flex items-center justify-center text-slate-400 text-xs gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-[#00a8ff]" /> Loading chat transcript...
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-slate-400 text-xs">
+                No messages in this channel yet.
+              </div>
+            ) : (
+              messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`p-3 rounded-lg max-w-lg text-xs ${
+                    m.isStaff
+                      ? 'bg-slate-100 text-slate-800 ml-auto border border-slate-200'
+                      : 'bg-blue-50 text-slate-900 border border-blue-100'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1 gap-4">
+                    <span className="font-bold text-slate-700">{m.sender}</span>
+                    <span>{m.time}</span>
+                  </div>
+                  <p className="leading-relaxed">{m.text}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form onSubmit={handleSend} className="p-3 border-t border-slate-100 flex gap-2">
+            <input
+              type="text"
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              placeholder="Type dispatch response or message to guest..."
+              className="flex-1 px-3 py-2 border border-slate-200 rounded-md text-xs focus:outline-hidden focus:border-[#00a8ff]"
+            />
+            <Button
+              type="submit"
+              disabled={sendMutation.isPending}
+              size="sm"
+              className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs px-4"
+            >
+              <Send className="w-3.5 h-3.5 mr-1" /> Send
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );

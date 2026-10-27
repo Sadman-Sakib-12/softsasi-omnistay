@@ -17,8 +17,8 @@ export default function HrmPage() {
   const [newStaff, setNewStaff] = useState({
     name: '',
     email: '',
-    role: 'Housekeeping Staff',
-    shift: 'Morning (07:00 - 15:00)',
+    role: '',
+    shift: '',
   });
 
   const { data: users = [], isLoading } = useQuery({
@@ -45,8 +45,8 @@ export default function HrmPage() {
       setNewStaff({
         name: '',
         email: '',
-        role: 'Housekeeping Staff',
-        shift: 'Morning (07:00 - 15:00)',
+        role: '',
+        shift: '',
       });
     }
   };

@@ -20,12 +20,12 @@ export default function UsersPage() {
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
-    role: 'FRONT_DESK_AGENT',
+    role: '',
   });
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users', currentTenantId],
-    queryFn: () => usersService.getAll(),
+    queryFn: () => usersService.getAll(currentTenantId),
   });
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -34,13 +34,13 @@ export default function UsersPage() {
     setIsSubmitting(true);
     try {
       await usersService.invite(newUser);
-    } catch {
-      // Backend may not implement /invite endpoint yet; queryClient invalidate handles UI
+    } catch (err) {
+      console.error('Failed to invite user', err);
     } finally {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setIsSubmitting(false);
       setIsAddUserOpen(false);
-      setNewUser({ name: '', email: '', role: 'FRONT_DESK_AGENT' });
+      setNewUser({ name: '', email: '', role: '' });
     }
   };
 
@@ -90,7 +90,7 @@ export default function UsersPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push(`/users/${item.id}`)}
+          onClick={() => router.push(`/users/${item.id || (item as any).userId}`)}
           className="hover:text-blue-600 hover:bg-blue-50 text-slate-500"
         >
           <Eye className="w-3.5 h-3.5" />
@@ -130,7 +130,7 @@ export default function UsersPage() {
         searchPlaceholder="Search by name or email..."
         emptyTitle="No Users Found in Partition"
         emptySubtitle="Register staff members to grant access to the PMS console."
-        onRowClick={(item) => router.push(`/users/${item.id}`)}
+        onRowClick={(item) => router.push(`/users/${item.id || (item as any).userId}`)}
       />
 
       {/* Add User Modal Dialog */}
@@ -179,10 +179,12 @@ export default function UsersPage() {
                 <div className="space-y-1">
                   <label className="block text-slate-700 font-semibold">Role & Permissions *</label>
                   <select
+                    required
                     value={newUser.role}
                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                     className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
                   >
+                    <option value="" disabled>Select Role...</option>
                     <option value="PLATFORM_SUPERADMIN">Platform SuperAdmin</option>
                     <option value="COMPANY_OWNER_GM">Company Owner / GM</option>
                     <option value="FRONT_DESK_AGENT">Front Desk Agent</option>

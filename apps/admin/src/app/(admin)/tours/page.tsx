@@ -12,9 +12,9 @@ export default function ToursPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
-  const [newPrice, setNewPrice] = useState('150');
-  const [newDuration, setNewDuration] = useState('Full Day (8 Hours)');
-  const [newCategory, setNewCategory] = useState('Island Hopping');
+  const [newPrice, setNewPrice] = useState('');
+  const [newDuration, setNewDuration] = useState('');
+  const [newCategory, setNewCategory] = useState('');
 
   const { data: tours = [], isLoading, refetch } = useQuery({
     queryKey: ['adminTours'],
@@ -27,14 +27,16 @@ export default function ToursPage() {
     try {
       await travelService.createTour({
         title: newTitle,
-        price: parseFloat(newPrice) || 100,
-        duration: newDuration,
-        category: newCategory,
-        minPax: 2,
-        maxPax: 15,
+        price: parseFloat(newPrice) || 0,
+        duration: newDuration || 'Full Day',
+        category: newCategory || 'General',
+        minPax: 1,
+        maxPax: 20,
       });
       setIsAdding(false);
       setNewTitle('');
+      setNewPrice('');
+      setNewCategory('');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error creating tour');
@@ -93,21 +95,24 @@ export default function ToursPage() {
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Category</label>
               <select
+                required
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option>Island Hopping</option>
-                <option>Scuba & Snorkeling</option>
-                <option>Mountain Trekking</option>
-                <option>Cultural Heritage</option>
-                <option>Culinary Food Tour</option>
+                <option value="" disabled>Select Category...</option>
+                <option value="Island Hopping">Island Hopping</option>
+                <option value="Scuba & Snorkeling">Scuba & Snorkeling</option>
+                <option value="Mountain Trekking">Mountain Trekking</option>
+                <option value="Cultural Heritage">Cultural Heritage</option>
+                <option value="Culinary Food Tour">Culinary Food Tour</option>
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Adult Rate ($)</label>
               <input
                 type="number"
+                placeholder="0.00"
                 value={newPrice}
                 onChange={(e) => setNewPrice(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"

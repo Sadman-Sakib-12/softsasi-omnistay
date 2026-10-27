@@ -140,12 +140,12 @@ export default function FrontDeskPage() {
 
                       <div className="space-y-1">
                         <div className="text-[11px] font-bold text-blue-600 flex items-center justify-between">
-                          <span>Rate</span>
-                          <span>$150/d</span>
+                          <span>Avg Rate</span>
+                          <span>{rooms.length > 0 && rooms[0]?.pricePerNight ? `$${rooms[0].pricePerNight}/d` : '-'}</span>
                         </div>
                         <div className="text-[10px] text-slate-500 flex items-center justify-between font-medium">
                           <span>Avail</span>
-                          <span>{rooms.length > 0 ? `${rooms.length} Units` : 'Live'}</span>
+                          <span>{rooms.length > 0 ? `${rooms.length} Units` : '0 Units'}</span>
                         </div>
                       </div>
                     </div>

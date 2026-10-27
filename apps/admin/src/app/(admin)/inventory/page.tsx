@@ -16,11 +16,11 @@ export default function InventoryPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
-    sku: `SKU-${Math.floor(100 + Math.random() * 900)}`,
-    category: 'Housekeeping Linens',
-    currentStock: 50,
-    reorderPoint: 15,
-    unitCost: 25,
+    sku: '',
+    category: '',
+    currentStock: 0,
+    reorderPoint: 0,
+    unitCost: 0,
   });
 
   const { data: inventoryData = [], isLoading } = useQuery({
@@ -34,20 +34,20 @@ export default function InventoryPage() {
     setIsSubmitting(true);
     try {
       await inventoryService.createProduct(newProduct);
-    } catch {
-      // Backend inventory endpoint fallback
-    } finally {
-      queryClient.invalidateQueries({ queryKey: ['inventoryProducts'] });
-      setIsSubmitting(false);
       setIsAddProductOpen(false);
       setNewProduct({
         name: '',
-        sku: `SKU-${Math.floor(100 + Math.random() * 900)}`,
-        category: 'Housekeeping Linens',
-        currentStock: 50,
-        reorderPoint: 15,
-        unitCost: 25,
+        sku: '',
+        category: '',
+        currentStock: 0,
+        reorderPoint: 0,
+        unitCost: 0,
       });
+    } catch (err: any) {
+      alert(err.message || 'Failed to create inventory product');
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ['inventoryProducts'] });
+      setIsSubmitting(false);
     }
   };
 
@@ -209,7 +209,9 @@ export default function InventoryPage() {
                       value={newProduct.category}
                       onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                       className="w-full h-8 px-2.5 text-xs bg-[#1a2538] border border-[#2d3f5e] rounded text-white focus:outline-none focus:border-emerald-400"
+                      required
                     >
+                      <option value="" disabled>Select Category...</option>
                       <option value="Housekeeping Linens">Housekeeping Linens</option>
                       <option value="Toiletries & Amenities">Toiletries & Amenities</option>
                       <option value="F&B Pantry Supplies">F&B Pantry Supplies</option>

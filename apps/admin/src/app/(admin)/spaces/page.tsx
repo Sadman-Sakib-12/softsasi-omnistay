@@ -12,9 +12,9 @@ export default function SpacesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newCategory, setNewCategory] = useState('Executive Meeting Room');
-  const [newCapacity, setNewCapacity] = useState('16');
-  const [newHourlyRate, setNewHourlyRate] = useState('50');
+  const [newCategory, setNewCategory] = useState('');
+  const [newCapacity, setNewCapacity] = useState('');
+  const [newHourlyRate, setNewHourlyRate] = useState('');
 
   const { data: spaces = [], isLoading, refetch } = useQuery({
     queryKey: ['adminSpaces'],
@@ -27,12 +27,15 @@ export default function SpacesPage() {
     try {
       await travelService.createSpace({
         name: newName,
-        category: newCategory,
-        capacity: parseInt(newCapacity) || 10,
-        hourlyRate: parseFloat(newHourlyRate) || 50,
+        category: newCategory || 'Meeting Room',
+        capacity: parseInt(newCapacity) || 1,
+        hourlyRate: parseFloat(newHourlyRate) || 0,
       });
       setIsAdding(false);
       setNewName('');
+      setNewCategory('');
+      setNewCapacity('');
+      setNewHourlyRate('');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error creating space');
@@ -88,20 +91,23 @@ export default function SpacesPage() {
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Category</label>
               <select
+                required
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option>Executive Meeting Room</option>
-                <option>Grand Wedding Ballroom</option>
-                <option>Coworking Hot-Desk</option>
-                <option>Outdoor Garden Pavilion</option>
+                <option value="" disabled>Select Category...</option>
+                <option value="Executive Meeting Room">Executive Meeting Room</option>
+                <option value="Grand Wedding Ballroom">Grand Wedding Ballroom</option>
+                <option value="Coworking Hot-Desk">Coworking Hot-Desk</option>
+                <option value="Outdoor Garden Pavilion">Outdoor Garden Pavilion</option>
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Hourly Rate ($)</label>
               <input
                 type="number"
+                placeholder="0.00"
                 value={newHourlyRate}
                 onChange={(e) => setNewHourlyRate(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"

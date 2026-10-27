@@ -2,6 +2,8 @@
 
 @layer base {
   :root {
+    --brand-primary: #00a8ff;
+    --brand-bg: #162032;
     --background: #f8fafc;
     --foreground: #0f172a;
     --card: #ffffff;

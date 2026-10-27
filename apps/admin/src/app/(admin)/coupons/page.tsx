@@ -6,58 +6,52 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 
-interface CouponItem {
-  id: string;
-  code: string;
-  discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
-  discountValue: number;
-  minSpend: number;
-  totalUsageLimit: number;
-  usedCount: number;
-  status: string;
-}
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { couponsService, CouponItem } from '@/features/coupons/services/coupons.service';
 
 export default function CouponsPage() {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddCouponOpen, setIsAddCouponOpen] = useState(false);
   const [newCoupon, setNewCoupon] = useState({
     code: '',
     discountType: 'PERCENTAGE' as 'PERCENTAGE' | 'FIXED_AMOUNT',
-    discountValue: 20,
-    minSpend: 150,
-    totalUsageLimit: 500,
+    discountValue: 0,
+    minSpend: 0,
+    totalUsageLimit: 0,
     status: 'Active',
   });
-  const [coupons, setCoupons] = useState<CouponItem[]>([
-    { id: 'c-1', code: 'WELCOME20', discountType: 'PERCENTAGE', discountValue: 20, minSpend: 150, totalUsageLimit: 500, usedCount: 142, status: 'Active' },
-    { id: 'c-2', code: 'LUXURY50', discountType: 'FIXED_AMOUNT', discountValue: 50, minSpend: 300, totalUsageLimit: 200, usedCount: 89, status: 'Active' },
-    { id: 'c-3', code: 'SUMMERVIBES', discountType: 'PERCENTAGE', discountValue: 15, minSpend: 200, totalUsageLimit: 1000, usedCount: 420, status: 'Active' },
-  ]);
 
-  const handleAddCoupon = (e: React.FormEvent) => {
+  const { data: coupons = [], isLoading } = useQuery<CouponItem[]>({
+    queryKey: ['loyaltyCoupons'],
+    queryFn: () => couponsService.getAll(),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (dto: any) => couponsService.create(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loyaltyCoupons'] });
+      setIsAddCouponOpen(false);
+      setNewCoupon({
+        code: '',
+        discountType: 'PERCENTAGE',
+        discountValue: 0,
+        minSpend: 0,
+        totalUsageLimit: 0,
+        status: 'Active',
+      });
+    },
+  });
+
+  const handleAddCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCoupon.code) return;
-    setCoupons((prev) => [
-      ...prev,
-      {
-        id: `c-${Date.now()}`,
-        code: newCoupon.code.toUpperCase().trim(),
-        discountType: newCoupon.discountType,
-        discountValue: Number(newCoupon.discountValue),
-        minSpend: Number(newCoupon.minSpend),
-        totalUsageLimit: Number(newCoupon.totalUsageLimit),
-        usedCount: 0,
-        status: newCoupon.status,
-      },
-    ]);
-    setIsAddCouponOpen(false);
-    setNewCoupon({
-      code: '',
-      discountType: 'PERCENTAGE',
-      discountValue: 20,
-      minSpend: 150,
-      totalUsageLimit: 500,
-      status: 'Active',
+    await createMutation.mutateAsync({
+      code: newCoupon.code.toUpperCase().trim(),
+      discountType: newCoupon.discountType,
+      discountValue: Number(newCoupon.discountValue),
+      minSpend: Number(newCoupon.minSpend),
+      totalUsageLimit: Number(newCoupon.totalUsageLimit),
     });
   };
 

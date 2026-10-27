@@ -14,6 +14,9 @@ interface LocationItem {
   status: string;
 }
 
+import { useQuery } from '@tanstack/react-query';
+import { propertiesService, Property } from '@/features/properties/services/properties.service';
+
 export default function LocationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
@@ -24,19 +27,46 @@ export default function LocationsPage() {
     propertiesCount: 1,
     status: 'Active',
   });
-  const [locations, setLocations] = useState<LocationItem[]>([
-    { id: 'loc-1', name: 'Cox’s Bazar Beachfront', country: 'Bangladesh', city: 'Cox’s Bazar', propertiesCount: 8, status: 'Active' },
-    { id: 'loc-2', name: 'Sylhet Tea Valleys', country: 'Bangladesh', city: 'Sylhet', propertiesCount: 4, status: 'Active' },
-    { id: 'loc-3', name: 'Dhaka Diplomatic Zone (Gulshan)', country: 'Bangladesh', city: 'Dhaka', propertiesCount: 12, status: 'Active' },
-    { id: 'loc-4', name: 'Saint Martin Island', country: 'Bangladesh', city: 'Saint Martin', propertiesCount: 3, status: 'Active' },
-  ]);
+
+  const { data: properties = [], isLoading } = useQuery<Property[]>({
+    queryKey: ['properties'],
+    queryFn: () => propertiesService.getAll(),
+  });
+
+  // Derive dynamic locations purely from database properties
+  const derivedLocations: LocationItem[] = React.useMemo(() => {
+    const locMap = new Map<string, LocationItem>();
+    properties.forEach((p) => {
+      const city = p.city || 'Unspecified';
+      const country = p.country || 'Bangladesh';
+      const key = `${city}-${country}`.toLowerCase();
+      if (!locMap.has(key)) {
+        locMap.set(key, {
+          id: `loc-${key}`,
+          name: `${city} Destination`,
+          city,
+          country,
+          propertiesCount: 1,
+          status: 'Active',
+        });
+      } else {
+        const item = locMap.get(key)!;
+        item.propertiesCount += 1;
+      }
+    });
+    return Array.from(locMap.values());
+  }, [properties]);
+
+  const [customLocations, setCustomLocations] = useState<LocationItem[]>([]);
+
+  const locations = [...derivedLocations, ...customLocations];
 
   const handleAddLocation = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newLoc.name || !newLoc.city) return;
-    setLocations((prev) => [
+    setCustomLocations((prev) => [
       ...prev,
-      { id: `loc-${Date.now()}`, ...newLoc },
+      { id: `loc-${Date.now()}`, ...newLoc, propertiesCount: 1 },
     ]);
     setIsAddLocationOpen(false);
     setNewLoc({ name: '', city: '', country: 'Bangladesh', propertiesCount: 1, status: 'Active' });

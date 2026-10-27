@@ -49,7 +49,7 @@ export default function MarketplacePage() {
     },
     {
       header: 'Commission Margin',
-      cell: (item) => <span className="font-semibold text-emerald-400">{item.commissionRate || 15}% Net</span>,
+      cell: (item) => <span className="font-semibold text-emerald-400">{item.commissionRate ?? 0}% Net</span>,
     },
     {
       header: 'Joined Date',

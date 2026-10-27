@@ -12,8 +12,8 @@ export default function BoatsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newVesselType, setNewVesselType] = useState('Luxury Motor Yacht');
-  const [newHourlyRate, setNewHourlyRate] = useState('350');
+  const [newVesselType, setNewVesselType] = useState('');
+  const [newHourlyRate, setNewHourlyRate] = useState('');
 
   const { data: boats = [], isLoading, refetch } = useQuery({
     queryKey: ['adminBoats'],
@@ -26,13 +26,15 @@ export default function BoatsPage() {
     try {
       await travelService.createBoat({
         name: newName,
-        vesselType: newVesselType,
-        hourlyRate: parseFloat(newHourlyRate) || 250,
+        vesselType: newVesselType || 'Luxury Motor Yacht',
+        hourlyRate: parseFloat(newHourlyRate) || 0,
         capacity: 12,
         lengthFt: 52,
       });
       setIsAdding(false);
       setNewName('');
+      setNewHourlyRate('');
+      setNewVesselType('');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error registering vessel');
@@ -88,20 +90,23 @@ export default function BoatsPage() {
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Vessel Type</label>
               <select
+                required
                 value={newVesselType}
                 onChange={(e) => setNewVesselType(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option>Luxury Motor Yacht</option>
-                <option>Sailing Catamaran</option>
-                <option>High-Speed Ferry</option>
-                <option>Jet Ski Fleet</option>
+                <option value="" disabled>Select Vessel Type...</option>
+                <option value="Luxury Motor Yacht">Luxury Motor Yacht</option>
+                <option value="Sailing Catamaran">Sailing Catamaran</option>
+                <option value="High-Speed Ferry">High-Speed Ferry</option>
+                <option value="Jet Ski Fleet">Jet Ski Fleet</option>
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Charter Rate ($/hr)</label>
               <input
                 type="number"
+                placeholder="0.00"
                 value={newHourlyRate}
                 onChange={(e) => setNewHourlyRate(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"

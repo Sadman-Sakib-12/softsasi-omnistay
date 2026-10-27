@@ -4,68 +4,32 @@ import React, { useState } from 'react';
 import { Star, MessageSquare, CheckCircle2, ShieldCheck, ThumbsUp, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-interface ReviewItem {
-  id: string;
-  guestName: string;
-  property: string;
-  rating: number;
-  criteria: { cleanliness: number; location: number; service: number; value: number };
-  comment: string;
-  verifiedStay: boolean;
-  date: string;
-  status: string;
-  hostReply?: { text: string; date: string };
-}
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { reviewsService, ReviewItem } from '@/features/reviews/services/reviews.service';
 
 export default function ReviewsPage() {
+  const queryClient = useQueryClient();
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
-  const [reviews, setReviews] = useState<ReviewItem[]>([
-    {
-      id: 'rev-1',
-      guestName: 'Alexander Wright',
-      property: 'Grand Palace Resort & Spa',
-      rating: 5,
-      criteria: { cleanliness: 5, location: 5, service: 5, value: 4.8 },
-      comment: 'Exceptional stay. The private pool suite was pristine and the AI Concierge handled dining reservations effortlessly.',
-      verifiedStay: true,
-      date: '2026-10-22',
-      status: 'Approved',
-      hostReply: {
-        text: 'Thank you Alexander! We are delighted the AI Concierge enhanced your stay. Looking forward to welcoming you back.',
-        date: '2026-10-23',
-      },
-    },
-    {
-      id: 'rev-2',
-      guestName: 'Elena Rostova',
-      property: 'Hotel Stanford',
-      rating: 4.8,
-      criteria: { cleanliness: 5, location: 4.5, service: 5, value: 4.7 },
-      comment: 'The contactless check-in and digital key worked instantly on my iPhone. Beautiful harbor views.',
-      verifiedStay: true,
-      date: '2026-10-20',
-      status: 'Approved',
-    },
-  ]);
 
-  const handlePublishReply = (reviewId: string) => {
+  const { data: reviews = [], isLoading } = useQuery<ReviewItem[]>({
+    queryKey: ['guestReviews'],
+    queryFn: () => reviewsService.getAll(),
+  });
+
+  const replyMutation = useMutation({
+    mutationFn: ({ id, reply }: { id: string; reply: string }) =>
+      reviewsService.reply(id, reply),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guestReviews'] });
+      setReplyingToId(null);
+      setReplyText('');
+    },
+  });
+
+  const handlePublishReply = async (reviewId: string) => {
     if (!replyText.trim()) return;
-    setReviews((prev) =>
-      prev.map((r) =>
-        r.id === reviewId
-          ? {
-              ...r,
-              hostReply: {
-                text: replyText.trim(),
-                date: new Date().toISOString().split('T')[0],
-              },
-            }
-          : r
-      )
-    );
-    setReplyingToId(null);
-    setReplyText('');
+    await replyMutation.mutateAsync({ id: reviewId, reply: replyText.trim() });
   };
 
   return (
@@ -87,10 +51,22 @@ export default function ReviewsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
-          { label: 'Overall Reputation Score', val: '4.9 / 5.0' },
-          { label: 'Verified Stays Checked', val: '100% Verified' },
-          { label: 'Cleanliness Rating', val: '4.95 / 5.0' },
-          { label: 'Hospitality & Service', val: '4.90 / 5.0' },
+          {
+            label: 'Overall Reputation Score',
+            val: reviews.length > 0 ? `${(reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length).toFixed(1)} / 5.0` : '0.0 / 5.0',
+          },
+          {
+            label: 'Verified Stays Checked',
+            val: reviews.length > 0 ? `${Math.round((reviews.filter((r) => r.verifiedStay).length / reviews.length) * 100)}% Verified` : '0% Verified',
+          },
+          {
+            label: 'Cleanliness Rating',
+            val: reviews.length > 0 ? `${(reviews.reduce((acc, r) => acc + (r.criteria?.cleanliness || 0), 0) / reviews.length).toFixed(1)} / 5.0` : '0.0 / 5.0',
+          },
+          {
+            label: 'Hospitality & Service',
+            val: reviews.length > 0 ? `${(reviews.reduce((acc, r) => acc + (r.criteria?.service || 0), 0) / reviews.length).toFixed(1)} / 5.0` : '0.0 / 5.0',
+          },
         ].map((stat) => (
           <div key={stat.label} className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
             <span className="text-[11px] text-slate-500 font-medium">{stat.label}</span>
@@ -99,8 +75,19 @@ export default function ReviewsPage() {
         ))}
       </div>
 
-      <div className="space-y-3">
-        {reviews.map((rev) => (
+      {isLoading ? (
+        <div className="py-12 text-center text-slate-400 text-xs">
+          <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#00a8ff]" />
+          <span className="mt-2 block">Loading guest reviews from database...</span>
+        </div>
+      ) : reviews.length === 0 ? (
+        <div className="p-12 text-center bg-white border border-slate-200 rounded-lg shadow-2xs">
+          <p className="text-sm font-semibold text-slate-700">No guest reviews submitted yet</p>
+          <p className="text-xs text-slate-500 mt-1">Verified reviews will automatically appear after guests complete check-out.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {reviews.map((rev) => (
           <div key={rev.id} className="p-5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-3">
             <div className="flex items-start justify-between">
               <div>
@@ -193,7 +180,8 @@ export default function ReviewsPage() {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

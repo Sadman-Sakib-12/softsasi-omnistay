@@ -64,16 +64,16 @@ export default function HotelSettingsPage() {
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
   // Form State for Hotel Settings (Figure 2.1)
-  const [titlePage, setTitlePage] = useState('Search for hotel');
+  const [titlePage, setTitlePage] = useState('');
   const [layoutSearch, setLayoutSearch] = useState('Normal Layout');
   const [locationSearchStyle, setLocationSearchStyle] = useState('Normal');
-  const [limitItemPerPage, setLimitItemPerPage] = useState('9');
+  const [limitItemPerPage, setLimitItemPerPage] = useState('');
   const [layoutItemHotel, setLayoutItemHotel] = useState('List Item');
   const [attributeToShow, setAttributeToShow] = useState('Facilities');
   const [layoutMapOption, setLayoutMapOption] = useState('Map Left');
-  const [mapLatDefault, setMapLatDefault] = useState('21.030513');
-  const [mapLngDefault, setMapLngDefault] = useState('105.840565');
-  const [mapZoomDefault, setMapZoomDefault] = useState('13');
+  const [mapLatDefault, setMapLatDefault] = useState('');
+  const [mapLngDefault, setMapLngDefault] = useState('');
+  const [mapZoomDefault, setMapZoomDefault] = useState('');
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -405,7 +405,7 @@ export default function HotelSettingsPage() {
                   <label className="text-xs font-medium text-slate-700">Site Title</label>
                   <input
                     type="text"
-                    defaultValue="OmniStay 360"
+                    placeholder="e.g. OmniStay"
                     className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
                   />
                 </div>
@@ -413,7 +413,7 @@ export default function HotelSettingsPage() {
                   <label className="text-xs font-medium text-slate-700">Site Description</label>
                   <input
                     type="text"
-                    defaultValue="Enterprise Multi-Tenant Hospitality Platform"
+                    placeholder="Enter platform meta description"
                     className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
                   />
                 </div>
@@ -422,7 +422,7 @@ export default function HotelSettingsPage() {
                     <label className="text-xs font-medium text-slate-700">Admin Email</label>
                     <input
                       type="email"
-                      defaultValue="admin@omnistay.com"
+                      placeholder="admin@example.com"
                       className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
                     />
                   </div>
@@ -430,7 +430,7 @@ export default function HotelSettingsPage() {
                     <label className="text-xs font-medium text-slate-700">Default Currency</label>
                     <input
                       type="text"
-                      defaultValue="USD ($)"
+                      placeholder="e.g. USD ($)"
                       className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
                     />
                   </div>

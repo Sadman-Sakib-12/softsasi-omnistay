@@ -11,10 +11,10 @@ import { Button } from '@/components/ui/button';
 export default function FlightsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [newFlightNumber, setNewFlightNumber] = useState('OS-802');
-  const [newOrigin, setNewOrigin] = useState('DAC');
-  const [newDestination, setNewDestination] = useState('CXB');
-  const [newSeatPrice, setNewSeatPrice] = useState('180');
+  const [newFlightNumber, setNewFlightNumber] = useState('');
+  const [newOrigin, setNewOrigin] = useState('');
+  const [newDestination, setNewDestination] = useState('');
+  const [newSeatPrice, setNewSeatPrice] = useState('');
 
   const { data: flights = [], isLoading, refetch } = useQuery({
     queryKey: ['adminFlights'],
@@ -27,12 +27,16 @@ export default function FlightsPage() {
     try {
       await travelService.createFlight({
         flightNumber: newFlightNumber,
-        origin: newOrigin,
-        destination: newDestination,
-        seatPrice: parseFloat(newSeatPrice) || 150,
-        aircraft: 'Twin Otter Seaplane',
+        origin: newOrigin || 'Origin',
+        destination: newDestination || 'Destination',
+        seatPrice: parseFloat(newSeatPrice) || 0,
+        aircraft: 'Commercial Aircraft',
       });
       setIsAdding(false);
+      setNewFlightNumber('');
+      setNewOrigin('');
+      setNewDestination('');
+      setNewSeatPrice('');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error scheduling flight');
@@ -81,6 +85,7 @@ export default function FlightsPage() {
               <input
                 type="text"
                 required
+                placeholder="e.g. OS-802"
                 value={newFlightNumber}
                 onChange={(e) => setNewFlightNumber(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
@@ -90,6 +95,7 @@ export default function FlightsPage() {
               <label className="text-xs font-medium text-slate-700">Origin (IATA)</label>
               <input
                 type="text"
+                placeholder="e.g. DAC"
                 value={newOrigin}
                 onChange={(e) => setNewOrigin(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
@@ -99,6 +105,7 @@ export default function FlightsPage() {
               <label className="text-xs font-medium text-slate-700">Destination (IATA)</label>
               <input
                 type="text"
+                placeholder="e.g. CXB"
                 value={newDestination}
                 onChange={(e) => setNewDestination(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
@@ -108,6 +115,7 @@ export default function FlightsPage() {
               <label className="text-xs font-medium text-slate-700">Seat Price ($)</label>
               <input
                 type="number"
+                placeholder="0.00"
                 value={newSeatPrice}
                 onChange={(e) => setNewSeatPrice(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"

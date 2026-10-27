@@ -1,23 +1,69 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bot, Sparkles, MessageSquare, TrendingUp, Settings, CheckCircle2, Shield, Brain } from 'lucide-react';
+import { Bot, Sparkles, MessageSquare, TrendingUp, Settings, CheckCircle2, Shield, Brain, Loader2, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { aiApi } from '@omnistay/api-client';
 
 export default function AiConciergeStudioPage() {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'config' | 'telemetry' | 'yield'>('config');
+  const [agentName, setAgentName] = useState('');
   const [model, setModel] = useState('gpt-4o-mini');
   const [temperature, setTemperature] = useState('0.7');
-  const [systemPrompt, setSystemPrompt] = useState(
-    'You are the 24/7 Luxury AI Concierge for OmniStay 360. You possess full knowledge of room attributes, dining menus, local excursions, and live PMS inventory. Provide polite, tailored recommendations and assist guests with reservations.'
-  );
+  const [systemPrompt, setSystemPrompt] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  // Load AI configuration
+  useQuery({
+    queryKey: ['aiConfig'],
+    queryFn: async () => {
+      try {
+        const cfg = await aiApi.getConfig();
+        if (cfg?.agentName) setAgentName(cfg.agentName);
+        if (cfg?.systemPrompt) setSystemPrompt(cfg.systemPrompt);
+        if (cfg?.modelName) setModel(cfg.modelName);
+        if (cfg?.temperature !== undefined) setTemperature(String(cfg.temperature));
+        return cfg;
+      } catch {
+        return null;
+      }
+    },
+  });
+
+  // Load real indexed RAG knowledge documents
+  const { data: knowledgeDocs = [], isLoading: isLoadingDocs } = useQuery({
+    queryKey: ['aiKnowledge'],
+    queryFn: async () => {
+      try {
+        const res = await aiApi.getKnowledge();
+        return Array.isArray(res) ? res : [];
+      } catch {
+        return [];
+      }
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: (dto: any) => aiApi.updateConfig(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['aiConfig'] });
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    },
+  });
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    await saveMutation.mutateAsync({
+      agentName: agentName || 'Concierge Assistant',
+      systemPrompt,
+      modelName: model,
+      temperature: parseFloat(temperature) || 0.7,
+      isEnabled: true,
+    });
   };
 
   return (
@@ -86,7 +132,9 @@ export default function AiConciergeStudioPage() {
                   <label className="text-xs font-medium text-slate-700">Agent Display Name</label>
                   <input
                     type="text"
-                    defaultValue="OmniStay Luxury Assistant"
+                    value={agentName}
+                    onChange={(e) => setAgentName(e.target.value)}
+                    placeholder="e.g. OmniStay Concierge"
                     className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
                   />
                 </div>
@@ -126,18 +174,30 @@ export default function AiConciergeStudioPage() {
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider text-slate-500">
               RAG Knowledge Indexing
             </h3>
-            <div className="space-y-3">
-              {[
-                { title: 'Hotel Stanford Amenities & Policies', status: 'Indexed (42 Chunks)' },
-                { title: 'Fine Dining Menus & Wine Lists', status: 'Indexed (18 Chunks)' },
-                { title: 'Cox’s Bazar Local Excursions Guide', status: 'Indexed (64 Chunks)' },
-              ].map((doc, idx) => (
-                <div key={idx} className="p-3 rounded bg-slate-50 border border-slate-200 space-y-1">
-                  <p className="text-xs font-bold text-slate-900">{doc.title}</p>
-                  <span className="text-[10px] text-emerald-600 font-semibold">{doc.status}</span>
-                </div>
-              ))}
-            </div>
+            {isLoadingDocs ? (
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="w-5 h-5 animate-spin text-[#00a8ff]" />
+              </div>
+            ) : knowledgeDocs.length === 0 ? (
+              <div className="text-center py-8 bg-slate-50 rounded border border-dashed border-slate-200 p-4 space-y-2">
+                <BookOpen className="w-6 h-6 text-slate-400 mx-auto" />
+                <p className="text-xs font-medium text-slate-700">No RAG documents indexed</p>
+                <p className="text-[11px] text-slate-500">
+                  Add hotel policies, amenities, and dining menus to train the autonomous concierge.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {knowledgeDocs.map((doc: any, idx: number) => (
+                  <div key={doc.id || idx} className="p-3 rounded bg-slate-50 border border-slate-200 space-y-1">
+                    <p className="text-xs font-bold text-slate-900">{doc.title}</p>
+                    <span className="text-[10px] text-emerald-600 font-semibold">
+                      {doc.category || 'Indexed (Ready)'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -147,10 +207,10 @@ export default function AiConciergeStudioPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { label: 'Total In-Chat Inquiries', val: '1,420' },
-              { label: 'Conversational Bookings', val: '184 Completed' },
-              { label: 'Direct In-Chat Revenue', val: '$64,500' },
-              { label: 'Guest Sentiment Score', val: '98.4% Positive' },
+              { label: 'Total In-Chat Inquiries', val: '0' },
+              { label: 'Conversational Bookings', val: '0 Completed' },
+              { label: 'Direct In-Chat Revenue', val: '$0.00' },
+              { label: 'Guest Sentiment Score', val: '100% Positive' },
             ].map((stat) => (
               <div key={stat.label} className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
                 <span className="text-[11px] text-slate-500 font-medium">{stat.label}</span>

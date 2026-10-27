@@ -12,8 +12,8 @@ export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
-  const [newVenue, setNewVenue] = useState('Grand Ocean Ballroom');
-  const [newPrice, setNewPrice] = useState('75');
+  const [newVenue, setNewVenue] = useState('');
+  const [newPrice, setNewPrice] = useState('');
 
   const { data: events = [], isLoading, refetch } = useQuery({
     queryKey: ['adminEvents'],
@@ -26,13 +26,15 @@ export default function EventsPage() {
     try {
       await travelService.createEvent({
         title: newTitle,
-        venue: newVenue,
-        ticketPrice: parseFloat(newPrice) || 50,
-        totalTickets: 250,
+        venue: newVenue || 'Main Ballroom',
+        ticketPrice: parseFloat(newPrice) || 0,
+        totalTickets: 100,
         eventType: 'Gala Banquet',
       });
       setIsAdding(false);
       setNewTitle('');
+      setNewVenue('');
+      setNewPrice('');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error creating event');
@@ -89,6 +91,7 @@ export default function EventsPage() {
               <label className="text-xs font-medium text-slate-700">Venue</label>
               <input
                 type="text"
+                placeholder="e.g. Grand Ballroom"
                 value={newVenue}
                 onChange={(e) => setNewVenue(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
@@ -98,6 +101,7 @@ export default function EventsPage() {
               <label className="text-xs font-medium text-slate-700">Ticket Base Price ($)</label>
               <input
                 type="number"
+                placeholder="0.00"
                 value={newPrice}
                 onChange={(e) => setNewPrice(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"

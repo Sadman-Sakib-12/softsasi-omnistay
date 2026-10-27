@@ -44,12 +44,12 @@ export default function OrganizationsPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {organizations.map((tenant) => {
+          {organizations.map((tenant, idx) => {
             const isActive = tenant.id === currentTenantId;
 
             return (
               <Card
-                key={tenant.id}
+                key={tenant.id || tenant.slug || `tenant-card-${idx}`}
                 className={`transition-all bg-white border ${
                   isActive
                     ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md'
@@ -79,6 +79,14 @@ export default function OrganizationsPage() {
                     <div>
                       <span className="text-slate-400 font-medium">Domain Mapping</span>
                       <p className="font-medium text-slate-800 mt-0.5">{tenant.domain || `${tenant.slug}.omnistay.com`}</p>
+                      <a
+                        href={`http://${tenant.slug}.localhost:3001`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] text-[#00a8ff] hover:underline inline-flex items-center gap-1 mt-0.5 font-mono"
+                      >
+                        http://{tenant.slug}.localhost:3001 ↗
+                      </a>
                     </div>
                     <div>
                       <span className="text-slate-400 font-medium">SaaS Tier</span>

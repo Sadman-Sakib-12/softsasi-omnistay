@@ -12,8 +12,8 @@ export default function CarsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [newModel, setNewModel] = useState('');
-  const [newCategory, setNewCategory] = useState('Executive SUV');
-  const [newDailyRate, setNewDailyRate] = useState('120');
+  const [newCategory, setNewCategory] = useState('');
+  const [newDailyRate, setNewDailyRate] = useState('');
 
   const { data: cars = [], isLoading, refetch } = useQuery({
     queryKey: ['adminCars'],
@@ -26,14 +26,16 @@ export default function CarsPage() {
     try {
       await travelService.createCar({
         model: newModel,
-        category: newCategory,
-        dailyRate: parseFloat(newDailyRate) || 80,
+        category: newCategory || 'Executive SUV',
+        dailyRate: parseFloat(newDailyRate) || 0,
         seats: 5,
         transmission: 'Automatic',
         fuelType: 'Hybrid',
       });
       setIsAdding(false);
       setNewModel('');
+      setNewDailyRate('');
+      setNewCategory('');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error creating vehicle');
@@ -89,20 +91,23 @@ export default function CarsPage() {
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Category</label>
               <select
+                required
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option>Executive SUV</option>
-                <option>Luxury Sedan</option>
-                <option>Passenger Van (12-Seater)</option>
-                <option>Electric EV</option>
+                <option value="" disabled>Select Category...</option>
+                <option value="Executive SUV">Executive SUV</option>
+                <option value="Luxury Sedan">Luxury Sedan</option>
+                <option value="Passenger Van (12-Seater)">Passenger Van (12-Seater)</option>
+                <option value="Electric EV">Electric EV</option>
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Daily Rate ($)</label>
               <input
                 type="number"
+                placeholder="0.00"
                 value={newDailyRate}
                 onChange={(e) => setNewDailyRate(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"

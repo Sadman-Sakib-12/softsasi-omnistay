@@ -23,33 +23,8 @@ export default function AuditLogsPage() {
     queryKey: ['systemAuditLogs'],
     queryFn: async () => {
       try {
-        const user = await api.get<any>('/api/v1/auth/me').catch(() => null);
-        return [
-          {
-            id: 'log-1',
-            action: 'POST /api/v1/auth/login - Bearer JWT Session Issued',
-            user: user?.email || 'admin@omnistay.com',
-            ipAddress: '127.0.0.1',
-            status: 'SUCCESS',
-            timestamp: new Date().toISOString(),
-          },
-          {
-            id: 'log-2',
-            action: 'GET /api/v1/properties - Multi-Tenant Data Tree Query',
-            user: user?.email || 'admin@omnistay.com',
-            ipAddress: '127.0.0.1',
-            status: 'SUCCESS',
-            timestamp: new Date(Date.now() - 300000).toISOString(),
-          },
-          {
-            id: 'log-3',
-            action: 'POST /api/v1/accounting/night-audit - Automated Room Charge Posting',
-            user: 'SYSTEM_NIGHT_AUDIT_DAEMON',
-            ipAddress: '10.0.0.1',
-            status: 'SUCCESS',
-            timestamp: new Date(Date.now() - 3600000).toISOString(),
-          },
-        ];
+        const res = await api.get<any>('/api/v1/system/audit-logs');
+        return Array.isArray(res) ? res : res?.data || [];
       } catch {
         return [];
       }

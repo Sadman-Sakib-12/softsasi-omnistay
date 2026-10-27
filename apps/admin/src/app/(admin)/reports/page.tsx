@@ -33,7 +33,7 @@ export default function ReportsPage() {
             <CardTitle className="text-2xl text-slate-900 font-bold">
               {metrics.totalReservations > 0
                 ? formatCurrency(metrics.totalRevenue / metrics.totalReservations)
-                : '$150.00'}
+                : '$0.00'}
             </CardTitle>
           </CardHeader>
           <CardContent>

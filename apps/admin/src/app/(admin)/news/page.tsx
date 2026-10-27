@@ -1,17 +1,43 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Newspaper, Plus, Search, Calendar, User, Eye } from 'lucide-react';
+import { Newspaper, Plus, Search, Calendar, User, Eye, Trash2, Loader2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { contentService, NewsArticleItem } from '@/features/content/services/content.service';
 
 export default function NewsCmsPage() {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
-  const [articles, setArticles] = useState([
-    { id: 'art-1', title: 'Top 10 Secret Scuba Diving Spots in Saint Martin', category: 'Destination Travel', author: 'Editorial Team', date: '2026-10-18', views: 1420, status: 'Published' },
-    { id: 'art-2', title: 'Grand Palace Introduces Michelin-Star Autumn Tasting Menu', category: 'Dining & Culinary', author: 'Chef Roberto', date: '2026-10-14', views: 890, status: 'Published' },
-    { id: 'art-3', title: 'How Contactless IoT Check-In Elevates Luxury Hospitality', category: 'Hospitality Insights', author: 'Platform Team', date: '2026-10-09', views: 2310, status: 'Published' },
-  ]);
+  const [isWriteOpen, setIsWriteOpen] = useState(false);
+  const [newArticle, setNewArticle] = useState<Partial<NewsArticleItem>>({
+    title: '',
+    category: '',
+    author: '',
+    status: 'Published',
+  });
+
+  const { data: articles = [], isLoading } = useQuery<NewsArticleItem[]>({
+    queryKey: ['systemNews'],
+    queryFn: () => contentService.getNews(),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (dto: Partial<NewsArticleItem>) => contentService.createNews(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['systemNews'] });
+      setIsWriteOpen(false);
+      setNewArticle({ title: '', category: '', author: '', status: 'Published' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => contentService.deleteNews(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['systemNews'] });
+    },
+  });
 
   const filtered = articles.filter((a) =>
     a.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -35,7 +61,10 @@ export default function NewsCmsPage() {
           </p>
         </div>
 
-        <button className="h-9 px-4 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer">
+        <button
+          onClick={() => setIsWriteOpen(true)}
+          className="h-9 px-4 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+        >
           <Plus className="w-4 h-4" />
           <span>Write Article</span>
         </button>
@@ -49,7 +78,7 @@ export default function NewsCmsPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search news..."
-            className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+            className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-hidden focus:border-[#00a8ff]"
           />
         </div>
         <span className="text-xs text-slate-500">Found {filtered.length} articles</span>
@@ -62,36 +91,129 @@ export default function NewsCmsPage() {
               <th className="py-3 px-4">Article Title</th>
               <th className="py-3 px-4">Category</th>
               <th className="py-3 px-4">Author</th>
-              <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4">Publish Date</th>
               <th className="py-3 px-4">Views</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map((art) => (
-              <tr key={art.id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="py-3 px-4 font-semibold text-slate-900">{art.title}</td>
-                <td className="py-3 px-4">
-                  <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 text-[10px]">
-                    {art.category}
-                  </Badge>
-                </td>
-                <td className="py-3 px-4 text-slate-500">{art.author}</td>
-                <td className="py-3 px-4 text-slate-500">{art.date}</td>
-                <td className="py-3 px-4 text-slate-600 flex items-center gap-1">
-                  <Eye className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{art.views}</span>
-                </td>
-                <td className="py-3 px-4">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    {art.status}
-                  </span>
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} className="py-8 text-center text-slate-400">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#00a8ff]" />
+                  <span className="mt-2 block text-xs">Loading articles...</span>
                 </td>
               </tr>
-            ))}
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="py-8 text-center text-slate-400 text-xs">
+                  No articles found.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((a) => (
+                <tr key={a.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="py-3 px-4 font-semibold text-slate-900">{a.title}</td>
+                  <td className="py-3 px-4 text-slate-600">{a.category}</td>
+                  <td className="py-3 px-4 text-slate-600 flex items-center gap-1.5 pt-4">
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{a.author}</span>
+                  </td>
+                  <td className="py-3 px-4 text-slate-500">{a.date}</td>
+                  <td className="py-3 px-4 font-mono text-slate-600">{a.views}</td>
+                  <td className="py-3 px-4">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {a.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <button
+                      onClick={() => deleteMutation.mutate(a.id)}
+                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
+                      title="Delete article"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* Write Article Modal */}
+      {isWriteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Newspaper className="w-4 h-4 text-[#00a8ff]" /> Write New Editorial Article
+              </h3>
+              <button onClick={() => setIsWriteOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await createMutation.mutateAsync(newArticle);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Article Headline</label>
+                <input
+                  type="text"
+                  required
+                  value={newArticle.title}
+                  onChange={(e) => setNewArticle({ ...newArticle, title: e.target.value })}
+                  placeholder="e.g. Exploring Coral Lagoons in the Bay of Bengal"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Category</label>
+                <select
+                  value={newArticle.category}
+                  onChange={(e) => setNewArticle({ ...newArticle, category: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                  required
+                >
+                  <option value="" disabled>Select Category...</option>
+                  <option value="Destination Travel">Destination Travel</option>
+                  <option value="Dining & Culinary">Dining & Culinary</option>
+                  <option value="Hospitality Insights">Hospitality Insights</option>
+                  <option value="Resort Activities">Resort Activities</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Author Byline</label>
+                <input
+                  type="text"
+                  value={newArticle.author}
+                  onChange={(e) => setNewArticle({ ...newArticle, author: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsWriteOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={createMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white"
+                >
+                  {createMutation.isPending ? 'Publishing...' : 'Publish Article'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

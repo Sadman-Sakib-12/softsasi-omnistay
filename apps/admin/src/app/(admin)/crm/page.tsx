@@ -16,11 +16,11 @@ export default function CrmPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newLead, setNewLead] = useState({
     clientName: '',
-    eventType: 'Corporate Gala & Awards',
-    eventDate: new Date().toISOString().split('T')[0],
-    pax: 120,
-    estimatedBudget: 8500,
-    stage: 'Proposal Sent',
+    eventType: '',
+    eventDate: '',
+    pax: 0,
+    estimatedBudget: 0,
+    stage: 'New',
   });
 
   const { data: leadsData = [], isLoading } = useQuery({
@@ -42,11 +42,11 @@ export default function CrmPage() {
       setIsAddLeadOpen(false);
       setNewLead({
         clientName: '',
-        eventType: 'Corporate Gala & Awards',
-        eventDate: new Date().toISOString().split('T')[0],
-        pax: 120,
-        estimatedBudget: 8500,
-        stage: 'Proposal Sent',
+        eventType: '',
+        eventDate: '',
+        pax: 0,
+        estimatedBudget: 0,
+        stage: 'New',
       });
     }
   };
