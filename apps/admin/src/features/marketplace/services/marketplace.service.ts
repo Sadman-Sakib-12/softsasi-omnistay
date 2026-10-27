@@ -20,17 +20,17 @@ export const marketplaceService = {
       const data = Array.isArray(res) ? res : res?.data || [];
       return data.map((v: any) => ({
         id: v.id || `vendor-${Date.now()}`,
-        name: v.name || v.businessName || v.fullName || 'Property Host',
-        email: v.email || 'host@partner.com',
-        phone: v.phone || '—',
-        businessEntity: v.businessEntity || 'Hospitality Partner',
+        name: v.name || v.businessName || v.fullName || '',
+        email: v.email || '',
+        phone: v.phone || '',
+        businessEntity: v.businessEntity || '',
         kycStatus: v.kycStatus || (v.isVerified ? 'VERIFIED' : 'PENDING'),
-        totalListings: v.totalListings || 0,
-        totalEarnings: v.totalEarnings || 0,
-        commissionRate: v.commissionRate || 15,
+        totalListings: Number(v.totalListings || 0),
+        totalEarnings: Number(v.totalEarnings || 0),
+        commissionRate: Number(v.commissionRate || 0),
         createdAt: v.createdAt || new Date().toISOString(),
       }));
-    } catch {
+    } catch (error) {
       return [];
     }
   },
@@ -38,7 +38,7 @@ export const marketplaceService = {
   getPlans: async () => {
     try {
       return await api.get<any>('/api/v1/marketplace/vendors/plans');
-    } catch {
+    } catch (error) {
       return [];
     }
   },

@@ -18,15 +18,15 @@ export const inventoryService = {
       const data = Array.isArray(res) ? res : res?.data || [];
       return data.map((item: any) => ({
         id: item.id || `inv-${Date.now()}`,
-        sku: item.sku || item.code || 'SKU-001',
-        name: item.name || item.title || 'Inventory Item',
-        category: item.category || 'Kitchen Supplies',
-        currentStock: item.currentStock ?? item.stock ?? item.quantity ?? 0,
-        reorderPoint: item.reorderPoint ?? 10,
-        unitCost: item.costPrice ?? item.unitCost ?? 0,
-        status: (item.currentStock ?? 0) <= (item.reorderPoint ?? 10) ? 'LOW_STOCK' : 'IN_STOCK',
+        sku: item.sku || item.code || '',
+        name: item.name || item.title || '',
+        category: item.category || 'General',
+        currentStock: Number(item.currentStock ?? item.stock ?? item.quantity ?? 0),
+        reorderPoint: Number(item.reorderPoint ?? 0),
+        unitCost: Number(item.costPrice ?? item.unitCost ?? 0),
+        status: (Number(item.currentStock ?? 0) <= Number(item.reorderPoint ?? 0)) ? 'LOW_STOCK' : 'IN_STOCK',
       }));
-    } catch {
+    } catch (error) {
       return [];
     }
   },

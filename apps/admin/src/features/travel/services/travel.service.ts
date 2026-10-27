@@ -72,7 +72,7 @@ export const travelService = {
     try {
       const res = await api.get<any>('/api/v1/tours');
       return Array.isArray(res) ? res : res?.data || [];
-    } catch {
+    } catch (error) {
       return [];
     }
   },
@@ -85,7 +85,7 @@ export const travelService = {
     try {
       const res = await api.get<any>('/api/v1/spaces');
       return Array.isArray(res) ? res : res?.data || [];
-    } catch {
+    } catch (error) {
       return [];
     }
   },
@@ -98,7 +98,7 @@ export const travelService = {
     try {
       const res = await api.get<any>('/api/v1/cars');
       return Array.isArray(res) ? res : res?.data || [];
-    } catch {
+    } catch (error) {
       return [];
     }
   },
@@ -111,7 +111,7 @@ export const travelService = {
     try {
       const res = await api.get<any>('/api/v1/boats');
       return Array.isArray(res) ? res : res?.data || [];
-    } catch {
+    } catch (error) {
       return [];
     }
   },
@@ -124,7 +124,7 @@ export const travelService = {
     try {
       const res = await api.get<any>('/api/v1/events');
       return Array.isArray(res) ? res : res?.data || [];
-    } catch {
+    } catch (error) {
       return [];
     }
   },
@@ -137,7 +137,7 @@ export const travelService = {
     try {
       const res = await api.get<any>('/api/v1/flights');
       return Array.isArray(res) ? res : res?.data || [];
-    } catch {
+    } catch (error) {
       return [];
     }
   },

@@ -36,7 +36,7 @@ export function AddRoomForm() {
     resolver: zodResolver(roomSchema) as any,
     defaultValues: {
       name: '',
-      pricePerNight: 350,
+      pricePerNight: 0,
       numberOfBeds: 1,
     },
   });
@@ -61,8 +61,7 @@ export function AddRoomForm() {
     try {
       await createRoom({
         ...data,
-        roomNumber: data.roomNumber || String(Math.floor(100 + Math.random() * 900)),
-        roomType: 'Standard Room',
+        roomNumber: data.roomNumber || data.name,
       });
       reset();
       setImagePreview(null);

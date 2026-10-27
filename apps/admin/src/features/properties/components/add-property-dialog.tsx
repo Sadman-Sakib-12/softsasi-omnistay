@@ -24,7 +24,7 @@ const propertySchema = z.object({
   country: z.string().min(2, 'Country is required'),
   phone: z.string().optional(),
   email: z.string().email('Invalid email address').optional().or(z.literal('')),
-  starRating: z.coerce.number().min(1).max(5).default(5),
+  starRating: z.coerce.number().min(1).max(5).default(1),
 });
 
 type PropertyFormData = z.infer<typeof propertySchema>;
@@ -41,7 +41,13 @@ export function AddPropertyDialog() {
   } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema) as any,
     defaultValues: {
-      starRating: 5,
+      name: '',
+      address: '',
+      city: '',
+      country: '',
+      phone: '',
+      email: '',
+      starRating: 1,
     },
   });
 

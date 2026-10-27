@@ -18,14 +18,14 @@ export const crmService = {
       const data = Array.isArray(res) ? res : res?.data || [];
       return data.map((item: any) => ({
         id: item.id || `lead-${Date.now()}`,
-        clientName: item.clientName || item.name || item.guestName || 'Corporate Client',
-        eventType: item.eventType || item.category || 'Banquet Gala',
-        eventDate: item.eventDate || item.targetDate || new Date().toISOString().split('T')[0],
-        pax: item.pax || item.headcount || 100,
-        estimatedBudget: item.estimatedBudget || item.budget || 5000,
-        stage: item.stage || item.status || 'Proposal Sent',
+        clientName: item.clientName || item.name || item.guestName || '',
+        eventType: item.eventType || item.category || 'General',
+        eventDate: item.eventDate || item.targetDate || '',
+        pax: Number(item.pax || item.headcount || 0),
+        estimatedBudget: Number(item.estimatedBudget || item.budget || 0),
+        stage: item.stage || item.status || 'New',
       }));
-    } catch {
+    } catch (error) {
       return [];
     }
   },

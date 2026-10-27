@@ -45,7 +45,7 @@ export function NewReservationDialog() {
     defaultValues: {
       checkInDate: new Date().toISOString().split('T')[0],
       checkOutDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      totalAmount: 200,
+      totalAmount: 0,
     },
   });
 
