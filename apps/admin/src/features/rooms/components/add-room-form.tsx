@@ -66,8 +66,10 @@ export function AddRoomForm() {
       reset();
       setImagePreview(null);
       setGalleryPreviews([]);
-    } catch (e) {
+      alert('Room created successfully!');
+    } catch (e: any) {
       console.error(e);
+      alert(e?.message || 'Error creating room unit');
     }
   };
 

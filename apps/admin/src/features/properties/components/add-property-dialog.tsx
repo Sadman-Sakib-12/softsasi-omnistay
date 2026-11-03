@@ -55,12 +55,14 @@ export function AddPropertyDialog() {
     try {
       await createProperty({
         ...data,
+        code: (data.name || 'HTL').replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() + Math.floor(100 + Math.random() * 900),
         email: data.email || undefined,
       });
       reset();
       setOpen(false);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert(e?.message || 'Error registering property. Please try again.');
     }
   };
 

@@ -17,6 +17,7 @@ export interface Property {
 
 export interface CreatePropertyDto {
   name: string;
+  code?: string;
   slug?: string;
   address: string;
   city: string;
