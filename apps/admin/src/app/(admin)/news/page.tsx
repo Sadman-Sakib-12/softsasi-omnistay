@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, NewsArticleItem } from '@/features/content/services/content.service';
+import { UnifiedRichEditor } from '@/components/editor/unified-rich-editor';
 
 export default function NewsCmsPage() {
   const queryClient = useQueryClient();
@@ -245,16 +246,12 @@ export default function NewsCmsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Article Body</label>
-                <textarea
-                  rows={4}
-                  placeholder="Write the article copy here..."
-                  value={newArticle.content}
-                  onChange={(e) => setNewArticle({ ...newArticle, content: e.target.value })}
-                  className="w-full p-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
-                />
-              </div>
+              <UnifiedRichEditor
+                label="Article Body (Tiptap / Editor.js / Markdown)"
+                value={newArticle.content || ''}
+                onChange={(content) => setNewArticle({ ...newArticle, content })}
+                placeholder="Write the article copy here..."
+              />
 
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsWriteOpen(false)}>
@@ -325,15 +322,12 @@ export default function NewsCmsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Article Body</label>
-                <textarea
-                  rows={4}
-                  value={editingArticle.content || ''}
-                  onChange={(e) => setEditingArticle({ ...editingArticle, content: e.target.value })}
-                  className="w-full p-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
-                />
-              </div>
+              <UnifiedRichEditor
+                label="Article Body (Tiptap / Editor.js / Markdown)"
+                value={editingArticle.content || ''}
+                onChange={(content) => setEditingArticle({ ...editingArticle, content })}
+                placeholder="Write the article copy here..."
+              />
 
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                 <Button type="button" variant="outline" size="sm" onClick={() => setEditingArticle(null)}>

@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, CustomPageItem } from '@/features/content/services/content.service';
+import { UnifiedRichEditor } from '@/components/editor/unified-rich-editor';
 
 export default function StaticPagesCmsPage() {
   const queryClient = useQueryClient();
@@ -386,106 +387,13 @@ export default function StaticPagesCmsPage() {
                 </div>
               </div>
 
-              {/* Formatting Toolbar & Editor */}
-              <div>
-                <div className="flex items-center justify-between pb-1.5">
-                  <label className="block text-slate-700 font-semibold">Page Content (Markdown / HTML)</label>
-                  <div className="flex items-center gap-1 border border-slate-200 rounded-md p-0.5 bg-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setPreviewMode('editor')}
-                      className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
-                        previewMode === 'editor' ? 'bg-white shadow-2xs text-[#00a8ff]' : 'text-slate-600'
-                      }`}
-                    >
-                      <Code2 className="w-3 h-3 inline mr-1" />
-                      Editor
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPreviewMode('preview')}
-                      className={`px-2 py-0.5 text-[11px] font-semibold rounded ${
-                        previewMode === 'preview' ? 'bg-white shadow-2xs text-[#00a8ff]' : 'text-slate-600'
-                      }`}
-                    >
-                      <Eye className="w-3 h-3 inline mr-1" />
-                      Preview
-                    </button>
-                  </div>
-                </div>
-
-                {previewMode === 'editor' ? (
-                  <div className="space-y-1.5">
-                    {/* Quick formatting buttons */}
-                    <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-t-lg border border-b-0 border-slate-200 text-slate-600">
-                      <button
-                        type="button"
-                        onClick={() => insertSnippet('# Heading 1\n', true)}
-                        className="p-1 hover:bg-white rounded"
-                        title="Add H1"
-                      >
-                        <Heading1 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => insertSnippet('### Heading 2\n', true)}
-                        className="p-1 hover:bg-white rounded"
-                        title="Add H2"
-                      >
-                        <Heading2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => insertSnippet('**Bold Text**', true)}
-                        className="p-1 hover:bg-white rounded font-bold"
-                        title="Bold"
-                      >
-                        <Bold className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => insertSnippet('*Italic Text*', true)}
-                        className="p-1 hover:bg-white rounded italic"
-                        title="Italic"
-                      >
-                        <Italic className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => insertSnippet('- Bullet Item 1\n- Bullet Item 2', true)}
-                        className="p-1 hover:bg-white rounded"
-                        title="Bullet List"
-                      >
-                        <List className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => insertSnippet('> Important note or blockquote', true)}
-                        className="p-1 hover:bg-white rounded"
-                        title="Blockquote"
-                      >
-                        <Quote className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <textarea
-                      rows={9}
-                      value={editingPage.content || ''}
-                      onChange={(e) => setEditingPage({ ...editingPage, content: e.target.value })}
-                      placeholder="Write your page markdown content here..."
-                      className="w-full p-3 font-mono text-xs bg-white border border-slate-200 rounded-b-lg focus:outline-none focus:border-[#00a8ff]"
-                    />
-                  </div>
-                ) : (
-                  <div className="border border-slate-200 rounded-lg p-4 bg-slate-50 min-h-[180px] max-h-[260px] overflow-y-auto text-xs text-slate-800 space-y-2 whitespace-pre-wrap font-sans">
-                    {editingPage.content ? (
-                      editingPage.content
-                    ) : (
-                      <span className="text-slate-400 italic">No content written yet.</span>
-                    )}
-                  </div>
-                )}
-              </div>
+              {/* Tiptap / Editor.js Unified Rich Text Editor */}
+              <UnifiedRichEditor
+                label="Page Body Content (Tiptap / Editor.js / Markdown)"
+                value={editingPage.content || ''}
+                onChange={(content) => setEditingPage({ ...editingPage, content })}
+                placeholder="Compose your rich luxury page content..."
+              />
 
               <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                 <a
@@ -622,16 +530,12 @@ export default function StaticPagesCmsPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Page Body Content (Markdown / HTML)</label>
-                <textarea
-                  rows={8}
-                  placeholder="# Page Heading&#10;&#10;Write the content of this page using markdown or plain text..."
-                  value={newPage.content}
-                  onChange={(e) => setNewPage({ ...newPage, content: e.target.value })}
-                  className="w-full p-3 font-mono text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#00a8ff]"
-                />
-              </div>
+              <UnifiedRichEditor
+                label="Page Body Content (Tiptap / Editor.js / Markdown)"
+                value={newPage.content || ''}
+                onChange={(content) => setNewPage({ ...newPage, content })}
+                placeholder="Write the content of this page using Tiptap, Editor.js, or Markdown..."
+              />
 
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsAddOpen(false)}>
