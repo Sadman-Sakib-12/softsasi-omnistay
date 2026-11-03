@@ -24,6 +24,20 @@ export class FormApplicationService {
     });
   }
 
+  async updateForm(id: string, dto: Partial<CreateFormBuilderDto>) {
+    await this.getFormById(id);
+    return this.formRepo.updateForm(id, {
+      formName: dto.formName,
+      formSchema: dto.formSchema,
+      isActive: dto.isActive,
+    });
+  }
+
+  async deleteForm(id: string) {
+    await this.getFormById(id);
+    return this.formRepo.deleteForm(id);
+  }
+
   async getForms(tenantId: string) {
     return this.formRepo.findForms(tenantId);
   }

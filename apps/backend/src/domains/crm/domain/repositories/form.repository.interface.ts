@@ -7,6 +7,12 @@ export interface IFormRepository {
     formSchema: Record<string, any>;
     isActive: boolean;
   }): Promise<any>;
+  updateForm(id: string, data: {
+    formName?: string;
+    formSchema?: Record<string, any>;
+    isActive?: boolean;
+  }): Promise<any>;
+  deleteForm(id: string): Promise<any>;
   findForms(tenantId: string): Promise<any[]>;
   findFormById(id: string): Promise<any | null>;
   createResponse(data: {
