@@ -23,3 +23,5 @@ export * from './presentation/dto/disable-2fa.dto.js';
 export * from './presentation/dto/refresh-token.dto.js';
 export * from './presentation/dto/password-reset-request.dto.js';
 export * from './presentation/dto/password-reset-confirm.dto.js';
+export * from './presentation/dto/verify-email.dto.js';
+export * from './presentation/validators/is-not-disposable-email.validator.js';

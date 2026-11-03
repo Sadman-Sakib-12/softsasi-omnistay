@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsNotDisposableEmail } from '../validators/is-not-disposable-email.validator.js';
 
 export class RegisterDto {
   @ApiProperty({ description: 'Full name of the registrant', example: 'Alexander Wright' })
@@ -7,8 +8,9 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Full name is required' })
   fullName!: string;
 
-  @ApiProperty({ description: 'Unique email address', example: 'alexander@grandresort.com' })
+  @ApiProperty({ description: 'Unique corporate/personal email address', example: 'alexander@grandresort.com' })
   @IsEmail({}, { message: 'A valid email address is required' })
+  @IsNotDisposableEmail()
   email!: string;
 
   @ApiProperty({ description: 'Account password (minimum 6 characters)', example: 'Secret123!' })

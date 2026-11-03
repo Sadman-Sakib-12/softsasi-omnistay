@@ -18,6 +18,7 @@ import {
 import { AuthService } from '../../application/services/auth.service.js';
 import { LoginDto } from '../dto/login.dto.js';
 import { RegisterDto } from '../dto/register.dto.js';
+import { VerifyEmailDto, ResendVerificationDto } from '../dto/verify-email.dto.js';
 import { Verify2faDto } from '../dto/verify-2fa.dto.js';
 import { ConfirmEnrollmentDto } from '../dto/confirm-enrollment.dto.js';
 import { Disable2faDto } from '../dto/disable-2fa.dto.js';
@@ -49,6 +50,37 @@ export class AuthController {
     @Ip() ip: string,
   ) {
     return this.authService.register(dto, ip || '127.0.0.1');
+  }
+
+  @Public()
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Verify user email via 6-digit code or URL token',
+    description: 'Validates activation code/token, transitions user status from PENDING to ACTIVE, and returns session.',
+  })
+  @ApiResponse({ status: 200, description: 'Email verified successfully; session activated' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired verification code' })
+  async verifyEmail(
+    @Body(new ValidationPipe({ whitelist: true })) dto: VerifyEmailDto,
+    @Ip() ip: string,
+  ) {
+    return this.authService.verifyEmail(dto, ip || '127.0.0.1');
+  }
+
+  @Public()
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Resend email verification code',
+    description: 'Generates and dispatches a fresh 6-digit activation code to user email.',
+  })
+  @ApiResponse({ status: 200, description: 'New activation code dispatched' })
+  async resendVerification(
+    @Body(new ValidationPipe({ whitelist: true })) dto: ResendVerificationDto,
+    @Ip() ip: string,
+  ) {
+    return this.authService.resendVerification(dto, ip || '127.0.0.1');
   }
 
   @Public()
