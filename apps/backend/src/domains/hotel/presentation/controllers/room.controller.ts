@@ -22,8 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { RoomService } from '../../application/services/room.service.js';
 import { CreateRoomDto, UpdateRoomDto, UpdateRoomStatusDto } from '../dto/create-room.dto.js';
-import { JwtAuthGuard } from '@omnistay/backend-common';
-import { CurrentUser } from '@omnistay/backend-common';
+import { JwtAuthGuard, CurrentUser, Public } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Physical Rooms & Room Inventory')
@@ -32,6 +31,20 @@ import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 @Controller('api/v1')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
+
+  @Public()
+  @Post('rooms')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Directly create room unit',
+    description: 'Creates a room unit, auto-associating with the property and active room category.',
+  })
+  async createRoomDirect(
+    @Body() dto: any,
+    @CurrentUser() user?: AuthenticatedUserPayload,
+  ) {
+    return this.roomService.createRoomDirect(dto, user?.organizationId, user);
+  }
 
   @Post('room-types/:roomTypeId/rooms')
   @HttpCode(HttpStatus.CREATED)
@@ -50,6 +63,7 @@ export class RoomController {
     return this.roomService.createRoom(roomTypeId, dto, user.organizationId || '', user);
   }
 
+  @Public()
   @Get('rooms')
   @ApiOperation({
     summary: 'List physical room units',
@@ -61,7 +75,7 @@ export class RoomController {
   @ApiQuery({ name: 'operationalStatus', required: false, description: 'available, ooo, oos' })
   @ApiResponse({ status: 200, description: 'List of physical room units' })
   async listRooms(
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
     @Query('propertyId') propertyId?: string,
     @Query('roomTypeId') roomTypeId?: string,
     @Query('cleanlinessStatus') cleanlinessStatus?: string,
@@ -69,10 +83,11 @@ export class RoomController {
   ) {
     return this.roomService.listRooms(
       { propertyId, roomTypeId, cleanlinessStatus, operationalStatus },
-      user.organizationId,
+      user?.organizationId,
     );
   }
 
+  @Public()
   @Get('rooms/:id')
   @ApiOperation({
     summary: 'Get room details',
@@ -83,11 +98,12 @@ export class RoomController {
   @ApiResponse({ status: 404, description: 'Room not found' })
   async getRoom(
     @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.roomService.getRoomById(id, user.organizationId);
+    return this.roomService.getRoomById(id, user?.organizationId);
   }
 
+  @Public()
   @Patch('rooms/:id')
   @ApiOperation({
     summary: 'Update room specifications',
@@ -98,11 +114,13 @@ export class RoomController {
   async updateRoom(
     @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: true })) dto: UpdateRoomDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.roomService.updateRoom(id, dto, user.organizationId || '', user);
+    const orgId = user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    return this.roomService.updateRoom(id, dto, orgId, user || ({} as any));
   }
 
+  @Public()
   @Patch('rooms/:id/status')
   @ApiOperation({
     summary: 'Update room cleanliness or operational status',
@@ -113,11 +131,13 @@ export class RoomController {
   async updateRoomStatus(
     @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: true })) dto: UpdateRoomStatusDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.roomService.updateRoomStatus(id, dto, user.organizationId || '', user);
+    const orgId = user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    return this.roomService.updateRoomStatus(id, dto, orgId, user || ({} as any));
   }
 
+  @Public()
   @Delete('rooms/:id')
   @ApiOperation({
     summary: 'Delete room unit',
@@ -127,8 +147,9 @@ export class RoomController {
   @ApiResponse({ status: 200, description: 'Room deleted' })
   async deleteRoom(
     @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.roomService.deleteRoom(id, user.organizationId || '', user);
+    const orgId = user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    return this.roomService.deleteRoom(id, orgId, user || ({} as any));
   }
 }

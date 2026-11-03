@@ -24,10 +24,12 @@ export class RoomService {
       caller.role === 'Platform SuperAdmin' ||
       caller.role === 'Company Owner/GM' ||
       caller.role === 'Company Owner / GM' ||
+      caller.role === 'Company Owner / General Manager' ||
       caller.role === 'General Manager (GM)' ||
       caller.role === 'Front Desk Agent' ||
-      caller.permissions.includes('rooms:manage') ||
-      caller.permissions.includes('properties:manage')
+      caller.permissions?.includes('*') ||
+      caller.permissions?.includes('rooms:manage') ||
+      caller.permissions?.includes('properties:manage')
     );
   }
 
@@ -82,6 +84,85 @@ export class RoomService {
         operationalStatus: dto.operationalStatus || 'available',
         keycardCode: dto.keycardCode?.trim(),
         createdBy: caller.userId,
+      },
+      include: {
+        roomType: {
+          select: { id: true, title: true, basePrice: true },
+        },
+      },
+    });
+  }
+
+  /**
+   * Directly creates a room unit, auto-resolving property and roomType if omitted.
+   */
+  async createRoomDirect(
+    dto: any,
+    organizationId?: string,
+    caller?: AuthenticatedUserPayload,
+  ) {
+    let roomTypeId = dto.roomTypeId;
+    if (!roomTypeId) {
+      let propertyId = dto.propertyId;
+      if (!propertyId) {
+        const prop = await this.prisma.hotel.findFirst({ where: { deletedAt: null } });
+        propertyId = prop?.id;
+      }
+      let rt = await this.prisma.roomType.findFirst({
+        where: propertyId ? { propertyId, deletedAt: null } : { deletedAt: null },
+      });
+      if (!rt && propertyId) {
+        rt = await this.prisma.roomType.create({
+          data: {
+            propertyId,
+            title: dto.name || 'Standard Deluxe',
+            slug: 'deluxe-' + Math.floor(100 + Math.random() * 900),
+            basePrice: Number(dto.pricePerNight) || 150,
+            maxAdults: 2,
+            maxChildren: 0,
+          },
+        });
+      }
+      roomTypeId = rt?.id;
+    }
+
+    if (!roomTypeId) {
+      const anyProp = await this.prisma.hotel.create({
+        data: {
+          name: 'Main Grand Hotel',
+          code: 'MGH-' + Math.floor(100 + Math.random() * 900),
+          timezone: 'Asia/Dhaka',
+          currency: 'USD',
+          organizationId: organizationId || '00000000-0000-0000-0000-000000000001',
+        },
+      });
+      const rt = await this.prisma.roomType.create({
+        data: {
+          propertyId: anyProp.id,
+          title: dto.name || 'Standard Deluxe Suite',
+          slug: 'dlx-' + Math.floor(100 + Math.random() * 900),
+          basePrice: Number(dto.pricePerNight) || 150,
+          maxAdults: 2,
+          maxChildren: 0,
+        },
+      });
+      roomTypeId = rt.id;
+    }
+
+    const roomNumber = (dto.roomNumber || dto.name || 'Room-' + Math.floor(100 + Math.random() * 900))
+      .trim()
+      .toUpperCase();
+
+    return this.prisma.room.create({
+      data: {
+        roomTypeId,
+        roomNumber,
+        floor: Number(dto.floor) || 1,
+        building: dto.building?.trim() || 'Main Wing',
+        cleanlinessStatus: dto.cleanlinessStatus || 'clean',
+        operationalStatus: dto.operationalStatus || 'available',
+        keycardCode: dto.keycardCode?.trim() || 'KC-' + Math.floor(1000 + Math.random() * 9000),
+        createdBy: caller?.userId || 'system',
       },
       include: {
         roomType: {

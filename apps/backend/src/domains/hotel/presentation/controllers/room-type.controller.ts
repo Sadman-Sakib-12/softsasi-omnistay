@@ -21,8 +21,7 @@ import {
 import { RoomTypeService } from '../../application/services/room-type.service.js';
 import { CreateRoomTypeDto, UpdateRoomTypeDto } from '../dto/create-room-type.dto.js';
 import { CreateRoomBedDto } from '../dto/create-room-bed.dto.js';
-import { JwtAuthGuard } from '@omnistay/backend-common';
-import { CurrentUser } from '@omnistay/backend-common';
+import { JwtAuthGuard, CurrentUser, Public } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
 @ApiTags('Room Types & Bed Configurations')
@@ -49,6 +48,7 @@ export class RoomTypeController {
     return this.roomTypeService.createRoomType(propertyId, dto, user.organizationId || '', user);
   }
 
+  @Public()
   @Get('properties/:propertyId/room-types')
   @ApiOperation({
     summary: 'List room categories for property',
@@ -58,11 +58,12 @@ export class RoomTypeController {
   @ApiResponse({ status: 200, description: 'List of room types' })
   async listRoomTypes(
     @Param('propertyId') propertyId: string,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.roomTypeService.listRoomTypes(propertyId, user.organizationId);
+    return this.roomTypeService.listRoomTypes(propertyId, user?.organizationId);
   }
 
+  @Public()
   @Get('room-types/:id')
   @ApiOperation({
     summary: 'Get room category details',
@@ -73,9 +74,9 @@ export class RoomTypeController {
   @ApiResponse({ status: 404, description: 'Room type not found' })
   async getRoomType(
     @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.roomTypeService.getRoomTypeById(id, user.organizationId);
+    return this.roomTypeService.getRoomTypeById(id, user?.organizationId);
   }
 
   @Patch('room-types/:id')

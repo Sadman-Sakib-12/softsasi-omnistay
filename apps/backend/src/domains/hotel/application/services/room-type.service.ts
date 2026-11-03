@@ -25,9 +25,11 @@ export class RoomTypeService {
       caller.role === 'Platform SuperAdmin' ||
       caller.role === 'Company Owner/GM' ||
       caller.role === 'Company Owner / GM' ||
+      caller.role === 'Company Owner / General Manager' ||
       caller.role === 'General Manager (GM)' ||
-      caller.permissions.includes('rooms:manage') ||
-      caller.permissions.includes('properties:manage')
+      caller.permissions?.includes('*') ||
+      caller.permissions?.includes('rooms:manage') ||
+      caller.permissions?.includes('properties:manage')
     );
   }
 
@@ -91,13 +93,26 @@ export class RoomTypeService {
    * Lists active room types belonging to a property.
    */
   async listRoomTypes(propertyId: string, organizationId?: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(propertyId);
+    let resolvedPropertyId = propertyId;
+    if (!isUuid) {
+      const hotel = await this.prisma.hotel.findFirst({
+        where: {
+          deletedAt: null,
+          OR: [{ code: propertyId }, { code: propertyId.toUpperCase() }, { code: propertyId.toLowerCase() }],
+        },
+        select: { id: true },
+      });
+      if (hotel) resolvedPropertyId = hotel.id;
+    }
+
     if (organizationId) {
-      await this.hotelService.getPropertyById(propertyId, organizationId);
+      await this.hotelService.getPropertyById(resolvedPropertyId, organizationId);
     }
 
     return this.prisma.roomType.findMany({
       where: {
-        propertyId,
+        propertyId: resolvedPropertyId,
         deletedAt: null,
       },
       orderBy: { createdAt: 'asc' },
