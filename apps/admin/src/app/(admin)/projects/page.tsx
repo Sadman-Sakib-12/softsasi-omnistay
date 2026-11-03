@@ -1,7 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Hammer, Bug, Calendar, Clock, CheckCircle2, AlertTriangle, Plus, RefreshCw, Loader2, X } from 'lucide-react';
+import {
+  Hammer,
+  Bug,
+  Calendar,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  Plus,
+  RefreshCw,
+  Loader2,
+  X,
+  Milestone,
+  Activity,
+  ArrowRight,
+  TrendingUp,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
@@ -10,9 +25,19 @@ import { projectsService, ProjectItem, BugItem, CreateProjectDto, CreateBugDto }
 
 export default function ProjectsBugsPage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<'renovations' | 'bugs'>('renovations');
+  const [activeTab, setActiveTab] = useState<'renovations' | 'gantt' | 'bugs'>('renovations');
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
   const [isAddBugOpen, setIsAddBugOpen] = useState(false);
+  const [showCriticalPathOnly, setShowCriticalPathOnly] = useState(false);
+
+  // Chapter 16.1 Interactive Project Gantt Milestones
+  const [ganttTasks, setGanttTasks] = useState([
+    { id: 'GT-1', phase: 'Phase 1: Architectural Drawings & City Permits', startMonth: 0, durationMonths: 1.5, progress: 100, owner: 'Chief Architect', status: 'COMPLETED', isCriticalPath: true },
+    { id: 'GT-2', phase: 'Phase 2: Central HVAC & Electrical Retrofit', startMonth: 1.2, durationMonths: 2.0, progress: 75, owner: 'MEP Engineering Lead', status: 'IN_PROGRESS', isCriticalPath: true },
+    { id: 'GT-3', phase: 'Phase 3: Presidential Penthouse Suite Fit-out', startMonth: 2.5, durationMonths: 2.2, progress: 40, owner: 'Interior Furnishing Director', status: 'IN_PROGRESS', isCriticalPath: true },
+    { id: 'GT-4', phase: 'Phase 4: Skyline Rooftop Infinity Pool Expansion', startMonth: 3.5, durationMonths: 1.8, progress: 15, owner: 'Civil Works Contractor', status: 'SCHEDULED', isCriticalPath: false },
+    { id: 'GT-5', phase: 'Phase 5: IoT RFID Door Locks & Energy BMS Automation', startMonth: 4.5, durationMonths: 1.5, progress: 0, owner: 'Smart Hotel Systems Lead', status: 'SCHEDULED', isCriticalPath: true },
+  ]);
 
   const [newProject, setNewProject] = useState<CreateProjectDto>({
     name: '',
@@ -73,10 +98,10 @@ export default function ProjectsBugsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Hammer className="w-6 h-6 text-[#00a8ff]" /> Project & Defect Management
+            <Hammer className="w-6 h-6 text-[#00a8ff]" /> Project, Gantt & Defect Management
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Capital renovation milestones, budget variance, and internal defect bug tracking (Chapter 16).
+            Capital renovation milestones, interactive Gantt chart timeline & internal defect bug tracking (Chapter 16).
           </p>
         </div>
 
@@ -88,7 +113,16 @@ export default function ProjectsBugsPage() {
                 activeTab === 'renovations' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Hotel Renovations
+              Renovations
+            </button>
+            <button
+              onClick={() => setActiveTab('gantt')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
+                activeTab === 'gantt' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Milestone className="w-3 h-3 text-[#00a8ff]" />
+              <span>Gantt Timeline (16.1)</span>
             </button>
             <button
               onClick={() => setActiveTab('bugs')}
@@ -100,7 +134,7 @@ export default function ProjectsBugsPage() {
             </button>
           </div>
 
-          {activeTab === 'renovations' ? (
+          {activeTab === 'renovations' && (
             <Button
               onClick={() => setIsAddProjectOpen(true)}
               size="sm"
@@ -108,7 +142,9 @@ export default function ProjectsBugsPage() {
             >
               <Plus className="w-3.5 h-3.5 mr-1" /> New Project
             </Button>
-          ) : (
+          )}
+
+          {activeTab === 'bugs' && (
             <Button
               onClick={() => setIsAddBugOpen(true)}
               size="sm"
@@ -163,6 +199,122 @@ export default function ProjectsBugsPage() {
               </div>
             ))
           )}
+        </div>
+      )}
+
+      {activeTab === 'gantt' && (
+        <div className="space-y-4">
+          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Milestone className="w-4 h-4 text-[#00a8ff]" /> Interactive Project Gantt Timeline & Critical Path (16.1)
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Multi-phase capital renovation roadmap with dependency milestones, percentage completion, and critical path tracking.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowCriticalPathOnly(!showCriticalPathOnly)}
+                className={`text-xs cursor-pointer ${
+                  showCriticalPathOnly ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold' : 'bg-white'
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5 mr-1 text-amber-600" />
+                {showCriticalPathOnly ? 'Showing Critical Path Only' : 'Highlight Critical Path'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Gantt Timeline Container */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs space-y-4 overflow-x-auto">
+            {/* Months Header Scale */}
+            <div className="min-w-[750px]">
+              <div className="grid grid-cols-12 gap-0 border-b border-slate-200 pb-2 text-[11px] font-bold text-slate-600">
+                <div className="col-span-4 pl-2">Project Phase & Lead Owner</div>
+                <div className="col-span-8 grid grid-cols-6 text-center text-slate-500">
+                  <div>Oct &apos;26</div>
+                  <div>Nov &apos;26</div>
+                  <div>Dec &apos;26</div>
+                  <div>Jan &apos;27</div>
+                  <div>Feb &apos;27</div>
+                  <div>Mar &apos;27</div>
+                </div>
+              </div>
+
+              {/* Gantt Rows */}
+              <div className="divide-y divide-slate-100 mt-2 space-y-2">
+                {ganttTasks
+                  .filter((t) => (!showCriticalPathOnly ? true : t.isCriticalPath))
+                  .map((task) => (
+                    <div key={task.id} className="grid grid-cols-12 gap-0 items-center py-2.5 hover:bg-slate-50/70 rounded-lg transition-colors">
+                      {/* Left: Task Name & Details */}
+                      <div className="col-span-4 pr-3">
+                        <div className="flex items-center gap-1.5">
+                          {task.isCriticalPath && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" title="Critical Path" />
+                          )}
+                          <span className="font-bold text-xs text-slate-900 truncate">{task.phase}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-2">
+                          <span>{task.owner}</span>
+                          <span>&middot;</span>
+                          <span className="font-semibold text-slate-600">{task.progress}% Done</span>
+                        </div>
+                      </div>
+
+                      {/* Right: Gantt Horizontal Track */}
+                      <div className="col-span-8 relative h-8 bg-slate-50 rounded-lg border border-slate-100 flex items-center px-1">
+                        {/* Month Grid Lines */}
+                        <div className="absolute inset-0 grid grid-cols-6 divide-x divide-slate-200/50 pointer-events-none" />
+
+                        {/* Gantt Bar */}
+                        <div
+                          style={{
+                            left: `${(task.startMonth / 6) * 100}%`,
+                            width: `${(task.durationMonths / 6) * 100}%`,
+                          }}
+                          className={`absolute h-6 rounded-md shadow-xs overflow-hidden transition-all flex items-center px-2 z-10 cursor-pointer hover:brightness-105 ${
+                            task.status === 'COMPLETED'
+                              ? 'bg-emerald-500 text-white'
+                              : task.status === 'IN_PROGRESS'
+                              ? 'bg-[#00a8ff] text-white'
+                              : 'bg-slate-400 text-white'
+                          } ${task.isCriticalPath ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}
+                        >
+                          {/* Inner Fill */}
+                          <div
+                            style={{ width: `${task.progress}%` }}
+                            className="absolute left-0 inset-y-0 bg-white/20 pointer-events-none"
+                          />
+                          <span className="text-[10px] font-bold truncate z-10 select-none">
+                            {task.progress}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Gantt Legend */}
+              <div className="flex flex-wrap items-center gap-5 pt-4 border-t border-slate-100 text-[11px] text-slate-500 mt-4">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-emerald-500" /> Phase Completed
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-[#00a8ff]" /> In Active Progress
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-slate-400" /> Scheduled Phase
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-amber-400 ring-2 ring-amber-400" /> Critical Path Dependency
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

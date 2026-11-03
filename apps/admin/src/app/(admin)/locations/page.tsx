@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MapPin, Plus, Search, Globe, Building, Loader2, X } from 'lucide-react';
+import { MapPin, Plus, Search, Globe, Building, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -20,6 +20,8 @@ import { propertiesService, Property } from '@/features/properties/services/prop
 export default function LocationsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
+  const [editingLoc, setEditingLoc] = useState<LocationItem | null>(null);
+
   const [newLoc, setNewLoc] = useState({
     name: '',
     city: '',
@@ -33,7 +35,7 @@ export default function LocationsPage() {
     queryFn: () => propertiesService.getAll(),
   });
 
-  // Derive dynamic locations purely from database properties
+  // Derive dynamic locations from database properties
   const derivedLocations: LocationItem[] = React.useMemo(() => {
     const locMap = new Map<string, LocationItem>();
     properties.forEach((p) => {
@@ -70,6 +72,26 @@ export default function LocationsPage() {
     ]);
     setIsAddLocationOpen(false);
     setNewLoc({ name: '', city: '', country: 'Bangladesh', propertiesCount: 1, status: 'Active' });
+  };
+
+  const handleUpdateLocation = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLoc) return;
+    setCustomLocations((prev) => {
+      const exists = prev.some((l) => l.id === editingLoc.id);
+      if (exists) {
+        return prev.map((l) => (l.id === editingLoc.id ? editingLoc : l));
+      } else {
+        return [...prev, editingLoc];
+      }
+    });
+    setEditingLoc(null);
+  };
+
+  const handleDeleteLocation = (id: string, name: string) => {
+    if (confirm(`Are you sure you want to remove "${name}"?`)) {
+      setCustomLocations((prev) => prev.filter((l) => l.id !== id));
+    }
   };
 
   const filtered = locations.filter((l) =>
@@ -127,25 +149,59 @@ export default function LocationsPage() {
               <th className="py-3 px-4">Country</th>
               <th className="py-3 px-4">Properties</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map((loc) => (
-              <tr key={loc.id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="py-3 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#00a8ff]" />
-                  <span>{loc.name}</span>
-                </td>
-                <td className="py-3 px-4 text-slate-600">{loc.city}</td>
-                <td className="py-3 px-4 text-slate-600">{loc.country}</td>
-                <td className="py-3 px-4 font-bold text-slate-900">{loc.propertiesCount} Hotels</td>
-                <td className="py-3 px-4">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    {loc.status}
-                  </span>
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
+                  Loading destination database...
                 </td>
               </tr>
-            ))}
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-slate-400">
+                  No destination hubs created yet. Click "Add Location" to register your first destination.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((loc) => (
+                <tr key={loc.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="py-3 px-4 font-semibold text-slate-900 flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5 text-[#00a8ff]" />
+                    <span>{loc.name}</span>
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">{loc.city}</td>
+                  <td className="py-3 px-4 text-slate-600">{loc.country}</td>
+                  <td className="py-3 px-4 font-bold text-slate-900">{loc.propertiesCount} Hotels</td>
+                  <td className="py-3 px-4">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {loc.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingLoc(loc)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Location"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLocation(loc.id, loc.name)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Location"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -245,6 +301,94 @@ export default function LocationsPage() {
                   className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   Save Location
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Location Modal Dialog */}
+      {editingLoc && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#00a8ff]" /> Edit Destination Location
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingLoc(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateLocation}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Destination Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingLoc.name}
+                    onChange={(e) => setEditingLoc({ ...editingLoc, name: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">City *</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingLoc.city}
+                      onChange={(e) => setEditingLoc({ ...editingLoc, city: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Country *</label>
+                    <input
+                      type="text"
+                      required
+                      value={editingLoc.country}
+                      onChange={(e) => setEditingLoc({ ...editingLoc, country: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Status</label>
+                  <select
+                    value={editingLoc.status}
+                    onChange={(e) => setEditingLoc({ ...editingLoc, status: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Draft">Draft</option>
+                    <option value="Under Review">Under Review</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingLoc(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  Save Changes
                 </button>
               </div>
             </form>

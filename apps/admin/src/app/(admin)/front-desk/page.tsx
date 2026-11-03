@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import {
   Calendar as CalendarIcon,
@@ -10,6 +11,7 @@ import {
   DollarSign,
   Clock,
   ConciergeBell,
+  LogIn,
 } from 'lucide-react';
 import { reservationsService } from '@/features/reservations/services/reservations.service';
 import { useRooms } from '@/features/rooms/hooks/use-rooms';
@@ -20,6 +22,7 @@ import { formatCurrency } from '@/lib/utils';
 import { NewReservationDialog } from '@/features/reservations/components/new-reservation-dialog';
 
 export default function FrontDeskPage() {
+  const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const { rooms } = useRooms();
 
@@ -58,6 +61,14 @@ export default function FrontDeskPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push('/reservations')}
+            className="bg-white text-xs text-blue-700 border-blue-200 hover:bg-blue-50 cursor-pointer"
+          >
+            <LogIn className="w-3.5 h-3.5 mr-1" /> Express Check-In & OCR
+          </Button>
           <NewReservationDialog />
         </div>
       </div>
