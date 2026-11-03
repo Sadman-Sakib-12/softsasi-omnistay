@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Ship, Plus, Search, Anchor, Users, Compass, Loader2 } from 'lucide-react';
+import { Ship, Plus, Search, Anchor, Users, Compass, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { travelService, BoatItem } from '@/features/travel/services/travel.service';
 import { formatCurrency } from '@/lib/utils';
@@ -11,8 +11,11 @@ import { Button } from '@/components/ui/button';
 export default function BoatsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingBoat, setEditingBoat] = useState<BoatItem | null>(null);
+
+  // New form state
   const [newName, setNewName] = useState('');
-  const [newVesselType, setNewVesselType] = useState('');
+  const [newVesselType, setNewVesselType] = useState('Luxury Motor Yacht');
   const [newHourlyRate, setNewHourlyRate] = useState('');
 
   const { data: boats = [], isLoading, refetch } = useQuery({
@@ -34,10 +37,39 @@ export default function BoatsPage() {
       setIsAdding(false);
       setNewName('');
       setNewHourlyRate('');
-      setNewVesselType('');
+      setNewVesselType('Luxury Motor Yacht');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error registering vessel');
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBoat) return;
+    try {
+      await travelService.updateBoat(editingBoat.id, {
+        name: editingBoat.name,
+        vesselType: editingBoat.vesselType,
+        hourlyRate: Number(editingBoat.hourlyRate),
+        capacity: Number(editingBoat.capacity),
+        lengthFt: Number(editingBoat.lengthFt),
+      });
+      setEditingBoat(null);
+      refetch();
+    } catch (err: any) {
+      alert(err.message || 'Error updating vessel');
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (confirm(`Are you sure you want to remove vessel "${name}" from the active fleet?`)) {
+      try {
+        await travelService.deleteBoat(id);
+        refetch();
+      } catch (err: any) {
+        alert(err.message || 'Error deleting vessel');
+      }
     }
   };
 
@@ -95,7 +127,6 @@ export default function BoatsPage() {
                 onChange={(e) => setNewVesselType(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option value="" disabled>Select Vessel Type...</option>
                 <option value="Luxury Motor Yacht">Luxury Motor Yacht</option>
                 <option value="Sailing Catamaran">Sailing Catamaran</option>
                 <option value="High-Speed Ferry">High-Speed Ferry</option>
@@ -148,19 +179,20 @@ export default function BoatsPage() {
               <th className="py-3 px-4">Length</th>
               <th className="py-3 px-4">Charter Rate</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400">
+                <td colSpan={7} className="py-8 text-center text-slate-400">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
                   Loading maritime fleet...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400">
+                <td colSpan={7} className="py-8 text-center text-slate-400">
                   No boats or yachts registered in fleet yet.
                 </td>
               </tr>
@@ -181,12 +213,130 @@ export default function BoatsPage() {
                       Docked & Ready
                     </span>
                   </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingBoat(boat)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Vessel"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(boat.id, boat.name)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Vessel"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Vessel Modal Dialog */}
+      {editingBoat && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Ship className="w-4 h-4 text-[#00a8ff]" /> Edit Vessel Configuration
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingBoat(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Vessel Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingBoat.name}
+                    onChange={(e) => setEditingBoat({ ...editingBoat, name: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Vessel Type</label>
+                    <select
+                      value={editingBoat.vesselType || 'Luxury Motor Yacht'}
+                      onChange={(e) => setEditingBoat({ ...editingBoat, vesselType: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    >
+                      <option value="Luxury Motor Yacht">Luxury Motor Yacht</option>
+                      <option value="Sailing Catamaran">Sailing Catamaran</option>
+                      <option value="High-Speed Ferry">High-Speed Ferry</option>
+                      <option value="Jet Ski Fleet">Jet Ski Fleet</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Charter Rate ($/hr)</label>
+                    <input
+                      type="number"
+                      required
+                      value={editingBoat.hourlyRate}
+                      onChange={(e) => setEditingBoat({ ...editingBoat, hourlyRate: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Capacity (Guests)</label>
+                    <input
+                      type="number"
+                      value={editingBoat.capacity || 10}
+                      onChange={(e) => setEditingBoat({ ...editingBoat, capacity: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Length (Feet)</label>
+                    <input
+                      type="number"
+                      value={editingBoat.lengthFt || 48}
+                      onChange={(e) => setEditingBoat({ ...editingBoat, lengthFt: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingBoat(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

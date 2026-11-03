@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CalendarCheck, Plus, Search, Ticket, MapPin, Users, Loader2 } from 'lucide-react';
+import { CalendarCheck, Plus, Search, Ticket, MapPin, Users, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { travelService, EventItem } from '@/features/travel/services/travel.service';
 import { formatCurrency } from '@/lib/utils';
@@ -11,9 +11,12 @@ import { Button } from '@/components/ui/button';
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+
   const [newTitle, setNewTitle] = useState('');
-  const [newVenue, setNewVenue] = useState('');
+  const [newVenue, setNewVenue] = useState('Grand Ballroom');
   const [newPrice, setNewPrice] = useState('');
+  const [newTotalTickets, setNewTotalTickets] = useState('200');
 
   const { data: events = [], isLoading, refetch } = useQuery({
     queryKey: ['adminEvents'],
@@ -26,18 +29,48 @@ export default function EventsPage() {
     try {
       await travelService.createEvent({
         title: newTitle,
-        venue: newVenue || 'Main Ballroom',
+        venue: newVenue || 'Grand Ballroom',
         ticketPrice: parseFloat(newPrice) || 0,
-        totalTickets: 100,
+        totalTickets: parseInt(newTotalTickets) || 200,
         eventType: 'Gala Banquet',
       });
       setIsAdding(false);
       setNewTitle('');
-      setNewVenue('');
+      setNewVenue('Grand Ballroom');
       setNewPrice('');
+      setNewTotalTickets('200');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error creating event');
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingEvent) return;
+    try {
+      await travelService.updateEvent(editingEvent.id, {
+        title: editingEvent.title,
+        venue: editingEvent.venue,
+        ticketPrice: Number(editingEvent.ticketPrice),
+        totalTickets: Number(editingEvent.totalTickets || 200),
+        eventType: editingEvent.eventType || 'Gala Banquet',
+      });
+      setEditingEvent(null);
+      refetch();
+    } catch (err: any) {
+      alert(err.message || 'Error updating event');
+    }
+  };
+
+  const handleDelete = async (id: string, title: string) => {
+    if (confirm(`Are you sure you want to cancel event "${title}"?`)) {
+      try {
+        await travelService.deleteEvent(id);
+        refetch();
+      } catch (err: any) {
+        alert(err.message || 'Error deleting event');
+      }
     }
   };
 
@@ -75,8 +108,8 @@ export default function EventsPage() {
       {isAdding && (
         <div className="p-5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-4">
           <h3 className="text-sm font-bold text-slate-800">New Event Profile</h3>
-          <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-            <div className="space-y-1">
+          <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+            <div className="space-y-1 sm:col-span-2">
               <label className="text-xs font-medium text-slate-700">Event Title *</label>
               <input
                 type="text"
@@ -98,7 +131,7 @@ export default function EventsPage() {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-700">Ticket Base Price ($)</label>
+              <label className="text-xs font-medium text-slate-700">Ticket Price ($)</label>
               <input
                 type="number"
                 placeholder="0.00"
@@ -107,7 +140,7 @@ export default function EventsPage() {
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               />
             </div>
-            <div className="sm:col-span-3 flex justify-end gap-2 pt-2 border-t border-slate-100">
+            <div className="sm:col-span-4 flex justify-end gap-2 pt-2 border-t border-slate-100">
               <Button type="button" variant="outline" size="sm" onClick={() => setIsAdding(false)}>
                 Cancel
               </Button>
@@ -142,19 +175,20 @@ export default function EventsPage() {
               <th className="py-3 px-4">Ticket Price</th>
               <th className="py-3 px-4">Capacity</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
+                <td colSpan={6} className="py-8 text-center text-slate-400">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
                   Loading events...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
+                <td colSpan={6} className="py-8 text-center text-slate-400">
                   No ticketed events created yet.
                 </td>
               </tr>
@@ -170,12 +204,115 @@ export default function EventsPage() {
                       On Sale
                     </span>
                   </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingEvent(event)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Event"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(event.id, event.title)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Event"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Event Modal */}
+      {editingEvent && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <CalendarCheck className="w-4 h-4 text-[#00a8ff]" /> Edit Event Ticketing
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingEvent(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Event Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingEvent.title}
+                    onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Venue / Location</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingEvent.venue || 'Grand Ballroom'}
+                    onChange={(e) => setEditingEvent({ ...editingEvent, venue: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Ticket Price ($)</label>
+                    <input
+                      type="number"
+                      required
+                      value={editingEvent.ticketPrice}
+                      onChange={(e) => setEditingEvent({ ...editingEvent, ticketPrice: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Capacity (Passes)</label>
+                    <input
+                      type="number"
+                      value={editingEvent.totalTickets || 200}
+                      onChange={(e) => setEditingEvent({ ...editingEvent, totalTickets: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingEvent(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

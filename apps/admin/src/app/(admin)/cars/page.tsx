@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Car, Plus, Search, Fuel, Settings2, Users, Loader2 } from 'lucide-react';
+import { Car, Plus, Search, Fuel, Settings2, Users, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { travelService, CarItem } from '@/features/travel/services/travel.service';
 import { formatCurrency } from '@/lib/utils';
@@ -11,8 +11,10 @@ import { Button } from '@/components/ui/button';
 export default function CarsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingCar, setEditingCar] = useState<CarItem | null>(null);
+
   const [newModel, setNewModel] = useState('');
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategory, setNewCategory] = useState('Executive SUV');
   const [newDailyRate, setNewDailyRate] = useState('');
 
   const { data: cars = [], isLoading, refetch } = useQuery({
@@ -35,10 +37,40 @@ export default function CarsPage() {
       setIsAdding(false);
       setNewModel('');
       setNewDailyRate('');
-      setNewCategory('');
+      setNewCategory('Executive SUV');
       refetch();
     } catch (err: any) {
       alert(err.message || 'Error creating vehicle');
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCar) return;
+    try {
+      await travelService.updateCar(editingCar.id, {
+        model: editingCar.model,
+        category: editingCar.category,
+        dailyRate: Number(editingCar.dailyRate),
+        seats: Number(editingCar.seats),
+        transmission: editingCar.transmission,
+        fuelType: editingCar.fuelType,
+      });
+      setEditingCar(null);
+      refetch();
+    } catch (err: any) {
+      alert(err.message || 'Error updating vehicle');
+    }
+  };
+
+  const handleDelete = async (id: string, model: string) => {
+    if (confirm(`Are you sure you want to remove "${model}" from the vehicle fleet?`)) {
+      try {
+        await travelService.deleteCar(id);
+        refetch();
+      } catch (err: any) {
+        alert(err.message || 'Error deleting vehicle');
+      }
     }
   };
 
@@ -96,7 +128,6 @@ export default function CarsPage() {
                 onChange={(e) => setNewCategory(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option value="" disabled>Select Category...</option>
                 <option value="Executive SUV">Executive SUV</option>
                 <option value="Luxury Sedan">Luxury Sedan</option>
                 <option value="Passenger Van (12-Seater)">Passenger Van (12-Seater)</option>
@@ -132,7 +163,7 @@ export default function CarsPage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search vehicle fleet..."
+            placeholder="Search vehicles..."
             className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
           />
         </div>
@@ -143,24 +174,25 @@ export default function CarsPage() {
         <table className="w-full text-left text-xs text-slate-700">
           <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
             <tr>
-              <th className="py-3 px-4">Vehicle Model</th>
-              <th className="py-3 px-4">Class</th>
-              <th className="py-3 px-4">Specs</th>
+              <th className="py-3 px-4">Model</th>
+              <th className="py-3 px-4">Category</th>
+              <th className="py-3 px-4">Specifications</th>
               <th className="py-3 px-4">Daily Rate</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
+                <td colSpan={6} className="py-8 text-center text-slate-400">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
                   Loading fleet data...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
+                <td colSpan={6} className="py-8 text-center text-slate-400">
                   No vehicles registered in fleet yet.
                 </td>
               </tr>
@@ -182,12 +214,146 @@ export default function CarsPage() {
                       Available
                     </span>
                   </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingCar(car)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Vehicle"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(car.id, car.model)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Vehicle"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Vehicle Modal */}
+      {editingCar && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Car className="w-4 h-4 text-[#00a8ff]" /> Edit Vehicle Fleet Profile
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingCar(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Model Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingCar.model}
+                    onChange={(e) => setEditingCar({ ...editingCar, model: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Category</label>
+                    <select
+                      value={editingCar.category || 'Executive SUV'}
+                      onChange={(e) => setEditingCar({ ...editingCar, category: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    >
+                      <option value="Executive SUV">Executive SUV</option>
+                      <option value="Luxury Sedan">Luxury Sedan</option>
+                      <option value="Passenger Van (12-Seater)">Passenger Van (12-Seater)</option>
+                      <option value="Electric EV">Electric EV</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Daily Rate ($)</label>
+                    <input
+                      type="number"
+                      required
+                      value={editingCar.dailyRate}
+                      onChange={(e) => setEditingCar({ ...editingCar, dailyRate: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Seats</label>
+                    <input
+                      type="number"
+                      value={editingCar.seats || 5}
+                      onChange={(e) => setEditingCar({ ...editingCar, seats: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Gear</label>
+                    <select
+                      value={editingCar.transmission || 'Automatic'}
+                      onChange={(e) => setEditingCar({ ...editingCar, transmission: e.target.value })}
+                      className="w-full h-8 px-2 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    >
+                      <option value="Automatic">Auto</option>
+                      <option value="Manual">Manual</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Fuel</label>
+                    <select
+                      value={editingCar.fuelType || 'Hybrid'}
+                      onChange={(e) => setEditingCar({ ...editingCar, fuelType: e.target.value })}
+                      className="w-full h-8 px-2 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    >
+                      <option value="Hybrid">Hybrid</option>
+                      <option value="Petrol">Petrol</option>
+                      <option value="Electric">Electric</option>
+                      <option value="Diesel">Diesel</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingCar(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

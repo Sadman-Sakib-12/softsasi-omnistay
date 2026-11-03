@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Compass, Plus, Search, MapPin, Users, Clock, DollarSign, CheckCircle2, Loader2 } from 'lucide-react';
+import { Compass, Plus, Search, MapPin, Users, Clock, DollarSign, CheckCircle2, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { travelService, TourItem } from '@/features/travel/services/travel.service';
 import { formatCurrency } from '@/lib/utils';
@@ -11,10 +11,12 @@ import { Button } from '@/components/ui/button';
 export default function ToursPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingTour, setEditingTour] = useState<TourItem | null>(null);
+
   const [newTitle, setNewTitle] = useState('');
   const [newPrice, setNewPrice] = useState('');
-  const [newDuration, setNewDuration] = useState('');
-  const [newCategory, setNewCategory] = useState('');
+  const [newDuration, setNewDuration] = useState('Full Day');
+  const [newCategory, setNewCategory] = useState('Adventure');
 
   const { data: tours = [], isLoading, refetch } = useQuery({
     queryKey: ['adminTours'],
@@ -29,17 +31,48 @@ export default function ToursPage() {
         title: newTitle,
         price: parseFloat(newPrice) || 0,
         duration: newDuration || 'Full Day',
-        category: newCategory || 'General',
-        minPax: 1,
-        maxPax: 20,
+        category: newCategory || 'Adventure',
+        minPax: 2,
+        maxPax: 12,
       });
       setIsAdding(false);
       setNewTitle('');
       setNewPrice('');
-      setNewCategory('');
+      setNewCategory('Adventure');
+      setNewDuration('Full Day');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error creating tour');
+      alert(err.message || 'Error creating tour package');
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTour) return;
+    try {
+      await travelService.updateTour(editingTour.id, {
+        title: editingTour.title,
+        price: Number(editingTour.price),
+        duration: editingTour.duration,
+        category: editingTour.category,
+        minPax: Number(editingTour.minPax || 2),
+        maxPax: Number(editingTour.maxPax || 12),
+      });
+      setEditingTour(null);
+      refetch();
+    } catch (err: any) {
+      alert(err.message || 'Error updating tour package');
+    }
+  };
+
+  const handleDelete = async (id: string, title: string) => {
+    if (confirm(`Are you sure you want to remove tour package "${title}"?`)) {
+      try {
+        await travelService.deleteTour(id);
+        refetch();
+      } catch (err: any) {
+        alert(err.message || 'Error deleting tour package');
+      }
     }
   };
 
@@ -79,37 +112,35 @@ export default function ToursPage() {
       {/* Add Tour Form (Collapsible) */}
       {isAdding && (
         <div className="p-5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-4">
-          <h3 className="text-sm font-bold text-slate-800">New Tour Package Specification</h3>
+          <h3 className="text-sm font-bold text-slate-800">Add Tour Package</h3>
           <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs font-medium text-slate-700">Tour Package Title *</label>
+              <label className="text-xs font-medium text-slate-700">Tour Title *</label>
               <input
                 type="text"
                 required
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="e.g. Coral Reef Island Hopping & Snorkel Safari"
+                placeholder="e.g. Sundarbans Mangrove Wildlife Safari (3D/2N)"
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
               />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Category</label>
               <select
-                required
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option value="" disabled>Select Category...</option>
-                <option value="Island Hopping">Island Hopping</option>
-                <option value="Scuba & Snorkeling">Scuba & Snorkeling</option>
-                <option value="Mountain Trekking">Mountain Trekking</option>
-                <option value="Cultural Heritage">Cultural Heritage</option>
-                <option value="Culinary Food Tour">Culinary Food Tour</option>
+                <option value="Adventure">Adventure</option>
+                <option value="Cultural & Heritage">Cultural & Heritage</option>
+                <option value="Island Cruise">Island Cruise</option>
+                <option value="Culinary Trail">Culinary Trail</option>
+                <option value="Nature Trek">Nature Trek</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-700">Adult Rate ($)</label>
+              <label className="text-xs font-medium text-slate-700">Price per Person ($)</label>
               <input
                 type="number"
                 placeholder="0.00"
@@ -123,14 +154,14 @@ export default function ToursPage() {
                 Cancel
               </Button>
               <Button type="submit" size="sm" className="bg-[#00a8ff] hover:bg-[#0097e6] text-white">
-                Save Tour Package
+                Save Package
               </Button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Filter Toolbar */}
+      {/* Filter / Search Bar */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative w-72">
           <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
@@ -156,19 +187,20 @@ export default function ToursPage() {
               <th className="py-3 px-4">Capacity (Pax)</th>
               <th className="py-3 px-4">Price</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400">
+                <td colSpan={7} className="py-8 text-center text-slate-400">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
                   Loading tours from backend...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400">
+                <td colSpan={7} className="py-8 text-center text-slate-400">
                   No tour packages created yet. Click "Add Tour Package" to create the first package.
                 </td>
               </tr>
@@ -191,12 +223,131 @@ export default function ToursPage() {
                       Publish
                     </span>
                   </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingTour(tour)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Package"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(tour.id, tour.title)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Package"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Tour Modal Dialog */}
+      {editingTour && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Compass className="w-4 h-4 text-[#00a8ff]" /> Edit Tour Package
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingTour(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Tour Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingTour.title}
+                    onChange={(e) => setEditingTour({ ...editingTour, title: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Category</label>
+                    <select
+                      value={editingTour.category || 'Adventure'}
+                      onChange={(e) => setEditingTour({ ...editingTour, category: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    >
+                      <option value="Adventure">Adventure</option>
+                      <option value="Cultural & Heritage">Cultural & Heritage</option>
+                      <option value="Island Cruise">Island Cruise</option>
+                      <option value="Culinary Trail">Culinary Trail</option>
+                      <option value="Nature Trek">Nature Trek</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Price per Pax ($)</label>
+                    <input
+                      type="number"
+                      required
+                      value={editingTour.price}
+                      onChange={(e) => setEditingTour({ ...editingTour, price: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Duration</label>
+                    <input
+                      type="text"
+                      value={editingTour.duration || 'Full Day'}
+                      onChange={(e) => setEditingTour({ ...editingTour, duration: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Max Guests</label>
+                    <input
+                      type="number"
+                      value={editingTour.maxPax || 12}
+                      onChange={(e) => setEditingTour({ ...editingTour, maxPax: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingTour(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

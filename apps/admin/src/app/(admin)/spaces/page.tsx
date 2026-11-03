@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Home, Plus, Search, Users, Maximize, Clock, Loader2 } from 'lucide-react';
+import { Home, Plus, Search, Users, Maximize, Clock, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { travelService, SpaceItem } from '@/features/travel/services/travel.service';
 import { formatCurrency } from '@/lib/utils';
@@ -11,8 +11,10 @@ import { Button } from '@/components/ui/button';
 export default function SpacesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingSpace, setEditingSpace] = useState<SpaceItem | null>(null);
+
   const [newName, setNewName] = useState('');
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategory, setNewCategory] = useState('Meeting Room');
   const [newCapacity, setNewCapacity] = useState('');
   const [newHourlyRate, setNewHourlyRate] = useState('');
 
@@ -33,12 +35,41 @@ export default function SpacesPage() {
       });
       setIsAdding(false);
       setNewName('');
-      setNewCategory('');
+      setNewCategory('Meeting Room');
       setNewCapacity('');
       setNewHourlyRate('');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error creating space');
+      alert(err.message || 'Error creating venue space');
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSpace) return;
+    try {
+      await travelService.updateSpace(editingSpace.id, {
+        name: editingSpace.name,
+        category: editingSpace.category,
+        capacity: Number(editingSpace.capacity),
+        hourlyRate: Number(editingSpace.hourlyRate),
+        dailyRate: Number(editingSpace.dailyRate || 0),
+      });
+      setEditingSpace(null);
+      refetch();
+    } catch (err: any) {
+      alert(err.message || 'Error updating space');
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (confirm(`Are you sure you want to remove "${name}" from venue listings?`)) {
+      try {
+        await travelService.deleteSpace(id);
+        refetch();
+      } catch (err: any) {
+        alert(err.message || 'Error deleting space');
+      }
     }
   };
 
@@ -78,29 +109,28 @@ export default function SpacesPage() {
           <h3 className="text-sm font-bold text-slate-800">New Space / Venue Profile</h3>
           <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-xs font-medium text-slate-700">Venue / Room Name *</label>
+              <label className="text-xs font-medium text-slate-700">Space Name *</label>
               <input
                 type="text"
                 required
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="e.g. Grand Sapphire Ballroom / Boardroom Alpha"
+                placeholder="e.g. Royal Crystal Ballroom"
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
               />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Category</label>
               <select
-                required
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 className="w-full h-9 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800"
               >
-                <option value="" disabled>Select Category...</option>
-                <option value="Executive Meeting Room">Executive Meeting Room</option>
-                <option value="Grand Wedding Ballroom">Grand Wedding Ballroom</option>
-                <option value="Coworking Hot-Desk">Coworking Hot-Desk</option>
-                <option value="Outdoor Garden Pavilion">Outdoor Garden Pavilion</option>
+                <option value="Meeting Room">Meeting Room</option>
+                <option value="Banquet Hall">Banquet Hall</option>
+                <option value="Conference Auditorium">Conference Auditorium</option>
+                <option value="Private Office">Private Office</option>
+                <option value="Hot-Desk Co-Working">Hot-Desk Co-Working</option>
               </select>
             </div>
             <div className="space-y-1">
@@ -148,19 +178,20 @@ export default function SpacesPage() {
               <th className="py-3 px-4">Capacity</th>
               <th className="py-3 px-4">Hourly Rate</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
+                <td colSpan={6} className="py-8 text-center text-slate-400">
                   <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
                   Loading venue spaces...
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-slate-400">
+                <td colSpan={6} className="py-8 text-center text-slate-400">
                   No coworking or venue spaces created yet.
                 </td>
               </tr>
@@ -180,12 +211,131 @@ export default function SpacesPage() {
                       Publish
                     </span>
                   </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingSpace(space)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Space"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(space.id, space.name)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Space"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Space Modal */}
+      {editingSpace && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Home className="w-4 h-4 text-[#00a8ff]" /> Edit Venue Space Profile
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingSpace(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Space / Venue Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingSpace.name}
+                    onChange={(e) => setEditingSpace({ ...editingSpace, name: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Category</label>
+                    <select
+                      value={editingSpace.category || 'Meeting Room'}
+                      onChange={(e) => setEditingSpace({ ...editingSpace, category: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    >
+                      <option value="Meeting Room">Meeting Room</option>
+                      <option value="Banquet Hall">Banquet Hall</option>
+                      <option value="Conference Auditorium">Conference Auditorium</option>
+                      <option value="Private Office">Private Office</option>
+                      <option value="Hot-Desk Co-Working">Hot-Desk Co-Working</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Hourly Rate ($)</label>
+                    <input
+                      type="number"
+                      required
+                      value={editingSpace.hourlyRate}
+                      onChange={(e) => setEditingSpace({ ...editingSpace, hourlyRate: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Capacity (Guests)</label>
+                    <input
+                      type="number"
+                      value={editingSpace.capacity || 10}
+                      onChange={(e) => setEditingSpace({ ...editingSpace, capacity: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Daily Rate ($)</label>
+                    <input
+                      type="number"
+                      value={editingSpace.dailyRate || 0}
+                      onChange={(e) => setEditingSpace({ ...editingSpace, dailyRate: Number(e.target.value) })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingSpace(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

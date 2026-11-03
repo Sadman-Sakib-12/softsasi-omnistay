@@ -79,6 +79,12 @@ export const travelService = {
   createTour: async (dto: any) => {
     return await api.post('/api/v1/tours', dto);
   },
+  updateTour: async (id: string, dto: any) => {
+    return await api.patch(`/api/v1/tours/${id}`, dto);
+  },
+  deleteTour: async (id: string) => {
+    return await api.delete(`/api/v1/tours/${id}`);
+  },
 
   // Spaces
   getSpaces: async (): Promise<SpaceItem[]> => {
@@ -91,6 +97,12 @@ export const travelService = {
   },
   createSpace: async (dto: any) => {
     return await api.post('/api/v1/spaces', dto);
+  },
+  updateSpace: async (id: string, dto: any) => {
+    return await api.patch(`/api/v1/spaces/${id}`, dto);
+  },
+  deleteSpace: async (id: string) => {
+    return await api.delete(`/api/v1/spaces/${id}`);
   },
 
   // Cars
@@ -105,6 +117,12 @@ export const travelService = {
   createCar: async (dto: any) => {
     return await api.post('/api/v1/cars', dto);
   },
+  updateCar: async (id: string, dto: any) => {
+    return await api.patch(`/api/v1/cars/${id}`, dto);
+  },
+  deleteCar: async (id: string) => {
+    return await api.delete(`/api/v1/cars/${id}`);
+  },
 
   // Boats
   getBoats: async (): Promise<BoatItem[]> => {
@@ -117,6 +135,12 @@ export const travelService = {
   },
   createBoat: async (dto: any) => {
     return await api.post('/api/v1/boats', dto);
+  },
+  updateBoat: async (id: string, dto: any) => {
+    return await api.patch(`/api/v1/boats/${id}`, dto);
+  },
+  deleteBoat: async (id: string) => {
+    return await api.delete(`/api/v1/boats/${id}`);
   },
 
   // Events
@@ -131,6 +155,12 @@ export const travelService = {
   createEvent: async (dto: any) => {
     return await api.post('/api/v1/events', dto);
   },
+  updateEvent: async (id: string, dto: any) => {
+    return await api.patch(`/api/v1/events/${id}`, dto);
+  },
+  deleteEvent: async (id: string) => {
+    return await api.delete(`/api/v1/events/${id}`);
+  },
 
   // Flights
   getFlights: async (): Promise<FlightItem[]> => {
@@ -143,5 +173,11 @@ export const travelService = {
   },
   createFlight: async (dto: any) => {
     return await api.post('/api/v1/flights', dto);
+  },
+  updateFlight: async (id: string, dto: any) => {
+    return await api.patch(`/api/v1/flights/${id}`, dto);
+  },
+  deleteFlight: async (id: string) => {
+    return await api.delete(`/api/v1/flights/${id}`);
   },
 };
