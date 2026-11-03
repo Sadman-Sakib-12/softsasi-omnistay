@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Newspaper, Plus, Search, Calendar, User, Eye, Trash2, Loader2, X } from 'lucide-react';
+import { Newspaper, Plus, Search, Calendar, User, Eye, Edit, Trash2, Loader2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,11 +11,14 @@ export default function NewsCmsPage() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [isWriteOpen, setIsWriteOpen] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<NewsArticleItem | null>(null);
+
   const [newArticle, setNewArticle] = useState<Partial<NewsArticleItem>>({
     title: '',
-    category: '',
-    author: '',
+    category: 'Travel Guides',
+    author: 'OmniStay Editor',
     status: 'Published',
+    content: '',
   });
 
   const { data: articles = [], isLoading } = useQuery<NewsArticleItem[]>({
@@ -28,7 +31,15 @@ export default function NewsCmsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['systemNews'] });
       setIsWriteOpen(false);
-      setNewArticle({ title: '', category: '', author: '', status: 'Published' });
+      setNewArticle({ title: '', category: 'Travel Guides', author: 'OmniStay Editor', status: 'Published', content: '' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, dto }: { id: string; dto: Partial<NewsArticleItem> }) => contentService.updateNews(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['systemNews'] });
+      setEditingArticle(null);
     },
   });
 
@@ -38,6 +49,33 @@ export default function NewsCmsPage() {
       queryClient.invalidateQueries({ queryKey: ['systemNews'] });
     },
   });
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newArticle.title) return;
+    createMutation.mutate(newArticle);
+  };
+
+  const handleUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingArticle) return;
+    updateMutation.mutate({
+      id: editingArticle.id,
+      dto: {
+        title: editingArticle.title,
+        category: editingArticle.category,
+        author: editingArticle.author,
+        status: editingArticle.status,
+        content: editingArticle.content,
+      },
+    });
+  };
+
+  const handleDelete = (id: string, title: string) => {
+    if (confirm(`Are you sure you want to delete article "${title}"?`)) {
+      deleteMutation.mutate(id);
+    }
+  };
 
   const filtered = articles.filter((a) =>
     a.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -57,7 +95,7 @@ export default function NewsCmsPage() {
             <Newspaper className="w-6 h-6 text-[#00a8ff]" /> Articles & News Manager
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Publish travel destination guides, hotel announcements, and culinary stories.
+            Publish travel destination guides, hotel announcements, and culinary stories (Chapter 19.1).
           </p>
         </div>
 
@@ -78,7 +116,7 @@ export default function NewsCmsPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search news..."
-            className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-hidden focus:border-[#00a8ff]"
+            className="w-full h-9 pl-9 pr-3 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
           />
         </div>
         <span className="text-xs text-slate-500">Found {filtered.length} articles</span>
@@ -108,7 +146,7 @@ export default function NewsCmsPage() {
             ) : filtered.length === 0 ? (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-slate-400 text-xs">
-                  No articles found.
+                  No articles found. Click "Write Article" to publish your first post.
                 </td>
               </tr>
             ) : (
@@ -128,13 +166,22 @@ export default function NewsCmsPage() {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() => deleteMutation.mutate(a.id)}
-                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
-                      title="Delete article"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingArticle(a)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit article"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(a.id, a.title)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete article"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -146,68 +193,154 @@ export default function NewsCmsPage() {
       {/* Write Article Modal */}
       {isWriteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Newspaper className="w-4 h-4 text-[#00a8ff]" /> Write New Editorial Article
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Newspaper className="w-4 h-4 text-[#00a8ff]" /> Write New Article
               </h3>
-              <button onClick={() => setIsWriteOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <button
+                type="button"
+                onClick={() => setIsWriteOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                await createMutation.mutateAsync(newArticle);
-              }}
-              className="space-y-4 text-xs"
-            >
+
+            <form onSubmit={handleCreate} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Article Headline</label>
+                <label className="block text-slate-700 font-semibold mb-1">Article Title *</label>
                 <input
                   type="text"
                   required
+                  placeholder="e.g. Ultimate Travel Guide to Cox's Bazar 2026"
                   value={newArticle.title}
                   onChange={(e) => setNewArticle({ ...newArticle, title: e.target.value })}
-                  placeholder="e.g. Exploring Coral Lagoons in the Bay of Bengal"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                  className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
                 />
               </div>
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Category</label>
-                <select
-                  value={newArticle.category}
-                  onChange={(e) => setNewArticle({ ...newArticle, category: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
-                  required
-                >
-                  <option value="" disabled>Select Category...</option>
-                  <option value="Destination Travel">Destination Travel</option>
-                  <option value="Dining & Culinary">Dining & Culinary</option>
-                  <option value="Hospitality Insights">Hospitality Insights</option>
-                  <option value="Resort Activities">Resort Activities</option>
-                </select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Category</label>
+                  <select
+                    value={newArticle.category}
+                    onChange={(e) => setNewArticle({ ...newArticle, category: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-700"
+                  >
+                    <option value="Travel Guides">Travel Guides</option>
+                    <option value="Company News">Company News</option>
+                    <option value="Culinary & Dining">Culinary & Dining</option>
+                    <option value="Hospitality Trends">Hospitality Trends</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Author</label>
+                  <input
+                    type="text"
+                    value={newArticle.author}
+                    onChange={(e) => setNewArticle({ ...newArticle, author: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
               </div>
+
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Author Byline</label>
-                <input
-                  type="text"
-                  value={newArticle.author}
-                  onChange={(e) => setNewArticle({ ...newArticle, author: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                <label className="block text-slate-700 font-semibold mb-1">Article Body</label>
+                <textarea
+                  rows={4}
+                  placeholder="Write the article copy here..."
+                  value={newArticle.content}
+                  onChange={(e) => setNewArticle({ ...newArticle, content: e.target.value })}
+                  className="w-full p-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
                 />
               </div>
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsWriteOpen(false)}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={createMutation.isPending}
-                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white"
-                >
-                  {createMutation.isPending ? 'Publishing...' : 'Publish Article'}
+                <Button type="submit" size="sm" className="bg-[#00a8ff] hover:bg-[#0097e6] text-white">
+                  Publish Article
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Article Modal */}
+      {editingArticle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Newspaper className="w-4 h-4 text-[#00a8ff]" /> Edit Article
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingArticle(null)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Article Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingArticle.title}
+                  onChange={(e) => setEditingArticle({ ...editingArticle, title: e.target.value })}
+                  className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Category</label>
+                  <select
+                    value={editingArticle.category}
+                    onChange={(e) => setEditingArticle({ ...editingArticle, category: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-700"
+                  >
+                    <option value="Travel Guides">Travel Guides</option>
+                    <option value="Company News">Company News</option>
+                    <option value="Culinary & Dining">Culinary & Dining</option>
+                    <option value="Hospitality Trends">Hospitality Trends</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">Status</label>
+                  <select
+                    value={editingArticle.status}
+                    onChange={(e) => setEditingArticle({ ...editingArticle, status: e.target.value })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-700"
+                  >
+                    <option value="Published">Published</option>
+                    <option value="Draft">Draft</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">Article Body</label>
+                <textarea
+                  rows={4}
+                  value={editingArticle.content || ''}
+                  onChange={(e) => setEditingArticle({ ...editingArticle, content: e.target.value })}
+                  className="w-full p-2.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:border-[#00a8ff]"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <Button type="button" variant="outline" size="sm" onClick={() => setEditingArticle(null)}>
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" className="bg-[#00a8ff] hover:bg-[#0097e6] text-white">
+                  Save Changes
                 </Button>
               </div>
             </form>
