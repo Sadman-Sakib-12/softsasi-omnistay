@@ -38,4 +38,8 @@ export const organizationsService = {
   create: async (dto: { name: string; slug: string }): Promise<Organization> => {
     return await api.post<Organization>('/api/v1/organizations', dto);
   },
+
+  delete: async (id: string): Promise<any> => {
+    return await api.delete(`/api/v1/organizations/${id}`);
+  },
 };
