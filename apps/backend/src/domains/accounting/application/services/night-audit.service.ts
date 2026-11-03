@@ -210,4 +210,84 @@ export class NightAuditService {
       include: { snapshots: true },
     });
   }
+
+  /**
+   * Automated 02:00 AM Night Audit Scheduler Daemon:
+   * Iterates across active multi-tenant hotel partitions,
+   * accrues daily room revenues, recognizes advance deposits,
+   * enforces double-entry USALI reconciliations, and persists trial balance snapshots.
+   */
+  async runNightAuditForAllTenants(dto?: { auditDate?: string; forceRun?: boolean; tenantId?: string }) {
+    const targetDate = dto?.auditDate || new Date().toISOString().split('T')[0];
+    this.logger.log(`Executing Multi-Tenant Night Audit Scheduler Daemon for date: ${targetDate}`);
+
+    const tenants = await this.prisma.organization.findMany({
+      where: {
+        deletedAt: null,
+        ...(dto?.tenantId ? { id: dto.tenantId } : {}),
+      },
+      select: { id: true, name: true, slug: true },
+    });
+
+    const results: Array<{
+      tenantId: string;
+      tenantName: string;
+      status: 'success' | 'failed' | 'skipped';
+      revenuePosted?: number;
+      roomsAudited?: number;
+      error?: string;
+    }> = [];
+
+    let totalRevenuePosted = 0;
+    let successCount = 0;
+    let failedCount = 0;
+
+    for (const tenant of tenants) {
+      try {
+        const auditResult = await this.runNightAudit(tenant.id, {
+          auditDate: targetDate,
+          forceRun: dto?.forceRun ?? false,
+        });
+
+        totalRevenuePosted += Number(auditResult.revenuePosted || 0);
+        successCount++;
+
+        results.push({
+          tenantId: tenant.id,
+          tenantName: tenant.name,
+          status: 'success',
+          revenuePosted: Number(auditResult.revenuePosted || 0),
+          roomsAudited: auditResult.roomsAudited,
+        });
+      } catch (err: any) {
+        if (err.message && err.message.includes('has already been completed')) {
+          results.push({
+            tenantId: tenant.id,
+            tenantName: tenant.name,
+            status: 'skipped',
+            error: err.message,
+          });
+        } else {
+          this.logger.error(`Night audit failed for tenant ${tenant.name} (${tenant.id}): ${err.message}`);
+          failedCount++;
+          results.push({
+            tenantId: tenant.id,
+            tenantName: tenant.name,
+            status: 'failed',
+            error: err.message,
+          });
+        }
+      }
+    }
+
+    return {
+      message: `Multi-Tenant Night Audit Batch executed for date ${targetDate}`,
+      auditDate: targetDate,
+      totalTenantsProcessed: tenants.length,
+      successCount,
+      failedCount,
+      totalRevenuePosted: Math.round(totalRevenuePosted * 100) / 100,
+      details: results,
+    };
+  }
 }
