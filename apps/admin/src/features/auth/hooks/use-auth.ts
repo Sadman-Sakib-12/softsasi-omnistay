@@ -9,6 +9,28 @@ import { useTenantStore } from '@/stores/tenant-store';
 import { useUiStore } from '@/stores/ui-store';
 import { Role } from '@/lib/auth/permissions';
 
+const parseJwtRoleAndPerms = (token?: string) => {
+  if (!token || typeof window === 'undefined') return { role: null, permissions: [] };
+  try {
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return { role: null, permissions: [] };
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const parsed = JSON.parse(json);
+    return {
+      role: parsed.role || null,
+      permissions: Array.isArray(parsed.permissions) ? parsed.permissions : [],
+    };
+  } catch {
+    return { role: null, permissions: [] };
+  }
+};
+
 export function useAuth() {
   const router = useRouter();
   const { setTenantId } = useTenantStore();
@@ -23,12 +45,19 @@ export function useAuth() {
         if (token) {
           sessionManager.setToken(token);
         }
+        if (typeof window !== 'undefined') {
+          if (res.secret) sessionStorage.setItem('omnistay_2fa_secret', res.secret);
+          if (res.otpAuthUri) sessionStorage.setItem('omnistay_2fa_otpauth', res.otpAuthUri);
+          if (res.enrollmentRequired) sessionStorage.setItem('omnistay_2fa_enrollment', 'true');
+        }
         router.push('/verify-2fa');
         return;
       }
 
-      const activeRole = (res.role as Role) || (res.user?.role as Role) || Role.PLATFORM_SUPERADMIN;
+      const decoded = parseJwtRoleAndPerms(res.accessToken);
+      const activeRole = (res.role as Role) || (res.user?.role as Role) || (decoded.role as Role) || Role.FRONT_DESK_AGENT;
       const tenantId = res.organization?.id || res.user?.tenantId || '';
+      const permissions = res.permissions || res.user?.permissions || decoded.permissions || [];
 
       sessionManager.setToken(res.accessToken, res.refreshToken);
       sessionManager.setUser({
@@ -39,7 +68,7 @@ export function useAuth() {
         tenantId: tenantId,
         organizationName: res.organization?.name || '',
         organizationSlug: res.organization?.slug || '',
-        permissions: res.permissions || res.user?.permissions || [],
+        permissions,
       });
 
       if (tenantId) {
@@ -65,8 +94,10 @@ export function useAuth() {
   const verify2faMutation = useMutation({
     mutationFn: (data: Verify2faFormData) => authService.verify2fa(data),
     onSuccess: (res: any) => {
-      const activeRole = (res.role as Role) || (res.user?.role as Role) || Role.PLATFORM_SUPERADMIN;
+      const decoded = parseJwtRoleAndPerms(res.accessToken);
+      const activeRole = (res.role as Role) || (res.user?.role as Role) || (decoded.role as Role) || Role.FRONT_DESK_AGENT;
       const tenantId = res.organization?.id || res.user?.tenantId || '';
+      const permissions = res.permissions || res.user?.permissions || decoded.permissions || [];
 
       sessionManager.setToken(res.accessToken, res.refreshToken);
       sessionManager.setUser({
@@ -75,7 +106,7 @@ export function useAuth() {
         name: res.user?.name || '',
         role: activeRole,
         tenantId: tenantId,
-        permissions: res.permissions || ['*'],
+        permissions,
       });
 
       if (tenantId) {

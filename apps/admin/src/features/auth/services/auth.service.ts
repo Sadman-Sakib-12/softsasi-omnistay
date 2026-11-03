@@ -28,6 +28,14 @@ export const authService = {
     return await api.post<any>('/api/v1/auth/register', data);
   },
 
+  verifyEmail: async (data: { email: string; code?: string; token?: string }): Promise<any> => {
+    return await api.post<any>('/api/v1/auth/verify-email', data);
+  },
+
+  resendVerification: async (email: string): Promise<any> => {
+    return await api.post<any>('/api/v1/auth/resend-verification', { email });
+  },
+
   login: async (data: LoginFormData): Promise<LoginResponse> => {
     return await api.post<LoginResponse>('/api/v1/auth/login', {
       email: data.email,
@@ -36,11 +44,11 @@ export const authService = {
   },
 
   forgotPassword: async (data: ForgotPasswordFormData): Promise<{ message: string }> => {
-    return await api.post<{ message: string }>('/api/v1/auth/forgot-password', data);
+    return await api.post<{ message: string }>('/api/v1/auth/password-reset/request', data);
   },
 
   resetPassword: async (data: ResetPasswordFormData, token: string): Promise<{ message: string }> => {
-    return await api.post<{ message: string }>('/api/v1/auth/reset-password', {
+    return await api.post<{ message: string }>('/api/v1/auth/password-reset/confirm', {
       ...data,
       token,
     });

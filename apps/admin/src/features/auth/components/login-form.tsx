@@ -44,9 +44,19 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {loginError && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{loginError.message || 'Authentication failed. Please verify credentials.'}</span>
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex flex-col gap-1.5">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{loginError.message || 'Authentication failed. Please verify credentials.'}</span>
+            </div>
+            {loginError.message?.toLowerCase().includes('verification') && (
+              <Link
+                href="/verify-email"
+                className="text-[11px] font-bold text-[#00a8ff] hover:underline pl-6"
+              >
+                Go to Email Verification Page &rarr;
+              </Link>
+            )}
           </div>
         )}
 

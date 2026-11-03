@@ -25,10 +25,42 @@ import { useTenantStore } from '@/stores/tenant-store';
 import { useUiStore } from '@/stores/ui-store';
 import { Role } from '@/lib/auth/permissions';
 
+const DISPOSABLE_DOMAINS = [
+  'mailinator.com',
+  'tempmail.com',
+  'temp-mail.org',
+  'temp-mail.io',
+  '10minutemail.com',
+  '10minutemail.net',
+  'guerrillamail.com',
+  'trashmail.com',
+  'throwawaymail.com',
+  'yopmail.com',
+  'dispostable.com',
+  'getnada.com',
+  'fake.com',
+  'fakeinbox.com',
+  'fakemailgenerator.com',
+  'mohmal.com',
+  'sharklasers.com',
+  'spam4.me',
+];
+
 const registerSchema = z
   .object({
     fullName: z.string().min(2, 'Full name is required'),
-    email: z.string().email('Please enter a valid email address'),
+    email: z
+      .string()
+      .email('Please enter a valid email address')
+      .refine(
+        (val) => {
+          const domain = val.toLowerCase().split('@')[1];
+          return !DISPOSABLE_DOMAINS.includes(domain);
+        },
+        {
+          message: 'Disposable or temporary email domains are strictly not allowed. Please use your authentic domain.',
+        },
+      ),
     phone: z.string().min(6, 'Valid phone number is required'),
     companyName: z.string().min(2, 'Hotel / Property name is required'),
     propertyType: z.string().default('hotel'),
@@ -88,6 +120,14 @@ export function RegisterForm() {
         phone: data.phone,
         propertyType: data.propertyType,
       });
+
+      if (res.requiresEmailVerification) {
+        setSuccess(true);
+        setTimeout(() => {
+          router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+        }, 1200);
+        return;
+      }
 
       const tenantId = res.organization?.id || '';
       const activeRole = (res.role as Role) || Role.COMPANY_OWNER_GM;
