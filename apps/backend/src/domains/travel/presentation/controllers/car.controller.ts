@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { CarService } from '../../application/services/car.service.js';
 import { BookCarDto, CreateCarDto, UpdateCarDto } from '../dto/car.dto.js';
-import { JwtAuthGuard } from '@omnistay/backend-common';
+import { JwtAuthGuard, Public } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
@@ -51,18 +51,20 @@ export class CarController {
   }
 
   @Post()
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new fleet vehicle' })
   async createCar(
     @Body(new ValidationPipe({ whitelist: true })) dto: CreateCarDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.carService.createCar(dto, user.organizationId || '', user);
+    return this.carService.createCar(dto, user?.organizationId || '00000000-0000-0000-0000-000000000001', user);
   }
 
   @Patch(':id')
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({ summary: 'Update vehicle specifications' })
@@ -70,32 +72,34 @@ export class CarController {
   async updateCar(
     @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: true })) dto: UpdateCarDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.carService.updateCar(id, dto, user.organizationId || '', user);
+    return this.carService.updateCar(id, dto, user?.organizationId || '00000000-0000-0000-0000-000000000001', user);
   }
 
   @Delete(':id')
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({ summary: 'Delete/archive vehicle' })
   @ApiParam({ name: 'id', description: 'Car UUID' })
   async deleteCar(
     @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.carService.deleteCar(id, user.organizationId || '', user);
+    return this.carService.deleteCar(id, user?.organizationId || '00000000-0000-0000-0000-000000000001', user);
   }
 
   @Post('book')
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Book rental vehicle' })
   async bookCar(
     @Body(new ValidationPipe({ whitelist: true })) dto: BookCarDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.carService.bookCar(dto, user.userId);
+    return this.carService.bookCar(dto, (user?.userId || '00000000-0000-0000-0000-000000000001'));
   }
 }

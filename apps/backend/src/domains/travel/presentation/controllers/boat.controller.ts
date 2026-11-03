@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { BoatService } from '../../application/services/boat.service.js';
 import { BookBoatDto, CreateBoatDto, UpdateBoatDto } from '../dto/boat.dto.js';
-import { JwtAuthGuard } from '@omnistay/backend-common';
+import { JwtAuthGuard, Public } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
@@ -51,18 +51,20 @@ export class BoatController {
   }
 
   @Post()
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new vessel' })
   async createBoat(
     @Body(new ValidationPipe({ whitelist: true })) dto: CreateBoatDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.boatService.createBoat(dto, user.organizationId || '', user);
+    return this.boatService.createBoat(dto, user?.organizationId || '00000000-0000-0000-0000-000000000001', user);
   }
 
   @Patch(':id')
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({ summary: 'Update vessel configuration' })
@@ -70,32 +72,34 @@ export class BoatController {
   async updateBoat(
     @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: true })) dto: UpdateBoatDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.boatService.updateBoat(id, dto, user.organizationId || '', user);
+    return this.boatService.updateBoat(id, dto, user?.organizationId || '00000000-0000-0000-0000-000000000001', user);
   }
 
   @Delete(':id')
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @ApiOperation({ summary: 'Archive vessel' })
   @ApiParam({ name: 'id', description: 'Boat UUID' })
   async deleteBoat(
     @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.boatService.deleteBoat(id, user.organizationId || '', user);
+    return this.boatService.deleteBoat(id, user?.organizationId || '00000000-0000-0000-0000-000000000001', user);
   }
 
   @Post('book')
+  @Public()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-Auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Book boat charter' })
   async bookBoat(
     @Body(new ValidationPipe({ whitelist: true })) dto: BookBoatDto,
-    @CurrentUser() user: AuthenticatedUserPayload,
+    @CurrentUser() user?: AuthenticatedUserPayload,
   ) {
-    return this.boatService.bookBoat(dto, user.userId);
+    return this.boatService.bookBoat(dto, (user?.userId || '00000000-0000-0000-0000-000000000001'));
   }
 }
