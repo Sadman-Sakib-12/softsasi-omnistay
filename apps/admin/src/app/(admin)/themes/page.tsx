@@ -62,6 +62,7 @@ import {
   WebsiteCustomizerConfig,
   ThemeCatalogItem,
 } from '@/features/content/services/content.service';
+import { UnifiedRichEditor } from '@/components/editor/unified-rich-editor';
 
 export const THEME_PRESETS = [
   {
@@ -379,7 +380,7 @@ export default function ElementorWhiteWebsiteBuilderPage() {
     { id: 'inner_section', name: 'Inner Section', icon: Columns3, action: () => handleSelectElement('hero_section') },
     { id: 'heading', name: 'Heading', icon: Heading, action: () => handleSelectElement('heading') },
     { id: 'image', name: 'Image', icon: ImageIcon, action: () => handleSelectElement('hero_section') },
-    { id: 'text_editor', name: 'Text Editor', icon: FileText, action: () => handleSelectElement('subheading') },
+    { id: 'text_editor', name: 'Text Editor (Tiptap / Editor.js)', icon: FileText, action: () => handleSelectElement('subheading') },
     { id: 'video', name: 'Video', icon: PlaySquare, action: () => handleSelectElement('hero_section') },
     { id: 'button', name: 'Button', icon: MousePointerClick, action: () => handleSelectElement('search_button') },
     { id: 'divider', name: 'Divider', icon: Minus, action: () => handleSelectElement('feature_cards') },
@@ -871,22 +872,36 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                         </div>
                       )}
 
-                      {/* Subheading Inspector */}
+                      {/* Subheading / Text Editor Inspector Powered by Tiptap & Editor.js */}
                       {activeElement === 'subheading' && (
                         <div className="space-y-3">
-                          <label className="block text-slate-700 font-bold">
-                            Subtitle / Body Copy
-                          </label>
-                          <textarea
-                            rows={4}
-                            value={formState.heroSubtitle}
-                            onChange={(e) =>
-                              setFormState({ ...formState, heroSubtitle: e.target.value })
+                          <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                            <div>
+                              <span className="font-bold text-slate-800 text-xs block">
+                                Text Editor
+                              </span>
+                              <span className="text-[10px] text-slate-400">
+                                Powered by Tiptap & Editor.js
+                              </span>
+                            </div>
+                            <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-2 py-0.5 rounded-full">
+                              Next.js 16 Active
+                            </span>
+                          </div>
+
+                          <UnifiedRichEditor
+                            label="Content Body"
+                            value={formState.heroSubtitle || ''}
+                            onChange={(content) =>
+                              setFormState({ ...formState, heroSubtitle: content })
                             }
-                            placeholder="e.g. Discover handcrafted luxury hotels, private villas, yachts..."
-                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 focus:border-[#00a8ff] outline-none shadow-xs"
-                            autoFocus
+                            placeholder="Type or format your text using Tiptap WYSIWYG or Editor.js blocks..."
                           />
+
+                          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-500 leading-relaxed">
+                            <span className="font-bold text-slate-700 block mb-0.5">Live Synchronization</span>
+                            Format text with bold, italic, headings, lists, or structured blocks. Changes update the canvas instantly.
+                          </div>
                         </div>
                       )}
 
@@ -1584,12 +1599,30 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                           }`}
                         >
                           <FileText className="w-3 h-3" />
-                          <span>Edit Text Editor</span>
+                          <span>Edit Text Editor (Tiptap / Editor.js)</span>
                         </div>
-                        <p className="text-sm sm:text-base font-medium text-white/95 drop-shadow-md leading-relaxed">
-                          {formState.heroSubtitle ||
-                            'Book handpicked 5-star suites, private beachfront villas, and bespoke journeys across 45+ premier destinations.'}
-                        </p>
+                        {formState.heroSubtitle && (formState.heroSubtitle.includes('<') || formState.heroSubtitle.startsWith('{')) ? (
+                          <div
+                            className="text-sm sm:text-base font-medium text-white/95 drop-shadow-md leading-relaxed prose prose-invert max-w-none [&_p]:my-1"
+                            dangerouslySetInnerHTML={{
+                              __html: formState.heroSubtitle.startsWith('{')
+                                ? (() => {
+                                    try {
+                                      const data = JSON.parse(formState.heroSubtitle);
+                                      return (data.blocks || []).map((b: any) => `<p>${b.data?.text || ''}</p>`).join('');
+                                    } catch {
+                                      return formState.heroSubtitle;
+                                    }
+                                  })()
+                                : formState.heroSubtitle,
+                            }}
+                          />
+                        ) : (
+                          <p className="text-sm sm:text-base font-medium text-white/95 drop-shadow-md leading-relaxed">
+                            {formState.heroSubtitle ||
+                              'Book handpicked 5-star suites, private beachfront villas, and bespoke journeys across 45+ premier destinations.'}
+                          </p>
+                        )}
                       </div>
 
                       {/* Search Bar Capsule Widget */}
