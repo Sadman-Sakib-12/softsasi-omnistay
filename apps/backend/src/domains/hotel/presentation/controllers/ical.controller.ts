@@ -80,6 +80,19 @@ export class IcalController {
     return this.icalService.syncIcalFeed(id, user.organizationId || '', user);
   }
 
+  @ApiBearerAuth('JWT-Auth')
+  @UseGuards(JwtAuthGuard)
+  @Post('ical/sync-all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Trigger batch 2-way iCal synchronization for all feeds',
+    description: 'Polls and synchronizes all external OTA channels across properties for the organization.',
+  })
+  @ApiResponse({ status: 200, description: 'Batch synchronization completed' })
+  async syncAllFeeds(@CurrentUser() user: AuthenticatedUserPayload) {
+    return this.icalService.syncAllFeeds(user.organizationId || '', user);
+  }
+
   @Public()
   @Get('ical/export/:token.ics')
   @Header('Content-Type', 'text/calendar; charset=utf-8')

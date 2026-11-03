@@ -31,9 +31,11 @@ export class RateCalendarService {
       caller.role === 'Platform SuperAdmin' ||
       caller.role === 'Company Owner/GM' ||
       caller.role === 'Company Owner / GM' ||
+      caller.role === 'Company Owner / General Manager' ||
       caller.role === 'General Manager (GM)' ||
-      caller.permissions.includes('rates:manage') ||
-      caller.permissions.includes('properties:manage')
+      caller.permissions?.includes('*') ||
+      caller.permissions?.includes('rates:manage') ||
+      caller.permissions?.includes('properties:manage')
     );
   }
 
