@@ -40,10 +40,22 @@ export const reservationsService = {
     return await api.post<Reservation>('/api/v1/bookings', dto);
   },
 
-  checkIn: async (bookingId: string): Promise<{ success: boolean; message: string }> => {
-    return await api.post<{ success: boolean; message: string }>('/api/v1/rooms/check-in', {
-      bookingId,
-    });
+  checkIn: async (params: {
+    bookingId: string;
+    roomId?: string;
+    keycardCode?: string;
+    digitalSignature?: string;
+  } | string): Promise<{ success: boolean; message: string }> => {
+    const payload = typeof params === 'string' ? { bookingId: params } : params;
+    return await api.post<{ success: boolean; message: string }>('/api/v1/rooms/check-in', payload);
+  },
+
+  parsePassportOcr: async (data: {
+    imageBase64?: string;
+    rawText?: string;
+    mrzLines?: string[];
+  }): Promise<any> => {
+    return await api.post('/api/v1/hotel/ocr/passport', data);
   },
 
   checkOut: async (bookingId: string): Promise<{ success: boolean; message: string }> => {

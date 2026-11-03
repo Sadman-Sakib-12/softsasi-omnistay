@@ -21,7 +21,8 @@ export function useReservations() {
   });
 
   const checkInMutation = useMutation({
-    mutationFn: (bookingId: string) => reservationsService.checkIn(bookingId),
+    mutationFn: (params: string | { bookingId: string; roomId?: string; keycardCode?: string; digitalSignature?: string }) =>
+      reservationsService.checkIn(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reservations'] });
       queryClient.invalidateQueries({ queryKey: ['rooms'] });

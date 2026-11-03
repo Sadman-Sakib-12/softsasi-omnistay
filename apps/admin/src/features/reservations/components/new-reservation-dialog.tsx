@@ -54,8 +54,9 @@ export function NewReservationDialog() {
       await createReservation(data);
       reset();
       setOpen(false);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert(e?.message || 'Error creating reservation. Please verify details.');
     }
   };
 

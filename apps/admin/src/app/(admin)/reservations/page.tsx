@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   CalendarDays,
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useReservations } from '@/features/reservations/hooks/use-reservations';
 import { NewReservationDialog } from '@/features/reservations/components/new-reservation-dialog';
+import { CheckInDialog } from '@/features/reservations/components/check-in-dialog';
 import { DataTable, Column } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,8 +22,8 @@ import { Reservation } from '@/features/reservations/services/reservations.servi
 
 export default function ReservationsPage() {
   const router = useRouter();
-  const { reservations, isLoading, checkIn, isCheckingIn, checkOut, isCheckingOut } =
-    useReservations();
+  const [activeCheckInReservation, setActiveCheckInReservation] = useState<Reservation | null>(null);
+  const { reservations, isLoading, checkOut, isCheckingOut } = useReservations();
 
   const columns: Column<Reservation>[] = [
     {
@@ -85,11 +86,8 @@ export default function ReservationsPage() {
             <Button
               variant="outline"
               size="sm"
-              disabled={isCheckingIn}
-              onClick={async () => {
-                await checkIn(item.id);
-              }}
-              className="text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-xs py-1 h-7 font-semibold"
+              onClick={() => setActiveCheckInReservation(item)}
+              className="text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-xs py-1 h-7 font-semibold cursor-pointer"
             >
               <LogIn className="w-3 h-3 mr-1" /> Check In
             </Button>
@@ -148,6 +146,17 @@ export default function ReservationsPage() {
         emptySubtitle="Click 'New Reservation' above to create a booking directly in the PMS database."
         onRowClick={(item) => router.push(`/reservations/${item.id}`)}
       />
+
+      {activeCheckInReservation && (
+        <CheckInDialog
+          reservation={activeCheckInReservation}
+          isOpen={!!activeCheckInReservation}
+          onClose={() => setActiveCheckInReservation(null)}
+          onSuccess={() => {
+            setActiveCheckInReservation(null);
+          }}
+        />
+      )}
     </div>
   );
 }
