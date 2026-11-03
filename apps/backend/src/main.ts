@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule, ObserveInstrument } from './app.module.js';
@@ -44,7 +45,9 @@ async function bootstrap() {
   // Mount OpenAPI 3.1.0 specification and Swagger UI
   setupSwagger(app);
 
-  await app.listen(process.env.PORT ?? 4000);
+  const port = process.env.PORT ?? 4000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Backend server ready and listening on http://0.0.0.0:${port}`);
 }
 
 await bootstrap();

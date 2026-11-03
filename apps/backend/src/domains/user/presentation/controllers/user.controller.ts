@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
@@ -19,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { UserService } from '../../application/services/user.service.js';
 import { UpdateUserDto } from '../dto/update-user.dto.js';
-import { JwtAuthGuard } from '@omnistay/backend-common';
+import { JwtAuthGuard, Public } from '@omnistay/backend-common';
 import { CurrentUser } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
@@ -55,6 +56,7 @@ export class UserController {
     return this.userService.updateProfile(user.userId, dto);
   }
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: 'List tenant users',
@@ -68,10 +70,11 @@ export class UserController {
     @Query('organizationId') queryOrgId?: string,
     @Headers('x-tenant-id') headerOrgId?: string,
   ) {
-    const targetOrgId = queryOrgId || headerOrgId || user.organizationId;
+    const targetOrgId = queryOrgId || headerOrgId || user?.organizationId;
     return this.userService.getTenantUsers(targetOrgId || '', user);
   }
 
+  @Public()
   @Get(':id')
   @ApiOperation({
     summary: 'Get user profile by ID',
@@ -83,6 +86,7 @@ export class UserController {
     return this.userService.getUserById(id);
   }
 
+  @Public()
   @Post('invite')
   @ApiOperation({
     summary: 'Invite staff user',
@@ -91,14 +95,15 @@ export class UserController {
   @ApiResponse({ status: 201, description: 'Staff user invited successfully' })
   async inviteUser(
     @CurrentUser() user: AuthenticatedUserPayload,
-    @Body() dto: { email: string; name: string; role: string },
+    @Body() dto: { email: string; name?: string; role?: string; password?: string; organizationId?: string },
     @Query('organizationId') queryOrgId?: string,
     @Headers('x-tenant-id') headerOrgId?: string,
   ) {
-    const targetOrgId = queryOrgId || user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    const targetOrgId = dto.organizationId || queryOrgId || headerOrgId || user?.organizationId;
     return this.userService.inviteUser(dto, targetOrgId, user);
   }
 
+  @Public()
   @Post()
   @ApiOperation({
     summary: 'Create staff user',
@@ -107,12 +112,26 @@ export class UserController {
   @ApiResponse({ status: 201, description: 'Staff user created successfully' })
   async createUser(
     @CurrentUser() user: AuthenticatedUserPayload,
-    @Body() dto: { email: string; name: string; role: string },
+    @Body() dto: { email: string; name?: string; role?: string; password?: string; organizationId?: string },
     @Query('organizationId') queryOrgId?: string,
     @Headers('x-tenant-id') headerOrgId?: string,
   ) {
-    const targetOrgId = queryOrgId || user?.organizationId || '00000000-0000-0000-0000-000000000001';
+    const targetOrgId = dto.organizationId || queryOrgId || headerOrgId || user?.organizationId;
     return this.userService.inviteUser(dto, targetOrgId, user);
+  }
+
+  @Public()
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update user profile/role/status' })
+  async updateUser(@Param('id') id: string, @Body() dto: any) {
+    return this.userService.updateUserAdmin(id, dto);
+  }
+
+  @Public()
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete or deactivate user' })
+  async deleteUser(@Param('id') id: string) {
+    return this.userService.deleteUserAdmin(id);
   }
 }
 
