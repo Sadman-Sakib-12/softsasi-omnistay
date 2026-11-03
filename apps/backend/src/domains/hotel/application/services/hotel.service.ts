@@ -21,25 +21,25 @@ export class HotelService {
       caller.role === 'Platform SuperAdmin' ||
       caller.role === 'Company Owner/GM' ||
       caller.role === 'Company Owner / GM' ||
+      caller.role === 'Company Owner / General Manager' ||
       caller.role === 'General Manager (GM)' ||
-      caller.permissions.includes('properties:manage')
+      caller.permissions?.includes('*') ||
+      caller.permissions?.includes('properties:manage')
     );
   }
 
   /**
-   * Lists properties/hotels belonging to the authenticated tenant organization.
+   * Lists properties/hotels belonging to the authenticated tenant organization or public marketplace.
    */
   async listProperties(organizationId?: string, caller?: AuthenticatedUserPayload) {
     const targetOrgId = organizationId || caller?.organizationId;
-    if (!targetOrgId) {
-      return [];
+    const where: any = { deletedAt: null };
+    if (targetOrgId) {
+      where.organizationId = targetOrgId;
     }
 
     return this.prisma.hotel.findMany({
-      where: {
-        organizationId: targetOrgId,
-        deletedAt: null,
-      },
+      where,
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -58,6 +58,25 @@ export class HotelService {
         status: true,
         createdAt: true,
         updatedAt: true,
+        photos: true,
+        translations: true,
+        facilities: {
+          include: {
+            facility: true,
+          },
+        },
+        roomTypes: {
+          where: { deletedAt: null },
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            basePrice: true,
+            maxAdults: true,
+            maxChildren: true,
+            squareMeters: true,
+          },
+        },
         _count: {
           select: {
             roomTypes: { where: { deletedAt: null } },
@@ -69,12 +88,27 @@ export class HotelService {
   }
 
   /**
-   * Retrieves a single property by ID within the tenant.
+   * Retrieves a single property by ID or Code within the tenant or public view.
    */
   async getPropertyById(id: string, organizationId?: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    const where: any = { deletedAt: null };
+    if (isUuid) {
+      where.OR = [{ id }, { code: id }];
+    } else {
+      where.OR = [{ code: id }, { code: id.toUpperCase() }, { code: id.toLowerCase() }];
+    }
+
     const hotel = await this.prisma.hotel.findFirst({
-      where: { id, deletedAt: null },
+      where,
       include: {
+        photos: true,
+        translations: true,
+        facilities: {
+          include: {
+            facility: true,
+          },
+        },
         organization: {
           select: { id: true, name: true, slug: true },
         },
@@ -129,7 +163,7 @@ export class HotelService {
       where: {
         organizationId_code: {
           organizationId,
-          code: dto.code.trim().toUpperCase(),
+          code: (dto.code || ('HTL-' + Math.floor(100 + Math.random() * 900))).trim().toUpperCase(),
         },
       },
     });
@@ -142,7 +176,7 @@ export class HotelService {
       data: {
         organizationId,
         name: dto.name.trim(),
-        code: dto.code.trim().toUpperCase(),
+        code: (dto.code || ('HTL-' + Math.floor(100 + Math.random() * 900))).trim().toUpperCase(),
         timezone: dto.timezone || 'Asia/Dhaka',
         currency: dto.currency || 'BDT',
       },

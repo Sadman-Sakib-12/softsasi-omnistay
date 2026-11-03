@@ -14,6 +14,8 @@ import { FolioController } from './presentation/controllers/folio.controller.js'
 import { HousekeepingController } from './presentation/controllers/housekeeping.controller.js';
 import { MaintenanceController } from './presentation/controllers/maintenance.controller.js';
 import { IcalController } from './presentation/controllers/ical.controller.js';
+import { YieldPricingController } from './presentation/controllers/yield-pricing.controller.js';
+import { OcrController } from './presentation/controllers/ocr.controller.js';
 
 // Services
 import { HotelService } from './application/services/hotel.service.js';
@@ -26,6 +28,9 @@ import { FolioService } from './application/services/folio.service.js';
 import { HousekeepingService } from './application/services/housekeeping.service.js';
 import { MaintenanceService } from './application/services/maintenance.service.js';
 import { IcalService } from './application/services/ical.service.js';
+import { VoucherRefundService } from './application/services/voucher-refund.service.js';
+import { YieldPricingService } from './application/services/yield-pricing.service.js';
+import { OcrService } from './application/services/ocr.service.js';
 
 @Module({
   imports: [PrismaModule],
@@ -40,6 +45,8 @@ import { IcalService } from './application/services/ical.service.js';
     HousekeepingController,
     MaintenanceController,
     IcalController,
+    YieldPricingController,
+    OcrController,
   ],
   providers: [
     {
@@ -56,6 +63,9 @@ import { IcalService } from './application/services/ical.service.js';
     HousekeepingService,
     MaintenanceService,
     IcalService,
+    VoucherRefundService,
+    YieldPricingService,
+    OcrService,
   ],
   exports: [
     HOTEL_REPOSITORY_TOKEN,
@@ -69,6 +79,9 @@ import { IcalService } from './application/services/ical.service.js';
     HousekeepingService,
     MaintenanceService,
     IcalService,
+    VoucherRefundService,
+    YieldPricingService,
+    OcrService,
   ],
 })
 export class HotelModule {}

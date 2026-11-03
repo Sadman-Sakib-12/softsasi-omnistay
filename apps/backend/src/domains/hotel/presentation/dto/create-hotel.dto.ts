@@ -12,15 +12,13 @@ export class CreateHotelDto {
   @MaxLength(100)
   name!: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'GHR01',
     description: 'Property identifier code (alphanumeric, e.g. GHR01)',
   })
   @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(20)
-  code!: string;
+  @IsOptional()
+  code?: string;
 
   @ApiPropertyOptional({
     example: 'Asia/Dhaka',

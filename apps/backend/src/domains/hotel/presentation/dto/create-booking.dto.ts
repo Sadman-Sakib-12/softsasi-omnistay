@@ -59,21 +59,45 @@ export class BookingGuestDto {
 }
 
 export class CreateBookingDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'uuid-property-id',
     description: 'Property UUID where the reservation is placed',
   })
   @IsUUID()
-  @IsNotEmpty()
-  propertyId!: string;
+  @IsOptional()
+  propertyId?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'uuid-room-type-id',
     description: 'Room category / RoomType UUID',
   })
   @IsUUID()
-  @IsNotEmpty()
-  roomTypeId!: string;
+  @IsOptional()
+  roomTypeId?: string;
+
+  @ApiPropertyOptional({
+    example: 'John Doe',
+    description: 'Direct guest name',
+  })
+  @IsString()
+  @IsOptional()
+  guestName?: string;
+
+  @ApiPropertyOptional({
+    example: 'john@example.com',
+    description: 'Direct guest email',
+  })
+  @IsEmail()
+  @IsOptional()
+  guestEmail?: string;
+
+  @ApiPropertyOptional({
+    example: '+8801700000000',
+    description: 'Direct guest phone',
+  })
+  @IsString()
+  @IsOptional()
+  guestPhone?: string;
 
   @ApiProperty({
     example: '2026-11-10',

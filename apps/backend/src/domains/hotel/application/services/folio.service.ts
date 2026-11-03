@@ -20,12 +20,14 @@ export class FolioService {
       caller.role === 'Platform SuperAdmin' ||
       caller.role === 'Company Owner/GM' ||
       caller.role === 'Company Owner / GM' ||
+      caller.role === 'Company Owner / General Manager' ||
       caller.role === 'General Manager (GM)' ||
       caller.role === 'Front Desk Agent' ||
       caller.role === 'Chief Financial Officer / Accountant' ||
       caller.role === 'Financial Accountant' ||
       caller.role === 'F&B / POS Cashier' ||
       caller.role === 'POS Waiter / Cashier' ||
+      caller.permissions?.includes('*') ||
       caller.permissions.includes('folios:manage') ||
       caller.permissions.includes('finance:write') ||
       caller.permissions.includes('pos:charge')
