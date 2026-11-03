@@ -28,6 +28,19 @@ export class EmailTemplateService {
     });
   }
 
+  async updateTemplate(id: string, data: {
+    name?: string;
+    subject?: string;
+    htmlBody?: string;
+    mergeTags?: string[];
+  }) {
+    return this.commRepo.updateEmailTemplate(id, data);
+  }
+
+  async deleteTemplate(id: string) {
+    return this.commRepo.deleteEmailTemplate(id);
+  }
+
   async getTemplates() {
     return this.commRepo.findEmailTemplates();
   }

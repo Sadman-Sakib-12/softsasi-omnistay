@@ -22,6 +22,8 @@ export interface ICommunicationRepository {
   findActiveSmsGateway(): Promise<any | null>;
 
   createEmailTemplate(data: any): Promise<any>;
+  updateEmailTemplate(id: string, data: any): Promise<any>;
+  deleteEmailTemplate(id: string): Promise<any>;
   findEmailTemplateByName(name: string): Promise<any | null>;
   findEmailTemplates(): Promise<any[]>;
 
