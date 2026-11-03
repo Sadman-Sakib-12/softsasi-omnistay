@@ -94,6 +94,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<Role, string[]> = {
     '/wallet',
     '/popup',
     '/menu',
+    '/themes',
   ],
   [Role.COMPANY_OWNER_GM]: [
     '/dashboard',
@@ -133,6 +134,7 @@ export const ROLE_ROUTE_PERMISSIONS: Record<Role, string[]> = {
     '/wallet',
     '/popup',
     '/menu',
+    '/themes',
   ],
   [Role.CFO_ACCOUNTANT]: [
     '/dashboard',
@@ -198,6 +200,7 @@ export function normalizeRole(role?: string): Role {
 
 export function isRouteAllowedForRole(role: string, path: string): boolean {
   const normalized = normalizeRole(role);
+  if (normalized === Role.PLATFORM_SUPERADMIN) return true;
   const allowed = ROLE_ROUTE_PERMISSIONS[normalized];
   if (!allowed) return true;
   return allowed.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));

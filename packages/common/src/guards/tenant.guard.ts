@@ -36,6 +36,7 @@ export class TenantGuard implements CanActivate {
     // For SuperAdmin, require explicit system administrative permission before allowing cross-tenant operations
     if (user.isSuperAdmin || user.role === 'SuperAdmin' || user.role === 'Platform SuperAdmin') {
       const hasSystemAdminPerm =
+        user.permissions.includes('*') ||
         user.permissions.includes('system:root') ||
         user.permissions.includes('tenant:manage') ||
         user.permissions.includes('tenant:audit');

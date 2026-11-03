@@ -23,6 +23,11 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException('User is not authenticated');
     }
 
+    // Platform SuperAdmin has universal bypass across all operational roles
+    if (user.isSuperAdmin || user.role === 'Platform SuperAdmin' || user.role === 'SuperAdmin') {
+      return true;
+    }
+
     if (!user.role || !requiredRoles.includes(user.role)) {
       throw new ForbiddenException(`Access denied. Required roles: ${requiredRoles.join(', ')}`);
     }

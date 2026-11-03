@@ -24,6 +24,12 @@ export class PermissionsGuard implements CanActivate {
     }
 
     const userPermissions = user.permissions || [];
+
+    // Platform SuperAdmin or Wildcard (*) has universal permission
+    if (user.isSuperAdmin || user.role === 'Platform SuperAdmin' || userPermissions.includes('*')) {
+      return true;
+    }
+
     const hasAll = requiredPermissions.every((perm) => userPermissions.includes(perm));
 
     if (!hasAll) {
