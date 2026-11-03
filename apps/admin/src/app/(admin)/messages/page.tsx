@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { MessageSquare, Phone, Mail, Send, CheckCircle2, User, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -62,31 +63,41 @@ export default function OmnichannelMessagesPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
-          <button
-            onClick={() => setActiveChannelType('whatsapp')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activeChannelType === 'whatsapp' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href="/messages/email-templates"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#00a8ff] hover:bg-[#0097e6] text-white shadow-2xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            WhatsApp Business
-          </button>
-          <button
-            onClick={() => setActiveChannelType('internal')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activeChannelType === 'internal' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Internal Staff Chat
-          </button>
-          <button
-            onClick={() => setActiveChannelType('sms')}
-            className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-              activeChannelType === 'sms' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            SMS Gateways
-          </button>
+            <Mail className="w-3.5 h-3.5" />
+            <span>Email Template Builder (17.4)</span>
+          </Link>
+
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+            <button
+              onClick={() => setActiveChannelType('whatsapp')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
+                activeChannelType === 'whatsapp' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              WhatsApp Business
+            </button>
+            <button
+              onClick={() => setActiveChannelType('internal')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
+                activeChannelType === 'internal' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Internal Staff Chat
+            </button>
+            <button
+              onClick={() => setActiveChannelType('sms')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
+                activeChannelType === 'sms' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              SMS Gateways
+            </button>
+          </div>
         </div>
       </div>
 

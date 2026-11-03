@@ -54,4 +54,12 @@ export const couponsService = {
       status: 'Active',
     };
   },
+
+  update: async (id: string, dto: Partial<CreateCouponDto> & { status?: string }): Promise<void> => {
+    await api.patch(`/api/v1/loyalty/coupons/${id}`, dto);
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/api/v1/loyalty/coupons/${id}`);
+  },
 };

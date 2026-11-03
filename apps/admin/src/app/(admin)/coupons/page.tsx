@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TicketPercent, Plus, Search, Tag, Calendar, Percent, DollarSign, Loader2, X } from 'lucide-react';
+import { TicketPercent, Plus, Search, Tag, Calendar, Percent, DollarSign, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { couponsService, CouponItem } from '@/features/coupons/services/coupons.service';
 
@@ -13,12 +12,14 @@ export default function CouponsPage() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddCouponOpen, setIsAddCouponOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<CouponItem | null>(null);
+
   const [newCoupon, setNewCoupon] = useState({
     code: '',
     discountType: 'PERCENTAGE' as 'PERCENTAGE' | 'FIXED_AMOUNT',
-    discountValue: 0,
-    minSpend: 0,
-    totalUsageLimit: 0,
+    discountValue: 15,
+    minSpend: 50,
+    totalUsageLimit: 100,
     status: 'Active',
   });
 
@@ -35,11 +36,26 @@ export default function CouponsPage() {
       setNewCoupon({
         code: '',
         discountType: 'PERCENTAGE',
-        discountValue: 0,
-        minSpend: 0,
-        totalUsageLimit: 0,
+        discountValue: 15,
+        minSpend: 50,
+        totalUsageLimit: 100,
         status: 'Active',
       });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, dto }: { id: string; dto: any }) => couponsService.update(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loyaltyCoupons'] });
+      setEditingCoupon(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => couponsService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loyaltyCoupons'] });
     },
   });
 
@@ -53,6 +69,28 @@ export default function CouponsPage() {
       minSpend: Number(newCoupon.minSpend),
       totalUsageLimit: Number(newCoupon.totalUsageLimit),
     });
+  };
+
+  const handleUpdateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCoupon) return;
+    await updateMutation.mutateAsync({
+      id: editingCoupon.id,
+      dto: {
+        code: editingCoupon.code.toUpperCase().trim(),
+        discountType: editingCoupon.discountType,
+        discountValue: Number(editingCoupon.discountValue),
+        minSpend: Number(editingCoupon.minSpend),
+        totalUsageLimit: Number(editingCoupon.totalUsageLimit),
+        status: editingCoupon.status,
+      },
+    });
+  };
+
+  const handleDelete = (id: string, code: string) => {
+    if (confirm(`Are you sure you want to delete coupon code "${code}"?`)) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const filtered = coupons.filter((c) =>
@@ -109,29 +147,67 @@ export default function CouponsPage() {
               <th className="py-3 px-4">Min Spend</th>
               <th className="py-3 px-4">Redemptions</th>
               <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map((c) => (
-              <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="py-3 px-4 font-mono font-bold text-slate-900 flex items-center gap-2">
-                  <Tag className="w-3.5 h-3.5 text-[#00a8ff]" />
-                  <span>{c.code}</span>
-                </td>
-                <td className="py-3 px-4 font-bold text-emerald-600">
-                  {c.discountType === 'PERCENTAGE' ? `${c.discountValue}% OFF` : `$${c.discountValue} OFF`}
-                </td>
-                <td className="py-3 px-4 text-slate-600">{formatCurrency(c.minSpend)}</td>
-                <td className="py-3 px-4 text-slate-600">
-                  {c.usedCount} / {c.totalUsageLimit} used
-                </td>
-                <td className="py-3 px-4">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    {c.status}
-                  </span>
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-slate-400">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
+                  Loading promotional coupons...
                 </td>
               </tr>
-            ))}
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-slate-400">
+                  No promotional coupons created yet. Click "Create Coupon" to launch your first promotion.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((c) => (
+                <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-slate-900 flex items-center gap-2">
+                    <Tag className="w-3.5 h-3.5 text-[#00a8ff]" />
+                    <span>{c.code}</span>
+                  </td>
+                  <td className="py-3 px-4 font-bold text-emerald-600">
+                    {c.discountType === 'PERCENTAGE' ? `${c.discountValue}% OFF` : `$${c.discountValue} OFF`}
+                  </td>
+                  <td className="py-3 px-4 text-slate-600">{formatCurrency(c.minSpend)}</td>
+                  <td className="py-3 px-4 text-slate-600">
+                    {c.usedCount} / {c.totalUsageLimit} used
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                      c.status === 'Active'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-slate-100 text-slate-600 border-slate-200'
+                    }`}>
+                      {c.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setEditingCoupon(c)}
+                        className="p-1 text-slate-500 hover:text-[#00a8ff] transition-colors rounded hover:bg-slate-100"
+                        title="Edit Coupon"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(c.id, c.code)}
+                        className="p-1 text-slate-400 hover:text-rose-600 transition-colors rounded hover:bg-rose-50"
+                        title="Delete Coupon"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -238,9 +314,122 @@ export default function CouponsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer"
+                  disabled={createMutation.isPending}
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
-                  Create Code
+                  {createMutation.isPending ? 'Creating...' : 'Create Code'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Coupon Modal Dialog */}
+      {editingCoupon && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <TicketPercent className="w-4 h-4 text-[#00a8ff]" /> Edit Coupon Parameters
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingCoupon(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCoupon}>
+              <div className="p-5 space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="block text-slate-700 font-semibold">Coupon Code *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingCoupon.code}
+                    onChange={(e) => setEditingCoupon({ ...editingCoupon, code: e.target.value.toUpperCase() })}
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 uppercase font-mono font-bold focus:outline-none focus:border-[#00a8ff]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Discount Type</label>
+                    <select
+                      value={editingCoupon.discountType}
+                      onChange={(e) =>
+                        setEditingCoupon({
+                          ...editingCoupon,
+                          discountType: e.target.value as 'PERCENTAGE' | 'FIXED_AMOUNT',
+                        })
+                      }
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                    >
+                      <option value="PERCENTAGE">Percentage (%)</option>
+                      <option value="FIXED_AMOUNT">Fixed Amount ($)</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">
+                      Value {editingCoupon.discountType === 'PERCENTAGE' ? '(%)' : '($)'} *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={editingCoupon.discountValue}
+                      onChange={(e) =>
+                        setEditingCoupon({ ...editingCoupon, discountValue: Number(e.target.value) })
+                      }
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Min Spend ($)</label>
+                    <input
+                      type="number"
+                      value={editingCoupon.minSpend}
+                      onChange={(e) =>
+                        setEditingCoupon({ ...editingCoupon, minSpend: Number(e.target.value) })
+                      }
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-slate-700 font-semibold">Status</label>
+                    <select
+                      value={editingCoupon.status}
+                      onChange={(e) => setEditingCoupon({ ...editingCoupon, status: e.target.value })}
+                      className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingCoupon(null)}
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/60 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updateMutation.isPending}
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
