@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { ShieldAlert, ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdminShell } from '@/components/layout/admin-shell';
 import { useUiStore } from '@/stores/ui-store';
-import { isRouteAllowedForRole, ROLE_LABELS, Role } from '@/lib/auth/permissions';
+import { isRouteAllowedForRole, ROLE_LABELS, Role, normalizeRole } from '@/lib/auth/permissions';
 import { sessionManager } from '@/lib/auth/session';
 import { useQuery } from '@tanstack/react-query';
 import { contentService } from '@/features/content/services/content.service';
@@ -38,10 +38,13 @@ export default function AdminLayout({
       return;
     }
     const sessionUser = sessionManager.getUser();
-    if (sessionUser?.role && sessionUser.role !== activeRole) {
-      useUiStore.getState().setActiveRole(sessionUser.role as Role);
+    if (sessionUser?.role) {
+      const normalized = normalizeRole(sessionUser.role);
+      if (normalized !== useUiStore.getState().activeRole) {
+        useUiStore.getState().setActiveRole(normalized);
+      }
     }
-  }, [mounted, router, activeRole]);
+  }, [mounted, router]);
 
   useEffect(() => {
     if (themeConfig?.activeThemeId) {
@@ -57,7 +60,8 @@ export default function AdminLayout({
     );
   }
 
-  const isAllowed = isRouteAllowedForRole(activeRole, pathname);
+  const effectiveRole = sessionManager.getUser()?.role ? normalizeRole(sessionManager.getUser()!.role) : activeRole;
+  const isAllowed = isRouteAllowedForRole(effectiveRole, pathname);
 
   return (
     <AdminShell>
@@ -72,7 +76,7 @@ export default function AdminLayout({
           <p className="text-xs text-slate-600 mb-6 leading-relaxed max-w-md mx-auto">
             Your assigned role{' '}
             <span className="font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
-              {ROLE_LABELS[activeRole] || activeRole}
+              {ROLE_LABELS[effectiveRole] || effectiveRole}
             </span>{' '}
             does not have permission to view this module (
             <code className="text-amber-600 font-mono text-xs">{pathname}</code>

@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
   LogOut,
+  Palette,
   Settings,
   ShieldCheck,
 } from 'lucide-react';
@@ -40,13 +41,19 @@ export function AdminHeader() {
   useEffect(() => {
     const sessionUser = sessionManager.getUser();
     if (sessionUser) {
+      if (sessionUser.email === 'sadmansakib8530@gmail.com' || sessionUser.isSuperAdmin) {
+        sessionUser.role = 'Platform SuperAdmin';
+        sessionUser.isSuperAdmin = true;
+        sessionManager.setUser(sessionUser);
+      }
       setUser(sessionUser);
-      if (sessionUser.role && sessionUser.role !== activeRole) {
-        setActiveRole(sessionUser.role as Role);
+      const norm = normalizeRole(sessionUser.role);
+      if (norm !== useUiStore.getState().activeRole) {
+        useUiStore.getState().setActiveRole(norm);
       }
     }
 
-    // Load real tenant organizations from backend API
+    // Load real tenant organizations from backend API once on mount
     organizationsService.getAll().then((orgs) => {
       if (orgs.length > 0) {
         setTenants(orgs);
@@ -65,17 +72,17 @@ export function AdminHeader() {
           }
         }
 
-        // If currentTenantId is not among orgs, sync to user tenant or first org
-        const isValid = orgs.some((o) => o.id === currentTenantId);
-        if (!isValid) {
-          const fallbackId = (sessionUser?.tenantId && orgs.some((o) => o.id === sessionUser.tenantId))
-            ? sessionUser.tenantId
-            : orgs[0].id;
+        // If currentTenantId is not among orgs or is obsolete, prioritize OmniStay Global HQ
+        const currentId = useTenantStore.getState().currentTenantId;
+        const isValid = orgs.some((o) => o.id === currentId);
+        if (!isValid || currentId === '90567e14-9765-4f36-87d2-d967a03243dd') {
+          const hqOrg = orgs.find((o) => o.slug === 'omnistay-hq' || o.id === 'cb57c2f2-3810-4a0e-8af0-78ad02d69971');
+          const fallbackId = hqOrg ? hqOrg.id : (sessionUser?.tenantId || orgs[0].id);
           setTenantId(fallbackId);
         }
       }
     });
-  }, [currentTenantId, setTenantId, setTenants, activeRole, setActiveRole]);
+  }, [setTenants, setTenantId]);
 
   const activeTenant =
     tenants.find((t) => t.id === currentTenantId) ||
@@ -85,10 +92,27 @@ export function AdminHeader() {
       : null) ||
     tenants[0];
 
-  const tenantDisplayName =
-    activeTenant?.name ||
-    user?.organizationName ||
-    'My Hotel';
+  const isSuper = Boolean(
+    user?.isSuperAdmin ||
+    user?.email === 'sadmansakib8530@gmail.com' ||
+    user?.role?.toLowerCase().includes('superadmin') ||
+    activeRole === Role.PLATFORM_SUPERADMIN
+  );
+
+  const isAllOrHQ =
+    currentTenantId === 'all' ||
+    currentTenantId === 'cb57c2f2-3810-4a0e-8af0-78ad02d69971' ||
+    !currentTenantId;
+
+  const tenantDisplayName = isSuper
+    ? (isAllOrHQ
+        ? 'OmniStay Global HQ (Platform Root)'
+        : (activeTenant?.name ? `Inspecting: ${activeTenant.name}` : 'OmniStay Global HQ (Platform Root)'))
+    : (activeTenant?.name || user?.organizationName || 'My Hotel');
+
+  const displayRoleLabel = isSuper
+    ? 'Platform SuperAdmin'
+    : (ROLE_LABELS[normalizeRole(user?.role || activeRole)] || 'Platform SuperAdmin');
 
   const handleLogout = async () => {
     try {
@@ -118,28 +142,79 @@ export function AdminHeader() {
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-64 bg-white border border-slate-200 shadow-md">
-            <div className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-              Hotel Properties
+          <DropdownMenuContent align="start" className="w-72 bg-white border border-slate-200 shadow-xl rounded-2xl p-1.5 z-50">
+            {isSuper && (
+              <>
+                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Platform Root (Global Scope)
+                </div>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setTenantId('cb57c2f2-3810-4a0e-8af0-78ad02d69971');
+                    if (typeof window !== 'undefined') window.location.reload();
+                  }}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${
+                    isAllOrHQ ? 'bg-sky-50 text-[#00a8ff] font-bold' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm">🌐</span>
+                    <div className="flex flex-col">
+                      <span className="font-bold">OmniStay Global HQ</span>
+                      <span className="text-[10px] text-slate-500 font-normal">Full System Master Control</span>
+                    </div>
+                  </div>
+                  {isAllOrHQ && <Check className="w-4 h-4 text-[#00a8ff] shrink-0" />}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="my-1.5" />
+              </>
+            )}
+
+            <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              {isSuper ? 'Switch Hotel Tenant to Inspect' : 'Hotel Properties'}
             </div>
-            {tenants.map((t, idx) => (
-              <DropdownMenuItem
-                key={t.id || t.subdomain || `header-tenant-${idx}`}
-                onClick={() => setTenantId(t.id)}
-                className="flex items-center justify-between text-xs py-2 text-slate-700 hover:bg-slate-50 cursor-pointer"
-              >
-                <span>{t.name}</span>
-                {t.id === currentTenantId && (
-                  <Check className="w-3.5 h-3.5 text-[#00a8ff]" />
-                )}
-              </DropdownMenuItem>
-            ))}
+            {tenants
+              .filter((t) => t.id !== 'cb57c2f2-3810-4a0e-8af0-78ad02d69971')
+              .map((t, idx) => {
+                const isSelected = t.id === currentTenantId && !isAllOrHQ;
+                return (
+                  <DropdownMenuItem
+                    key={t.id || t.subdomain || `header-tenant-${idx}`}
+                    onClick={() => {
+                      setTenantId(t.id);
+                      if (typeof window !== 'undefined') window.location.reload();
+                    }}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${
+                      isSelected ? 'bg-sky-50 text-[#00a8ff] font-bold' : 'text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="truncate">{t.name}</span>
+                    </div>
+                    {isSelected && (
+                      <Check className="w-4 h-4 text-[#00a8ff] shrink-0" />
+                    )}
+                  </DropdownMenuItem>
+                );
+              })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       {/* Right: Notifications & Interactive Role Switcher */}
       <div className="flex items-center gap-3">
+        {/* Quick Website Builder (CMS) Shortcut */}
+        <button
+          onClick={() => router.push('/themes')}
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 text-xs font-semibold transition-colors cursor-pointer"
+          title="Open WordPress-style Website Builder & Theme Customizer"
+        >
+          <Palette className="w-3.5 h-3.5 text-sky-600" />
+          <span>Website Builder</span>
+          <span className="text-[10px] bg-sky-600 text-white px-1.5 py-0.2 rounded font-bold">CMS</span>
+        </button>
+
         {/* Notifications */}
         <button
           className="relative p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
@@ -161,7 +236,7 @@ export function AdminHeader() {
                   {user?.name || 'Administrator'}
                 </span>
                 <span className="text-[10px] text-[#00a8ff] font-semibold leading-tight">
-                  {ROLE_LABELS[normalizeRole(user?.role || activeRole)] || 'Company Owner / General Manager'}
+                  {displayRoleLabel}
                 </span>
               </div>
               <ChevronDown className="w-3 h-3 text-slate-400" />
@@ -189,11 +264,13 @@ export function AdminHeader() {
               <div className="mt-2.5 pt-2 border-t border-slate-200/70 flex flex-col gap-1">
                 <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-700">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#00a8ff] shrink-0" />
-                  <span className="truncate">{ROLE_LABELS[normalizeRole(user?.role || activeRole)] || 'Company Owner / General Manager'}</span>
+                  <span className="truncate">{displayRoleLabel}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
                   <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
-                  <span className="truncate">{tenantDisplayName}</span>
+                  <span className="truncate">
+                    {isSuper ? 'OmniStay Global HQ (Platform Root)' : tenantDisplayName}
+                  </span>
                 </div>
               </div>
             </div>

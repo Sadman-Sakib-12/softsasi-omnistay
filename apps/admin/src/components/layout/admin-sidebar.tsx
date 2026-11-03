@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Layers,
   Menu as MenuIcon,
+  Palette,
   DollarSign,
   Settings,
   UtensilsCrossed,
@@ -46,7 +47,7 @@ import {
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import { sessionManager } from '@/lib/auth/session';
-import { isRouteAllowedForRole } from '@/lib/auth/permissions';
+import { isRouteAllowedForRole, normalizeRole } from '@/lib/auth/permissions';
 import { cn } from '@/lib/utils';
 
 interface SubNavItem {
@@ -130,11 +131,12 @@ export const navigationSections: NavSection[] = [
   {
     section: 'CONTENT & CMS',
     items: [
-      { title: 'News', href: '/news', icon: Newspaper },
+      { title: 'Website Builder (CMS)', href: '/themes', icon: Palette, badge: 'Live' },
       { title: 'Page', href: '/pages', icon: FileText },
+      { title: 'Menu Builder', href: '/menu', icon: MenuIcon },
+      { title: 'News', href: '/news', icon: Newspaper },
       { title: 'Media', href: '/media', icon: ImageIcon },
       { title: 'Popup Modals', href: '/popup', icon: Layers },
-      { title: 'Menu Builder', href: '/menu', icon: MenuIcon },
     ],
   },
   {
@@ -193,20 +195,23 @@ export function AdminSidebar() {
   };
 
   // Dynamically filter sections and items according to the active role
+  const sessionUser = typeof window !== 'undefined' ? sessionManager.getUser() : null;
+  const effectiveRole = sessionUser?.role ? normalizeRole(sessionUser.role) : activeRole;
+
   const visibleSections = navigationSections
     .map((section) => {
       const allowedItems = section.items
         .map((item) => {
           if (item.submenu && item.submenu.length > 0) {
             const filteredSub = item.submenu.filter((sub) =>
-              isRouteAllowedForRole(activeRole, sub.href)
+              isRouteAllowedForRole(effectiveRole, sub.href)
             );
             if (filteredSub.length > 0) {
               return { ...item, submenu: filteredSub };
             }
             return null;
           }
-          if (item.href && isRouteAllowedForRole(activeRole, item.href)) {
+          if (item.href && isRouteAllowedForRole(effectiveRole, item.href)) {
             return item;
           }
           return null;
