@@ -18,9 +18,10 @@ export class GuestReviewApplicationService {
       throw new NotFoundException(`Booking ${dto.bookingId} not found`);
     }
 
-    // 2. Verified stay enforcement
-    if (booking.bookingStatus === 'cancelled') {
-      throw new BadRequestException('Cannot review a cancelled reservation');
+    // 2. Verified stay enforcement (Chapter 12.6: Only guests with confirmed/completed stays can post reviews)
+    const validStayStatuses = ['confirmed', 'checked_in', 'checked_out', 'completed'];
+    if (!validStayStatuses.includes(booking.bookingStatus) || booking.bookingStatus === 'cancelled') {
+      throw new BadRequestException('Verified Stay Protection: Only guests with confirmed or completed stays can post reviews, eliminating fake spam reviews.');
     }
 
     // 3. Prevent duplicate reviews

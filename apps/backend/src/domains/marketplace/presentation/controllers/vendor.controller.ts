@@ -68,6 +68,15 @@ export class VendorController {
     return this.vendorService.getVendorById(id);
   }
 
+  @Get('kyc/submissions')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SuperAdmin', 'Company Owner/GM')
+  @ApiOperation({ summary: 'List all host/vendor KYC document submissions for SuperAdmin queue' })
+  getKycSubmissions() {
+    return this.vendorService.getKycSubmissions();
+  }
+
   @Post(':id/kyc')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

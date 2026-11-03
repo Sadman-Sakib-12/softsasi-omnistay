@@ -59,6 +59,7 @@ describe('Marketplace Domain — Clean Architecture & DDD Test Suite', () => {
         findKycById: vi.fn().mockImplementation((id) =>
           id === 'kyc-1' ? Promise.resolve({ id: 'kyc-1', vendorId: 'v-1', status: 'pending' }) : Promise.resolve(null),
         ),
+        findKycSubmissions: vi.fn().mockResolvedValue([]),
         updateKyc: vi.fn().mockImplementation((id, data) => Promise.resolve({ id, ...data })),
         updateVendor: vi.fn().mockImplementation((id, data) => {
           const balance = data.balance?.increment ? 1500 + data.balance.increment : (data.balance?.decrement ? 1500 - data.balance.decrement : 1500);

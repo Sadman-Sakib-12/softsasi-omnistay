@@ -72,6 +72,10 @@ export class VendorApplicationService {
     });
   }
 
+  async getKycSubmissions(status?: string) {
+    return this.marketplaceRepo.findKycSubmissions(status ? { status } : undefined);
+  }
+
   async reviewKyc(kycId: string, adminUserId: string, status: 'verified' | 'rejected') {
     const kyc = await this.marketplaceRepo.findKycById(kycId);
     if (!kyc) throw new NotFoundException(`KYC submission ${kycId} not found`);

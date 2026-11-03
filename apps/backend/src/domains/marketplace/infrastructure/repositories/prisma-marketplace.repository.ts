@@ -54,7 +54,21 @@ export class PrismaMarketplaceRepository implements IMarketplaceRepository {
   }
 
   async findKycById(id: string) {
-    return this.prisma.vendorKycSubmission.findUnique({ where: { id } });
+    return this.prisma.vendorKycSubmission.findUnique({ where: { id }, include: { vendor: true } });
+  }
+
+  async findKycSubmissions(filter?: { status?: string }) {
+    const where: any = {};
+    if (filter?.status) {
+      where.status = filter.status;
+    }
+    return this.prisma.vendorKycSubmission.findMany({
+      where,
+      include: {
+        vendor: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async updateKyc(id: string, data: Record<string, any>) {
@@ -171,8 +185,12 @@ export class PrismaMarketplaceRepository implements IMarketplaceRepository {
   }
 
   async findReviewsByBookings(bookingIds: string[]) {
+    const where: any = {};
+    if (bookingIds && bookingIds.length > 0) {
+      where.bookingId = { in: bookingIds };
+    }
     return this.prisma.guestReview.findMany({
-      where: { bookingId: { in: bookingIds } },
+      where,
       include: { ratings: true, hostReplies: true },
       orderBy: { createdAt: 'desc' },
     });

@@ -18,6 +18,7 @@ export interface IMarketplaceRepository {
   findVendorById(id: string): Promise<any | null>;
   createKycSubmission(data: { vendorId: string; documentType: string; documentUrl: string; status: string }): Promise<any>;
   findKycById(id: string): Promise<any | null>;
+  findKycSubmissions(filter?: { status?: string }): Promise<any[]>;
   updateKyc(id: string, data: Record<string, any>): Promise<any>;
   updateVendor(id: string, data: Record<string, any>): Promise<any>;
   createTeamMember(data: { vendorId: string; userId: string; role: string }): Promise<any>;
