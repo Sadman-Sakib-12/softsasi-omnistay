@@ -1,5 +1,18 @@
 import { create } from 'zustand';
-import { Role } from '@/lib/auth/permissions';
+import { Role, normalizeRole } from '@/lib/auth/permissions';
+
+const getInitialRole = (): Role => {
+  if (typeof window !== 'undefined') {
+    const raw = localStorage.getItem('omnistay_user_session');
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed?.role) return normalizeRole(parsed.role);
+      } catch {}
+    }
+  }
+  return Role.COMPANY_OWNER_GM;
+};
 
 interface UiState {
   sidebarCollapsed: boolean;
@@ -17,7 +30,7 @@ interface UiState {
 export const useUiStore = create<UiState>((set) => ({
   sidebarCollapsed: false,
   theme: 'dark',
-  activeRole: Role.COMPANY_OWNER_GM,
+  activeRole: getInitialRole(),
   isCommandPaletteOpen: false,
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
