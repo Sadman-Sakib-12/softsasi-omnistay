@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { AiService, ChatMessage } from "@/features/ai/ai.service";
 import { formatCurrency } from "@/lib/utils";
+import { BeatLoader } from "react-spinners";
 
 export function AiConciergeChat() {
   const [isOpen, setIsOpen] = useState(false);
@@ -212,9 +213,9 @@ export function AiConciergeChat() {
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs pl-2">
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
-                <span>Store Assistant is typing...</span>
+              <div className="flex items-center gap-3 text-slate-400 text-xs pl-2 py-2">
+                <BeatLoader color="#22d3ee" size={10} speedMultiplier={1.2} />
+                <span className="text-[11px] font-medium text-slate-500">Store Assistant is typing...</span>
               </div>
             )}
 

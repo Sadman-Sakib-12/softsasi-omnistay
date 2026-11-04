@@ -8,6 +8,7 @@ import { useCurrencyStore } from "@/features/currency/currency-store";
 import { formatCurrency } from "@/lib/utils";
 import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, Sparkles, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BeatLoader } from "react-spinners";
 
 export default function CartPage() {
   const router = useRouter();
@@ -21,8 +22,8 @@ export default function CartPage() {
 
   if (!mounted) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin mx-auto" />
+      <div className="max-w-4xl mx-auto px-4 py-20 flex flex-col items-center justify-center">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
       </div>
     );
   }

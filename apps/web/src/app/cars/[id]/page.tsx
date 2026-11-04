@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { TravelService, CarItem } from "@/features/travel/travel.service";
 import { useCartStore } from "@/features/cart/cart-store";
 import { formatCurrency } from "@/lib/utils";
+import { BeatLoader } from "react-spinners";
 import {
   Car,
   Users,
@@ -45,9 +46,9 @@ export default function CarDetailPage() {
 
   if (!car) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-500 text-sm">Loading vehicle specifications...</p>
+      <div className="max-w-7xl mx-auto px-4 py-20 flex flex-col items-center justify-center">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+        <p className="text-slate-500 text-sm mt-4 font-medium animate-pulse">Loading vehicle specifications...</p>
       </div>
     );
   }

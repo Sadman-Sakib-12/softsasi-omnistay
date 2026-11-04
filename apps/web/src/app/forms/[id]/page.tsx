@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState, useEffect, use } from 'react';
 import {
@@ -98,9 +99,9 @@ export default function PublicFormSubmissionPage({ params }: { params: Promise<{
 
   if (loading) {
     return (
-      <div className="min-h-[500px] flex items-center justify-center p-6 text-slate-500 text-xs">
-        <Loader2 className="w-5 h-5 animate-spin text-[#00a8ff] mr-2" />
-        <span>Loading secure form...</span>
+      <div className="min-h-[500px] flex flex-col items-center justify-center gap-3 p-6 text-slate-500 text-xs">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+        <span className="animate-pulse font-medium">Loading secure form...</span>
       </div>
     );
   }

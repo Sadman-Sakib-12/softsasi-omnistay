@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GuestPortalNav } from "@/components/guest/guest-portal-nav";
+import { BeatLoader } from "react-spinners";
 
 export default function GuestBookingsPage() {
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
@@ -41,9 +42,9 @@ export default function GuestBookingsPage() {
       <GuestPortalNav />
 
       {loading ? (
-        <div className="py-20 text-center">
-          <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500 text-sm">Loading your reservations...</p>
+        <div className="py-20 flex flex-col items-center justify-center">
+          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+          <p className="text-slate-500 text-sm mt-4 font-medium animate-pulse">Loading your reservations...</p>
         </div>
       ) : bookings.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-xs max-w-xl mx-auto">

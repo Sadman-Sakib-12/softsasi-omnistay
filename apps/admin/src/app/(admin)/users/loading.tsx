@@ -1,10 +1,8 @@
-import React from 'react';
+"use client";
+
+import React from "react";
+import { AppLoader } from "@/components/ui/app-loader";
 
 export default function UsersLoading() {
-  return (
-    <div className="space-y-6 animate-pulse">
-      <div className="h-8 w-48 bg-slate-800 rounded-xl" />
-      <div className="h-96 rounded-2xl bg-slate-900/60 border border-slate-800" />
-    </div>
-  );
+  return <AppLoader fullPage color="#22d3ee" size={18} speedMultiplier={1.2} text="Loading Users..." />;
 }

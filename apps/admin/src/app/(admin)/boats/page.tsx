@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
 import { Ship, Plus, Search, Anchor, Users, Compass, Loader2, Edit, Trash2, X } from 'lucide-react';
@@ -186,7 +187,7 @@ export default function BoatsPage() {
             {isLoading ? (
               <tr>
                 <td colSpan={7} className="py-8 text-center text-slate-400">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
+                  <div className="py-2"><BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} /></div>
                   Loading maritime fleet...
                 </td>
               </tr>

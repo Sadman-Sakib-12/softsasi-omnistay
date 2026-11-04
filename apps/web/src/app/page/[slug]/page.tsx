@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -36,9 +37,9 @@ export default function DynamicCmsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <Loader2 className="w-8 h-8 animate-spin mx-auto text-[#00a8ff]" />
-        <p className="text-slate-500 text-sm mt-3">Loading page content...</p>
+      <div className="max-w-4xl mx-auto px-4 py-24 flex flex-col items-center justify-center gap-3">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+        <p className="text-slate-500 text-sm mt-3 animate-pulse font-medium">Loading page content...</p>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
 import Link from 'next/link';

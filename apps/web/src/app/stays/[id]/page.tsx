@@ -28,6 +28,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BeatLoader } from "react-spinners";
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -91,9 +92,9 @@ export default function PropertyDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center">
-        <div className="w-8 h-8 border-4 border-[#2577e3] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-500 text-sm">Fetching real sanctuary specifications from backend database...</p>
+      <div className="max-w-7xl mx-auto px-4 py-24 flex flex-col items-center justify-center">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+        <p className="text-slate-500 text-sm mt-4 font-medium animate-pulse">Fetching real sanctuary specifications from backend database...</p>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
@@ -156,8 +157,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[80vh] flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-[80vh] flex flex-col items-center justify-center gap-3">
+          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
         </div>
       }
     >

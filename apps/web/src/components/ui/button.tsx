@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { BeatLoader } from "react-spinners";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -52,10 +53,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         {...props}
       >
-        {isLoading && (
-          <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        {isLoading ? (
+          <BeatLoader color="currentColor" size={size === "sm" ? 6 : size === "lg" ? 10 : 8} speedMultiplier={1.2} />
+        ) : (
+          children
         )}
-        {children}
       </button>
     );
   }

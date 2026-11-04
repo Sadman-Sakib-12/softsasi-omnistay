@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -133,7 +134,7 @@ export function AddPropertyDialog() {
             <Button type="submit" variant="glow" disabled={isCreating}>
               {isCreating ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" /> Creating Property...
+                  <BeatLoader color="currentColor" size={8} speedMultiplier={1.2} className="mr-2" /> Creating Property...
                 </>
               ) : (
                 'Save Property'

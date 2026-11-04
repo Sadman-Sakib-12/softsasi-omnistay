@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
 import { Image as ImageIcon, Upload, Search, Trash2, ExternalLink, Loader2 } from 'lucide-react';

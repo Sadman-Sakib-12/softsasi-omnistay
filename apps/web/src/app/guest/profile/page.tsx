@@ -23,6 +23,7 @@ import {
   Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BeatLoader } from "react-spinners";
 
 export default function GuestProfilePage() {
   const router = useRouter();
@@ -153,9 +154,9 @@ export default function GuestProfilePage() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="py-20 text-center">
-          <div className="w-8 h-8 border-4 border-[#2577e3] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500 text-sm">Loading your account profile...</p>
+        <div className="py-20 flex flex-col items-center justify-center">
+          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+          <p className="text-slate-500 text-sm mt-4 font-medium animate-pulse">Loading your account profile...</p>
         </div>
       </div>
     );

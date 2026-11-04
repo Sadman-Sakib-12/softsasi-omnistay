@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useEffect, useState } from "react";
 import apiClient from "@/lib/api-client";
@@ -36,9 +37,9 @@ export default function PrivacyPage() {
 
       <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-xs">
         {loading ? (
-          <div className="py-16 text-center text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#00a8ff]" />
-            <span className="mt-2 block text-xs">Loading privacy disclosures...</span>
+          <div className="py-16 flex flex-col items-center justify-center gap-3">
+            <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+            <span className="text-xs font-semibold text-slate-400 animate-pulse">Loading privacy disclosures...</span>
           </div>
         ) : page?.content ? (
           <MarkdownContent content={page.content} />

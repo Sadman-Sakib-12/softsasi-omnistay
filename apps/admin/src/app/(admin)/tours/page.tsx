@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Compass, Plus, Search, MapPin, Users, Clock, DollarSign, CheckCircle2, Loader2, Edit, Trash2, X } from 'lucide-react';
+import { BeatLoader } from 'react-spinners';
 import { useQuery } from '@tanstack/react-query';
 import { travelService, TourItem } from '@/features/travel/services/travel.service';
 import { formatCurrency } from '@/lib/utils';
@@ -193,9 +194,11 @@ export default function ToursPage() {
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-400">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[#00a8ff]" />
-                  Loading tours from backend...
+                <td colSpan={7} className="py-12 text-center text-slate-400">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+                    <span className="text-xs font-semibold text-slate-400 animate-pulse">Loading tours from backend...</span>
+                  </div>
                 </td>
               </tr>
             ) : filtered.length === 0 ? (

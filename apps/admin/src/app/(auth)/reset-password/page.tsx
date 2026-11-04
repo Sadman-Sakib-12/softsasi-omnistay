@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -94,7 +95,7 @@ function ResetPasswordContent() {
           >
             {isResetPasswordLoading ? (
               <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <BeatLoader color="currentColor" size={8} speedMultiplier={1.2} />
                 <span>Updating Password...</span>
               </div>
             ) : (

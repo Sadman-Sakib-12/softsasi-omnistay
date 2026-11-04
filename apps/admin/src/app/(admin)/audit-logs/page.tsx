@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React from 'react';
 import { FileText, ShieldAlert, CheckCircle2, User, Loader2 } from 'lucide-react';
@@ -78,7 +79,7 @@ export default function AuditLogsPage() {
           <CardHeader className="pb-2">
             <CardDescription className="text-xs">Logged Events</CardDescription>
             <CardTitle className="text-2xl text-white">
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : auditLogs.length}
+              {isLoading ? <BeatLoader color="currentColor" size={8} speedMultiplier={1.2} /> : auditLogs.length}
             </CardTitle>
           </CardHeader>
           <CardContent>

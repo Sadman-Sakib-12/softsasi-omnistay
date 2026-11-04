@@ -8,6 +8,7 @@ import { useRooms } from '@/features/rooms/hooks/use-rooms';
 import { useProperties } from '@/features/properties/hooks/use-properties';
 import { Room } from '@/features/rooms/services/rooms.service';
 import { Calendar, ArrowLeft, Edit, Trash2, X, Save, Loader2 } from 'lucide-react';
+import { BeatLoader } from 'react-spinners';
 
 export default function RoomManagementPage() {
   const router = useRouter();
@@ -166,7 +167,10 @@ export default function RoomManagementPage() {
                   {isLoading ? (
                     <tr>
                       <td colSpan={6} className="py-12 text-center text-slate-400">
-                        Loading rooms from backend...
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+                          <span className="text-xs font-semibold text-slate-400 animate-pulse">Loading rooms from backend...</span>
+                        </div>
                       </td>
                     </tr>
                   ) : rooms.length > 0 ? (
@@ -319,7 +323,7 @@ export default function RoomManagementPage() {
                 onClick={handleSaveEdit}
                 className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                {isUpdating ? <BeatLoader color="#ffffff" size={6} speedMultiplier={1.2} /> : <Save className="w-3.5 h-3.5" />}
                 Save Changes
               </button>
             </div>

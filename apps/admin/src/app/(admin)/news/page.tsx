@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
 import { Newspaper, Plus, Search, Calendar, User, Eye, Edit, Trash2, Loader2, X } from 'lucide-react';

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { BeatLoader } from 'react-spinners';
 import {
   Menu,
   LayoutGrid,
@@ -676,8 +677,8 @@ export default function ElementorWhiteWebsiteBuilderPage() {
   if (isConfigLoading || !formState) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50 text-slate-800">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-[#00a8ff] border-t-transparent rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-4">
+          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
           <span className="text-sm font-semibold tracking-wide text-slate-600">
             Loading Elementor Visual Studio...
           </span>
@@ -3263,10 +3264,10 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                   className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-bold px-4 py-2 flex items-center gap-1.5 shadow cursor-pointer"
                 >
                   {createThemeMutation.isPending ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2">
+                      <BeatLoader color="#ffffff" size={8} speedMultiplier={1.2} />
                       <span>Building Theme...</span>
-                    </>
+                    </div>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4" />
@@ -3462,10 +3463,10 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                   className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-bold px-4 py-2 flex items-center gap-1.5 shadow cursor-pointer"
                 >
                   {createPageMutation.isPending ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2">
+                      <BeatLoader color="#ffffff" size={8} speedMultiplier={1.2} />
                       <span>Creating Page...</span>
-                    </>
+                    </div>
                   ) : (
                     <>
                       <Plus className="w-4 h-4" />

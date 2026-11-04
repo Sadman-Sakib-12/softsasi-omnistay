@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -1029,7 +1030,7 @@ export default function HotelSettingsPage() {
                     disabled={isSavingBranding}
                     className="h-9 px-6 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
                   >
-                    {isSavingBranding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                    {isSavingBranding ? <BeatLoader color="currentColor" size={6} speedMultiplier={1.2} /> : <Save className="w-3.5 h-3.5" />}
                     <span>Save Brand Settings</span>
                   </button>
                 </div>

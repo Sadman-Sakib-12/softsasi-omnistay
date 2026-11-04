@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -261,7 +262,7 @@ export default function RegisterPage() {
             className="w-full py-6 font-black uppercase tracking-wider text-sm bg-[#00a8ff] hover:bg-[#0092dd] shadow-md shadow-sky-500/20 gap-2"
           >
             {loading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <BeatLoader color="#ffffff" size={8} speedMultiplier={1.2} />
             ) : (
               <>
                 <span>Create Guest Account</span>

@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
 import { Star, MessageSquare, CheckCircle2, ShieldCheck, ThumbsUp, Loader2 } from 'lucide-react';

@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -59,9 +60,9 @@ export default function AboutPage() {
 
       {/* Dynamic CMS Page Body */}
       {loading ? (
-        <div className="py-12 text-center text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#00a8ff]" />
-          <span className="mt-2 block text-xs">Loading page details...</span>
+        <div className="py-12 flex flex-col items-center justify-center gap-3">
+          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+          <span className="text-xs font-semibold text-slate-400 animate-pulse">Loading page details...</span>
         </div>
       ) : page?.content ? (
         <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-xs">

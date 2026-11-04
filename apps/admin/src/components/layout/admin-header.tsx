@@ -106,8 +106,8 @@ export function AdminHeader() {
 
   const tenantDisplayName = isSuper
     ? (isAllOrHQ
-        ? 'OmniStay Global HQ (Platform Root)'
-        : (activeTenant?.name ? `Inspecting: ${activeTenant.name}` : 'OmniStay Global HQ (Platform Root)'))
+      ? 'OmniStay Global HQ (Platform Root)'
+      : (activeTenant?.name ? `Inspecting: ${activeTenant.name}` : 'OmniStay Global HQ (Platform Root)'))
     : (activeTenant?.name || user?.organizationName || 'My Hotel');
 
   const displayRoleLabel = isSuper
@@ -153,9 +153,8 @@ export function AdminHeader() {
                     setTenantId('cb57c2f2-3810-4a0e-8af0-78ad02d69971');
                     if (typeof window !== 'undefined') window.location.reload();
                   }}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${
-                    isAllOrHQ ? 'bg-sky-50 text-[#00a8ff] font-bold' : 'text-slate-700 hover:bg-slate-50'
-                  }`}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${isAllOrHQ ? 'bg-sky-50 text-[#00a8ff] font-bold' : 'text-slate-700 hover:bg-slate-50'
+                    }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-sm">🌐</span>
@@ -184,9 +183,8 @@ export function AdminHeader() {
                       setTenantId(t.id);
                       if (typeof window !== 'undefined') window.location.reload();
                     }}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${
-                      isSelected ? 'bg-sky-50 text-[#00a8ff] font-bold' : 'text-slate-700 hover:bg-slate-50'
-                    }`}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer ${isSelected ? 'bg-sky-50 text-[#00a8ff] font-bold' : 'text-slate-700 hover:bg-slate-50'
+                      }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
@@ -204,17 +202,6 @@ export function AdminHeader() {
 
       {/* Right: Notifications & Interactive Role Switcher */}
       <div className="flex items-center gap-3">
-        {/* Quick Website Builder (CMS) Shortcut */}
-        <button
-          onClick={() => router.push('/themes')}
-          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 text-xs font-semibold transition-colors cursor-pointer"
-          title="Open WordPress-style Website Builder & Theme Customizer"
-        >
-          <Palette className="w-3.5 h-3.5 text-sky-600" />
-          <span>Website Builder</span>
-          <span className="text-[10px] bg-sky-600 text-white px-1.5 py-0.2 rounded font-bold">CMS</span>
-        </button>
-
         {/* Notifications */}
         <button
           className="relative p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"

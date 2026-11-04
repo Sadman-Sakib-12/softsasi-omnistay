@@ -1,4 +1,5 @@
 'use client';
+import { BeatLoader } from 'react-spinners';
 
 import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -220,7 +221,7 @@ function VerifyEmailContent() {
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <BeatLoader color="currentColor" size={8} speedMultiplier={1.2} />
                 <span>Activating Account...</span>
               </div>
             ) : (

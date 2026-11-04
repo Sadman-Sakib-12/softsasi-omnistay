@@ -23,6 +23,7 @@ import {
   QrCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BeatLoader } from "react-spinners";
 import { GuestPortalNav } from "@/components/guest/guest-portal-nav";
 
 const LOYALTY_TIERS = [
@@ -427,7 +428,7 @@ export default function GuestWalletPage() {
             className="w-full py-6 font-black uppercase tracking-wider text-sm bg-[#00a8ff] hover:bg-[#0092dd] shadow-md shadow-sky-500/20"
           >
             {topUpLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <BeatLoader color="#ffffff" size={10} speedMultiplier={1.2} />
             ) : (
               <span>Proceed to Top-Up</span>
             )}

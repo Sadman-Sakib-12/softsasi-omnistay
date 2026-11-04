@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
@@ -179,7 +180,7 @@ function ForgotPasswordForm() {
               className="w-full py-6 font-black uppercase tracking-wider text-sm bg-[#00a8ff] hover:bg-[#0092dd] shadow-md shadow-sky-500/20 gap-2"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <BeatLoader color="#ffffff" size={8} speedMultiplier={1.2} />
               ) : (
                 <>
                   <span>Save New Password</span>
@@ -214,7 +215,7 @@ function ForgotPasswordForm() {
               className="w-full py-6 font-black uppercase tracking-wider text-sm bg-[#00a8ff] hover:bg-[#0092dd] shadow-md shadow-sky-500/20 gap-2"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <BeatLoader color="#ffffff" size={8} speedMultiplier={1.2} />
               ) : (
                 <>
                   <span>Send Reset Link</span>
@@ -244,7 +245,7 @@ export default function ForgotPasswordPage() {
     <Suspense
       fallback={
         <div className="min-h-[80vh] flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin" />
+          <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
         </div>
       }
     >

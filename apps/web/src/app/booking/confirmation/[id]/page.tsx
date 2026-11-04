@@ -1,4 +1,5 @@
 "use client";
+import { BeatLoader } from 'react-spinners';
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -39,9 +40,9 @@ export default function BookingConfirmationPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-500 text-sm">Retrieving reservation from backend database...</p>
+      <div className="max-w-4xl mx-auto px-4 py-24 flex flex-col items-center justify-center gap-3">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+        <p className="text-slate-500 text-sm mt-3 animate-pulse font-medium">Retrieving reservation from backend database...</p>
       </div>
     );
   }
