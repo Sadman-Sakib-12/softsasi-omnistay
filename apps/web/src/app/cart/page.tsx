@@ -28,8 +28,13 @@ export default function CartPage() {
   }
 
   const subtotal = getTotal();
-  const vatTax = subtotal * 0.05; // 5% hospitality VAT
-  const grandTotal = subtotal + vatTax;
+  // Chapter 6.1 Smart Vacation Bundling: 12% off vehicle when booked with a stay
+  const hasStay = items.some((i) => i.verticalType === "stay");
+  const carItems = items.filter((i) => i.verticalType === "car");
+  const carSubtotal = carItems.reduce((acc, c) => acc + c.pricePerUnit * c.quantity, 0);
+  const bundleDiscount = (hasStay && carItems.length > 0) ? Math.round(carSubtotal * 0.12 * 100) / 100 : 0;
+  const vatTax = Math.round(subtotal * 0.05 * 100) / 100; // 5% hospitality VAT
+  const grandTotal = Math.max(0, subtotal + vatTax - bundleDiscount);
 
   if (items.length === 0) {
     return (
@@ -156,6 +161,12 @@ export default function CartPage() {
                 <span>Subtotal ({items.length} items)</span>
                 <span className="font-semibold text-slate-900">{formatPrice(subtotal)}</span>
               </div>
+              {bundleDiscount > 0 && (
+                <div className="flex justify-between text-emerald-600 font-semibold">
+                  <span>Vacation Bundle (12% off Car)</span>
+                  <span>-{formatPrice(bundleDiscount)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span>Government Hospitality VAT (5%)</span>
                 <span className="font-semibold text-slate-900">{formatPrice(vatTax)}</span>

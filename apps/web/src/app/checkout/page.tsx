@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export type PaymentMode = "full" | "deposit_20" | "pay_at_hotel" | "wallet";
+export type PaymentMode = "full" | "deposit_20" | "pay_at_hotel" | "wallet" | "corporate_invoice";
 export type PaymentMethodId = "card" | "bkash" | "nagad" | "wallet" | "bank" | "pay_at_hotel";
 
 const CHECKOUT_PAYMENT_METHODS = [
@@ -39,10 +39,16 @@ export default function CheckoutPage() {
   const { items, getTotal, clearCart } = useCartStore();
   const { currentCurrency, setCurrency, formatPrice, convert } = useCurrencyStore();
 
+  const [checkoutType, setCheckoutType] = useState<"guest" | "corporate">("guest");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
+
+  // Corporate Portal Checkout Fields (Chapter 6.1 & 6.2)
+  const [corporateClientId, setCorporateClientId] = useState("CORP-TITAN-8890");
+  const [companyName, setCompanyName] = useState("Apex Global Holdings Ltd.");
+  const [billingPoNumber, setBillingPoNumber] = useState("PO-2026-OMNI-091");
   
   // Chapter 6.2 - 5 Flexible Payment Modes
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("full");
@@ -70,9 +76,20 @@ export default function CheckoutPage() {
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
+  // Chapter 6.1 - Smart Vacation Bundling & Dynamic Package Discounts
+  // Automatically applies 12% bundle discount on car rental when booked with a stay
+  const hasStay = items.some((i) => i.verticalType === "stay");
+  const carItems = items.filter((i) => i.verticalType === "car");
+  const carSubtotal = carItems.reduce((acc, c) => acc + c.pricePerUnit * c.quantity, 0);
+  const bundleDiscount = (hasStay && carItems.length > 0) ? Math.round(carSubtotal * 0.12 * 100) / 100 : 0;
+
+  // Chapter 6.4 - Comprehensive Tax & Fee Computation Engine
   const subtotal = getTotal();
-  const vatTax = subtotal * 0.05;
-  const grandTotal = Math.max(0, subtotal + vatTax - promoDiscount);
+  const vatTax = Math.round(subtotal * 0.05 * 100) / 100; // 5% VAT / GST
+  const cityLodgingTax = 7.00; // Flat municipal city lodging tax ($3.50/guest x 2 nights)
+  const resortFacilityFee = 15.00; // Daily facility amenities & Wi-Fi fee
+  const totalSavings = promoDiscount + bundleDiscount;
+  const grandTotal = Math.max(0, subtotal + vatTax + cityLodgingTax + resortFacilityFee - totalSavings);
 
   // Dynamic deposit & balance calculation (Chapter 6.2)
   const depositAmount =
@@ -82,7 +99,7 @@ export default function CheckoutPage() {
       ? Math.round(grandTotal * 0.2 * 100) / 100
       : paymentMode === "wallet"
       ? grandTotal
-      : 0; // pay_at_hotel
+      : 0; // pay_at_hotel or corporate_invoice
 
   const balanceDueAtCheckIn = Math.max(0, grandTotal - depositAmount);
 
@@ -196,15 +213,79 @@ export default function CheckoutPage() {
       )}
 
       <form onSubmit={handlePlaceBooking}>
+        {/* Chapter 6.1 Guest vs Corporate Account Checkout Switcher */}
+        <div className="mb-6 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setCheckoutType("guest");
+              if (paymentMode === "corporate_invoice") setPaymentMode("full");
+            }}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
+              checkoutType === "guest"
+                ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>👤 Express Guest Checkout</span>
+            <span className="text-[10px] font-normal text-slate-400">(No password required)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setCheckoutType("corporate");
+              setPaymentMode("corporate_invoice");
+              setPaymentMethod("bank");
+            }}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
+              checkoutType === "corporate"
+                ? "bg-white text-indigo-600 shadow-sm ring-1 ring-indigo-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🏢 Corporate Portal Checkout</span>
+            <span className="text-[10px] font-normal text-indigo-400">(Net 30/60 AR Billing)</span>
+          </button>
+        </div>
+
+        {/* Chapter 6.1 Vacation Bundle Notification */}
+        {bundleDiscount > 0 && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Smart Vacation Bundle Active:</strong> You bundled a hotel sanctuary with an airport vehicle! A <strong>12% vehicle discount</strong> has been applied automatically.
+              </span>
+            </div>
+            <span className="font-black text-emerald-700 whitespace-nowrap ml-2">
+              Save {formatPrice(bundleDiscount)}
+            </span>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Guest Form & Payment */}
           <div className="lg:col-span-2 space-y-8">
             {/* 1. Guest Information */}
             <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
-              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-[#00a8ff] text-white text-xs flex items-center justify-center">1</span>
-                <span>Primary Guest Contact Details</span>
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#00a8ff] text-white text-xs flex items-center justify-center">1</span>
+                  <span>{checkoutType === "corporate" ? "Corporate Traveler & Company Details" : "Primary Guest Contact Details"}</span>
+                </h2>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {checkoutType === "corporate" ? "Corporate Master AR" : "One-Click Guest"}
+                </span>
+              </div>
+
+              {/* Chapter 6.7 Cancellation Policy Assurance */}
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  <strong>Flexible Cancellation (Chapter 6.7):</strong> 100% full refund if cancelled up to 24 hours prior to arrival. 1-click automated refund routing.
+                </span>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
@@ -248,6 +329,52 @@ export default function CheckoutPage() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00a8ff]"
                   />
                 </div>
+
+                {/* Corporate Account Fields (Chapter 6.1) */}
+                {checkoutType === "corporate" && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">
+                        Corporate Client ID *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. CORP-TITAN-8890"
+                        value={corporateClientId}
+                        onChange={(e) => setCorporateClientId(e.target.value)}
+                        className="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-4 py-3 text-sm font-mono text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">
+                        Organization / Company Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Apex Global Holdings Ltd."
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        className="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-4 py-3 text-sm text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">
+                        Purchase Order (PO) / Cost Center Ref
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. PO-2026-OMNI-091"
+                        value={billingPoNumber}
+                        onChange={(e) => setBillingPoNumber(e.target.value)}
+                        className="w-full bg-indigo-50/50 border border-indigo-200 rounded-xl px-4 py-3 text-sm font-mono text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
@@ -352,7 +479,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Credit card guarantee. No charge today; pay 100% upon arrival.
+                    Credit card guarantee ($1 pre-auth). Zero charged online today; settle 100% upon front desk arrival.
                   </p>
                   <div className="mt-2 text-xs font-bold text-amber-600">
                     Pay Online Today: {formatPrice(0)}
@@ -385,6 +512,36 @@ export default function CheckoutPage() {
                   </p>
                   <div className="mt-2 text-xs font-bold text-blue-600">
                     Available Balance: {formatPrice(500)}
+                  </div>
+                </button>
+
+                {/* Mode 5: Corporate Master Invoicing (Chapter 6.2) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentMode("corporate_invoice");
+                    setPaymentMethod("bank");
+                    setCheckoutType("corporate");
+                  }}
+                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    paymentMode === "corporate_invoice"
+                      ? "border-indigo-500 bg-indigo-50/60 ring-2 ring-indigo-500/20 shadow-xs"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-indigo-900 uppercase">Corporate Master Invoicing</span>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      paymentMode === "corporate_invoice" ? "border-indigo-500 bg-indigo-600" : "border-slate-300"
+                    }`}>
+                      {paymentMode === "corporate_invoice" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Net 30/60 terms. Posts directly to Accounts Receivable against Corporate Client ID.
+                  </p>
+                  <div className="mt-2 text-xs font-bold text-indigo-600">
+                    Net 30 AR Terms: {formatPrice(grandTotal)}
                   </div>
                 </button>
               </div>
@@ -598,28 +755,53 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Pricing breakdown with Live Dynamic Payment Mode & Currency Update */}
+              {/* Pricing breakdown with Chapter 6.1 & 6.4 details */}
               <div className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span className="font-semibold text-slate-900">{formatPrice(subtotal)}</span>
                 </div>
+
+                {bundleDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-600 font-semibold">
+                    <span>Vacation Bundle (12% off Car)</span>
+                    <span>-{formatPrice(bundleDiscount)}</span>
+                  </div>
+                )}
+
                 {promoDiscount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
                     <span>Voucher Discount</span>
                     <span>-{formatPrice(promoDiscount)}</span>
                   </div>
                 )}
+
                 <div className="flex justify-between">
-                  <span>Hospitality VAT (5%)</span>
+                  <span>Hospitality VAT / GST (5%)</span>
                   <span className="font-semibold text-slate-900">{formatPrice(vatTax)}</span>
                 </div>
+
+                <div className="flex justify-between">
+                  <span>Municipal City Lodging Tax</span>
+                  <span className="font-semibold text-slate-900">{formatPrice(cityLodgingTax)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Mandatory Resort & Amenities Fee</span>
+                  <span className="font-semibold text-slate-900">{formatPrice(resortFacilityFee)}</span>
+                </div>
+
+                <div className="flex justify-between text-emerald-600 font-medium">
+                  <span>Platform Booking Fee</span>
+                  <span>FREE (Promotional Waiver)</span>
+                </div>
+
                 <div className="flex justify-between items-baseline text-slate-900 pt-2 border-t border-slate-100">
                   <span className="text-xs font-bold text-slate-600">Total Booking Value</span>
                   <span className="text-base font-bold text-slate-900">{formatPrice(grandTotal)}</span>
                 </div>
 
-                {/* Due Today Highlighted Box based on Payment Mode */}
+                {/* Due Today Highlighted Box based on Payment Mode (Chapter 6.2) */}
                 <div className="p-3.5 rounded-2xl bg-sky-50 border border-sky-200/80 space-y-1.5 my-2">
                   <div className="flex justify-between items-center text-sky-950">
                     <span className="font-bold text-xs uppercase tracking-wide">
@@ -629,6 +811,8 @@ export default function CheckoutPage() {
                         ? "Deposit Due Today (20%)"
                         : paymentMode === "pay_at_hotel"
                         ? "Due Today (Pay at Arrival)"
+                        : paymentMode === "corporate_invoice"
+                        ? "Due Today (Net 30 Invoicing)"
                         : "Total Due Today (Wallet)"}
                     </span>
                     <span className="text-xl font-black text-sky-600">
@@ -639,6 +823,12 @@ export default function CheckoutPage() {
                     <div className="flex justify-between items-center text-[11px] text-slate-600 pt-1 border-t border-sky-100">
                       <span>Due Upon Check-In:</span>
                       <span className="font-bold text-slate-800">{formatPrice(balanceDueAtCheckIn)}</span>
+                    </div>
+                  )}
+                  {paymentMode === "corporate_invoice" && (
+                    <div className="flex justify-between items-center text-[11px] text-indigo-700 pt-1 border-t border-sky-100">
+                      <span>Net 30 Corporate AR Terms:</span>
+                      <span className="font-bold">{formatPrice(grandTotal)}</span>
                     </div>
                   )}
                 </div>
@@ -681,9 +871,18 @@ export default function CheckoutPage() {
                 size="lg"
                 className="w-full py-4 text-base font-bold shadow-xl shadow-sky-500/25 cursor-pointer"
               >
-                {depositAmount > 0
-                  ? `Pay ${formatPrice(depositAmount)} & Confirm`
-                  : `Confirm Reservation (Pay at Arrival)`}
+                <span>
+                  {paymentMode === "full"
+                    ? `Pay ${formatPrice(grandTotal)} & Confirm`
+                    : paymentMode === "deposit_20"
+                    ? `Pay 20% Deposit (${formatPrice(depositAmount)}) & Confirm`
+                    : paymentMode === "pay_at_hotel"
+                    ? `Confirm with $1 CC Guarantee`
+                    : paymentMode === "corporate_invoice"
+                    ? `Generate Net 30 AR Invoice & Confirm`
+                    : `Authorize ${formatPrice(grandTotal)} via Wallet`}
+                </span>
+                <CheckCircle2 className="w-5 h-5 ml-1" />
               </Button>
 
               <div className="text-center">
