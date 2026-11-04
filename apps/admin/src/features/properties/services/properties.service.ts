@@ -3,6 +3,7 @@ import { api } from '@/lib/api/client';
 export interface Property {
   id: string;
   name: string;
+  code?: string;
   slug?: string;
   address?: string;
   city?: string;

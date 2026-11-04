@@ -56,7 +56,11 @@ export const BookingService = {
       checkOutDate: payload.checkOutDate,
       adults: payload.adults,
       children: payload.children || 0,
-      depositAmount: payload.depositAmount || 0,
+      depositAmount: payload.depositAmount,
+      paymentMethod: payload.paymentMethod,
+      paymentMode: payload.paymentMode,
+      specialRequests: payload.specialRequests,
+      promoCode: payload.promoCode,
       guests: [
         {
           fullName: payload.guestName,
@@ -103,10 +107,11 @@ export const BookingService = {
   /**
    * Retrieves real booking details from backend API (/api/v1/bookings/:id)
    */
-  async getBooking(id: string): Promise<BookingResponse> {
+  async getBooking(id: string): Promise<BookingResponse | null> {
     try {
       const response = await apiClient.get<any>(`/bookings/${id}`);
       const b = response.data;
+      if (!b) return null;
 
       const bookingCode = b.bookingCode || b.id;
       const primaryGuest = b.bookingGuests?.find((g: any) => g.isPrimary) || b.bookingGuests?.[0] || b.guest;
@@ -146,31 +151,7 @@ export const BookingService = {
         ],
       };
     } catch {
-      // Graceful local fallback for instant offline/direct voucher generation
-      const bookingCode = id.startsWith("OMNI-") ? id : `OMNI-${id.substring(0, 8).toUpperCase()}`;
-      return {
-        id,
-        bookingCode,
-        bookingReference: bookingCode,
-        guestName: "Sadman Sakib",
-        guestEmail: "sakib@softsasi.com",
-        guestPhone: "+880 1712-345678",
-        status: "CONFIRMED",
-        totalAmount: 384.50,
-        currency: "USD",
-        createdAt: new Date().toISOString(),
-        qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(bookingCode)}`,
-        items: [
-          {
-            title: "Standard Double Room - Parian Holiday Villas",
-            verticalType: "stay",
-            quantity: 1,
-            price: 350.00,
-            startDate: "2026-11-10",
-            endDate: "2026-11-12",
-          },
-        ],
-      };
+      return null;
     }
   },
 

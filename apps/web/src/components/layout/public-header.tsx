@@ -297,6 +297,13 @@ export function PublicHeader() {
             ) : (
               <div className="flex items-center gap-2">
                 <Link
+                  href="/hotelin"
+                  className="hidden xl:inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 py-1 rounded-full transition-colors"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  <span>HOTELIN Luxury</span>
+                </Link>
+                <Link
                   href="/auth/login"
                   className="text-xs font-bold text-slate-700 hover:text-[#0284c7] px-2.5 py-1.5 transition-colors"
                 >

@@ -99,6 +99,38 @@ export class CreateBookingDto {
   @IsOptional()
   guestPhone?: string;
 
+  @ApiPropertyOptional({
+    example: 'card',
+    description: 'Selected payment method (card, bkash, nagad, wallet, bank, pay_at_hotel)',
+  })
+  @IsString()
+  @IsOptional()
+  paymentMethod?: string;
+
+  @ApiPropertyOptional({
+    example: 'full',
+    description: 'Selected payment mode (full, deposit_20, pay_at_hotel, wallet, corporate_invoice)',
+  })
+  @IsString()
+  @IsOptional()
+  paymentMode?: string;
+
+  @ApiPropertyOptional({
+    example: 'Quiet room on upper floor',
+    description: 'Special requests or notes from guest',
+  })
+  @IsString()
+  @IsOptional()
+  specialRequests?: string;
+
+  @ApiPropertyOptional({
+    example: 'OMNISTAY',
+    description: 'Promotional discount code',
+  })
+  @IsString()
+  @IsOptional()
+  promoCode?: string;
+
   @ApiProperty({
     example: '2026-11-10',
     description: 'Check-in arrival date (YYYY-MM-DD)',

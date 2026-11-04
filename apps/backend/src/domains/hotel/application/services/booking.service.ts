@@ -131,7 +131,15 @@ export class BookingService {
 
     const basePriceNum = Number(roomType.basePrice);
     const totalAmount = Math.round(basePriceNum * nights * 100) / 100;
-    const depositAmount = dto.depositAmount ? Math.min(dto.depositAmount, totalAmount) : 0;
+    let depositAmount = dto.depositAmount !== undefined ? dto.depositAmount : 0;
+    if (dto.paymentMode === 'deposit_20' && !depositAmount) {
+      depositAmount = Math.round(totalAmount * 0.2 * 100) / 100;
+    } else if ((dto.paymentMode === 'full' || !dto.paymentMode) && !depositAmount && dto.paymentMethod !== 'pay_at_hotel') {
+      depositAmount = totalAmount;
+    } else if (dto.paymentMode === 'pay_at_hotel' || dto.paymentMethod === 'pay_at_hotel') {
+      depositAmount = 0;
+    }
+    depositAmount = Math.min(depositAmount, totalAmount);
     const balanceDue = Math.max(0, totalAmount - depositAmount);
 
     const bookingCode = this.generateBookingCode();
@@ -260,9 +268,13 @@ export class BookingService {
       totalAmount,
       depositAmount,
       balanceDue,
+      paymentMethod: dto.paymentMethod || 'card',
+      paymentMode: dto.paymentMode || 'full',
+      paymentStatus: result.booking.paymentStatus,
       checkInDate: dto.checkInDate,
       checkOutDate: dto.checkOutDate,
       nights,
+      roomTypeName: roomType.title,
     };
   }
 

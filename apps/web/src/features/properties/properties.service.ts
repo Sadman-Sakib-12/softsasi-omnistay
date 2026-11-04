@@ -158,7 +158,7 @@ export const PropertiesService = {
         country,
         images: photos,
         amenities: facilities,
-        lowestPrice: p.roomTypes?.length > 0 ? Number(p.roomTypes[0].basePrice) : 14000,
+        lowestPrice: p.roomTypes?.length > 0 ? Number(p.roomTypes[0].basePrice) : 350,
         featured: true,
         status: p.status || "active",
         rooms: p.roomTypes?.map((rt: any) => ({
@@ -167,13 +167,13 @@ export const PropertiesService = {
           name: rt.title,
           slug: rt.slug,
           description: `Luxurious ${rt.title} with panoramic landscape views, en-suite bathroom, and premium room service.`,
-          basePrice: Number(rt.basePrice || 14000),
+          basePrice: Number(rt.basePrice || 350),
           maxOccupancy: (rt.maxAdults || 2) + (rt.maxChildren || 0),
           bedType: rt.roomBeds?.[0]?.bedType ? `${rt.roomBeds[0].quantity}x ${rt.roomBeds[0].bedType}` : "1x King Size Bed",
           sizeSquareMeters: rt.squareMeters || 50,
           images: photos,
           amenities: facilities,
-          availableCount: 4,
+          availableCount: rt._count?.rooms || 4,
         })) || [],
       };
     } catch (err) {
@@ -196,13 +196,13 @@ export const PropertiesService = {
         name: rt.title,
         slug: rt.slug,
         description: `Luxurious ${rt.title} with high-speed Wi-Fi, air conditioning, and 24/7 dedicated room service.`,
-        basePrice: Number(rt.basePrice || 14000),
+        basePrice: Number(rt.basePrice || 350),
         maxOccupancy: (rt.maxAdults || 2) + (rt.maxChildren || 0),
         bedType: rt.roomBeds?.[0]?.bedType ? `${rt.roomBeds[0].quantity}x ${rt.roomBeds[0].bedType}` : "1 King Bed",
         sizeSquareMeters: rt.squareMeters || 50,
         images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80"],
         amenities: ["wifi", "ac", "tv", "breakfast", "beach"],
-        availableCount: 3,
+        availableCount: rt._count?.rooms || 3,
       }));
     } catch (err) {
       console.error(`Failed to fetch rooms for property ${propertyId} from API:`, err);

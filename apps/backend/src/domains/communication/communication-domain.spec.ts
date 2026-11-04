@@ -103,6 +103,15 @@ class MockCommunicationRepository implements ICommunicationRepository {
     this.emailTemplates.set(data.name, tpl);
     return tpl;
   }
+  async updateEmailTemplate(id: string, data: any) {
+    const tpl = { id, ...data, updatedAt: new Date() };
+    this.emailTemplates.set(id, tpl);
+    return tpl;
+  }
+  async deleteEmailTemplate(id: string) {
+    this.emailTemplates.delete(id);
+    return { success: true };
+  }
   async findEmailTemplateByName(name: string) {
     return this.emailTemplates.get(name) || null;
   }

@@ -92,6 +92,8 @@ describe('CRM Domain — Clean Architecture & DDD Pilot Test Suite', () => {
         findFormById: vi.fn().mockImplementation((id) =>
           id === 'form-1' ? Promise.resolve({ id: 'form-1', tenantId: 't-1', formName: 'Inquiry Form' }) : Promise.resolve(null),
         ),
+        updateForm: vi.fn().mockImplementation((id, data) => Promise.resolve({ id, ...data })),
+        deleteForm: vi.fn().mockImplementation((id) => Promise.resolve({ id })),
         createResponse: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'resp-1', ...data })),
         findResponses: vi.fn().mockResolvedValue([{ id: 'resp-1' }]),
       };

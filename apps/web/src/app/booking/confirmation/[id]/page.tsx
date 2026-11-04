@@ -37,11 +37,26 @@ export default function BookingConfirmationPage() {
     });
   }, [id]);
 
-  if (loading || !booking) {
+  if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
         <div className="w-8 h-8 border-4 border-[#00a8ff] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-slate-500 text-sm">Generating your encrypted digital voucher...</p>
+        <p className="text-slate-500 text-sm">Retrieving reservation from backend database...</p>
+      </div>
+    );
+  }
+
+  if (!booking) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
+        <h2 className="text-2xl font-bold text-slate-800">Reservation Not Found</h2>
+        <p className="text-slate-500 text-sm mt-2">No active booking was found matching reference "{id}".</p>
+        <Link
+          href="/stays"
+          className="mt-4 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#00a8ff] text-white text-xs font-bold shadow-md hover:bg-sky-600 transition-colors"
+        >
+          Browse Available Hotels
+        </Link>
       </div>
     );
   }

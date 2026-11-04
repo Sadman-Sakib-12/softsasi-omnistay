@@ -28,6 +28,29 @@ export interface CreateRoomDto {
 
 export const roomsService = {
   getAll: async (propertyId?: string): Promise<Room[]> => {
+    try {
+      const target = propertyId || 'STANFORD-01';
+      const res = await api.get<any>(`/api/v1/properties/${target}/room-types`);
+      const data = Array.isArray(res) ? res : res?.data || [];
+      if (data.length > 0) {
+        return data
+          .filter((rt: any) => (rt._count?.rooms ?? 1) > 0)
+          .map((rt: any) => ({
+            id: rt.id,
+            name: rt.title,
+            roomNumber: rt.slug,
+            pricePerNight: Number(rt.basePrice || 350),
+            basePrice: Number(rt.basePrice || 350),
+            numberOfBeds: rt._count?.rooms ?? rt.maxAdults ?? 5,
+            minStay: 2,
+            status: 'Publish',
+            propertyId: rt.propertyId,
+            createdAt: rt.createdAt || '12/13/2025',
+          }));
+      }
+    } catch {
+      // Fallback to /api/v1/rooms if needed
+    }
     const res = await api.get<any>('/api/v1/rooms', {
       params: propertyId ? { propertyId } : undefined,
     });

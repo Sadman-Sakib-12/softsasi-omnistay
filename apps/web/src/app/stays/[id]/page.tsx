@@ -29,145 +29,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const DEFAULT_FIGURE_6_1_PROPERTY: Property = {
-  id: "parian-holiday-villas",
-  code: "PARIAN-01",
-  name: "Parian Holiday Villas",
-  address: "Regal Cinemas Battery Park",
-  city: "New York",
-  country: "United States",
-  propertyType: "Hotels",
-  starRating: 5,
-  description: "Built in 1986, Hotel Stanford is a distinct addition to New York (NY) and a smart choice for travelers. The excitement of the city center is only 0 KM away. No less exceptional is the hotel's easy access to the city's myriad attractions and landmarks, such as Toto Music Studio, British Virgin Islands Tourist Board, L'Atelier Du Chocolat. Start and end in San Francisco! With the In-depth cultural tour Northern California Summer 2019, you have an 8 day tour package taking you through San Francisco, USA and 9 other destinations in USA. Northern California Summer 2019 includes accommodation as well as an expert guide, meals, transport and more.",
-  lowestPrice: 350,
-  images: [
-    "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=800&q=80",
-  ],
-  amenities: [
-    "Wake-up call",
-    "Car hire",
-    "Bicycle hire",
-    "Flat Tv",
-    "Laundry and dry cleaning",
-    "Internet - Wifi",
-    "Coffee and tea",
-  ],
-  rooms: [
-    {
-      id: "rm-1",
-      propertyId: "parian-holiday-villas",
-      name: "Standard Double Room",
-      description: "King bed with city view, soundproof glazing & marble bath.",
-      basePrice: 350,
-      bedType: "1 King Bed",
-      maxOccupancy: 2,
-      sizeSquareMeters: 42,
-      images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"],
-      amenities: ["Free Wifi", "Breakfast Included", "Air Conditioning", "Flat TV"],
-    },
-    {
-      id: "rm-2",
-      propertyId: "parian-holiday-villas",
-      name: "Double Room With Town View",
-      description: "Panoramic Manhattan skyline views with private workspace.",
-      basePrice: 350,
-      bedType: "2 Queen Beds",
-      maxOccupancy: 4,
-      sizeSquareMeters: 48,
-      images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"],
-      amenities: ["Free Wifi", "City View", "Work Desk", "Espresso Bar"],
-    },
-    {
-      id: "rm-3",
-      propertyId: "parian-holiday-villas",
-      name: "Room Sheraton Hotel",
-      description: "Executive club access with complimentary morning buffet.",
-      basePrice: 350,
-      bedType: "1 Super King Bed",
-      maxOccupancy: 2,
-      sizeSquareMeters: 55,
-      images: ["https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80"],
-      amenities: ["Executive Lounge Access", "King Bed", "Rain Shower", "Free Wifi"],
-    },
-    {
-      id: "rm-4",
-      propertyId: "parian-holiday-villas",
-      name: "Room Kerama Islands",
-      description: "Private outdoor terrace overlooking Battery Park.",
-      basePrice: 350,
-      bedType: "2 Double Beds",
-      maxOccupancy: 4,
-      sizeSquareMeters: 62,
-      images: ["https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80"],
-      amenities: ["Private Terrace", "Park View", "Free Minibar", "Free Wifi"],
-    },
-  ],
-};
-
-const DEFAULT_FIGURE_6_1_RELATED_HOTELS: Property[] = [
-  {
-    id: "rel-stanford",
-    name: "Hotel Stanford",
-    code: "STANFORD-01",
-    starRating: 5,
-    lowestPrice: 300,
-    address: "New York, USA",
-    city: "New York",
-    country: "USA",
-    propertyType: "Hotels",
-    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"],
-    amenities: ["Wifi", "Breakfast", "Gym"],
-    rooms: [],
-  },
-  {
-    id: "rel-wbf",
-    name: "Hotel WBF Hommachi",
-    code: "WBF-01",
-    starRating: 5,
-    lowestPrice: 350,
-    address: "Osaka, Japan",
-    city: "Osaka",
-    country: "Japan",
-    propertyType: "Hotels",
-    images: ["https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80"],
-    amenities: ["Wifi", "Spa", "Restaurant"],
-    rooms: [],
-  },
-  {
-    id: "rel-casole",
-    name: "Castello Casole Hotel",
-    code: "CASOLE-01",
-    starRating: 5,
-    lowestPrice: 350,
-    address: "Tuscany, Italy",
-    city: "Tuscany",
-    country: "Italy",
-    propertyType: "Hotels",
-    images: ["https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=800&q=80"],
-    amenities: ["Wifi", "Pool", "Vineyard Tour"],
-    rooms: [],
-  },
-  {
-    id: "rel-redac",
-    name: "Redac Gateway Hotel",
-    code: "REDAC-01",
-    starRating: 5,
-    lowestPrice: 500,
-    address: "Torrance, California",
-    city: "California",
-    country: "USA",
-    propertyType: "Hotels",
-    images: ["https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80"],
-    amenities: ["Wifi", "Airport Shuttle", "Pool"],
-    rooms: [],
-  },
-];
-
 export default function PropertyDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -187,46 +48,6 @@ export default function PropertyDetailPage() {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const { formatPrice } = useCurrencyStore();
 
-  // Guest Reviews
-  const [reviews, setReviews] = useState([
-    {
-      id: "rev-1",
-      author: "Robert Sterling",
-      avatar: "R",
-      date: "September 2026",
-      rating: 5,
-      comment: "Exceptional sanctuary in New York! The tufted master bedroom suite and private concierge service exceeded our expectations. Contactless self check-in took 30 seconds.",
-      verified: true,
-    },
-    {
-      id: "rev-2",
-      author: "Jessica Vance",
-      avatar: "J",
-      date: "August 2026",
-      rating: 5,
-      comment: "Top notch comfort and breathtaking views. Parian Holiday Villas offers seamless airport executive transfer and unmatched room acoustics.",
-      verified: true,
-    },
-    {
-      id: "rev-3",
-      author: "David Chen",
-      avatar: "D",
-      date: "July 2026",
-      rating: 5,
-      comment: "The executive loft suite was spacious and impeccably maintained. The high-speed internet and quiet work desk were ideal for remote meetings.",
-      verified: true,
-    },
-    {
-      id: "rev-4",
-      author: "Sophie Dupont",
-      avatar: "S",
-      date: "June 2026",
-      rating: 5,
-      comment: "Everything shown in the photos matches reality 100%. Five-star staff attentiveness and delicious artisan morning coffee.",
-      verified: true,
-    },
-  ]);
-
   const [newAuthor, setNewAuthor] = useState("");
   const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(5);
@@ -240,26 +61,27 @@ export default function PropertyDetailPage() {
       // Fetch property directly from PostgreSQL database via API
       const prop = await PropertiesService.getById(id);
       const allProps = await PropertiesService.getAll();
-      const effectiveProp = prop || DEFAULT_FIGURE_6_1_PROPERTY;
-      setProperty(effectiveProp);
+      setProperty(prop);
 
-      // Filter related properties from Figure 6.1 (Hotel Stanford, Hotel WBF Hommachi, Castello Casole Hotel, Redac Gateway Hotel)
-      const exactRelatedCodes = ["STANFORD-01", "WBF-01", "CASOLE-01", "REDAC-01"];
-      const filteredRelated = allProps.filter(
-        (p) => p.id !== effectiveProp?.id && (exactRelatedCodes.includes(p.code || "") || exactRelatedCodes.some(code => p.slug?.includes(code.toLowerCase())))
-      );
+      if (prop) {
+        // Real related properties from database (prioritizing Figure 6.1 canonical related hotels)
+        const canonicalRelatedCodes = ["STANFORD-01", "WBF-01", "CASOLE-01", "REDAC-01"];
+        const others = allProps.filter((p) => p.id !== prop.id);
+        others.sort((a, b) => {
+          const aMatch = canonicalRelatedCodes.includes(a.code || "");
+          const bMatch = canonicalRelatedCodes.includes(b.code || "");
+          if (aMatch && !bMatch) return -1;
+          if (!aMatch && bMatch) return 1;
+          return 0;
+        });
+        setRelatedProperties(others.slice(0, 4));
 
-      if (filteredRelated.length >= 4) {
-        setRelatedProperties(filteredRelated.slice(0, 4));
-      } else {
-        setRelatedProperties(DEFAULT_FIGURE_6_1_RELATED_HOTELS);
-      }
-
-      if (effectiveProp?.rooms && effectiveProp.rooms.length > 0) {
-        setRooms(effectiveProp.rooms);
-      } else {
-        const roomList = await PropertiesService.getRooms(effectiveProp.id);
-        setRooms(roomList && roomList.length > 0 ? roomList : (DEFAULT_FIGURE_6_1_PROPERTY.rooms || []));
+        if (prop.rooms && prop.rooms.length > 0) {
+          setRooms(prop.rooms);
+        } else {
+          const roomList = await PropertiesService.getRooms(prop.id);
+          setRooms(roomList || []);
+        }
       }
 
       setLoading(false);
@@ -288,17 +110,10 @@ export default function PropertyDetailPage() {
     );
   }
 
-  // Exact 6 photos matching Figure 6.1 (Page 31)
-  const galleryImages = (property.images && property.images.length >= 6)
-    ? property.images.slice(0, 6)
-    : [
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=800&q=80",
-      ];
+  // Real photos loaded directly from PostgreSQL database
+  const galleryImages = (property.images && property.images.length > 0)
+    ? property.images
+    : [""];
 
   const currentMainPhoto = galleryImages[activePhotoIndex] || galleryImages[0];
 
@@ -338,8 +153,8 @@ export default function PropertyDetailPage() {
       {/* 1. Top Cover Banner matching Figure 6.1 (Page 31) with [🎥 Hotel Video] Button */}
       <div className="relative h-32 sm:h-44 w-full bg-slate-900 overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=2000&q=80"
-          alt="Hotel Header Cover"
+          src={galleryImages[0] || "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"}
+          alt={property.name}
           className="w-full h-full object-cover opacity-75"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
@@ -444,9 +259,8 @@ export default function PropertyDetailPage() {
                   <button
                     type="button"
                     onClick={() => setIsFavorite(!isFavorite)}
-                    className={`w-8 h-8 rounded-full backdrop-blur-sm flex items-center justify-center transition-colors cursor-pointer shadow-md ${
-                      isFavorite ? "bg-red-500 text-white" : "bg-black/60 hover:bg-black/80 text-white"
-                    }`}
+                    className={`w-8 h-8 rounded-full backdrop-blur-sm flex items-center justify-center transition-colors cursor-pointer shadow-md ${isFavorite ? "bg-red-500 text-white" : "bg-black/60 hover:bg-black/80 text-white"
+                      }`}
                     title="Favorite"
                   >
                     <Heart className={`w-3.5 h-3.5 ${isFavorite ? "fill-current" : ""}`} />
@@ -483,11 +297,10 @@ export default function PropertyDetailPage() {
                       key={idx}
                       type="button"
                       onClick={() => setActivePhotoIndex(idx)}
-                      className={`relative aspect-square rounded-md overflow-hidden cursor-pointer transition-all ${
-                        isActive
-                          ? "ring-2 ring-[#2577e3] opacity-100"
-                          : "opacity-75 hover:opacity-100"
-                      }`}
+                      className={`relative aspect-square rounded-md overflow-hidden cursor-pointer transition-all ${isActive
+                        ? "ring-2 ring-[#2577e3] opacity-100"
+                        : "opacity-75 hover:opacity-100"
+                        }`}
                     >
                       <img
                         src={img}
@@ -535,22 +348,20 @@ export default function PropertyDetailPage() {
                   <button
                     type="button"
                     onClick={() => setActiveBookingTab("book")}
-                    className={`pb-2.5 transition-all cursor-pointer relative ${
-                      activeBookingTab === "book"
-                        ? "text-[#2577e3] border-b-2 border-[#2577e3]"
-                        : "text-slate-400 hover:text-slate-700"
-                    }`}
+                    className={`pb-2.5 transition-all cursor-pointer relative ${activeBookingTab === "book"
+                      ? "text-[#2577e3] border-b-2 border-[#2577e3]"
+                      : "text-slate-400 hover:text-slate-700"
+                      }`}
                   >
                     BOOK
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveBookingTab("enquiry")}
-                    className={`pb-2.5 transition-all cursor-pointer relative ${
-                      activeBookingTab === "enquiry"
-                        ? "text-[#2577e3] border-b-2 border-[#2577e3]"
-                        : "text-slate-400 hover:text-slate-700"
-                    }`}
+                    className={`pb-2.5 transition-all cursor-pointer relative ${activeBookingTab === "enquiry"
+                      ? "text-[#2577e3] border-b-2 border-[#2577e3]"
+                      : "text-slate-400 hover:text-slate-700"
+                      }`}
                   >
                     ENQUIRY
                   </button>
@@ -590,14 +401,21 @@ export default function PropertyDetailPage() {
                     </select>
                   </div>
                   <div className="pt-3 sm:pt-0">
-                    <Button className="w-full py-2 font-black text-xs uppercase bg-[#2577e3] hover:bg-[#1d62c2] text-white">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById("room-selection-matrix");
+                        el?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="w-full py-2 font-black text-xs uppercase bg-[#2577e3] hover:bg-[#1d62c2] text-white cursor-pointer"
+                    >
                       CHECK AVAILABILITY
                     </Button>
                   </div>
                 </div>
 
                 {/* Room Matrix Table / Cards */}
-                <div className="space-y-3.5">
+                <div id="room-selection-matrix" className="space-y-3.5 scroll-mt-24">
                   {rooms.map((room) => {
                     const isSelected = addedRoomId === room.id;
                     return (
@@ -715,10 +533,10 @@ export default function PropertyDetailPage() {
 
                 <div className="space-y-2 text-xs text-slate-700 font-medium">
                   {[
-                    { name: "Apartments", checked: false },
+                    { name: "Apartments", checked: true },
                     { name: "Hotels", checked: true },
-                    { name: "Homestays", checked: false },
-                    { name: "Boats", checked: false },
+                    { name: "Homestays", checked: true },
+                    { name: "Boats", checked: true },
                     { name: "Motels", checked: false },
                     { name: "Resorts", checked: false },
                     { name: "Lodges", checked: false },

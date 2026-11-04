@@ -12,27 +12,20 @@ export default function AvailabilityCalendarPage() {
   const [selectedRoomIndex, setSelectedRoomIndex] = useState(0);
   const [currentMonthYear, setCurrentMonthYear] = useState('October 2026');
 
-  const selectedHotelName = properties[0]?.name || 'Hotel Stanford';
+  const selectedHotelName = properties.find((p) => p.name.includes('Stanford') || p.code === 'STANFORD-01')?.name || 'Hotel Stanford';
 
-  const defaultRoomsList = rooms.length >= 4
-    ? rooms.map((r, i) => ({
-        id: r.id,
-        label: `#${rooms.length - i} - ${r.name}`,
-        price: r.pricePerNight || r.basePrice || 350,
-        inventory: r.numberOfBeds || 5,
-      }))
-    : [
-        { id: 'r-4', label: '#4 - Standard Double Room', price: 350, inventory: 5 },
-        { id: 'r-3', label: '#3 - Double Room With Town View', price: 350, inventory: 5 },
-        { id: 'r-2', label: '#2 - Room Sheraton Hotel', price: 350, inventory: 7 },
-        { id: 'r-1', label: '#1 - Room Kerama Islands', price: 350, inventory: 9 },
-      ];
+  const roomsList = rooms.map((r, i) => ({
+    id: r.id,
+    label: `#${rooms.length - i} - ${r.name}`,
+    price: r.pricePerNight || r.basePrice || 350,
+    inventory: r.numberOfBeds || 5,
+  }));
 
-  const currentRoom = defaultRoomsList[selectedRoomIndex] || defaultRoomsList[0] || {
+  const currentRoom = roomsList[selectedRoomIndex] || roomsList[0] || {
     id: '',
     label: 'No Room Selected',
-    price: 0,
-    inventory: 0,
+    price: 350,
+    inventory: 5,
   };
 
   // Calendar dates matrix for October 2026 matching Figure 4.3 (Starts Thursday Oct 1)
@@ -99,7 +92,7 @@ export default function AvailabilityCalendarPage() {
             Room Availability Calendar
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Showing 1 - {defaultRoomsList.length} of {defaultRoomsList.length} rooms
+            Showing 1 - {roomsList.length} of {roomsList.length} rooms
           </p>
         </div>
 
@@ -122,8 +115,8 @@ export default function AvailabilityCalendarPage() {
             <h2 className="text-xs font-bold text-slate-700">Availability</h2>
           </div>
           <div className="divide-y divide-slate-100">
-            {defaultRoomsList.length > 0 ? (
-              defaultRoomsList.map((roomItem, idx) => {
+            {roomsList.length > 0 ? (
+              roomsList.map((roomItem, idx) => {
                 const isSelected = selectedRoomIndex === idx;
 
                 return (

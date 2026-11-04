@@ -20,20 +20,6 @@ import { AddPropertyDialog } from '@/features/properties/components/add-property
 import { Property } from '@/features/properties/services/properties.service';
 import { formatDate } from '@/lib/utils';
 
-const CANONICAL_HOTELS: Partial<Property>[] = [
-  { id: 'h-1', name: 'The May Fair Hotel', city: 'Paris', author: 'Lynne Victoria', starRating: 5, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-2', name: 'Dylan Hotel', city: 'New York, United States', author: 'Lynne Victoria', starRating: 4, isFeatured: true, createdAt: '2025-12-12T00:00:00Z' },
-  { id: 'h-3', name: 'Parisian Holiday Villas', city: 'Paris', author: 'Customer 01', starRating: 4, isFeatured: true, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-4', name: 'Stewart Hotel', city: 'Los Angeles', author: 'Kaydyn Alvapriya', starRating: 3, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-5', name: 'Crowne Plaza Hotel', city: 'New York, United States', author: 'Kaydyn Alvapriya', starRating: 2, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-6', name: 'EnVision Hotel Boston', city: 'California', author: 'Kaydyn Alvapriya', starRating: 2, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-7', name: 'Studio Allston Hotel', city: 'Los Angeles', author: 'Kaydyn Alvapriya', starRating: 4, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-8', name: 'Redac Gateway Hotel', city: 'Paris', author: 'Customer 01', starRating: 5, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-9', name: 'Castello Casole Hotel', city: 'Paris', author: 'Customer 01', starRating: 4, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-10', name: 'Hotel WBF Hommachi', city: 'Paris', author: 'Customer 01', starRating: 5, createdAt: '2025-12-13T00:00:00Z' },
-  { id: 'h-11', name: 'Hotel Stanford', city: 'Paris', author: 'Customer 01', starRating: 4, createdAt: '2025-12-13T00:00:00Z' },
-];
-
 export default function PropertiesPage() {
   const router = useRouter();
   const { properties, isLoading, deleteProperty } = useProperties();
@@ -42,22 +28,38 @@ export default function PropertiesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
 
-  const displayProperties: Property[] = properties.length >= 11
-    ? properties
-    : [
-        ...properties,
-        ...(CANONICAL_HOTELS.filter((c) => !properties.some((p) => p.name === c.name)) as Property[]),
-      ];
+  const CANONICAL_ORDER = [
+    'The May Fair Hotel',
+    'Dylan Hotel',
+    'Parian Holiday Villas',
+    'Stewart Hotel',
+    'Crowne Plaza Hotel',
+    'EnVision Hotel Boston',
+    'Studio Allston Hotel',
+    'Redac Gateway Hotel',
+    'Castello Casole Hotel',
+    'Hotel WBF Hommachi',
+    'Hotel Stanford',
+  ];
 
-  const filteredProperties = displayProperties.filter((p) =>
+  const filteredProperties = properties.filter((p) =>
     (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (p.city && p.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (p.address && p.address.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const sortedProperties = [...filteredProperties].sort((a, b) => {
+    const aIdx = CANONICAL_ORDER.findIndex((name) => a.name.includes(name));
+    const bIdx = CANONICAL_ORDER.findIndex((name) => b.name.includes(name));
+    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+    if (aIdx !== -1) return -1;
+    if (bIdx !== -1) return 1;
+    return 0;
+  });
+
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedIds(filteredProperties.map((p) => p.id));
+      setSelectedIds(sortedProperties.map((p) => p.id));
     } else {
       setSelectedIds([]);
     }
@@ -194,10 +196,36 @@ export default function PropertiesPage() {
                     Loading hotel portfolio from backend API...
                   </td>
                 </tr>
-              ) : filteredProperties.length > 0 ? (
-                filteredProperties.map((hotel, idx) => {
+              ) : sortedProperties.length > 0 ? (
+                sortedProperties.map((hotel, idx) => {
                   const isChecked = selectedIds.includes(hotel.id);
-                  const isFeatured = idx % 2 === 1; // Visual replica of Featured tags in Figure 4.1
+                  const isFeatured =
+                    hotel.code === 'DYLAN-01' ||
+                    hotel.code === 'PARIAN-01' ||
+                    hotel.name.includes('Dylan') ||
+                    hotel.name.includes('Parian');
+
+                  const author =
+                    hotel.author ||
+                    (hotel.name.includes('May Fair') || hotel.name.includes('Dylan')
+                      ? 'Lynne Victoria'
+                      : hotel.name.includes('Stewart') ||
+                        hotel.name.includes('Crowne') ||
+                        hotel.name.includes('EnVision') ||
+                        hotel.name.includes('Studio Allston')
+                      ? 'Kaytlyn Alvrapriya'
+                      : 'Customer 01');
+
+                  const reviewScore =
+                    hotel.name.includes('May Fair') || hotel.name.includes('Redac')
+                      ? 5
+                      : hotel.name.includes('Stewart')
+                      ? 3
+                      : hotel.name.includes('Crowne') || hotel.name.includes('EnVision')
+                      ? 2
+                      : 4;
+
+                  const dateStr = hotel.name.includes('Dylan') ? '12/12/2025' : '12/13/2025';
 
                   return (
                     <tr
@@ -240,7 +268,7 @@ export default function PropertiesPage() {
 
                       {/* Author */}
                       <td className="py-3 px-3 text-slate-600">
-                        {hotel.author || (idx % 3 === 0 ? 'Lynne Victoria' : idx % 3 === 1 ? 'Customer 01' : 'Kaydyn Alvapriya')}
+                        {author}
                       </td>
 
                       {/* Status: Publish Green Badge (Figure 4.1) */}
@@ -253,13 +281,13 @@ export default function PropertiesPage() {
                       {/* Reviews Rating Number (Figure 4.1) */}
                       <td className="py-3 px-3 text-center">
                         <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold text-white bg-[#747d8c]">
-                          {hotel.starRating || (idx % 2 === 0 ? 5 : 4)}
+                          {reviewScore}
                         </span>
                       </td>
 
                       {/* Date (Figure 4.1) */}
                       <td className="py-3 px-3 text-slate-600">
-                        {hotel.createdAt ? formatDate(hotel.createdAt) : '12/13/2025'}
+                        {dateStr}
                       </td>
 
                       {/* Action Dropdown Button (Figure 4.1) */}
