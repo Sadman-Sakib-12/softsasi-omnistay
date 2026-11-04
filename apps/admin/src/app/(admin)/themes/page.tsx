@@ -1549,7 +1549,24 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                       style={{ opacity: Math.max(0.2, formState.heroOverlayOpacity) }}
                     />
 
+                    {/* Watermark Luxury Typography (Sakib_Project_Plan.pdf Figure 1.1) */}
+                    <div className="pointer-events-none absolute bottom-2 left-0 right-0 overflow-hidden select-none z-5 text-center">
+                      <span className="text-[11vw] font-serif font-black tracking-[0.25em] uppercase text-white/[0.06] leading-none whitespace-nowrap block">
+                        LUXURY HOTEL
+                      </span>
+                    </div>
+
                     <div className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 text-left">
+                      {/* 5-Star Rating Pill (Figure 1.1) */}
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 mb-3 shadow-sm">
+                        <div className="flex items-center gap-0.5 text-amber-400 text-xs">
+                          ★★★★★
+                        </div>
+                        <span className="text-[10px] font-semibold tracking-wider text-amber-200 uppercase ml-1">
+                          5-Star Luxury Experience
+                        </span>
+                      </div>
+
                       {/* Heading Widget */}
                       <div
                         id="canvas-heading"

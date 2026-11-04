@@ -20,6 +20,8 @@ import {
   Crown,
   KeyRound,
   CheckCircle2,
+  Play,
+  Star,
 } from "lucide-react";
 
 // Luxury Experience Categories
@@ -45,41 +47,87 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. Hero Banner: Compact, Balanced & Professional Standard (Figure 5.1) */}
+      {/* 1. Hero Banner: Luxury Guest Booking Experience (Sakib_Project_Plan.pdf Figure 1.1) */}
       {customizer.sections.hero && (
-        <section className="relative min-h-[390px] sm:min-h-[420px] w-full overflow-hidden flex items-center justify-center">
-          {/* Backdrop Banner from Customizer */}
+        <section className="relative min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] w-full overflow-hidden flex items-center justify-center">
+          {/* Backdrop Banner: Warm Luxury Hotel Suite (Figure 1.1) */}
           <div className="absolute inset-0 z-0">
             <img
-              src={customizer.heroBannerUrl}
-              alt="Hero Backdrop Banner"
-              className="w-full h-full object-cover object-center"
+              src={customizer.heroBannerUrl && customizer.heroBannerUrl.includes('unsplash') 
+                ? customizer.heroBannerUrl 
+                : "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=2400&q=85"}
+              alt="Luxury Suite Sanctuary"
+              className="w-full h-full object-cover object-center scale-105 transition-transform duration-1000 ease-out"
             />
-            {/* Natural Scrim Overlay */}
+            {/* Ambient Warm Scrim Vignette Overlay (Figure 1.1) */}
             <div
-              className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/45 to-slate-950/30 transition-opacity"
-              style={{ opacity: Math.max(customizer.heroOverlayOpacity, 0.45) }}
+              className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/55 to-slate-950/40 backdrop-blur-[0.5px]"
+              style={{ opacity: Math.max(customizer.heroOverlayOpacity, 0.55) }}
             />
           </div>
 
-          {/* Hero Content Container - Vertically Balanced */}
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-            <div className="max-w-4xl text-left">
-              {/* Clean Hero Title & Subtitle */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight drop-shadow-md leading-tight">
-                {customizer.heroTitle || "Find Your Next Extraordinary Stay"}
-              </h1>
-              <p className="mt-1.5 text-xs sm:text-sm md:text-base font-medium text-white/90 drop-shadow-sm mb-5 max-w-2xl leading-relaxed">
-                {customizer.heroSubtitle ||
-                  "Discover handcrafted luxury hotels, private villas, yachts, and bespoke tours across the globe."}
-              </p>
+          {/* Figure 1.1 Watermark Luxury Typography */}
+          <div className="pointer-events-none absolute bottom-4 sm:bottom-6 left-0 right-0 overflow-hidden select-none z-5 text-center">
+            <span className="text-[12vw] sm:text-[14vw] font-serif font-black tracking-[0.25em] uppercase text-white/[0.07] leading-none whitespace-nowrap block">
+              LUXURY HOTEL
+            </span>
+          </div>
 
-              {/* Floating Luxury Search Engine */}
-              <HeroSearchEngine
-                activeTabs={customizer.searchTabs}
-                searchButtonText={customizer.searchButtonText}
-                searchButtonColor={customizer.searchButtonColor}
-              />
+          {/* Hero Content Container - Vertically Balanced with Video Tour Trigger */}
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-10 text-left">
+                {/* 5-Star Rating Pill (Figure 1.1) */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md border border-white/10 mb-3.5 shadow-sm">
+                  <div className="flex items-center gap-0.5 text-amber-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <span className="text-[11px] font-semibold tracking-wider text-amber-200 uppercase ml-1">
+                    5-Star Luxury Experience
+                  </span>
+                </div>
+
+                {/* Hero Title - High-Converting Sanctuary Headline (Figure 1.1) */}
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white drop-shadow-md leading-[1.1] uppercase">
+                  {customizer.heroTitle && customizer.heroTitle !== "Hi There!"
+                    ? customizer.heroTitle
+                    : "PRIVATE SEASIDE SANCTUARY"}
+                </h1>
+
+                {/* Subtitle Paragraph */}
+                <p className="mt-3 text-xs sm:text-sm md:text-base font-light text-white/90 drop-shadow-sm mb-6 max-w-2xl leading-relaxed tracking-wide">
+                  {customizer.heroSubtitle && customizer.heroSubtitle !== "Where would you like to go?"
+                    ? customizer.heroSubtitle
+                    : "Experience unhurried luxury where contemporary elegance meets timeless hospitality across the world's most breathtaking sanctuaries."}
+                </p>
+
+                {/* Floating Luxury Search Engine */}
+                <HeroSearchEngine
+                  activeTabs={customizer.searchTabs}
+                  searchButtonText={customizer.searchButtonText}
+                  searchButtonColor={customizer.searchButtonColor}
+                />
+              </div>
+
+              {/* Right Side Video Tour Preview Button (Figure 1.1) */}
+              <div className="hidden lg:flex lg:col-span-2 items-center justify-end">
+                <div className="flex flex-col items-center gap-3">
+                  <a
+                    href="/stays"
+                    className="group relative flex items-center justify-center w-18 h-18 rounded-full bg-white text-slate-950 shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95"
+                    aria-label="Explore Video Tour"
+                    title="Watch Sanctuary Tour"
+                  >
+                    <div className="absolute inset-0 rounded-full bg-white/40 animate-ping opacity-70" />
+                    <Play className="w-6 h-6 fill-slate-950 text-slate-950 ml-1 transition-transform group-hover:scale-110" />
+                  </a>
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-white/80 drop-shadow-sm">
+                    Watch Tour
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
