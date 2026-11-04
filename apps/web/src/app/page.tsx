@@ -22,6 +22,7 @@ import {
   CheckCircle2,
   Play,
   Star,
+  Mail,
 } from "lucide-react";
 
 // Luxury Experience Categories
@@ -158,91 +159,83 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. Three Feature Cards Section */}
+      {/* 3. Three Feature Cards Section (Sakib_Project_Plan.pdf Figure 5.1) */}
       {customizer.sections.featureCards && (
-        <section className="bg-white py-8 sm:py-10 w-full">
+        <section className="bg-white py-6 sm:py-8 w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {/* Card 1: Holiday Sale / Special Offers */}
+              {/* Card 1: Holiday Sale / Special Offers (Figure 5.1) */}
               <Link
                 href="/stays"
-                className="rounded-2xl text-white p-6 min-h-[190px] sm:min-h-[210px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300"
+                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#00a8ff]"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80"
+                  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
                   alt="Special Offers"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
                 <div className="relative z-10">
-                  <span className="bg-rose-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider inline-block shadow-xs">
-                    {customizer.featureCard1.badge || "SPECIAL OFFER · 35% OFF"}
+                  <span className="bg-[#ff4757] text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded shadow-xs inline-block tracking-wider">
+                    {customizer.featureCard1?.badge || "HOLIDAY SALE"}
                   </span>
-                  <h3 className="text-lg sm:text-xl font-black text-white mt-2.5 tracking-tight leading-snug drop-shadow-md">
-                    {customizer.featureCard1.title || "Winter Sun & Overwater Escapes"}
+                  <h3 className="text-xl font-black text-white mt-2.5 tracking-tight drop-shadow-md">
+                    {customizer.featureCard1?.title || "Special Offers"}
                   </h3>
-                  <p className="text-[11px] text-white/80 mt-1 line-clamp-1">
-                    Complimentary daily champagne breakfast & spa credits.
+                  <p className="text-xs text-white/90 mt-1 line-clamp-1">
+                    Handcrafted luxury stays & exclusive seasonal packages.
                   </p>
                 </div>
-                <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-sky-300 group-hover:text-white transition-colors mt-3">
+                <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-sky-200 group-hover:text-white transition-colors">
                   <span>Explore Offers</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
 
-              {/* Card 2: Curated Retreats */}
+              {/* Card 2: Newsletters (Figure 5.1) */}
               <Link
-                href="/spaces"
-                className="rounded-2xl text-white p-6 min-h-[190px] sm:min-h-[210px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300"
+                href="/news"
+                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#3576ea]"
               >
-                <img
-                  src="https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=800&q=80"
-                  alt="Private Villas"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/20" />
-                <div className="relative z-10">
-                  <span className="bg-amber-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider inline-block shadow-xs">
-                    CURATED RETREATS
-                  </span>
-                  <h3 className="text-lg sm:text-xl font-black text-white mt-2.5 tracking-tight leading-snug drop-shadow-md">
-                    {customizer.featureCard2.title || "Private Villas & Alpine Chalets"}
-                  </h3>
-                  <p className="text-[11px] text-white/80 mt-1 line-clamp-1">
-                    Dedicated private butler & heated infinity pool.
-                  </p>
+                <div className="relative z-10 flex items-start justify-between">
+                  <div>
+                    <h3 className="text-xl font-black text-white tracking-tight drop-shadow-md">
+                      {customizer.featureCard2?.title || "Newsletters"}
+                    </h3>
+                    <p className="text-xs text-white/85 mt-1 max-w-[200px] leading-relaxed">
+                      Subscribe to receive secret travel deals & boutique updates.
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform">
+                    <Mail className="w-6 h-6 stroke-[2]" />
+                  </div>
                 </div>
-                <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-amber-300 group-hover:text-white transition-colors mt-3">
-                  <span>Discover Villas</span>
+                <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-white/90 group-hover:text-white transition-colors mt-4">
+                  <span>Stay Updated</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
 
-              {/* Card 3: VIP Fleet */}
+              {/* Card 3: Travel Tips (Figure 5.1) */}
               <Link
-                href="/boats"
-                className="rounded-2xl text-white p-6 min-h-[190px] sm:min-h-[210px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300"
+                href="/about"
+                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#e5b025]"
               >
-                <img
-                  src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80"
-                  alt="VIP Fleet"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/20" />
-                <div className="relative z-10">
-                  <span className="bg-cyan-500 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider inline-block shadow-xs">
-                    EXCLUSIVE VIP FLEET
-                  </span>
-                  <h3 className="text-lg sm:text-xl font-black text-white mt-2.5 tracking-tight leading-snug drop-shadow-md">
-                    {customizer.featureCard3.title || "Yacht Charters & VIP Chauffeurs"}
-                  </h3>
-                  <p className="text-[11px] text-white/80 mt-1 line-clamp-1">
-                    Private catamaran cruises & luxury supercars.
-                  </p>
+                <div className="relative z-10 flex items-start justify-between">
+                  <div>
+                    <h3 className="text-xl font-black text-white tracking-tight drop-shadow-md">
+                      {customizer.featureCard3?.title || "Travel Tips"}
+                    </h3>
+                    <p className="text-xs text-white/85 mt-1 max-w-[200px] leading-relaxed">
+                      Curated destination guides & expert travel advice.
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-white shrink-0 group-hover:scale-110 transition-transform">
+                    <Palmtree className="w-6 h-6 stroke-[2]" />
+                  </div>
                 </div>
-                <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-cyan-300 group-hover:text-white transition-colors mt-3">
-                  <span>Reserve Fleet</span>
+                <div className="relative z-10 flex items-center gap-1.5 text-xs font-bold text-white/90 group-hover:text-white transition-colors mt-4">
+                  <span>Read Guides</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
