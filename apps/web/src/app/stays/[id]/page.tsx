@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PropertiesService, Property, RoomType } from "@/features/properties/properties.service";
 import { useCartStore } from "@/features/cart/cart-store";
+import { useCurrencyStore } from "@/features/currency/currency-store";
 import {
   MapPin,
   Star,
@@ -38,12 +39,14 @@ export default function PropertyDetailPage() {
   const [rooms, setRooms] = useState<RoomType[]>([]);
   const [loading, setLoading] = useState(true);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
+  const [activeBookingTab, setActiveBookingTab] = useState<"book" | "enquiry">("book");
   const [checkInDate, setCheckInDate] = useState("2026-10-12");
   const [checkOutDate, setCheckOutDate] = useState("2026-10-14");
   const [guestsCount, setGuestsCount] = useState(2);
   const [addedRoomId, setAddedRoomId] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const { formatPrice } = useCurrencyStore();
 
   // Guest Reviews
   const [reviews, setReviews] = useState([
@@ -357,59 +360,67 @@ export default function PropertyDetailPage() {
                 })}
               </div>
 
-              {/* Description Section from Figure 6.1 */}
+              {/* Description Section from Figure 4.2 & Figure 6.1 */}
               <div className="pt-2">
                 <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">
                   Description
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                  {property.description}
+                  {property.description ||
+                    `Built in 1986, ${property.name} is a distinct addition to New York (NY) and a smart choice for travelers. The excitement of the city center is only 0 KM away. No less exceptional is the hotel's easy access to the city's myriad attractions and landmarks, such as Toto Music Studio, British Virgin Islands Tourist Board, L'Atelier Du Chocolat. Start and end in San Francisco! With the In-depth cultural tour Northern California Summer 2019, you have an 8 day tour package taking you through San Francisco, USA and 9 other destinations in USA. Northern California Summer 2019 includes accommodation as well as an expert guide, meals, transport and more.`}
                 </p>
               </div>
 
-              {/* Facilities list matching Figure 4.2 / Figure 6.1 */}
-              <div>
-                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">
-                  FACILITIES
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-slate-700">
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 font-semibold">
-                    <Bell className="w-4 h-4 text-[#2577e3]" />
-                    <span>Wake-up call</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 font-semibold">
-                    <Car className="w-4 h-4 text-[#2577e3]" />
-                    <span>Car hire & Chauffeur</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 font-semibold">
-                    <Tv className="w-4 h-4 text-[#2577e3]" />
-                    <span>Flat Screen Smart TV</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 font-semibold">
-                    <Wifi className="w-4 h-4 text-[#2577e3]" />
-                    <span>Internet - High Speed Wi-Fi</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 font-semibold">
-                    <Coffee className="w-4 h-4 text-[#2577e3]" />
-                    <span>Coffee and artisan tea</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 font-semibold">
-                    <Sparkles className="w-4 h-4 text-[#2577e3]" />
-                    <span>Laundry and dry cleaning</span>
-                  </div>
-                </div>
+              {/* HIGHLIGHTS Section Matching Figure 4.2 in PDF */}
+              <div className="pt-1">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
+                  HIGHLIGHTS
+                </h3>
+                <ul className="space-y-1.5 text-xs text-slate-600 font-normal pl-4 list-disc marker:text-slate-400">
+                  <li>Visit the Museum of Modern Art in Manhattan</li>
+                  <li>See amazing works of contemporary art, including Vincent van Gogh's The Starry Night</li>
+                  <li>Check out Campbell's Soup Cans by Warhol and The Dance (I) by Matisse</li>
+                  <li>Behold masterpieces by Gauguin, Dali, Picasso, and Pollock</li>
+                  <li>Enjoy free audio guides available in English, French, German, Italian, Spanish, Portuguese</li>
+                </ul>
               </div>
 
-              {/* Room Selection & Rate Plan Checkout Architecture (Figure 6.1) */}
-              <div className="pt-4 border-t border-slate-150">
-                <h2 className="text-base font-black text-slate-900 uppercase tracking-tight mb-4">
-                  Available Rooms & Rate Plans
+              {/* Room Selection & Rate Plan Checkout Architecture (Figure 4.2) */}
+              <div className="pt-5 border-t border-slate-150">
+                <h2 className="text-base font-black text-slate-900 uppercase tracking-tight mb-3">
+                  Available Rooms
                 </h2>
 
-                {/* Check Availability Bar */}
-                <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200 mb-5 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
+                {/* Available Rooms Tabs: BOOK / ENQUIRY (Figure 4.2) */}
+                <div className="flex items-center gap-6 border-b border-slate-200 mb-4 text-xs font-bold uppercase tracking-wider">
+                  <button
+                    type="button"
+                    onClick={() => setActiveBookingTab("book")}
+                    className={`pb-2.5 transition-all cursor-pointer relative ${
+                      activeBookingTab === "book"
+                        ? "text-[#2577e3] border-b-2 border-[#2577e3]"
+                        : "text-slate-400 hover:text-slate-700"
+                    }`}
+                  >
+                    BOOK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveBookingTab("enquiry")}
+                    className={`pb-2.5 transition-all cursor-pointer relative ${
+                      activeBookingTab === "enquiry"
+                        ? "text-[#2577e3] border-b-2 border-[#2577e3]"
+                        : "text-slate-400 hover:text-slate-700"
+                    }`}
+                  >
+                    ENQUIRY
+                  </button>
+                </div>
+
+                {/* Check Availability Bar Matching Figure 4.2 in PDF */}
+                <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200 mb-5 grid grid-cols-1 sm:grid-cols-4 gap-3 items-center">
                   <div>
-                    <label className="block text-[10px] font-bold uppercase text-slate-400">Check-in</label>
+                    <label className="block text-[10px] font-bold uppercase text-slate-400">Check In - Out</label>
                     <input
                       type="date"
                       value={checkInDate}
@@ -433,14 +444,15 @@ export default function PropertyDetailPage() {
                       onChange={(e) => setGuestsCount(Number(e.target.value))}
                       className="w-full bg-white border border-slate-200 rounded-md p-1.5 text-xs font-bold text-slate-800"
                     >
-                      <option value={1}>1 Adult</option>
-                      <option value={2}>2 Adults</option>
-                      <option value={4}>4 Adults - 2 Children</option>
+                      <option value={1}>1 Adult - 0 Child</option>
+                      <option value={2}>2 Adults - 0 Child</option>
+                      <option value={3}>2 Adults - 1 Child</option>
+                      <option value={4}>2 Adults - 2 Children</option>
                     </select>
                   </div>
                   <div className="pt-3 sm:pt-0">
-                    <Button className="w-full py-2 font-black text-xs uppercase bg-[#2577e3] hover:bg-[#1d62c2]">
-                      Check Availability
+                    <Button className="w-full py-2 font-black text-xs uppercase bg-[#2577e3] hover:bg-[#1d62c2] text-white">
+                      CHECK AVAILABILITY
                     </Button>
                   </div>
                 </div>
@@ -485,7 +497,7 @@ export default function PropertyDetailPage() {
                         <div className="w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-100 gap-1.5 shrink-0">
                           <div className="text-right">
                             <span className="text-lg font-black text-slate-900 block">
-                              ${room.basePrice}
+                              {formatPrice(room.basePrice)}
                             </span>
                             <span className="text-[10px] text-slate-400 font-bold uppercase">per night</span>
                           </div>
@@ -516,9 +528,97 @@ export default function PropertyDetailPage() {
               </div>
             </div>
 
-            {/* Right Column (32% width): EXACT RELATED HOTEL & PROPERTY TYPE from Figure 6.1 */}
+            {/* Right Column (32% width): EXACT PROPERTY TYPE, FACILITIES & RELATED HOTEL Matching Figure 4.2 in PDF */}
             <aside className="lg:col-span-4 space-y-6">
-              {/* RELATED HOTEL Section with Blue Left Border (Figure 6.1) */}
+              {/* PROPERTY TYPE Filter List with Blue Left Border (Figure 4.2) */}
+              <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
+                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                    PROPERTY TYPE
+                  </h3>
+                </div>
+
+                <div className="space-y-2 text-xs text-slate-700 font-medium">
+                  {[
+                    { name: "Apartments", checked: false },
+                    { name: "Hotels", checked: true },
+                    { name: "Homestays", checked: false },
+                    { name: "Boats", checked: false },
+                    { name: "Motels", checked: false },
+                    { name: "Resorts", checked: false },
+                    { name: "Lodges", checked: false },
+                    { name: "Holiday homes", checked: false },
+                    { name: "Cruises", checked: false },
+                  ].map((pt, i) => (
+                    <label key={i} className="flex items-center gap-2.5 cursor-pointer hover:text-slate-900">
+                      <input
+                        type="checkbox"
+                        className="rounded text-[#2577e3] focus:ring-[#2577e3] w-4 h-4 cursor-pointer"
+                        defaultChecked={pt.checked}
+                      />
+                      <span>{pt.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* FACILITIES List with Outline Icons Matching Figure 4.2 in PDF */}
+              <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
+                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                    FACILITIES
+                  </h3>
+                </div>
+
+                <div className="space-y-2.5 text-xs text-slate-700 font-medium">
+                  <div className="flex items-center gap-2.5">
+                    <Bell className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Wake-up call</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Car className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Car hire</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Bicycle hire</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Tv className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Flat Tv</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Laundry and dry cleaning</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Wifi className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Internet – Wifi</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Coffee className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>Coffee and tea</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* HOTEL SERVICE Section with Blue Left Border (Figure 4.2) */}
+              <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
+                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                    HOTEL SERVICE
+                  </h3>
+                </div>
+
+                <div className="space-y-2 text-xs text-slate-600 font-medium">
+                  <p>• 24/7 Multilingual Front Desk</p>
+                  <p>• Autonomous Digital Self Check-in</p>
+                  <p>• Concierge Luggage Storage</p>
+                  <p>• Express Laundry & Dry Cleaning</p>
+                </div>
+              </div>
+
+              {/* RELATED HOTEL Section with Blue Left Border (Figure 4.2) */}
               <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
                 <div className="border-l-3 border-[#2577e3] pl-2.5 mb-4">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
@@ -546,37 +646,10 @@ export default function PropertyDetailPage() {
                           {rel.name}
                         </h4>
                         <span className="text-xs text-slate-500 font-medium">
-                          from <span className="font-bold text-slate-900">${rel.lowestPrice || 300}</span> /night
+                          from <span className="font-bold text-slate-900">{formatPrice(rel.lowestPrice || 300)}</span> /night
                         </span>
                       </div>
                     </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* PROPERTY TYPE Filter List with Blue Left Border (Figure 6.1) */}
-              <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
-                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                    PROPERTY TYPE
-                  </h3>
-                </div>
-
-                <div className="space-y-2.5 text-xs text-slate-700 font-medium">
-                  {[
-                    { name: "Apartments", checked: false },
-                    { name: "Hotels", checked: true },
-                    { name: "Homestays", checked: false },
-                    { name: "Boats", checked: false },
-                  ].map((pt, i) => (
-                    <label key={i} className="flex items-center gap-2.5 cursor-pointer hover:text-slate-900">
-                      <input
-                        type="checkbox"
-                        className="rounded text-[#2577e3] focus:ring-[#2577e3] w-4 h-4 cursor-pointer"
-                        defaultChecked={pt.checked}
-                      />
-                      <span>{pt.name}</span>
-                    </label>
                   ))}
                 </div>
               </div>

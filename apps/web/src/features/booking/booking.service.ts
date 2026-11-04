@@ -5,7 +5,7 @@ export interface CreateBookingPayload {
   guestEmail: string;
   guestPhone: string;
   specialRequests?: string;
-  paymentMethod: "card" | "bkash" | "nagad" | "bank";
+  paymentMethod: "card" | "bkash" | "nagad" | "bank" | "wallet" | "pay_at_hotel";
   promoCode?: string;
   propertyId: string;
   roomTypeId: string;

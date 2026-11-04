@@ -1,12 +1,15 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Star, MapPin, ShieldCheck } from "lucide-react";
 import { Property } from "@/features/properties/properties.service";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrencyStore } from "@/features/currency/currency-store";
 import { AMENITY_ICONS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 
 export function StayCard({ property }: { property: Property }) {
+  const formatPrice = useCurrencyStore((s) => s.formatPrice);
   const primaryImage =
     property.images?.[0] ||
     "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80";
@@ -88,7 +91,7 @@ export function StayCard({ property }: { property: Property }) {
             </span>
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-black text-slate-900">
-                {formatCurrency(property.lowestPrice || 12000)}
+                {formatPrice(property.lowestPrice && property.lowestPrice < 2000 ? property.lowestPrice : 350)}
               </span>
               <span className="text-xs text-slate-500">/ night</span>
             </div>

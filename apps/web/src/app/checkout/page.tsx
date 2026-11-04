@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/features/cart/cart-store";
+import { useCurrencyStore, CurrencyCode } from "@/features/currency/currency-store";
 import { BookingService, CreateBookingPayload } from "@/features/booking/booking.service";
-import { formatCurrency } from "@/lib/utils";
 import apiClient from "@/lib/api-client";
-import { PAYMENT_METHODS } from "@/lib/constants";
 import {
   ShieldCheck,
   Lock,
@@ -16,43 +15,48 @@ import {
   Sparkles,
   Clock,
   Globe,
+  Wallet,
+  Building2,
+  Hotel,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+export type PaymentMode = "full" | "deposit_20" | "pay_at_hotel" | "wallet";
+export type PaymentMethodId = "card" | "bkash" | "nagad" | "wallet" | "bank" | "pay_at_hotel";
+
+const CHECKOUT_PAYMENT_METHODS = [
+  { id: "card", label: "Credit / Debit Card", icon: "💳", subtitle: "Visa, Mastercard, AMEX" },
+  { id: "bkash", label: "bKash Direct", icon: "📱", subtitle: "Instant Mobile Checkout" },
+  { id: "nagad", label: "Nagad Direct", icon: "🟠", subtitle: "Fast Mobile Payment" },
+  { id: "wallet", label: "Digital Wallet", icon: "👛", subtitle: "Stored-Value Credits" },
+  { id: "bank", label: "Bank Wire Transfer", icon: "🏦", subtitle: "Direct Corporate Invoice" },
+  { id: "pay_at_hotel", label: "Pay at Property", icon: "🏨", subtitle: "Credit Card Guarantee" },
+] as const;
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotal, clearCart } = useCartStore();
+  const { currentCurrency, setCurrency, formatPrice, convert } = useCurrencyStore();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [specialRequests, setSpecialRequests] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "bkash" | "nagad" | "bank">("card");
+  
+  // Chapter 6.2 - 5 Flexible Payment Modes
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("full");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodId>("card");
+
   const [promoCode, setPromoCode] = useState("");
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Dynamic Currency Conversion (Chapter 6.3)
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
-  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({
-    USD: 1.0,
-    EUR: 0.92,
-    GBP: 0.78,
-    BDT: 119.5,
-    AUD: 1.52,
-    CAD: 1.36,
-  });
   const [rateLockSeconds, setRateLockSeconds] = useState(900); // 15 minutes
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
-    // Fetch live system rates
-    apiClient.get<any>("/system/exchange-rates").then((res) => {
-      if (res.data?.rates) {
-        setExchangeRates((prev) => ({ ...prev, ...res.data.rates }));
-      }
-    }).catch(() => {});
-
+  useEffect(() => {
+    setMounted(true);
     // 15-minute countdown timer
     const interval = setInterval(() => {
       setRateLockSeconds((prev) => (prev > 0 ? prev - 1 : 900));
@@ -60,8 +64,6 @@ export default function CheckoutPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const currentRate = exchangeRates[selectedCurrency] || 1.0;
-  const convertedTotal = (grandTotal: number) => (grandTotal * currentRate).toFixed(2);
   const formatTimer = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
@@ -71,6 +73,18 @@ export default function CheckoutPage() {
   const subtotal = getTotal();
   const vatTax = subtotal * 0.05;
   const grandTotal = Math.max(0, subtotal + vatTax - promoDiscount);
+
+  // Dynamic deposit & balance calculation (Chapter 6.2)
+  const depositAmount =
+    paymentMode === "full"
+      ? grandTotal
+      : paymentMode === "deposit_20"
+      ? Math.round(grandTotal * 0.2 * 100) / 100
+      : paymentMode === "wallet"
+      ? grandTotal
+      : 0; // pay_at_hotel
+
+  const balanceDueAtCheckIn = Math.max(0, grandTotal - depositAmount);
 
   const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,27 +264,168 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* 2. Payment Method */}
+            {/* 2. Flexible Payment Modes (Sakib_Project_Plan.pdf Chapter 6.2) */}
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#00a8ff] text-white text-xs flex items-center justify-center font-bold">2</span>
+                  <span>Payment Mode</span>
+                </h2>
+                <span className="text-[11px] font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100">
+                  Chapter 6.2 Flexible Terms
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Mode 1: 100% Prepayment */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMode("full")}
+                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    paymentMode === "full"
+                      ? "border-[#00a8ff] bg-sky-50/60 ring-2 ring-[#00a8ff]/20 shadow-xs"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-slate-900 uppercase">100% Full Prepayment</span>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      paymentMode === "full" ? "border-[#00a8ff] bg-[#00a8ff]" : "border-slate-300"
+                    }`}>
+                      {paymentMode === "full" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Pay full amount now. Instant booking voucher & keycard issuance.
+                  </p>
+                  <div className="mt-2 text-xs font-bold text-slate-800">
+                    Pay Now: {formatPrice(grandTotal)}
+                  </div>
+                </button>
+
+                {/* Mode 2: 20% Partial Deposit */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMode("deposit_20")}
+                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    paymentMode === "deposit_20"
+                      ? "border-[#00a8ff] bg-sky-50/60 ring-2 ring-[#00a8ff]/20 shadow-xs"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-slate-900 uppercase">20% Partial Deposit</span>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      paymentMode === "deposit_20" ? "border-[#00a8ff] bg-[#00a8ff]" : "border-slate-300"
+                    }`}>
+                      {paymentMode === "deposit_20" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Lock room with 20% deposit. Pay remaining 80% at hotel check-in.
+                  </p>
+                  <div className="mt-2 text-xs font-bold text-emerald-600 flex items-center justify-between">
+                    <span>Pay Today: {formatPrice(Math.round(grandTotal * 0.2 * 100) / 100)}</span>
+                    <span className="text-slate-500 text-[10px]">Due Later: {formatPrice(Math.round(grandTotal * 0.8 * 100) / 100)}</span>
+                  </div>
+                </button>
+
+                {/* Mode 3: Pay-at-Hotel (CC Guarantee) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentMode("pay_at_hotel");
+                    setPaymentMethod("pay_at_hotel");
+                  }}
+                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    paymentMode === "pay_at_hotel"
+                      ? "border-[#00a8ff] bg-sky-50/60 ring-2 ring-[#00a8ff]/20 shadow-xs"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-slate-900 uppercase">Pay at Hotel / Arrival</span>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      paymentMode === "pay_at_hotel" ? "border-[#00a8ff] bg-[#00a8ff]" : "border-slate-300"
+                    }`}>
+                      {paymentMode === "pay_at_hotel" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Credit card guarantee. No charge today; pay 100% upon arrival.
+                  </p>
+                  <div className="mt-2 text-xs font-bold text-amber-600">
+                    Pay Online Today: {formatPrice(0)}
+                  </div>
+                </button>
+
+                {/* Mode 4: Digital Wallet */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentMode("wallet");
+                    setPaymentMethod("wallet");
+                  }}
+                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    paymentMode === "wallet"
+                      ? "border-[#00a8ff] bg-sky-50/60 ring-2 ring-[#00a8ff]/20 shadow-xs"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-slate-900 uppercase">OmniStay Digital Wallet</span>
+                    <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                      paymentMode === "wallet" ? "border-[#00a8ff] bg-[#00a8ff]" : "border-slate-300"
+                    }`}>
+                      {paymentMode === "wallet" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Instant 1-click checkout using stored value credits.
+                  </p>
+                  <div className="mt-2 text-xs font-bold text-blue-600">
+                    Available Balance: {formatPrice(500)}
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* 3. Payment Method & Gateway Details */}
             <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-[#00a8ff] text-white text-xs flex items-center justify-center">2</span>
-                <span>Payment Method</span>
+                <span className="w-6 h-6 rounded-full bg-[#00a8ff] text-white text-xs flex items-center justify-center font-bold">3</span>
+                <span>Select Payment Gateway</span>
               </h2>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {PAYMENT_METHODS.map((pm) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {CHECKOUT_PAYMENT_METHODS.map((pm) => (
                   <button
                     key={pm.id}
                     type="button"
-                    onClick={() => setPaymentMethod(pm.id as any)}
-                    className={`p-4 rounded-2xl border text-left flex flex-col justify-between h-24 transition-all cursor-pointer ${
+                    onClick={() => {
+                      setPaymentMethod(pm.id as any);
+                      if (pm.id === "pay_at_hotel") setPaymentMode("pay_at_hotel");
+                      else if (pm.id === "wallet") setPaymentMode("wallet");
+                      else if (paymentMode === "pay_at_hotel") setPaymentMode("full");
+                    }}
+                    className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between h-24 transition-all cursor-pointer ${
                       paymentMethod === pm.id
-                        ? "border-[#00a8ff] bg-sky-50/50 shadow-xs ring-2 ring-[#00a8ff]/20"
+                        ? "border-[#00a8ff] bg-sky-50/60 shadow-xs ring-2 ring-[#00a8ff]/20"
                         : "border-slate-200 hover:border-slate-300 bg-white"
                     }`}
                   >
-                    <span className="text-2xl">{pm.icon}</span>
-                    <span className="text-xs font-bold text-slate-900">{pm.label}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl">{pm.icon}</span>
+                      <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                        paymentMethod === pm.id ? "border-[#00a8ff] bg-[#00a8ff]" : "border-slate-300"
+                      }`}>
+                        {paymentMethod === pm.id && <div className="w-1 h-1 rounded-full bg-white" />}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block leading-tight">{pm.label}</span>
+                      <span className="text-[10px] text-slate-400 block mt-0.5 truncate">{pm.subtitle}</span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -312,6 +467,33 @@ export default function CheckoutPage() {
                       className="w-full bg-white border border-[#f7941d]/30 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#f7941d]"
                     />
                   </div>
+                </div>
+              )}
+
+              {paymentMethod === "wallet" && (
+                <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-2 text-xs animate-in fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-blue-900 flex items-center gap-1.5">
+                      <Wallet className="w-4 h-4 text-blue-600" /> OmniStay Stored-Value Wallet
+                    </span>
+                    <span className="font-mono font-bold text-emerald-600 bg-white px-2 py-0.5 rounded border border-emerald-200">
+                      Balance: {formatPrice(500)}
+                    </span>
+                  </div>
+                  <p className="text-slate-600 text-[11px]">
+                    Subtotal will be instantly debited from your active wallet balance with zero transaction fees.
+                  </p>
+                </div>
+              )}
+
+              {paymentMethod === "pay_at_hotel" && (
+                <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-2 text-xs animate-in fade-in">
+                  <span className="font-bold text-amber-900 block flex items-center gap-1.5">
+                    <Hotel className="w-4 h-4 text-amber-600" /> Pay at Hotel Front Desk
+                  </span>
+                  <p className="text-slate-600 text-[11px]">
+                    Your reservation is 100% confirmed now. Total payment of <strong>{formatPrice(grandTotal)}</strong> is payable upon check-in via cash, card, or room folio.
+                  </p>
                 </div>
               )}
 
@@ -394,7 +576,7 @@ export default function CheckoutPage() {
                       <p className="text-slate-400">Qty: {i.quantity} {i.unitLabel}</p>
                     </div>
                     <span className="font-bold text-slate-900 whitespace-nowrap">
-                      {formatCurrency(i.pricePerUnit * i.quantity)}
+                      {formatPrice(i.pricePerUnit * i.quantity)}
                     </span>
                   </div>
                 ))}
@@ -416,55 +598,70 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Pricing breakdown */}
-              <div className="space-y-2 text-xs text-slate-600 border-t border-slate-100 pt-4">
+              {/* Pricing breakdown with Live Dynamic Payment Mode & Currency Update */}
+              <div className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-slate-900">{formatCurrency(subtotal)}</span>
+                  <span className="font-semibold text-slate-900">{formatPrice(subtotal)}</span>
                 </div>
                 {promoDiscount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
                     <span>Voucher Discount</span>
-                    <span>-{formatCurrency(promoDiscount)}</span>
+                    <span>-{formatPrice(promoDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span>Hospitality VAT (5%)</span>
-                  <span className="font-semibold text-slate-900">{formatCurrency(vatTax)}</span>
+                  <span className="font-semibold text-slate-900">{formatPrice(vatTax)}</span>
                 </div>
-                <div className="flex justify-between items-baseline text-slate-900 pt-3 border-t border-slate-100">
-                  <span className="text-sm font-bold">Total Due (USD)</span>
-                  <span className="text-2xl font-black">{formatCurrency(grandTotal)}</span>
+                <div className="flex justify-between items-baseline text-slate-900 pt-2 border-t border-slate-100">
+                  <span className="text-xs font-bold text-slate-600">Total Booking Value</span>
+                  <span className="text-base font-bold text-slate-900">{formatPrice(grandTotal)}</span>
+                </div>
+
+                {/* Due Today Highlighted Box based on Payment Mode */}
+                <div className="p-3.5 rounded-2xl bg-sky-50 border border-sky-200/80 space-y-1.5 my-2">
+                  <div className="flex justify-between items-center text-sky-950">
+                    <span className="font-bold text-xs uppercase tracking-wide">
+                      {paymentMode === "full"
+                        ? "Total Due Today (100%)"
+                        : paymentMode === "deposit_20"
+                        ? "Deposit Due Today (20%)"
+                        : paymentMode === "pay_at_hotel"
+                        ? "Due Today (Pay at Arrival)"
+                        : "Total Due Today (Wallet)"}
+                    </span>
+                    <span className="text-xl font-black text-sky-600">
+                      {formatPrice(depositAmount)}
+                    </span>
+                  </div>
+                  {balanceDueAtCheckIn > 0 && (
+                    <div className="flex justify-between items-center text-[11px] text-slate-600 pt-1 border-t border-sky-100">
+                      <span>Due Upon Check-In:</span>
+                      <span className="font-bold text-slate-800">{formatPrice(balanceDueAtCheckIn)}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* DCC Multi-Currency Converter (Chapter 6.3) */}
                 <div className="pt-2 border-t border-slate-100 space-y-2">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-slate-700 flex items-center gap-1">
-                      <Globe className="w-3.5 h-3.5 text-blue-600" /> Pay in Home Currency:
+                      <Globe className="w-3.5 h-3.5 text-blue-600" /> Currency:
                     </span>
                     <select
-                      value={selectedCurrency}
-                      onChange={(e) => setSelectedCurrency(e.target.value)}
-                      className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 font-semibold text-slate-800"
+                      value={mounted ? currentCurrency : "USD"}
+                      onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                      className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 font-bold text-slate-800 cursor-pointer hover:bg-slate-100 transition-colors"
                     >
                       <option value="USD">USD ($)</option>
+                      <option value="BDT">BDT (৳)</option>
                       <option value="EUR">EUR (€)</option>
                       <option value="GBP">GBP (£)</option>
-                      <option value="BDT">BDT (৳)</option>
-                      <option value="CAD">CAD (C$)</option>
-                      <option value="AUD">AUD (A$)</option>
+                      <option value="AED">AED (AED )</option>
+                      <option value="SGD">SGD (S$)</option>
                     </select>
                   </div>
-
-                  {selectedCurrency !== "USD" && (
-                    <div className="p-2.5 bg-sky-50/70 border border-sky-200 rounded-xl flex items-center justify-between text-xs">
-                      <span className="text-sky-900 font-medium">Estimated Charge:</span>
-                      <span className="font-mono font-bold text-sky-900 text-sm">
-                        {selectedCurrency} {convertedTotal(grandTotal)}
-                      </span>
-                    </div>
-                  )}
 
                   {/* 15-Minute Guaranteed Rate Lock */}
                   <div className="p-2 rounded-xl bg-amber-50/80 border border-amber-200 text-[10px] text-amber-900 flex items-center justify-between">
@@ -482,9 +679,11 @@ export default function CheckoutPage() {
                 type="submit"
                 isLoading={loading}
                 size="lg"
-                className="w-full py-4 text-base font-bold shadow-xl shadow-sky-500/25"
+                className="w-full py-4 text-base font-bold shadow-xl shadow-sky-500/25 cursor-pointer"
               >
-                Confirm & Pay Now
+                {depositAmount > 0
+                  ? `Pay ${formatPrice(depositAmount)} & Confirm`
+                  : `Confirm Reservation (Pay at Arrival)`}
               </Button>
 
               <div className="text-center">

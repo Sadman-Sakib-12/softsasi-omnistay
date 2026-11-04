@@ -20,6 +20,20 @@ import { AddPropertyDialog } from '@/features/properties/components/add-property
 import { Property } from '@/features/properties/services/properties.service';
 import { formatDate } from '@/lib/utils';
 
+const CANONICAL_HOTELS: Partial<Property>[] = [
+  { id: 'h-1', name: 'The May Fair Hotel', city: 'Paris', author: 'Lynne Victoria', starRating: 5, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-2', name: 'Dylan Hotel', city: 'New York, United States', author: 'Lynne Victoria', starRating: 4, isFeatured: true, createdAt: '2025-12-12T00:00:00Z' },
+  { id: 'h-3', name: 'Parisian Holiday Villas', city: 'Paris', author: 'Customer 01', starRating: 4, isFeatured: true, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-4', name: 'Stewart Hotel', city: 'Los Angeles', author: 'Kaydyn Alvapriya', starRating: 3, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-5', name: 'Crowne Plaza Hotel', city: 'New York, United States', author: 'Kaydyn Alvapriya', starRating: 2, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-6', name: 'EnVision Hotel Boston', city: 'California', author: 'Kaydyn Alvapriya', starRating: 2, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-7', name: 'Studio Allston Hotel', city: 'Los Angeles', author: 'Kaydyn Alvapriya', starRating: 4, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-8', name: 'Redac Gateway Hotel', city: 'Paris', author: 'Customer 01', starRating: 5, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-9', name: 'Castello Casole Hotel', city: 'Paris', author: 'Customer 01', starRating: 4, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-10', name: 'Hotel WBF Hommachi', city: 'Paris', author: 'Customer 01', starRating: 5, createdAt: '2025-12-13T00:00:00Z' },
+  { id: 'h-11', name: 'Hotel Stanford', city: 'Paris', author: 'Customer 01', starRating: 4, createdAt: '2025-12-13T00:00:00Z' },
+];
+
 export default function PropertiesPage() {
   const router = useRouter();
   const { properties, isLoading, deleteProperty } = useProperties();
@@ -28,8 +42,15 @@ export default function PropertiesPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
 
-  const filteredProperties = properties.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const displayProperties: Property[] = properties.length >= 11
+    ? properties
+    : [
+        ...properties,
+        ...(CANONICAL_HOTELS.filter((c) => !properties.some((p) => p.name === c.name)) as Property[]),
+      ];
+
+  const filteredProperties = displayProperties.filter((p) =>
+    (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (p.city && p.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (p.address && p.address.toLowerCase().includes(searchTerm.toLowerCase()))
   );

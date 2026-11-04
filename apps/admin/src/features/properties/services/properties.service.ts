@@ -12,6 +12,7 @@ export interface Property {
   status?: string;
   starRating?: number;
   author?: string;
+  isFeatured?: boolean;
   createdAt: string;
 }
 

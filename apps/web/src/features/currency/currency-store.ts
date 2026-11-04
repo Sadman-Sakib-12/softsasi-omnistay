@@ -1,41 +1,43 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type CurrencyCode = "BDT" | "USD" | "EUR" | "GBP";
+export type CurrencyCode = "USD" | "BDT" | "EUR" | "GBP" | "AED" | "SGD";
 
 interface CurrencyRate {
   code: CurrencyCode;
   symbol: string;
-  rate: number; // relative to BDT
+  rate: number; // relative to USD (1 USD = rate * Currency)
 }
 
 export const CURRENCY_RATES: Record<CurrencyCode, CurrencyRate> = {
-  BDT: { code: "BDT", symbol: "৳", rate: 1 },
-  USD: { code: "USD", symbol: "$", rate: 1 / 115 },
-  EUR: { code: "EUR", symbol: "€", rate: 1 / 125 },
-  GBP: { code: "GBP", symbol: "£", rate: 1 / 148 },
+  USD: { code: "USD", symbol: "$", rate: 1 },
+  BDT: { code: "BDT", symbol: "৳", rate: 120 },
+  EUR: { code: "EUR", symbol: "€", rate: 0.92 },
+  GBP: { code: "GBP", symbol: "£", rate: 0.78 },
+  AED: { code: "AED", symbol: "AED ", rate: 3.67 },
+  SGD: { code: "SGD", symbol: "S$", rate: 1.34 },
 };
 
 interface CurrencyState {
   currentCurrency: CurrencyCode;
   setCurrency: (code: CurrencyCode) => void;
-  formatPrice: (amountInBDT: number) => string;
-  convert: (amountInBDT: number) => number;
+  formatPrice: (amountInUSD: number) => string;
+  convert: (amountInUSD: number) => number;
 }
 
 export const useCurrencyStore = create<CurrencyState>()(
   persist(
     (set, get) => ({
-      currentCurrency: "BDT",
+      currentCurrency: "USD",
       setCurrency: (code: CurrencyCode) => set({ currentCurrency: code }),
-      convert: (amountInBDT: number) => {
+      convert: (amountInUSD: number) => {
         const rate = CURRENCY_RATES[get().currentCurrency]?.rate || 1;
-        return amountInBDT * rate;
+        return (amountInUSD || 0) * rate;
       },
-      formatPrice: (amountInBDT: number) => {
+      formatPrice: (amountInUSD: number) => {
         const currency = get().currentCurrency;
-        const info = CURRENCY_RATES[currency] || CURRENCY_RATES.BDT;
-        const converted = amountInBDT * info.rate;
+        const info = CURRENCY_RATES[currency] || CURRENCY_RATES.USD;
+        const converted = (amountInUSD || 0) * info.rate;
         if (currency === "BDT") {
           return `${info.symbol}${Math.round(converted).toLocaleString()}`;
         }

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/features/cart/cart-store";
+import { useCurrencyStore } from "@/features/currency/currency-store";
 import { formatCurrency } from "@/lib/utils";
 import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, Sparkles, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 export default function CartPage() {
   const router = useRouter();
   const { items, removeItem, updateQuantity, clearCart, getTotal } = useCartStore();
+  const { formatPrice } = useCurrencyStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -95,7 +97,7 @@ export default function CartPage() {
                     <p className="text-xs text-slate-500 mt-0.5">{item.subtitle}</p>
                   )}
                   <p className="text-xs font-semibold text-slate-700 mt-1">
-                    {formatCurrency(item.pricePerUnit)} / {item.unitLabel}
+                    {formatPrice(item.pricePerUnit)} / {item.unitLabel}
                   </p>
                 </div>
               </div>
@@ -120,7 +122,7 @@ export default function CartPage() {
 
                 <div className="text-right">
                   <span className="text-base font-black text-slate-900 block">
-                    {formatCurrency(item.pricePerUnit * item.quantity)}
+                    {formatPrice(item.pricePerUnit * item.quantity)}
                   </span>
                 </div>
 
@@ -152,11 +154,11 @@ export default function CartPage() {
             <div className="space-y-3 text-sm text-slate-600 border-b border-slate-100 pb-5">
               <div className="flex justify-between">
                 <span>Subtotal ({items.length} items)</span>
-                <span className="font-semibold text-slate-900">{formatCurrency(subtotal)}</span>
+                <span className="font-semibold text-slate-900">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Government Hospitality VAT (5%)</span>
-                <span className="font-semibold text-slate-900">{formatCurrency(vatTax)}</span>
+                <span className="font-semibold text-slate-900">{formatPrice(vatTax)}</span>
               </div>
               <div className="flex justify-between text-emerald-600 font-medium">
                 <span>Platform Booking Fee</span>
@@ -166,7 +168,7 @@ export default function CartPage() {
 
             <div className="flex justify-between items-baseline text-slate-900">
               <span className="text-base font-bold">Grand Total</span>
-              <span className="text-2xl font-black">{formatCurrency(grandTotal)}</span>
+              <span className="text-2xl font-black">{formatPrice(grandTotal)}</span>
             </div>
 
             <Button

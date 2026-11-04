@@ -1,20 +1,29 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { useCurrencyStore } from "@/features/currency/currency-store";
 
 /** Merge Tailwind classes without conflicts */
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-/** Format currency */
+/** Format currency with live store support */
 export function formatCurrency(
   amount: number,
-  currency = "USD",
+  currency?: string,
   locale = "en-US"
 ): string {
+  if (typeof window !== "undefined" && !currency) {
+    try {
+      return useCurrencyStore.getState().formatPrice(amount);
+    } catch {
+      // fallback
+    }
+  }
+
   return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency,
+    currency: currency || "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);

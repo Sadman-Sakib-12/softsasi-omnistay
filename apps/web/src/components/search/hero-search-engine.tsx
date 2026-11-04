@@ -16,14 +16,15 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-// Exact tabs from Chapter 5 Travel Marketplace specifications
+// Exact tabs matching Figure 5.1 in Sakib_Project_Plan.pdf
 const ALL_TABS = [
-  { id: "hotel", label: "Stays & Resorts", icon: Hotel, path: "/stays" },
-  { id: "space", label: "Private Villas", icon: Building2, path: "/spaces" },
-  { id: "tour", label: "Curated Tours", icon: Compass, path: "/tours" },
-  { id: "car", label: "Cars & Chauffeur", icon: Car, path: "/cars" },
-  { id: "flight", label: "Aviation", icon: Plane, path: "/flights" },
-  { id: "boat", label: "Yacht Charters", icon: Anchor, path: "/boats" },
+  { id: "hotel", label: "Hotel", icon: Hotel, path: "/stays" },
+  { id: "space", label: "Space", icon: Building2, path: "/spaces" },
+  { id: "tour", label: "Tour", icon: Compass, path: "/tours" },
+  { id: "car", label: "Car", icon: Car, path: "/cars" },
+  { id: "event", label: "Event", icon: Compass, path: "/stays?type=event" },
+  { id: "flight", label: "Flight", icon: Plane, path: "/flights" },
+  { id: "boat", label: "Boat", icon: Anchor, path: "/boats" },
 ];
 
 interface HeroSearchEngineProps {
@@ -66,129 +67,119 @@ export function HeroSearchEngine({
   };
 
   return (
-    <div className="w-full max-w-4xl">
-      {/* 1. Frosted Glass Floating Category Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-2">
-        <div className="bg-slate-950/40 backdrop-blur-md p-1 rounded-full border border-white/20 inline-flex items-center gap-1 shadow-md">
-          {visibleTabs.map((tab) => {
-            const active = activeTab === tab.id;
-            const IconComp = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap ${
-                  active
-                    ? "bg-white text-slate-900 shadow-sm scale-100"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                <IconComp className={`w-3.5 h-3.5 ${active ? "text-[#0284c7]" : "text-white/70"}`} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+    <div className="w-full max-w-5xl">
+      {/* 1. Category Bar Matching Figure 5.1 in PDF */}
+      <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
+        {visibleTabs.map((tab) => {
+          const active = activeTab === tab.id;
+          const IconComp = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap rounded-t-lg ${
+                active
+                  ? "bg-[#2577e3] text-white shadow-md"
+                  : "bg-[#0b132b]/85 text-white/80 hover:text-white hover:bg-[#0b132b]"
+              }`}
+            >
+              <IconComp className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* 2. Luxury Segmented Search Capsule */}
+      {/* 2. Unified Search Capsule Matching Figure 5.1 in PDF */}
       <form
         onSubmit={handleSearch}
-        className="bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-full shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-white/70 p-2 md:p-2.5 flex flex-col md:flex-row items-stretch md:items-center gap-2"
+        className="bg-white rounded-b-xl rounded-tr-xl shadow-2xl border border-slate-200/90 p-2 md:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2"
       >
-        {/* Field 1: Destination / Where */}
-        <div className="flex-1 px-4 py-2 rounded-xl md:rounded-full hover:bg-slate-50 transition-colors flex items-center gap-3 cursor-text">
-          <div className="w-9 h-9 rounded-full bg-sky-50 flex items-center justify-center text-[#0284c7] shrink-0">
-            <MapPin className="w-4 h-4 stroke-[2]" />
+        {/* Field 1: Location */}
+        <div className="flex-1 px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3 cursor-text">
+          <div className="text-[#2577e3] shrink-0">
+            <MapPin className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400">
-              Where
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+              Location
             </label>
             <input
               type="text"
-              placeholder="Search destinations, cities, resorts..."
+              placeholder="Where are you going?"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              className="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 placeholder-slate-400 focus:outline-none"
+              className="w-full bg-transparent text-xs sm:text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none"
             />
           </div>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         </div>
 
-        <div className="hidden md:block w-px h-10 bg-slate-200/80 my-auto" />
+        <div className="hidden md:block w-px h-9 bg-slate-200 my-auto" />
 
-        {/* Field 2: Dates (Check In - Out) */}
-        <div className="flex-1 px-4 py-2 rounded-xl md:rounded-full hover:bg-slate-50 transition-colors flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-sky-50 flex items-center justify-center text-[#0284c7] shrink-0">
-            <Calendar className="w-4 h-4 stroke-[2]" />
+        {/* Field 2: Check in - Out */}
+        <div className="flex-1 px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3">
+          <div className="text-[#2577e3] shrink-0">
+            <Calendar className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400">
-              Check In — Check Out
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+              Check In - Out
             </label>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+            <div className="flex items-center gap-1 text-xs font-semibold text-slate-800">
               <input
                 type="date"
                 value={checkIn}
                 onChange={(e) => setCheckIn(e.target.value)}
-                className="bg-transparent focus:outline-none cursor-pointer w-24 text-slate-900 font-semibold"
+                className="bg-transparent focus:outline-none cursor-pointer w-24 text-slate-800 font-semibold text-xs"
               />
-              <span className="text-slate-300 font-normal">→</span>
+              <span className="text-slate-400">-</span>
               <input
                 type="date"
                 value={checkOut}
                 onChange={(e) => setCheckOut(e.target.value)}
-                className="bg-transparent focus:outline-none cursor-pointer w-24 text-slate-900 font-semibold"
+                className="bg-transparent focus:outline-none cursor-pointer w-24 text-slate-800 font-semibold text-xs"
               />
             </div>
           </div>
         </div>
 
-        <div className="hidden md:block w-px h-10 bg-slate-200/80 my-auto" />
+        <div className="hidden md:block w-px h-9 bg-slate-200 my-auto" />
 
-        {/* Field 3: Guests & Rooms */}
-        <div className="w-full md:w-56 px-4 py-2 rounded-xl md:rounded-full hover:bg-slate-50 transition-colors flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-sky-50 flex items-center justify-center text-[#0284c7] shrink-0">
-            <Users className="w-4 h-4 stroke-[2]" />
+        {/* Field 3: Guests */}
+        <div className="w-full md:w-56 px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3">
+          <div className="text-[#2577e3] shrink-0">
+            <Users className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <label className="block text-[10px] font-black uppercase tracking-wider text-slate-400">
-              Who
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+              Guests
             </label>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
-              <select
-                value={adults}
-                onChange={(e) => setAdults(Number(e.target.value))}
-                className="bg-transparent focus:outline-none cursor-pointer text-slate-900 font-semibold"
-              >
-                <option value={1}>1 Guest</option>
-                <option value={2}>2 Guests</option>
-                <option value={4}>4 Guests</option>
-                <option value={6}>6+ Guests</option>
-              </select>
-              <span className="text-slate-300 font-normal">·</span>
-              <select
-                value={children}
-                onChange={(e) => setChildren(Number(e.target.value))}
-                className="bg-transparent focus:outline-none cursor-pointer text-slate-900 font-semibold"
-              >
-                <option value={0}>0 Kids</option>
-                <option value={1}>1 Kid</option>
-                <option value={2}>2 Kids</option>
-              </select>
-            </div>
+            <select
+              value={`${adults}-${children}`}
+              onChange={(e) => {
+                const [a, c] = e.target.value.split("-").map(Number);
+                setAdults(a);
+                setChildren(c);
+              }}
+              className="bg-transparent text-xs font-semibold text-slate-800 focus:outline-none w-full cursor-pointer"
+            >
+              <option value="1-0">1 Adult - 0 Child</option>
+              <option value="2-0">2 Adults - 0 Child</option>
+              <option value="2-1">2 Adults - 1 Child</option>
+              <option value="4-2">4 Adults - 2 Children</option>
+            </select>
           </div>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         </div>
 
-        {/* Action Button: Search */}
+        {/* Search Button (Figure 5.1) */}
         <button
           type="submit"
-          style={searchButtonColor ? { backgroundColor: searchButtonColor } : undefined}
-          className="bg-gradient-to-r from-[#0284c7] to-[#2563eb] hover:from-[#0369a1] hover:to-[#1d4ed8] text-white font-bold text-xs sm:text-sm px-6 sm:px-8 py-3.5 rounded-xl md:rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-md shadow-sky-500/25 hover:shadow-sky-500/40 hover:scale-[1.02] active:scale-95"
+          className="w-full md:w-auto px-7 py-3 rounded-lg font-bold text-xs uppercase tracking-wider text-white bg-[#2577e3] hover:bg-[#1d62c2] transition-colors shadow-md cursor-pointer shrink-0"
         >
-          <Search className="w-4 h-4 stroke-[2.5]" />
-          <span>{searchButtonText}</span>
+          {searchButtonText === "Search Availability" ? "SEARCH" : searchButtonText}
         </button>
       </form>
     </div>

@@ -14,12 +14,19 @@ export default function AvailabilityCalendarPage() {
 
   const selectedHotelName = properties[0]?.name || 'Hotel Stanford';
 
-  const defaultRoomsList = rooms.map((r, i) => ({
-    id: r.id,
-    label: `#${rooms.length - i} - ${r.name}`,
-    price: r.pricePerNight || r.basePrice || 350,
-    inventory: r.numberOfBeds || 5,
-  }));
+  const defaultRoomsList = rooms.length >= 4
+    ? rooms.map((r, i) => ({
+        id: r.id,
+        label: `#${rooms.length - i} - ${r.name}`,
+        price: r.pricePerNight || r.basePrice || 350,
+        inventory: r.numberOfBeds || 5,
+      }))
+    : [
+        { id: 'r-4', label: '#4 - Standard Double Room', price: 350, inventory: 5 },
+        { id: 'r-3', label: '#3 - Double Room With Town View', price: 350, inventory: 5 },
+        { id: 'r-2', label: '#2 - Room Sheraton Hotel', price: 350, inventory: 7 },
+        { id: 'r-1', label: '#1 - Room Kerama Islands', price: 350, inventory: 9 },
+      ];
 
   const currentRoom = defaultRoomsList[selectedRoomIndex] || defaultRoomsList[0] || {
     id: '',

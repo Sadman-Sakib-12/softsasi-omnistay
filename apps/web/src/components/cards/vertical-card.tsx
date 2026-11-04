@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/features/cart/cart-store";
+import { useCurrencyStore } from "@/features/currency/currency-store";
 import { Plus, Check, Clock, Users, ArrowRight } from "lucide-react";
 
 export interface VerticalCardProps {
@@ -32,6 +33,7 @@ export function VerticalCard({
   specs,
 }: VerticalCardProps) {
   const addItem = useCartStore((s) => s.addItem);
+  const formatPrice = useCurrencyStore((s) => s.formatPrice);
   const [added, setAdded] = React.useState(false);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
@@ -103,7 +105,7 @@ export function VerticalCard({
           <div>
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-black text-slate-900">
-                {formatCurrency(price)}
+                {formatPrice(price)}
               </span>
               <span className="text-xs text-slate-500">/ {unitLabel}</span>
             </div>

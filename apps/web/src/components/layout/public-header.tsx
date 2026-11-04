@@ -28,15 +28,17 @@ import {
 import { GuestAuthService, GuestUser } from "@/features/auth/auth.service";
 import { useCurrencyStore, CurrencyCode } from "@/features/currency/currency-store";
 
-// Refined, luxury navigation items mapped to Chapter 5 Travel Marketplace
+// Refined navigation items mapped directly to Figure 5.1 in Sakib_Project_Plan.pdf
 const DEFAULT_NAV_ITEMS = [
-  { label: "Stays & Resorts", path: "/stays", icon: Hotel },
-  { label: "Private Villas", path: "/spaces", icon: Building2 },
-  { label: "Curated Tours", path: "/tours", icon: Compass },
-  { label: "Car & Chauffeur", path: "/cars", icon: Car },
-  { label: "Yacht Charters", path: "/boats", icon: Anchor },
-  { label: "Flights", path: "/flights", icon: Plane },
-  { label: "About", path: "/about", icon: HelpCircle },
+  { label: "HOME", path: "/" },
+  { label: "HOTEL", path: "/stays" },
+  { label: "TOURS", path: "/tours" },
+  { label: "SPACE", path: "/spaces" },
+  { label: "CAR", path: "/cars" },
+  { label: "EVENT", path: "/stays?type=event" },
+  { label: "FLIGHT", path: "/flights" },
+  { label: "BOAT", path: "/boats" },
+  { label: "PAGES", path: "/about" },
 ];
 
 export function PublicHeader() {
@@ -48,7 +50,7 @@ export function PublicHeader() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navItems, setNavItems] = useState(DEFAULT_NAV_ITEMS);
-  const [siteTitle, setSiteTitle] = useState("OmniStay 360");
+  const [siteTitle, setSiteTitle] = useState("SOFTSASI");
   const [headerCta, setHeaderCta] = useState({ text: "Become a Partner", link: "/auth/register" });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -100,10 +102,10 @@ export function PublicHeader() {
       apiClient
         .get("/system/website-customizer")
         .then((res) => {
-          if (res.data?.siteTitle && res.data.siteTitle !== "SOFTSASI") {
+          if (res.data?.siteTitle) {
             setSiteTitle(res.data.siteTitle);
           } else {
-            setSiteTitle("OmniStay 360");
+            setSiteTitle("SOFTSASI");
           }
           if (res.data?.headerCtaText) {
             setHeaderCta({
@@ -129,29 +131,16 @@ export function PublicHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Balanced 3-Zone Header Layout with standard 64px (h-16) height */}
         <div className="flex items-center justify-between h-16">
-          {/* ZONE 1 (Left): Brand Logo & Tagline */}
+          {/* ZONE 1 (Left): Brand Logo & Tagline (Figure 5.1 in PDF) */}
           <div className="flex items-center shrink-0">
-            <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
-              <div className="w-8.5 h-8.5 rounded-lg bg-gradient-to-tr from-[#0284c7] via-[#2563eb] to-[#4f46e5] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200">
-                <span className="font-black text-xs tracking-tight">OS</span>
-              </div>
-              <div className="flex flex-col text-left">
-                <div className="flex items-center gap-1.5 leading-none">
-                  <span className="font-black text-base sm:text-lg tracking-tight text-slate-900 group-hover:text-[#0284c7] transition-colors">
-                    {siteTitle}
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold tracking-widest uppercase bg-sky-50 text-sky-700 border border-sky-200">
-                    LUXE
-                  </span>
-                </div>
-                <span className="text-[9px] font-semibold tracking-wider text-slate-400 uppercase leading-tight mt-0.5">
-                  Hospitality & Resorts
-                </span>
-              </div>
+            <Link href="/" className="flex items-center gap-2 group focus:outline-none">
+              <span className="font-black text-xl sm:text-2xl tracking-tighter text-slate-900 group-hover:text-[#00a8ff] transition-colors uppercase font-sans">
+                {siteTitle}
+              </span>
             </Link>
           </div>
 
-          {/* ZONE 2 (Center): Centered Navigation Bar */}
+          {/* ZONE 2 (Center): Centered Navigation Bar (Figure 5.1 in PDF) */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
             {navItems.map((item, idx) => {
               const active = item.path === "/" ? pathname === "/" : pathname.startsWith(item.path);
@@ -159,13 +148,14 @@ export function PublicHeader() {
                 <Link
                   key={idx}
                   href={item.path}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+                  className={`text-xs font-bold px-2.5 py-1.5 rounded transition-all whitespace-nowrap inline-flex items-center gap-1 uppercase tracking-tight ${
                     active
-                      ? "text-[#0284c7] bg-sky-50 font-bold"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      ? "text-[#00a8ff] font-extrabold"
+                      : "text-slate-700 hover:text-slate-900"
                   }`}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400 stroke-[2.5]" />
                 </Link>
               );
             })}
