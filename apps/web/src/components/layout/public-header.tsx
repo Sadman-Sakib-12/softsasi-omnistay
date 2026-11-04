@@ -28,8 +28,14 @@ import {
 import { GuestAuthService, GuestUser } from "@/features/auth/auth.service";
 import { useCurrencyStore, CurrencyCode } from "@/features/currency/currency-store";
 
-// Refined navigation items mapped directly to Figure 5.1 in Sakib_Project_Plan.pdf
-const DEFAULT_NAV_ITEMS = [
+interface NavItem {
+  label: string;
+  path: string;
+  icon?: any;
+}
+
+// 9 Standard verticals & CMS pages matching Figure 5.1 in Sakib_Project_Plan.pdf
+const DEFAULT_NAV_ITEMS: NavItem[] = [
   { label: "HOME", path: "/" },
   { label: "HOTEL", path: "/stays" },
   { label: "TOURS", path: "/tours" },
@@ -49,7 +55,7 @@ export function PublicHeader() {
   const [mounted, setMounted] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [navItems, setNavItems] = useState(DEFAULT_NAV_ITEMS);
+  const [navItems, setNavItems] = useState<NavItem[]>(DEFAULT_NAV_ITEMS);
   const [siteTitle, setSiteTitle] = useState("SOFTSASI");
   const [headerCta, setHeaderCta] = useState({ text: "Become a Partner", link: "/auth/register" });
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -76,7 +82,7 @@ export function PublicHeader() {
               localStorage.setItem("omnistay_guest_user", JSON.stringify(u));
             }
           })
-          .catch(() => {});
+          .catch(() => { });
       });
     }
 
@@ -89,14 +95,14 @@ export function PublicHeader() {
             const mapped = res.data
               .filter((m: any) => m.isActive !== false)
               .map((m: any) => ({
-                label: m.title,
+                label: String(m.title).toUpperCase(),
                 path: m.url,
                 icon: Hotel,
               }));
             setNavItems(mapped);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
 
       // Hydrate Website Customizer Branding & Identity
       apiClient
@@ -114,7 +120,7 @@ export function PublicHeader() {
             });
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     });
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -127,42 +133,62 @@ export function PublicHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Balanced 3-Zone Header Layout with standard 64px (h-16) height */}
-        <div className="flex items-center justify-between h-16">
-          {/* ZONE 1 (Left): Brand Logo & Tagline (Figure 5.1 in PDF) */}
-          <div className="flex items-center shrink-0">
-            <Link href="/" className="flex items-center gap-2 group focus:outline-none">
-              <span className="font-black text-xl sm:text-2xl tracking-tighter text-slate-900 group-hover:text-[#00a8ff] transition-colors uppercase font-sans">
-                {siteTitle}
-              </span>
-            </Link>
-          </div>
+    <>
+      {/* Top accent stripe matching Figure 5.1 in Sakib_Project_Plan.pdf */}
+      <div className="w-full h-1 bg-[#0b132b]" />
 
-          {/* ZONE 2 (Center): Centered Navigation Bar (Figure 5.1 in PDF) */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {navItems.map((item, idx) => {
-              const active = item.path === "/" ? pathname === "/" : pathname.startsWith(item.path);
-              return (
-                <Link
-                  key={idx}
-                  href={item.path}
-                  className={`text-xs font-bold px-2.5 py-1.5 rounded transition-all whitespace-nowrap inline-flex items-center gap-1 uppercase tracking-tight ${
-                    active
-                      ? "text-[#00a8ff] font-extrabold"
-                      : "text-slate-700 hover:text-slate-900"
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  <ChevronDown className="w-3 h-3 text-slate-400 stroke-[2.5]" />
-                </Link>
-              );
-            })}
-          </nav>
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Balanced 3-Zone Header Layout with standard 64px (h-16) height */}
+          <div className="flex items-center justify-between h-16 gap-2">
+            {/* ZONE 1 (Left): Brand Logo & Tagline (Figure 4.1 & Figure 5.1 in PDF) */}
+            <div className="flex items-center shrink-0">
+              <Link href="/" className="flex items-center gap-2.5 group focus:outline-none">
+                {/* SoftSasi Hex-Circuit Network Logo (Figure 4.1) */}
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#0284c7] via-[#00a8ff] to-cyan-400 p-0.5 flex items-center justify-center shadow-xs group-hover:shadow-md transition-all shrink-0">
+                  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="6" cy="6" r="2.5" />
+                    <circle cx="18" cy="6" r="2.5" />
+                    <circle cx="12" cy="18" r="2.5" />
+                    <path d="M8.5 6h7" />
+                    <path d="M7.2 8.3l3.6 7.4" />
+                    <path d="M16.8 8.3l-3.6 7.4" />
+                  </svg>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-black text-xl sm:text-2xl tracking-tighter text-slate-900 group-hover:text-[#00a8ff] transition-colors uppercase font-sans leading-none">
+                    {siteTitle}
+                  </span>
+                  <span className="text-[7.5px] font-bold text-slate-400 tracking-wider uppercase leading-tight mt-0.5 hidden sm:inline">
+                    Enterprise Marketplace
+                  </span>
+                </div>
+              </Link>
+            </div>
 
-          {/* ZONE 3 (Right): Utilities & Account Actions */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* ZONE 2 (Center): Centered Navigation Bar (Figure 5.1 in PDF) */}
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 2xl:gap-2">
+              {navItems.map((item, idx) => {
+                const active = item.path === "/" ? pathname === "/" : pathname.startsWith(item.path);
+                return (
+                  <Link
+                    key={idx}
+                    href={item.path}
+                    className={`text-[11px] xl:text-xs font-bold px-1.5 xl:px-2.5 py-1.5 rounded transition-all whitespace-nowrap inline-flex items-center gap-0.5 xl:gap-1 uppercase tracking-tight ${
+                      active
+                        ? "text-[#00a8ff] font-extrabold bg-sky-50/50"
+                        : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-slate-400 stroke-[2.5]" />
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* ZONE 3 (Right): Utilities & Account Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Currency Pill */}
             <div className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 transition-colors">
               <Globe className="w-3.5 h-3.5 text-slate-400" />
@@ -209,9 +235,8 @@ export function PublicHeader() {
                       {user.name ? user.name.split(" ")[0] : "Guest"}
                     </span>
                     <ChevronDown
-                      className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
-                        dropdownOpen ? "rotate-180" : ""
-                      }`}
+                      className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
@@ -347,11 +372,10 @@ export function PublicHeader() {
                   key={idx}
                   href={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-                    active
-                      ? "bg-sky-50 text-[#0284c7] font-bold"
-                      : "text-slate-700 hover:bg-slate-50"
-                  }`}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${active
+                    ? "bg-sky-50 text-[#0284c7] font-bold"
+                    : "text-slate-700 hover:bg-slate-50"
+                    }`}
                 >
                   <span>{item.label}</span>
                 </Link>
@@ -375,5 +399,6 @@ export function PublicHeader() {
         )}
       </div>
     </header>
+    </>
   );
 }

@@ -134,6 +134,13 @@ export class SystemContentController {
   }
 
   @Public()
+  @Put('menus')
+  @ApiOperation({ summary: 'Replace or bulk update navigation menus' })
+  replaceMenus(@Body() items: NavigationMenuItem[]): NavigationMenuItem[] {
+    return this.contentService.setMenus(items);
+  }
+
+  @Public()
   @Post('menus')
   @ApiOperation({ summary: 'Add navigation menu item' })
   createMenuItem(@Body() dto: Partial<NavigationMenuItem>): NavigationMenuItem {

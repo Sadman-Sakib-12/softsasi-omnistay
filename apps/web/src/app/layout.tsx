@@ -23,11 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-slate-900 selection:bg-sky-500 selection:text-white">
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} h-full antialiased overflow-x-hidden`}>
+      <body className="min-h-full flex flex-col bg-white text-slate-900 selection:bg-sky-500 selection:text-white overflow-x-hidden">
         <Providers>
           <PublicHeader />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 overflow-x-hidden">{children}</main>
           <PublicFooter />
           <AiConciergeChat />
         </Providers>

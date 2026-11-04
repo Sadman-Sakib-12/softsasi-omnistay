@@ -755,6 +755,18 @@ export class SystemContentService implements OnModuleInit {
     return list.sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
+  setMenus(items: NavigationMenuItem[]): NavigationMenuItem[] {
+    this.navMenus = items.map((m, idx) => ({
+      ...m,
+      id: m.id || `menu-${Date.now()}-${idx}`,
+      location: m.location || 'header',
+      order: m.order !== undefined ? m.order : idx + 1,
+      isActive: m.isActive !== undefined ? m.isActive : true,
+    }));
+    this.persistSetting('cms_menus', this.navMenus);
+    return this.navMenus;
+  }
+
   createMenuItem(item: Partial<NavigationMenuItem>): NavigationMenuItem {
     const loc = item.location || 'header';
     const currentLocItems = this.navMenus.filter((m) => (m.location || 'header') === loc);
