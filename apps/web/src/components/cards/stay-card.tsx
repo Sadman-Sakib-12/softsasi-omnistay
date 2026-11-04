@@ -90,7 +90,7 @@ export function StayCard({ property }: { property: Property }) {
               From
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-lg font-black text-slate-900">
+              <span className="text-lg font-black text-slate-900" suppressHydrationWarning>
                 {formatPrice(property.lowestPrice && property.lowestPrice < 2000 ? property.lowestPrice : 350)}
               </span>
               <span className="text-xs text-slate-500">/ night</span>

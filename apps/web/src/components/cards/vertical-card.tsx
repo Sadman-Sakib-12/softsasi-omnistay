@@ -104,7 +104,7 @@ export function VerticalCard({
         <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
           <div>
             <div className="flex items-baseline gap-1">
-              <span className="text-lg font-black text-slate-900">
+              <span className="text-lg font-black text-slate-900" suppressHydrationWarning>
                 {formatPrice(price)}
               </span>
               <span className="text-xs text-slate-500">/ {unitLabel}</span>

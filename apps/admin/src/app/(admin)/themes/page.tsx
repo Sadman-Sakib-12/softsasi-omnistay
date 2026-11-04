@@ -845,32 +845,6 @@ export default function ElementorWhiteWebsiteBuilderPage() {
 
           <div className="h-5 w-px bg-slate-200 hidden sm:block" />
 
-          {/* Mode Switcher: Visual Builder vs WordPress Themes Directory */}
-          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-semibold">
-            <button
-              onClick={() => setViewMode('builder')}
-              className={`px-2.5 py-1.5 rounded-md flex items-center gap-1.5 transition cursor-pointer ${
-                viewMode === 'builder'
-                  ? 'bg-white text-slate-900 font-bold shadow-xs border border-slate-200/80'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5 text-[#00a8ff]" />
-              <span className="hidden sm:inline">Visual Builder</span>
-            </button>
-            <button
-              onClick={() => setViewMode('directory')}
-              className={`px-2.5 py-1.5 rounded-md flex items-center gap-1.5 transition cursor-pointer ${
-                viewMode === 'directory'
-                  ? 'bg-white text-slate-900 font-bold shadow-xs border border-slate-200/80'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              <Paintbrush className="w-3.5 h-3.5 text-[#92003b]" />
-              <span className="hidden sm:inline">Themes</span>
-            </button>
-          </div>
-
           {/* Multi-Page Switcher Dropdown */}
           {viewMode === 'builder' && (
             <div className="relative">
@@ -2485,7 +2459,8 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                 </div>
               )}
 
-              {/* 1. TOP PUBLIC WEBSITE HEADER */}
+              {/* 1. TOP PUBLIC WEBSITE HEADER (Shown for Homepage) */}
+              {activePageId === "home" && (
               <div
                 id="canvas-header_nav"
                 onClick={() => handleSelectElement('header_nav')}
@@ -2547,6 +2522,7 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                   </button>
                 </div>
               </div>
+              )}
 
               {/* 2. DYNAMIC CANVAS BODY: HOMEPAGE VS CUSTOM PAGE */}
               {activePageId === 'home' ? (
@@ -3000,187 +2976,73 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                   )}
                 </>
               ) : activePageDraft ? (
-                // === DYNAMIC CUSTOM CMS PAGE CANVAS ===
-                <div className="flex-1 flex flex-col bg-slate-50/40">
-                  {/* Breadcrumb & Admin Ribbon */}
-                  <div className="bg-slate-100/90 border-b border-slate-200 px-6 py-2.5 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 text-slate-500">
-                      <button
-                        onClick={() => setActivePageId('home')}
-                        className="hover:text-slate-800 font-medium flex items-center gap-1 cursor-pointer"
-                      >
-                        <Home className="w-3.5 h-3.5" /> Home
-                      </button>
-                      <span>/</span>
-                      <span className="text-slate-400">Pages</span>
-                      <span>/</span>
-                      <span className="font-bold text-slate-800 truncate max-w-[200px]">
-                        {activePageDraft.title}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-600">
-                        {activePageDraft.slug}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const nextStatus =
-                            activePageDraft.status === 'Published' ? 'Draft' : 'Published';
-                          setActivePageDraft({ ...activePageDraft, status: nextStatus });
-                        }}
-                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 transition cursor-pointer ${
-                          activePageDraft.status === 'Published'
-                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                            : 'bg-amber-100 text-amber-800 border border-amber-200'
-                        }`}
-                        title="Click to toggle status"
-                      >
+                // === NORMAL CLEAN CUSTOM CMS PAGE CANVAS ===
+                <div className="flex-1 flex flex-col bg-slate-50/50 p-6 sm:p-12 overflow-y-auto">
+                  <div className="max-w-4xl w-full mx-auto space-y-6">
+                    {/* Clean Page Header (Title, Template, Last Updated) */}
+                    <div
+                      id="canvas-page_title"
+                      onClick={() => handleSelectElement('page_title')}
+                      className={`p-4 rounded-2xl transition cursor-pointer border ${
+                        activeElement === 'page_title'
+                          ? 'border-[#00a8ff] ring-2 ring-[#00a8ff]/20 bg-sky-50/30'
+                          : 'border-transparent hover:border-slate-200 hover:bg-white/60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#00a8ff]">
+                        <FileText className="w-4 h-4" />
+                        <span>{activePageDraft.template || 'Standard Page'}</span>
+                      </div>
+                      <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-1.5">
+                        {activePageDraft.title || 'Untitled Page'}
+                      </h1>
+                      <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-400">
+                        <span>Last Updated: {activePageDraft.updated || 'Recently'}</span>
+                        <span>•</span>
+                        <span className="font-mono bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[11px]">
+                          {activePageDraft.slug}
+                        </span>
+                        <span>•</span>
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            activePageDraft.status === 'Published' ? 'bg-emerald-500' : 'bg-amber-500'
-                          }`}
-                        />
-                        <span>{activePageDraft.status || 'Draft'}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Custom Page Hero Banner */}
-                  <div
-                    id="canvas-page_hero"
-                    onClick={() => handleSelectElement('page_hero')}
-                    className={`relative bg-gradient-to-br from-slate-900 via-slate-800 to-sky-950 text-white py-14 px-6 sm:px-10 border-b border-slate-800 group/hero cursor-pointer transition-all ${
-                      activeElement === 'page_hero'
-                        ? 'ring-4 ring-[#00a8ff] ring-offset-2'
-                        : 'hover:ring-2 hover:ring-[#00a8ff]/40'
-                    }`}
-                  >
-                    <div className="max-w-4xl mx-auto space-y-4">
-                      {/* Template Tag */}
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-bold uppercase tracking-wider text-sky-300">
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>{activePageDraft.template || 'Standard Template'}</span>
-                      </div>
-
-                      {/* Page Title (Click to Edit) */}
-                      <div
-                        id="canvas-page_title"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelectElement('page_title');
-                        }}
-                        className={`relative group/title inline-block p-1.5 -ml-1.5 rounded-xl transition-all cursor-pointer ${
-                          activeElement === 'page_title'
-                            ? 'outline-2 outline-solid outline-[#00a8ff] outline-offset-4 ring-4 ring-[#00a8ff]/30 bg-[#00a8ff]/10'
-                            : 'hover:outline-2 hover:outline-dashed hover:outline-[#00a8ff] hover:outline-offset-2'
-                        }`}
-                      >
-                        <div
-                          className={`absolute -top-3.5 left-2 z-30 transition-opacity flex items-center gap-1 bg-[#00a8ff] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow ${
-                            activeElement === 'page_title'
-                              ? 'opacity-100 ring-1 ring-white'
-                              : 'opacity-0 group-hover/title:opacity-100'
+                          className={`font-semibold px-2.5 py-0.5 rounded-full text-[10px] ${
+                            activePageDraft.status === 'Published'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-amber-100 text-amber-800'
                           }`}
                         >
-                          <Heading className="w-3 h-3" />
-                          <span>Edit Title</span>
-                        </div>
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight drop-shadow-md">
-                          {activePageDraft.title || 'Untitled Page'}
-                        </h1>
-                      </div>
-
-                      {/* Page Subtitle / Summary (Click to Edit) */}
-                      <div
-                        id="canvas-page_subtitle"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelectElement('page_subtitle');
-                        }}
-                        className={`relative group/sub block p-1.5 -ml-1.5 rounded-xl transition-all cursor-pointer max-w-2xl ${
-                          activeElement === 'page_subtitle'
-                            ? 'outline-2 outline-solid outline-[#00a8ff] outline-offset-4 ring-4 ring-[#00a8ff]/30 bg-[#00a8ff]/10'
-                            : 'hover:outline-2 hover:outline-dashed hover:outline-[#00a8ff] hover:outline-offset-2'
-                        }`}
-                      >
-                        <div
-                          className={`absolute -top-3.5 left-2 z-30 transition-opacity flex items-center gap-1 bg-[#00a8ff] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow ${
-                            activeElement === 'page_subtitle'
-                              ? 'opacity-100 ring-1 ring-white'
-                              : 'opacity-0 group-hover/sub:opacity-100'
-                          }`}
-                        >
-                          <Edit3 className="w-3 h-3" />
-                          <span>Edit Subtitle / Summary</span>
-                        </div>
-                        <p className="text-sm sm:text-base text-slate-300 font-medium leading-relaxed">
-                          {activePageDraft.metaDescription ||
-                            'Curated luxury hospitality and bespoke experiences across premier global destinations.'}
-                        </p>
-                      </div>
-
-                      {/* Action Buttons in Hero */}
-                      <div className="pt-2 flex items-center gap-3">
-                        <button
-                          type="button"
-                          className="px-5 py-2.5 rounded-xl text-white font-bold text-xs shadow-md transition cursor-pointer"
-                          style={{ backgroundColor: formState.primaryColor || '#00a8ff' }}
-                        >
-                          Contact Concierge
-                        </button>
-                        <button
-                          type="button"
-                          className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition cursor-pointer"
-                        >
-                          Explore Services
-                        </button>
+                          {activePageDraft.status || 'Draft'}
+                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Custom Page Main Content Card */}
-                  <div className="max-w-4xl w-full mx-auto p-6 sm:p-10 space-y-8 flex-1">
+                    {/* Clean Page Content Card (Matches live website page) */}
                     <div
                       id="canvas-page_content"
                       onClick={() => handleSelectElement('page_content')}
-                      className={`bg-white rounded-3xl p-6 sm:p-10 border transition-all cursor-pointer relative group/content ${
+                      className={`bg-white rounded-3xl p-8 sm:p-12 border transition cursor-pointer relative shadow-xs ${
                         activeElement === 'page_content'
-                          ? 'border-[#00a8ff] ring-4 ring-[#00a8ff]/20 shadow-lg'
-                          : 'border-slate-200/90 shadow-xs hover:border-[#00a8ff]/50'
+                          ? 'border-[#00a8ff] ring-2 ring-[#00a8ff]/20 shadow-md'
+                          : 'border-slate-200/80 hover:border-[#00a8ff]/40'
                       }`}
                     >
-                      <div
-                        className={`absolute top-3 right-3 transition-opacity flex items-center gap-1.5 bg-[#00a8ff] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow ${
-                          activeElement === 'page_content'
-                            ? 'opacity-100'
-                            : 'opacity-0 group-hover/content:opacity-100'
-                        }`}
-                      >
-                        <Edit3 className="w-3 h-3" />
-                        <span>Click to Edit Content (Tiptap / Editor.js)</span>
-                      </div>
-
-                      {/* Rendered Markdown Body */}
                       <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-4">
                         {renderMarkdownPreview(activePageDraft.content || '')}
                       </div>
 
-                      {/* In-Canvas Quick Add Block Toolbar */}
-                      <div className="mt-8 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/60 p-4 rounded-2xl">
-                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                      {/* In-Canvas Quick Add Toolbar */}
+                      <div className="mt-8 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
                           <Plus className="w-3.5 h-3.5 text-[#00a8ff]" />
-                          Insert Block Into Page:
+                          Insert:
                         </span>
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleInsertWidgetToPage('heading');
                             }}
-                            className="px-2.5 py-1 bg-white hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] border border-slate-200 hover:border-[#00a8ff] rounded-lg text-xs font-semibold transition cursor-pointer"
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] rounded-md text-xs font-medium transition cursor-pointer"
                           >
                             + Heading
                           </button>
@@ -3190,7 +3052,7 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                               e.stopPropagation();
                               handleInsertWidgetToPage('text_editor');
                             }}
-                            className="px-2.5 py-1 bg-white hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] border border-slate-200 hover:border-[#00a8ff] rounded-lg text-xs font-semibold transition cursor-pointer"
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] rounded-md text-xs font-medium transition cursor-pointer"
                           >
                             + Paragraph
                           </button>
@@ -3200,9 +3062,9 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                               e.stopPropagation();
                               handleInsertWidgetToPage('icon_box');
                             }}
-                            className="px-2.5 py-1 bg-white hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] border border-slate-200 hover:border-[#00a8ff] rounded-lg text-xs font-semibold transition cursor-pointer"
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] rounded-md text-xs font-medium transition cursor-pointer"
                           >
-                            + Highlights
+                            + List
                           </button>
                           <button
                             type="button"
@@ -3210,9 +3072,19 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                               e.stopPropagation();
                               handleInsertWidgetToPage('button');
                             }}
-                            className="px-2.5 py-1 bg-white hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] border border-slate-200 hover:border-[#00a8ff] rounded-lg text-xs font-semibold transition cursor-pointer"
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] rounded-md text-xs font-medium transition cursor-pointer"
                           >
-                            + CTA Button
+                            + Link / Button
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleInsertWidgetToPage('divider');
+                            }}
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] rounded-md text-xs font-medium transition cursor-pointer"
+                          >
+                            + Divider
                           </button>
                           <button
                             type="button"
@@ -3220,82 +3092,11 @@ export default function ElementorWhiteWebsiteBuilderPage() {
                               e.stopPropagation();
                               handleInsertWidgetToPage('image');
                             }}
-                            className="px-2.5 py-1 bg-white hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] border border-slate-200 hover:border-[#00a8ff] rounded-lg text-xs font-semibold transition cursor-pointer"
+                            className="px-2.5 py-1 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-[#00a8ff] rounded-md text-xs font-medium transition cursor-pointer"
                           >
                             + Image
                           </button>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Feature Highlights Grid */}
-                    <div
-                      id="canvas-page_features"
-                      onClick={() => handleSelectElement('page_features')}
-                      className={`grid grid-cols-1 md:grid-cols-3 gap-5 cursor-pointer rounded-2xl p-2 transition-all ${
-                        activeElement === 'page_features'
-                          ? 'ring-4 ring-[#00a8ff] ring-offset-2'
-                          : 'hover:ring-2 hover:ring-[#00a8ff]/30'
-                      }`}
-                    >
-                      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
-                        <div className="w-10 h-10 rounded-xl bg-sky-50 text-[#00a8ff] flex items-center justify-center font-bold">
-                          <ShieldCheck className="w-5 h-5" />
-                        </div>
-                        <h4 className="font-bold text-slate-900 text-sm">Bank-Grade Security</h4>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                          256-bit encryption for folio transactions, guest profiles, and reservation settlements.
-                        </p>
-                      </div>
-                      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                          <Award className="w-5 h-5" />
-                        </div>
-                        <h4 className="font-bold text-slate-900 text-sm">Curated 5-Star Standards</h4>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                          Every property and excursion meets strict luxury hospitality standards and verified reviews.
-                        </p>
-                      </div>
-                      <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
-                        <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                          <Sparkles className="w-5 h-5" />
-                        </div>
-                        <h4 className="font-bold text-slate-900 text-sm">24/7 VIP Concierge</h4>
-                        <p className="text-xs text-slate-500 leading-relaxed">
-                          Autonomous multi-lingual AI and human concierge for real-time assistance and bespoke requests.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* High-Converting CTA Banner */}
-                    <div
-                      id="canvas-page_cta"
-                      onClick={() => handleSelectElement('page_cta')}
-                      className={`rounded-3xl p-8 sm:p-10 text-white text-center space-y-4 relative overflow-hidden shadow-xl cursor-pointer transition-all ${
-                        activeElement === 'page_cta'
-                          ? 'ring-4 ring-blue-500 ring-offset-2'
-                          : 'hover:ring-2 hover:ring-blue-400/40'
-                      }`}
-                      style={{
-                        background: 'linear-gradient(135deg, #09172e 0%, #00a8ff 100%)',
-                      }}
-                    >
-                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-200 bg-white/10 px-3 py-1 rounded-full border border-white/20">
-                        EXPERIENCE THE EXTRAORDINARY
-                      </span>
-                      <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white max-w-xl mx-auto">
-                        Ready to Craft Your Unforgettable Journey?
-                      </h3>
-                      <p className="text-xs sm:text-sm text-sky-100 max-w-lg mx-auto leading-relaxed">
-                        Join thousands of discerning travelers who trust Softsasi OmniStay 360 for luxury accommodations and bespoke itineraries.
-                      </p>
-                      <div className="pt-2">
-                        <button
-                          type="button"
-                          className="px-6 py-3 rounded-xl bg-white text-slate-900 font-extrabold text-xs shadow-lg hover:bg-slate-100 transition cursor-pointer"
-                        >
-                          Explore Portfolio & Book Now
-                        </button>
                       </div>
                     </div>
                   </div>
