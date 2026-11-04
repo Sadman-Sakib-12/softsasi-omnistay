@@ -6,3 +6,4 @@ import { AppLoader } from "@/components/ui/app-loader";
 export default function AdminLoading() {
   return <AppLoader fullPage color="#22d3ee" size={18} speedMultiplier={1.2} text="Loading Dashboard..." />;
 }
+
