@@ -18,6 +18,12 @@ export class LeaveController {
     return this.leaveService.getLeaveTypes();
   }
 
+  @Get('holidays')
+  @ApiOperation({ summary: 'List holiday calendars and peak blackout periods' })
+  getHolidays() {
+    return this.leaveService.getHolidays();
+  }
+
   @Post('apply')
   @ApiOperation({ summary: 'Submit leave request (enforces holiday blackout checks)' })
   applyForLeave(@Body() dto: CreateLeaveApplicationDto) {

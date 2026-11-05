@@ -127,6 +127,14 @@ export class AttendanceApplicationService {
     return this.repo.findShiftSchedules();
   }
 
+  async getBiometricDevices() {
+    return this.repo.findBiometricDevices();
+  }
+
+  async getAttendanceLogs(limit = 100) {
+    return this.repo.findAllAttendances(limit);
+  }
+
   async calculateMonthlyOvertime(employeeId: string, monthPrefix: string) {
     const startDate = new Date(`${monthPrefix}-01`);
     const endDate = new Date(`${monthPrefix}-31`);

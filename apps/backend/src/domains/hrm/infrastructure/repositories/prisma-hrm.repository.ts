@@ -145,6 +145,28 @@ export class PrismaHrmRepository implements IHrmRepository {
     });
   }
 
+  async createBiometricDevice(data: any): Promise<any> {
+    return this.prisma.biometricDevice.create({ data });
+  }
+
+  async findBiometricDevices(): Promise<any[]> {
+    return this.prisma.biometricDevice.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findAllAttendances(limit = 100): Promise<any[]> {
+    return this.prisma.attendanceEmployee.findMany({
+      take: limit,
+      include: {
+        employee: {
+          include: { department: true, designation: true },
+        },
+      },
+      orderBy: { date: 'desc' },
+    });
+  }
+
   // Leaves
   async createLeaveType(data: any): Promise<any> {
     return this.prisma.leaveType.create({ data });
@@ -183,6 +205,16 @@ export class PrismaHrmRepository implements IHrmRepository {
 
   async updateLeaveApplication(id: string, data: Record<string, any>): Promise<any> {
     return this.prisma.leaveApplication.update({ where: { id }, data });
+  }
+
+  async createHolidayCalendar(data: any): Promise<any> {
+    return this.prisma.holidayCalendar.create({ data });
+  }
+
+  async findHolidayCalendars(): Promise<any[]> {
+    return this.prisma.holidayCalendar.findMany({
+      orderBy: { startDate: 'asc' },
+    });
   }
 
   // Payroll & Loans
@@ -307,21 +339,22 @@ export class PrismaHrmRepository implements IHrmRepository {
 
   async findJobs(tenantId?: string): Promise<any[]> {
     const where: any = { status: 'active' };
-    if (tenantId) where.tenantId = tenantId;
     return this.prisma.job.findMany({
       where,
       include: {
         applications: {
           select: { id: true, stage: true, name: true, email: true },
         },
-        branch: true,
       },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async findJobById(id: string): Promise<any | null> {
-    return this.prisma.job.findUnique({ where: { id } });
+    return this.prisma.job.findUnique({
+      where: { id },
+      include: { applications: true },
+    });
   }
 
   async createJobApplication(data: any): Promise<any> {
@@ -334,7 +367,18 @@ export class PrismaHrmRepository implements IHrmRepository {
   async findJobApplicationById(id: string): Promise<any | null> {
     return this.prisma.jobApplication.findUnique({
       where: { id },
-      include: { job: true },
+      include: { job: true, interviews: true },
+    });
+  }
+
+  async findAllJobApplications(jobId?: string): Promise<any[]> {
+    return this.prisma.jobApplication.findMany({
+      where: jobId ? { jobId } : undefined,
+      include: {
+        job: true,
+        interviews: { orderBy: { scheduledDate: 'desc' } },
+      },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -350,6 +394,7 @@ export class PrismaHrmRepository implements IHrmRepository {
     return this.prisma.interviewSchedule.create({ data });
   }
 
+  // 10.7 Appraisals & Goal Tracking
   async createAppraisal(data: any): Promise<any> {
     return this.prisma.appraisal.create({
       data,
@@ -357,7 +402,104 @@ export class PrismaHrmRepository implements IHrmRepository {
     });
   }
 
+  async findAppraisals(employeeId?: string): Promise<any[]> {
+    return this.prisma.appraisal.findMany({
+      where: employeeId ? { employeeId } : undefined,
+      include: { employee: { include: { department: true, designation: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async createGoalTracking(data: any): Promise<any> {
+    return this.prisma.goalTracking.create({ data });
+  }
+
+  async findGoalTrackings(): Promise<any[]> {
+    return this.prisma.goalTracking.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  // 10.8 Training, Development & Certifications
   async createEmployeeCertification(data: any): Promise<any> {
     return this.prisma.employeeCertification.create({ data });
+  }
+
+  async findEmployeeCertifications(): Promise<any[]> {
+    return this.prisma.employeeCertification.findMany({
+      orderBy: { expiryDate: 'asc' },
+    });
+  }
+
+  async createTrainingProgram(data: any): Promise<any> {
+    return this.prisma.trainingProgram.create({
+      data,
+      include: { attendees: true },
+    });
+  }
+
+  async findTrainingPrograms(): Promise<any[]> {
+    return this.prisma.trainingProgram.findMany({
+      include: { attendees: true },
+      orderBy: { startDate: 'desc' },
+    });
+  }
+
+  // 10.9 HR Administration & Disciplinary Workflows
+  async createEmployeeAward(data: any): Promise<any> {
+    return this.prisma.employeeAward.create({ data });
+  }
+
+  async findEmployeeAwards(): Promise<any[]> {
+    return this.prisma.employeeAward.findMany({
+      orderBy: { awardDate: 'desc' },
+    });
+  }
+
+  async createEmployeeComplaint(data: any): Promise<any> {
+    return this.prisma.employeeComplaint.create({ data });
+  }
+
+  async findEmployeeComplaints(): Promise<any[]> {
+    return this.prisma.employeeComplaint.findMany({
+      orderBy: { lodgedAt: 'desc' },
+    });
+  }
+
+  async createDisciplinaryWarning(data: any): Promise<any> {
+    return this.prisma.disciplinaryWarning.create({ data });
+  }
+
+  async findDisciplinaryWarnings(): Promise<any[]> {
+    return this.prisma.disciplinaryWarning.findMany({
+      orderBy: { issuedDate: 'desc' },
+    });
+  }
+
+  async createResignationRequest(data: any): Promise<any> {
+    return this.prisma.resignationRequest.create({ data });
+  }
+
+  async findResignationRequests(): Promise<any[]> {
+    return this.prisma.resignationRequest.findMany({
+      orderBy: { noticeDate: 'desc' },
+    });
+  }
+
+  async findOffboardingChecklists(): Promise<any[]> {
+    return this.prisma.offboardingChecklist.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async createOffboardingChecklist(data: any): Promise<any> {
+    return this.prisma.offboardingChecklist.create({ data });
+  }
+
+  async updateOffboardingChecklist(id: string, data: any): Promise<any> {
+    return this.prisma.offboardingChecklist.update({
+      where: { id },
+      data,
+    });
   }
 }

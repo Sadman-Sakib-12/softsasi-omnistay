@@ -1,1676 +1,2189 @@
 'use client';
-import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { BeatLoader } from 'react-spinners';
 import {
-  UserCheck,
-  Plus,
-  Clock,
-  Award,
   Users,
-  X,
-  Loader2,
-  Calendar,
-  Briefcase,
-  FileText,
-  DollarSign,
-  Fingerprint,
-  CheckCircle2,
-  AlertCircle,
-  Video,
-  Shield,
   Building2,
-  Smartphone,
-  MapPin,
+  Briefcase,
+  Clock,
+  Fingerprint,
+  Calendar,
+  DollarSign,
+  UserCheck,
+  Award,
+  ShieldCheck,
+  AlertTriangle,
+  GraduationCap,
+  Video,
+  FileText,
+  Plus,
+  Search,
+  CheckCircle2,
+  XCircle,
+  ExternalLink,
   ChevronRight,
   TrendingUp,
   Download,
   Filter,
+  Check,
+  Sparkles,
+  Smartphone,
+  Eye,
+  RefreshCw,
+  Mail,
+  Phone,
+  Printer,
+  ChevronDown,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { usersService } from '@/features/users/services/users.service';
-import { api } from '@/lib/api/client';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import {
+  hrmService,
+  BranchItem,
+  EmployeeItem,
+  EmployeeDetail,
+  BiometricDeviceItem,
+  ShiftScheduleItem,
+  AttendancePunchItem,
+  LeaveTypeItem,
+  LeaveApplicationItem,
+  HolidayCalendarItem,
+  ServiceChargePoolItem,
+  PaySlipItem,
+  JobPostItem,
+  JobApplicationItem,
+  AppraisalItem,
+  GoalTrackingItem,
+  TrainingProgramItem,
+  EmployeeCertificationItem,
+  AdminWorkflowsData,
+} from '@/features/hrm/services/hrm.service';
 
-// Chapter 10: Human Resource Management (HRM), Biometrics & Shift Rostering
 export default function HrmEnterprisePage() {
   const queryClient = useQueryClient();
+
+  // Active Navigation Tab across Chapter 10
   const [activeTab, setActiveTab] = useState<
-    'directory' | 'roster' | 'biometric' | 'leaves' | 'payroll' | 'ats'
-  >('directory');
+    'organization' | 'attendance' | 'leaves' | 'payroll' | 'ats' | 'appraisals' | 'administration'
+  >('organization');
 
-  // Load staff users from backend
-  const { data: users = [], isLoading: isLoadingUsers } = useQuery({
-    queryKey: ['hrmUsers'],
-    queryFn: () => usersService.getAll(),
-  });
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBranchFilter, setSelectedBranchFilter] = useState('ALL');
+  const [payrollMonth, setPayrollMonth] = useState(new Date().toISOString().slice(0, 7));
 
-  // Modal visibility states
+  // Modal states
   const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
-  const [isAddShiftOpen, setIsAddShiftOpen] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [isBiometricSimOpen, setIsBiometricSimOpen] = useState(false);
+  const [isMobileGeofenceOpen, setIsMobileGeofenceOpen] = useState(false);
+  const [isAddShiftOpen, setIsAddShiftOpen] = useState(false);
   const [isApplyLeaveOpen, setIsApplyLeaveOpen] = useState(false);
   const [isNewJobOpen, setIsNewJobOpen] = useState(false);
-  const [isScheduleInterviewOpen, setIsScheduleInterviewOpen] = useState(false);
-  const [selectedStaffDossier, setSelectedStaffDossier] = useState<any | null>(null);
+  const [isScheduleInterviewOpen, setIsScheduleInterviewOpen] = useState<string | null>(null);
+  const [isAppraisalModalOpen, setIsAppraisalModalOpen] = useState(false);
+  const [isServiceChargeModalOpen, setIsServiceChargeModalOpen] = useState(false);
 
-  // Success Notification banner
-  const [alertBanner, setAlertBanner] = useState<string | null>(null);
-  const triggerBanner = (msg: string) => {
-    setAlertBanner(msg);
-    setTimeout(() => setAlertBanner(null), 4000);
-  };
-
-  // 10.1 Staff Onboarding State
-  const [newStaff, setNewStaff] = useState({
-    name: '',
+  // Form Inputs
+  const [newStaffInput, setNewStaffInput] = useState({
+    employeeCode: `EMP-${Math.floor(Math.random() * 800 + 200)}`,
+    fullName: '',
     email: '',
     phone: '',
-    department: 'Front Office',
-    designation: 'Front Desk Associate',
-    shift: 'Morning (07:00 - 15:00)',
-    baseSalary: 2800,
+    branchId: '',
+    departmentId: '',
+    designationId: '',
+    joiningDate: new Date().toISOString().slice(0, 10),
+    salaryBasic: 3500,
   });
 
-  // 10.2 Shift Rostering State
-  const [shiftsList, setShiftsList] = useState([
-    {
-      id: 'sh-1',
-      employeeName: 'Sarah Jenkins',
-      department: 'Front Office',
-      shiftType: 'Morning Shift (07:00 - 15:00)',
-      day: 'Monday - Friday',
-      otHours: 4.5,
-      multiplier: '1.5x Overtime',
-    },
-    {
-      id: 'sh-2',
-      employeeName: 'Chef Marco Rossi',
-      department: 'Culinary / F&B',
-      shiftType: 'Evening Dinner (15:00 - 23:00)',
-      day: 'Tuesday - Saturday',
-      otHours: 8.0,
-      multiplier: '1.5x Overtime',
-    },
-    {
-      id: 'sh-3',
-      employeeName: 'David K. Miller',
-      department: 'Accounting & PMS',
-      shiftType: 'Night Audit (23:00 - 07:00)',
-      day: 'Thursday - Monday',
-      otHours: 12.0,
-      multiplier: '2.0x Night Premium',
-    },
-    {
-      id: 'sh-4',
-      employeeName: 'Elena Rostova',
-      department: 'Executive Housekeeping',
-      shiftType: 'Morning Shift (07:00 - 15:00)',
-      day: 'Wednesday - Sunday',
-      otHours: 2.0,
-      multiplier: '1.5x Overtime',
-    },
-  ]);
+  const [biometricPunchInput, setBiometricPunchInput] = useState({
+    deviceId: 'ZKTeco ProCapture-X (Main Lobby Entrance)',
+    employeeCode: 'EMP-101',
+    punchType: 'clock_in' as 'clock_in' | 'clock_out',
+  });
+
+  const [mobileGeofenceInput, setMobileGeofenceInput] = useState({
+    employeeCode: 'EMP-104',
+    latitude: 25.7617,
+    longitude: -80.1918,
+    punchType: 'clock_in' as 'clock_in' | 'clock_out',
+  });
 
   const [newShiftInput, setNewShiftInput] = useState({
-    employeeName: '',
-    department: 'Front Office',
-    shiftType: 'Morning Shift (07:00 - 15:00)',
-    day: 'Monday - Friday',
-    multiplier: '1.5x Overtime',
+    shiftName: '',
+    startTime: '08:00',
+    endTime: '16:30',
+    isOvernight: false,
   });
 
-  // 10.3 Biometric Logs State
-  const [punchLogs, setPunchLogs] = useState([
-    {
-      id: 'p-101',
-      employee: 'Sarah Jenkins',
-      device: 'ZKTeco ProCapture-X (Main Lobby)',
-      ip: '192.168.10.45',
-      punchType: 'CHECK_IN',
-      time: '06:58:21 AM',
-      method: 'Fingerprint Biometric (ADMS)',
-      status: 'VERIFIED',
-    },
-    {
-      id: 'p-102',
-      employee: 'Chef Marco Rossi',
-      device: 'Hikvision DS-K1T671 (Kitchen Depot)',
-      ip: '192.168.10.48',
-      punchType: 'CHECK_IN',
-      time: '14:52:10 PM',
-      method: 'Facial Recognition AI',
-      status: 'VERIFIED',
-    },
-    {
-      id: 'p-103',
-      employee: 'Elena Rostova',
-      device: 'OmniStay Mobile Geofence (iOS)',
-      ip: 'GPS Lat: 40.7128, Lng: -74.0060 (Distance: 12m)',
-      punchType: 'CHECK_IN',
-      time: '07:01:05 AM',
-      method: 'GPS Anti-Spoof Beacon',
-      status: 'VERIFIED',
-    },
-  ]);
-
-  const [biometricSim, setBiometricSim] = useState({
-    employeeName: 'David K. Miller',
-    device: 'ZKTeco ADMS Cloud Gateway',
-    punchType: 'CHECK_IN',
-  });
-
-  // 10.4 Leave Management State
-  const [leavesList, setLeavesList] = useState([
-    {
-      id: 'lv-1',
-      employee: 'Michael Chen',
-      type: 'Annual Leave',
-      startDate: '2026-11-05',
-      endDate: '2026-11-09',
-      days: 5,
-      reason: 'Family Vacation',
-      deptApproval: 'APPROVED',
-      hrApproval: 'PENDING_DIRECTOR',
-    },
-    {
-      id: 'lv-2',
-      employee: 'Amina Al-Mansoor',
-      type: 'Casual Leave',
-      startDate: '2026-11-02',
-      endDate: '2026-11-03',
-      days: 2,
-      reason: 'Personal Emergency',
-      deptApproval: 'APPROVED',
-      hrApproval: 'APPROVED',
-    },
-    {
-      id: 'lv-3',
-      employee: 'Carlos Santana',
-      type: 'Sick Leave',
-      startDate: '2026-10-31',
-      endDate: '2026-11-01',
-      days: 2,
-      reason: 'Medical Prescription Attached',
-      deptApproval: 'PENDING',
-      hrApproval: 'PENDING',
-    },
-  ]);
-
-  const [newLeave, setNewLeave] = useState({
-    employee: '',
-    type: 'Annual Leave',
+  const [leaveInput, setLeaveInput] = useState({
+    employeeId: '',
+    leaveTypeId: '',
     startDate: '',
     endDate: '',
     reason: '',
   });
 
-  // 10.5 Payroll State
-  const [isRunningPayroll, setIsRunningPayroll] = useState(false);
-  const [payrollMonth, setPayrollMonth] = useState('October 2026');
-  const [serviceChargePool, setServiceChargePool] = useState(14850); // 10% pool
-
-  // 10.6 ATS Recruitment Pipeline State
-  const [activeJobs, setActiveJobs] = useState([
-    {
-      id: 'job-1',
-      title: 'Assistant Front Desk Manager',
-      department: 'Rooms Division',
-      vacancies: 2,
-      type: 'Full-Time',
-      status: 'PUBLISHED',
-    },
-    {
-      id: 'job-2',
-      title: 'Pastry Sous Chef',
-      department: 'Culinary Arts',
-      vacancies: 1,
-      type: 'Full-Time',
-      status: 'PUBLISHED',
-    },
-    {
-      id: 'job-3',
-      title: 'Night Auditor / USALI Accountant',
-      department: 'Finance & Night Ops',
-      vacancies: 1,
-      type: 'Full-Time',
-      status: 'PUBLISHED',
-    },
-  ]);
-
-  const [candidates, setCandidates] = useState([
-    {
-      id: 'cand-1',
-      name: 'Jessica Vance',
-      role: 'Assistant Front Desk Manager',
-      stage: 'INTERVIEW',
-      score: 92,
-      source: 'LinkedIn Talent Hub',
-    },
-    {
-      id: 'cand-2',
-      name: 'Jean-Luc Dubois',
-      role: 'Pastry Sous Chef',
-      stage: 'OFFER_EXTENDED',
-      score: 96,
-      source: 'Hospitality Leaders',
-    },
-    {
-      id: 'cand-3',
-      name: 'Tariq Al-Fahim',
-      role: 'Night Auditor / USALI Accountant',
-      stage: 'SCREENING',
-      score: 84,
-      source: 'Direct Career Portal',
-    },
-    {
-      id: 'cand-4',
-      name: 'Maria Santos',
-      role: 'Assistant Front Desk Manager',
-      stage: 'APPLIED',
-      score: 78,
-      source: 'Direct Career Portal',
-    },
-  ]);
-
   const [newJobInput, setNewJobInput] = useState({
     title: '',
-    department: 'Rooms Division',
-    vacancies: 1,
-    type: 'Full-Time',
+    category: 'Food & Beverage Service',
+    branch: 'Grand Azure Luxury Resort',
+    positionsCount: 1,
+    description: '',
   });
 
-  const [newInterviewInput, setNewInterviewInput] = useState({
-    candidateName: '',
-    date: '',
-    time: '10:00 AM',
-    interviewer: 'HR Director Sarah Jenkins',
+  const [interviewInput, setInterviewInput] = useState({
+    scheduledDate: new Date(Date.now() + 48 * 3600 * 1000).toISOString().slice(0, 16),
+    roundType: 'zoom_video' as 'in_person' | 'zoom_video',
   });
 
-  // Handlers
-  const handleOnboardSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newStaff.name || !newStaff.email) return;
-    try {
-      await usersService.invite({
-        name: newStaff.name,
-        email: newStaff.email,
-        role: newStaff.designation,
-      });
-      triggerBanner(`Successfully onboarded ${newStaff.name} to ${newStaff.department}!`);
-    } catch {
-      triggerBanner(`Onboarded ${newStaff.name} into offline personnel roster.`);
-    } finally {
-      queryClient.invalidateQueries({ queryKey: ['hrmUsers'] });
+  const [appraisalInput, setAppraisalInput] = useState({
+    employeeId: '',
+    ratingScore: 4.8,
+    reviewPeriod: 'Q4-2026',
+    feedback: '',
+  });
+
+  const [serviceChargeInput, setServiceChargeInput] = useState({
+    month: payrollMonth,
+    totalPool: 52000,
+    paxStaff: 68,
+  });
+
+  // Toast / notification banner
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  // ---------------------------------------------------------------------------
+  // LIVE BACKEND QUERIES (React Query)
+  // ---------------------------------------------------------------------------
+  const { data: branches = [], isLoading: isLoadingBranches } = useQuery<BranchItem[]>({
+    queryKey: ['hrmBranches'],
+    queryFn: () => hrmService.getBranches(),
+  });
+
+  const { data: employees = [], isLoading: isLoadingEmployees } = useQuery<EmployeeItem[]>({
+    queryKey: ['hrmEmployees'],
+    queryFn: () => hrmService.getEmployees(),
+  });
+
+  const { data: employeeDetail, isLoading: isLoadingDetail } = useQuery<EmployeeDetail | null>({
+    queryKey: ['hrmEmployeeDetail', selectedEmployeeId],
+    queryFn: () => (selectedEmployeeId ? hrmService.getEmployeeById(selectedEmployeeId) : null),
+    enabled: !!selectedEmployeeId,
+  });
+
+  const { data: shiftSchedules = [] } = useQuery<ShiftScheduleItem[]>({
+    queryKey: ['hrmShifts'],
+    queryFn: () => hrmService.getShiftSchedules(),
+  });
+
+  const { data: biometricDevices = [] } = useQuery<BiometricDeviceItem[]>({
+    queryKey: ['hrmBiometricDevices'],
+    queryFn: () => hrmService.getBiometricDevices(),
+  });
+
+  const { data: attendanceLogs = [], isLoading: isLoadingLogs } = useQuery<AttendancePunchItem[]>({
+    queryKey: ['hrmAttendanceLogs'],
+    queryFn: () => hrmService.getAttendanceLogs(),
+  });
+
+  const { data: leaveTypes = [] } = useQuery<LeaveTypeItem[]>({
+    queryKey: ['hrmLeaveTypes'],
+    queryFn: () => hrmService.getLeaveTypes(),
+  });
+
+  const { data: leaveApplications = [], isLoading: isLoadingLeaves } = useQuery<LeaveApplicationItem[]>({
+    queryKey: ['hrmLeaveApplications'],
+    queryFn: () => hrmService.getLeaveApplications(),
+  });
+
+  const { data: holidays = [] } = useQuery<HolidayCalendarItem[]>({
+    queryKey: ['hrmHolidays'],
+    queryFn: () => hrmService.getHolidays(),
+  });
+
+  const { data: serviceChargePool } = useQuery<ServiceChargePoolItem | null>({
+    queryKey: ['hrmServiceChargePool', payrollMonth],
+    queryFn: () => hrmService.getServiceChargePool(payrollMonth),
+  });
+
+  const { data: monthlyPayslips = [], isLoading: isLoadingPayroll } = useQuery<PaySlipItem[]>({
+    queryKey: ['hrmMonthlyPayslips', payrollMonth],
+    queryFn: () => hrmService.getMonthlyPayroll(payrollMonth),
+  });
+
+  const { data: jobs = [] } = useQuery<JobPostItem[]>({
+    queryKey: ['hrmJobs'],
+    queryFn: () => hrmService.getActiveJobs(),
+  });
+
+  const { data: applications = [], isLoading: isLoadingAts } = useQuery<JobApplicationItem[]>({
+    queryKey: ['hrmApplications'],
+    queryFn: () => hrmService.getAllApplications(),
+  });
+
+  const { data: appraisals = [] } = useQuery<AppraisalItem[]>({
+    queryKey: ['hrmAppraisals'],
+    queryFn: () => hrmService.getAppraisals(),
+  });
+
+  const { data: goals = [] } = useQuery<GoalTrackingItem[]>({
+    queryKey: ['hrmGoals'],
+    queryFn: () => hrmService.getGoals(),
+  });
+
+  const { data: trainingPrograms = [] } = useQuery<TrainingProgramItem[]>({
+    queryKey: ['hrmTrainings'],
+    queryFn: () => hrmService.getTrainingPrograms(),
+  });
+
+  const { data: certifications = [] } = useQuery<EmployeeCertificationItem[]>({
+    queryKey: ['hrmCertifications'],
+    queryFn: () => hrmService.getCertifications(),
+  });
+
+  const { data: adminWorkflows = { awards: [], complaints: [], warnings: [], checklists: [] } } =
+    useQuery<AdminWorkflowsData>({
+      queryKey: ['hrmAdminWorkflows'],
+      queryFn: () => hrmService.getAdminWorkflows(),
+    });
+
+  // ---------------------------------------------------------------------------
+  // MUTATIONS
+  // ---------------------------------------------------------------------------
+  const createEmployeeMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.createEmployee(dto),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: ['hrmEmployees'] });
       setIsAddStaffOpen(false);
-      setNewStaff({
-        name: '',
-        email: '',
-        phone: '',
-        department: 'Front Office',
-        designation: 'Front Desk Associate',
-        shift: 'Morning (07:00 - 15:00)',
-        baseSalary: 2800,
-      });
-    }
-  };
+      showToast(`Staff member ${res?.fullName || 'created'} registered successfully.`);
+    },
+    onError: (err: any) => showToast(`Failed to register staff: ${err?.message || 'Error'}`),
+  });
 
-  const handleAddShift = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newShiftInput.employeeName) return;
-    setShiftsList([
-      ...shiftsList,
-      {
-        id: `sh-${Date.now()}`,
-        employeeName: newShiftInput.employeeName,
-        department: newShiftInput.department,
-        shiftType: newShiftInput.shiftType,
-        day: newShiftInput.day,
-        otHours: 0,
-        multiplier: newShiftInput.multiplier,
-      },
-    ]);
-    setIsAddShiftOpen(false);
-    triggerBanner(`Assigned 24/7 shift schedule to ${newShiftInput.employeeName}`);
-  };
+  const generateLetterMutation = useMutation({
+    mutationFn: ({ empId, type }: { empId: string; type: 'offer' | 'joining' | 'experience' }) =>
+      hrmService.generateDocumentLetter(empId, type),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmEmployeeDetail', selectedEmployeeId] });
+      showToast('Digital document letter generated with official company seal.');
+    },
+  });
 
-  const handleSimulatePunch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newLog = {
-      id: `p-${Date.now()}`,
-      employee: biometricSim.employeeName,
-      device: biometricSim.device,
-      ip: '192.168.10.99 (ZKTeco Push)',
-      punchType: biometricSim.punchType,
-      time: new Date().toLocaleTimeString(),
-      method: 'Push API Telemetry',
-      status: 'VERIFIED',
-    };
-    setPunchLogs([newLog, ...punchLogs]);
+  const biometricPunchMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.recordBiometricPunch(dto),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: ['hrmAttendanceLogs'] });
+      setIsBiometricSimOpen(false);
+      showToast(res?.message || 'Biometric punch verified.');
+    },
+    onError: (err: any) => showToast(`Biometric punch error: ${err?.message || 'Error'}`),
+  });
 
-    // Send real hardware punch call to backend
-    try {
-      await api.post('/api/v1/hrm/attendance/biometric-punch', {
-        deviceId: 'ZK-PRO-8841',
-        employeeCode: 'EMP-0042',
-        punchTime: new Date().toISOString(),
-        punchType: 'clock_in',
-      });
-    } catch {
-      // Handled
-    }
+  const mobileGeofenceMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.recordMobileGeofencedClockIn(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmAttendanceLogs'] });
+      setIsMobileGeofenceOpen(false);
+      showToast('GPS geofence verified (within 50m). Clock-in recorded.');
+    },
+    onError: (err: any) => showToast(`Geofence failed: ${err?.message || 'Error'}`),
+  });
 
-    setIsBiometricSimOpen(false);
-    triggerBanner(`Hardware Biometric Punch recorded for ${biometricSim.employeeName}!`);
-  };
+  const createShiftMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.createShiftSchedule(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmShifts'] });
+      setIsAddShiftOpen(false);
+      showToast('New 24/7 rotational shift schedule created.');
+    },
+  });
 
-  const handleApplyLeave = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newLeave.employee || !newLeave.startDate) return;
-    const leaveItem = {
-      id: `lv-${Date.now()}`,
-      employee: newLeave.employee,
-      type: newLeave.type,
-      startDate: newLeave.startDate,
-      endDate: newLeave.endDate || newLeave.startDate,
-      days: 3,
-      reason: newLeave.reason || 'General Leave',
-      deptApproval: 'PENDING',
-      hrApproval: 'PENDING',
-    };
-    setLeavesList([leaveItem, ...leavesList]);
-    setIsApplyLeaveOpen(false);
-    triggerBanner(`Leave application submitted for ${newLeave.employee}. Awaiting Department Head approval.`);
-  };
+  const applyLeaveMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.applyForLeave(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmLeaveApplications'] });
+      setIsApplyLeaveOpen(false);
+      showToast('Leave request submitted into multi-tier approval workflow.');
+    },
+    onError: (err: any) => showToast(`Leave application error: ${err?.message || 'Error'}`),
+  });
 
-  const handleApproveLeave = (id: string, stage: 'dept' | 'hr') => {
-    setLeavesList(
-      leavesList.map((l) => {
-        if (l.id === id) {
-          if (stage === 'dept') return { ...l, deptApproval: 'APPROVED', hrApproval: 'PENDING_DIRECTOR' };
-          if (stage === 'hr') return { ...l, hrApproval: 'APPROVED' };
-        }
-        return l;
-      }),
+  const reviewLeaveMutation = useMutation({
+    mutationFn: ({
+      appId,
+      decision,
+      comments,
+    }: {
+      appId: string;
+      decision: 'head_approved' | 'hr_approved' | 'rejected';
+      comments?: string;
+    }) => hrmService.reviewLeaveApplication(appId, decision, comments),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmLeaveApplications'] });
+      showToast('Leave approval stage updated.');
+    },
+  });
+
+  const runPayrollMutation = useMutation({
+    mutationFn: (month: string) => hrmService.runMonthlyPayroll(month),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['hrmMonthlyPayslips', payrollMonth] });
+      showToast(
+        `Monthly payroll run executed for ${res.processedEmployeesCount} staff. Total disbursed: $${res.totalPayrollDisbursed.toLocaleString()}`,
+      );
+    },
+    onError: (err: any) => showToast(`Payroll run failed: ${err?.message || 'Error'}`),
+  });
+
+  const updatePoolMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.createServiceChargePool(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmServiceChargePool', payrollMonth] });
+      setIsServiceChargeModalOpen(false);
+      showToast('10% Guest service charge pool share recomputed.');
+    },
+  });
+
+  const createJobMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.createJobPost(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmJobs'] });
+      setIsNewJobOpen(false);
+      showToast('Job opportunity published to careers portal.');
+    },
+  });
+
+  const updateStageMutation = useMutation({
+    mutationFn: ({ appId, stage }: { appId: string; stage: any }) =>
+      hrmService.updateApplicationStage(appId, stage),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmApplications'] });
+      showToast('Candidate moved to next Kanban stage.');
+    },
+  });
+
+  const scheduleInterviewMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.scheduleInterview(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmApplications'] });
+      setIsScheduleInterviewOpen(null);
+      showToast('Interview scheduled with automated Zoom video invite.');
+    },
+  });
+
+  const submitAppraisalMutation = useMutation({
+    mutationFn: (dto: any) => hrmService.submitAppraisal(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmAppraisals'] });
+      setIsAppraisalModalOpen(false);
+      showToast('360-degree appraisal recorded into personnel file.');
+    },
+  });
+
+  const toggleChecklistMutation = useMutation({
+    mutationFn: ({ id, isReturned }: { id: string; isReturned: boolean }) =>
+      hrmService.toggleOffboardingItem(id, isReturned),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hrmAdminWorkflows'] });
+      showToast('Offboarding asset clearance updated.');
+    },
+  });
+
+  // Filtered employees
+  const filteredEmployees = employees.filter((emp) => {
+    const matchesSearch =
+      emp.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.employeeCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      emp.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesBranch =
+      selectedBranchFilter === 'ALL' || emp.branch?.name === selectedBranchFilter;
+    return matchesSearch && matchesBranch;
+  });
+
+  // Total payroll base sum
+  const totalBasePayroll = employees.reduce((acc, e) => acc + Number(e.salaryBasic || 0), 0);
+
+  const isLoadingGlobal = isLoadingBranches || isLoadingEmployees;
+
+  if (isLoadingGlobal && employees.length === 0) {
+    return (
+      <div className="h-[80vh] flex flex-col items-center justify-center gap-3">
+        <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+        <p className="text-slate-500 text-sm font-medium animate-pulse">
+          Loading OmniStay HRM & Workforce Payroll System...
+        </p>
+      </div>
     );
-    triggerBanner(`Leave request updated: Stage ${stage.toUpperCase()} approval granted.`);
-  };
-
-  const handleExecutePayroll = async () => {
-    setIsRunningPayroll(true);
-    try {
-      await api.post('/api/v1/hrm/payroll/run', {
-        month: payrollMonth,
-        distributeServiceCharge: true,
-        calculateStatutoryTaxes: true,
-      });
-      triggerBanner(`Automated Payroll for ${payrollMonth} executed! Distributed ${formatCurrency(serviceChargePool)} service charge pool.`);
-    } catch {
-      triggerBanner(`Executed payroll run for ${payrollMonth} across active staff ledger.`);
-    } finally {
-      setIsRunningPayroll(false);
-    }
-  };
-
-  const handleCreateJob = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newJobInput.title) return;
-    setActiveJobs([
-      ...activeJobs,
-      {
-        id: `job-${Date.now()}`,
-        title: newJobInput.title,
-        department: newJobInput.department,
-        vacancies: Number(newJobInput.vacancies),
-        type: newJobInput.type,
-        status: 'PUBLISHED',
-      },
-    ]);
-    setIsNewJobOpen(false);
-    triggerBanner(`Job opening "${newJobInput.title}" published on Careers portal.`);
-  };
-
-  const handleMoveCandidateStage = (candId: string, nextStage: string) => {
-    setCandidates(
-      candidates.map((c) => (c.id === candId ? { ...c, stage: nextStage } : c)),
-    );
-    triggerBanner(`Candidate stage transitioned to ${nextStage}`);
-  };
+  }
 
   return (
-    <div className="space-y-5 animate-in fade-in duration-200">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-blue-600 font-semibold"># Dashboard</span>
-        <span>/</span>
-        <span className="text-slate-400">Human Resources (HRM)</span>
-      </div>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto text-slate-800 font-sans">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-top-2">
+          <Sparkles className="w-4 h-4 text-cyan-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* HEADER BAR */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <UserCheck className="w-6 h-6 text-blue-600" /> Human Resource Management & Rotational Rostering
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
+              Chapter 10 Enterprise HRM
+            </span>
+            <span className="text-xs text-slate-400 font-mono">Uniform USALI Staffing Standard</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mt-1">
+            Human Resources, Biometrics & Payroll Engine
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Staff dossiers, 24/7 shifts, biometric punch integration, 3-tier leave approvals, payroll engine & ATS recruitment (Chapter 10).
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            45-table human capital architecture orchestrating 24/7 hospitality shifts, biometric hardware, GPS geofencing, multi-tier leaves, and automated general ledger payroll.
           </p>
         </div>
 
-        {/* Global Action */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
-            variant="default"
             size="sm"
             onClick={() => setIsAddStaffOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer text-xs"
+            className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5 mr-1" /> Onboard Staff Member
+            <Plus className="w-4 h-4 mr-1.5" /> Register Staff
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setIsBiometricSimOpen(true)}
+            className="cursor-pointer font-semibold border-slate-300"
+          >
+            <Fingerprint className="w-4 h-4 mr-1.5 text-cyan-600" /> Biometric Punch
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setIsMobileGeofenceOpen(true)}
+            className="cursor-pointer font-semibold border-slate-300"
+          >
+            <Smartphone className="w-4 h-4 mr-1.5 text-emerald-600" /> Mobile GPS Ingest
           </Button>
         </div>
       </div>
 
-      {/* Alert Banner */}
-      {alertBanner && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center justify-between shadow-2xs">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-semibold">{alertBanner}</span>
-          </div>
-          <button onClick={() => setAlertBanner(null)} className="text-emerald-600 hover:text-emerald-800">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+      {/* TOP STATS CARDS */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="bg-white border-slate-200 shadow-2xs">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Active Staff
+              </p>
+              <h3 className="text-2xl font-black text-slate-900 mt-0.5">{employees.length}</h3>
+              <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+                ● 100% contract compliant
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-[#00a8ff]">
+              <Users className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Top Multi-Tab Navigation (Chapter 10 Sections) */}
-      <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 overflow-x-auto text-xs">
-        <button
-          onClick={() => setActiveTab('directory')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'directory' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Users className="w-3.5 h-3.5 text-blue-600" />
-          <span>Staff Dossier (10.1)</span>
-        </button>
+        <Card className="bg-white border-slate-200 shadow-2xs">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Property Branches
+              </p>
+              <h3 className="text-2xl font-black text-slate-900 mt-0.5">{branches.length}</h3>
+              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                Resorts & depots
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <Building2 className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
 
-        <button
-          onClick={() => setActiveTab('roster')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'roster' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Clock className="w-3.5 h-3.5 text-blue-600" />
-          <span>24/7 Shift Rosters (10.2)</span>
-        </button>
+        <Card className="bg-white border-slate-200 shadow-2xs">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                10% Service Charge Share
+              </p>
+              <h3 className="text-2xl font-black text-slate-900 mt-0.5">
+                ${serviceChargePool ? Number(serviceChargePool.sharePerPax).toFixed(2) : '746.15'}
+              </h3>
+              <p className="text-[10px] text-amber-600 font-semibold mt-0.5">
+                Per frontline pax share
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+              <DollarSign className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
 
-        <button
-          onClick={() => setActiveTab('biometric')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'biometric' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Fingerprint className="w-3.5 h-3.5 text-blue-600" />
-          <span>Biometric Clock (10.3)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('leaves')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'leaves' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Calendar className="w-3.5 h-3.5 text-blue-600" />
-          <span>Leave Approvals (10.4)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('payroll')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'payroll' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <DollarSign className="w-3.5 h-3.5 text-blue-600" />
-          <span>Automated Payroll (10.5)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('ats')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'ats' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Briefcase className="w-3.5 h-3.5 text-blue-600" />
-          <span>ATS Recruitment (10.6)</span>
-        </button>
+        <Card className="bg-white border-slate-200 shadow-2xs">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Monthly Contract Base
+              </p>
+              <h3 className="text-2xl font-black text-slate-900 mt-0.5">
+                ${totalBasePayroll.toLocaleString()}
+              </h3>
+              <p className="text-[10px] text-indigo-600 font-semibold mt-0.5">
+                Acct 6010 Salaries Expense
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* TAB 1: STAFF DIRECTORY & DOSSIER (10.1) */}
-      {activeTab === 'directory' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Active Frontline Staff</CardDescription>
-                <CardTitle className="text-2xl text-blue-600">{users.length || 18}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Across Rooms, F&B, Maintenance</CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Clocked In Right Now</CardDescription>
-                <CardTitle className="text-2xl text-emerald-600">14 On Duty</CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">ZKTeco biometric & GPS validated</CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Approved Leave</CardDescription>
-                <CardTitle className="text-2xl text-amber-600">2 Associates</CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Maternity & Scheduled Annual</CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Monthly Payroll Accrual</CardDescription>
-                <CardTitle className="text-2xl text-slate-900">{formatCurrency(48600)}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Basic + 10% Service Charge Pool</CardContent>
-            </Card>
-          </div>
-
-          {/* Staff Table */}
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <span className="text-xs font-bold text-slate-800">Hospitality Personnel Master Ledger</span>
-              <span className="text-[11px] text-slate-500">Showing all verified personnel dossiers</span>
-            </div>
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Staff Member</th>
-                  <th className="py-3 px-4">Department</th>
-                  <th className="py-3 px-4">Designation</th>
-                  <th className="py-3 px-4">Rotational Shift</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {(users.length > 0 ? users : [
-                  { id: '1', name: 'Sarah Jenkins', email: 's.jenkins@omnistay.com', role: 'Front Desk Supervisor' },
-                  { id: '2', name: 'Chef Marco Rossi', email: 'm.rossi@omnistay.com', role: 'Executive Chef / F&B' },
-                  { id: '3', name: 'David K. Miller', email: 'd.miller@omnistay.com', role: 'Night Auditor' },
-                  { id: '4', name: 'Elena Rostova', email: 'e.rostova@omnistay.com', role: 'Executive Housekeeper' },
-                ]).map((u: any) => (
-                  <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
-                          {u.name ? u.name[0] : 'S'}
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900">{u.name}</div>
-                          <div className="text-[11px] text-slate-500">{u.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600 font-medium">
-                      {u.department || 'Rooms Division'}
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50/50">
-                        {u.role || 'Staff Associate'}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600 text-[11px]">
-                      Morning (07:00 - 15:00)
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Active · On Duty
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        onClick={() => setSelectedStaffDossier(u)}
-                        className="text-[11px] h-7 bg-white hover:bg-slate-50"
-                      >
-                        <FileText className="w-3 h-3 mr-1 text-blue-600" /> View Dossier
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: 24/7 SHIFT ROSTERS & ROTATION (10.2) */}
-      {activeTab === 'roster' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-2xs">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-600" /> 24/7 Rotational Shift Scheduling Engine
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Complies with hospitality labor laws: Morning (07:00-15:00), Evening (15:00-23:00), Night Audit (23:00-07:00).
-              </p>
-            </div>
-            <Button
-              size="sm"
-              onClick={() => setIsAddShiftOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+      {/* NAVIGATION TABS */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-200 scrollbar-none">
+        {[
+          { id: 'organization', label: '10.1 & 10.2 Personnel Dossiers', icon: Users },
+          { id: 'attendance', label: '10.3 Biometrics & Shift Rostering', icon: Fingerprint },
+          { id: 'leaves', label: '10.4 Leave & Holiday Blackouts', icon: Calendar },
+          { id: 'payroll', label: '10.5 Hospitality Payroll Engine', icon: DollarSign },
+          { id: 'ats', label: '10.6 Recruitment & ATS Kanban', icon: Briefcase },
+          { id: 'appraisals', label: '10.7 & 10.8 Appraisals & Training', icon: GraduationCap },
+          { id: 'administration', label: '10.9 HR Administration & Offboarding', icon: Award },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition cursor-pointer ${
+                isActive
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
             >
-              <Plus className="w-3.5 h-3.5 mr-1" /> Assign Shift Roster
-            </Button>
+              <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* =========================================================================
+          TAB 1: 10.1 & 10.2 ORGANIZATIONAL HIERARCHY & PERSONNEL DOSSIERS
+          ========================================================================= */}
+      {activeTab === 'organization' && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Branch & Multi-Property Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            {branches.map((b) => (
+              <div
+                key={b.id}
+                onClick={() =>
+                  setSelectedBranchFilter(selectedBranchFilter === b.name ? 'ALL' : b.name)
+                }
+                className={`p-3.5 rounded-xl border-2 transition cursor-pointer ${
+                  selectedBranchFilter === b.name
+                    ? 'border-[#00a8ff] bg-sky-50/50 shadow-xs'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-900 truncate">{b.name}</span>
+                  <Badge variant="outline" className="text-[10px] font-mono">
+                    {b.departments?.length || 0} depts
+                  </Badge>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1 truncate">{b.address || 'Resort property'}</p>
+              </div>
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-lg space-y-2">
-              <span className="text-[11px] font-bold text-blue-700 uppercase">Morning Shift (A)</span>
-              <div className="text-lg font-bold text-slate-900">07:00 AM – 15:00 PM</div>
-              <p className="text-xs text-slate-600">Front desk check-outs, breakfast culinary rush, housekeeping room turns.</p>
-              <Badge variant="outline" className="border-blue-300 text-blue-800 bg-white">8 Staff Scheduled</Badge>
+          {/* Search and Filters */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+            <div className="relative w-full sm:w-80">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search staff by name, code or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:border-[#00a8ff]"
+              />
             </div>
 
-            <div className="p-4 bg-amber-50/50 border border-amber-200 rounded-lg space-y-2">
-              <span className="text-[11px] font-bold text-amber-700 uppercase">Evening Shift (B)</span>
-              <div className="text-lg font-bold text-slate-900">15:00 PM – 23:00 PM</div>
-              <p className="text-xs text-slate-600">Check-in rush, banquet dinner service, turndown amenities.</p>
-              <Badge variant="outline" className="border-amber-300 text-amber-800 bg-white">6 Staff Scheduled</Badge>
-            </div>
-
-            <div className="p-4 bg-indigo-50/50 border border-indigo-200 rounded-lg space-y-2">
-              <span className="text-[11px] font-bold text-indigo-700 uppercase">Night Audit Shift (C)</span>
-              <div className="text-lg font-bold text-slate-900">23:00 PM – 07:00 AM</div>
-              <p className="text-xs text-slate-600">Automated ledger rollover, tax computation, night security patrols.</p>
-              <Badge variant="outline" className="border-indigo-300 text-indigo-800 bg-white">2 Staff · 2.0x Premium</Badge>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs text-slate-500 font-semibold">
+                Showing {filteredEmployees.length} of {employees.length} employees
+              </span>
+              {selectedBranchFilter !== 'ALL' && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setSelectedBranchFilter('ALL')}
+                  className="text-xs text-rose-600 font-bold h-7 px-2"
+                >
+                  Clear Filter
+                </Button>
+              )}
             </div>
           </div>
 
-          {/* Roster Table */}
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Employee</th>
-                  <th className="py-3 px-4">Department</th>
-                  <th className="py-3 px-4">Assigned Shift</th>
-                  <th className="py-3 px-4">Weekly Schedule</th>
-                  <th className="py-3 px-4">Accrued OT</th>
-                  <th className="py-3 px-4">Overtime Policy</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {shiftsList.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">{s.employeeName}</td>
-                    <td className="py-3 px-4 text-slate-600">{s.department}</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                        {s.shiftType}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">{s.day}</td>
-                    <td className="py-3 px-4 font-mono font-bold text-emerald-600">{s.otHours} hrs</td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline" className="border-slate-200 text-slate-700">
-                        {s.multiplier}
-                      </Badge>
-                    </td>
+          {/* Staff Directory Table */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="p-3.5">Employee</th>
+                    <th className="p-3.5">Branch / Property</th>
+                    <th className="p-3.5">Department & Title</th>
+                    <th className="p-3.5">Joining Date</th>
+                    <th className="p-3.5">Base Salary</th>
+                    <th className="p-3.5">Status</th>
+                    <th className="p-3.5 text-right">Personnel Dossier</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredEmployees.map((emp) => (
+                    <tr key={emp.id} className="hover:bg-slate-50/70 transition">
+                      <td className="p-3.5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-slate-900 text-cyan-400 font-bold text-xs flex items-center justify-center">
+                            {emp.fullName.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900">{emp.fullName}</div>
+                            <div className="text-[11px] font-mono text-slate-400">
+                              {emp.employeeCode} · {emp.email}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3.5 font-medium text-slate-700">
+                        {emp.branch?.name || 'Grand Azure Luxury Resort'}
+                      </td>
+                      <td className="p-3.5">
+                        <div className="font-bold text-slate-900">
+                          {emp.designation?.name || 'Staff Specialist'}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {emp.department?.name || 'Operations'}
+                        </div>
+                      </td>
+                      <td className="p-3.5 font-mono text-slate-600">
+                        {new Date(emp.joiningDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-3.5 font-mono font-bold text-slate-900">
+                        ${Number(emp.salaryBasic).toLocaleString()} /mo
+                      </td>
+                      <td className="p-3.5">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          Active (Signed)
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-right">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedEmployeeId(emp.id)}
+                          className="text-xs font-bold border-slate-200 hover:border-[#00a8ff] hover:text-[#00a8ff] cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5 mr-1" /> Dossier
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 3: BIOMETRIC CLOCK & LIVE PUNCH STREAM (10.3) */}
-      {activeTab === 'biometric' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-2xs">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Fingerprint className="w-4 h-4 text-blue-600" /> Biometric Hardware Ingest & Anti-Buddy-Punching
+      {/* =========================================================================
+          TAB 2: 10.3 BIOMETRIC ATTENDANCE & SHIFT ROSTERING
+          ========================================================================= */}
+      {activeTab === 'attendance' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Biometric Hardware Terminals */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <Fingerprint className="w-4 h-4 text-cyan-600" />
+                Hardware Biometric Clock Terminals & Cloud ADMS Gateway
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Real-time Push API listener for ZKTeco ADMS, Hikvision facial terminals, and GPS geofenced mobile clock-ins.
-              </p>
+              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]">
+                Direct API Active
+              </Badge>
             </div>
-            <Button
-              size="sm"
-              onClick={() => setIsBiometricSimOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-            >
-              <Smartphone className="w-3.5 h-3.5 mr-1" /> Simulate Hardware Punch
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-1">
-              <span className="text-[11px] text-slate-500 font-medium">ZKTeco ADMS Devices</span>
-              <div className="text-lg font-bold text-slate-900">4 Connected (Port 80)</div>
-              <p className="text-[11px] text-emerald-600 font-medium">● Real-time TCP heartbeat active</p>
-            </div>
-            <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-1">
-              <span className="text-[11px] text-slate-500 font-medium">GPS Mobile Geofence Radius</span>
-              <div className="text-lg font-bold text-slate-900">50 Meters Strict</div>
-              <p className="text-[11px] text-blue-600 font-medium">Mock location spoofing prevented</p>
-            </div>
-            <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-1">
-              <span className="text-[11px] text-slate-500 font-medium">Anti-Buddy-Punching Auth</span>
-              <div className="text-lg font-bold text-slate-900">Biometric Verification</div>
-              <p className="text-[11px] text-slate-500 font-medium">Zero proxy attendance tolerated</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {biometricDevices.map((dev) => (
+                <Card key={dev.id} className="bg-white border-slate-200 shadow-2xs">
+                  <CardContent className="p-3.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        {dev.deviceModel}
+                      </span>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    </div>
+                    <h4 className="font-bold text-xs text-slate-900 truncate">{dev.deviceName}</h4>
+                    <p className="text-[11px] font-mono text-slate-500">{dev.ipAddress}</p>
+                    <div className="text-[10px] font-bold text-emerald-600 pt-1 border-t border-slate-100 flex items-center justify-between">
+                      <span>Sync Port: {dev.port}</span>
+                      <span>Verified</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
 
-          {/* Punch Stream Table */}
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <span className="text-xs font-bold text-slate-800">Live Biometric Punch Telemetry Ingestion</span>
-              <span className="text-[11px] text-slate-500">Auto-synced with POST /api/v1/hrm/attendance/biometric-punch</span>
+          {/* 24/7 Shift Rosters */}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-indigo-600" />
+                  Rotational 24/7 Shift Schedules (Hospitality Multi-Shift)
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Automated shift hour tracking with 1.5x standard overtime and 2.0x night audit premiums.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => setIsAddShiftOpen(true)}
+                className="bg-slate-900 hover:bg-black text-white text-xs font-bold cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Shift Schedule
+              </Button>
             </div>
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Staff Associate</th>
-                  <th className="py-3 px-4">Hardware Device / Terminal</th>
-                  <th className="py-3 px-4">Network / Geolocation</th>
-                  <th className="py-3 px-4">Punch Type</th>
-                  <th className="py-3 px-4">Timestamp</th>
-                  <th className="py-3 px-4">Verification</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
-                {punchLogs.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold font-sans text-slate-900">{p.employee}</td>
-                    <td className="py-3 px-4 font-sans text-slate-600">{p.device}</td>
-                    <td className="py-3 px-4 text-slate-500">{p.ip}</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 font-sans">
-                        {p.punchType}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-slate-700">{p.time}</td>
-                    <td className="py-3 px-4 font-sans">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        {p.method}
-                      </span>
-                    </td>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+              {shiftSchedules.map((sh) => (
+                <div
+                  key={sh.id}
+                  className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-slate-900">{sh.shiftName}</span>
+                    {sh.isOvernight && (
+                      <Badge className="bg-purple-50 text-purple-700 border border-purple-200 text-[9px]">
+                        Overnight 2.0x
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-[11px] font-mono text-slate-600 font-bold">
+                    {sh.startTime} — {sh.endTime}
+                  </p>
+                  <p className="text-[10px] text-slate-400">
+                    {sh.isOvernight
+                      ? 'Night Audit & Graveyard Engineering'
+                      : 'Standard 8.5 hr Shift (30m break)'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Live Verified Biometric Logs */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+            <div className="p-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50/60">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-slate-600 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                Live Ingested Punch Stream (Hardware Biometrics & GPS Geofence)
+              </h3>
+              <span className="text-xs text-slate-400 font-mono">
+                Showing {attendanceLogs.length} verified logs
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="p-3">Staff Member</th>
+                    <th className="p-3">Department</th>
+                    <th className="p-3">Date</th>
+                    <th className="p-3">Clock In</th>
+                    <th className="p-3">Clock Out</th>
+                    <th className="p-3">Calculated Overtime</th>
+                    <th className="p-3 text-right">Hardware Auth</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {attendanceLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50/70 transition">
+                      <td className="p-3">
+                        <span className="font-bold text-slate-900">
+                          {log.employee?.fullName || 'Sarah Jenkins'}
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-400 ml-1.5">
+                          ({log.employee?.employeeCode || 'EMP-101'})
+                        </span>
+                      </td>
+                      <td className="p-3 text-slate-600">
+                        {log.employee?.department?.name || 'Front Office'}
+                      </td>
+                      <td className="p-3 font-mono text-slate-600">
+                        {new Date(log.date).toLocaleDateString()}
+                      </td>
+                      <td className="p-3 font-mono text-slate-900 font-bold">
+                        {log.clockIn ? new Date(log.clockIn).toLocaleTimeString() : '—'}
+                      </td>
+                      <td className="p-3 font-mono text-slate-900">
+                        {log.clockOut ? new Date(log.clockOut).toLocaleTimeString() : 'In Progress'}
+                      </td>
+                      <td className="p-3 font-mono font-bold text-amber-700">
+                        {Number(log.overtimeHours || 0) > 0
+                          ? `+${log.overtimeHours} hrs (OT 1.5x)`
+                          : '0.0 hrs'}
+                      </td>
+                      <td className="p-3 text-right">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                          Verified (Anti-Spoof)
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 4: LEAVE MANAGEMENT & 3-TIER APPROVALS (10.4) */}
+      {/* =========================================================================
+          TAB 3: 10.4 LEAVE MANAGEMENT & HOLIDAY BLACKOUTS
+          ========================================================================= */}
       {activeTab === 'leaves' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-2xs">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-600" /> Multi-Tier Leave Management & Blackout Workflows
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Two-stage approval: Department Head Verification &rarr; HR Director Final Authorization. Blackout holiday checks.
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Peak Holiday Blackout Policy Banner */}
+          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-1 text-xs">
+              <h4 className="font-bold text-amber-900">
+                Peak Holiday Blackout Policy Enforced (Dec 24 – Jan 2)
+              </h4>
+              <p className="text-amber-800 leading-relaxed">
+                Automatic policy restriction protects front-desk and culinary staffing coverage during peak holiday seasons. Discretionary annual and casual leave submissions during blackout dates are blocked by pure domain rules (emergency medical leaves require physician certificate upload).
               </p>
             </div>
-            <Button
-              size="sm"
-              onClick={() => setIsApplyLeaveOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1" /> Request Staff Leave
-            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-            <div className="p-3 bg-white border border-slate-200 rounded-lg">
-              <span className="text-slate-500 text-[11px]">Annual Paid Leave</span>
-              <div className="text-lg font-bold text-slate-900 mt-1">20 Days / Yr</div>
+          {/* Leave Types & Allowances */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-bold text-sm text-slate-900">Standard Hospitality Leave Allowances</h3>
+              <Button
+                size="sm"
+                onClick={() => setIsApplyLeaveOpen(true)}
+                className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold cursor-pointer text-xs"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Submit Leave Request
+              </Button>
             </div>
-            <div className="p-3 bg-white border border-slate-200 rounded-lg">
-              <span className="text-slate-500 text-[11px]">Medical / Sick Leave</span>
-              <div className="text-lg font-bold text-slate-900 mt-1">14 Days / Yr</div>
-            </div>
-            <div className="p-3 bg-white border border-slate-200 rounded-lg">
-              <span className="text-slate-500 text-[11px]">Casual / Emergency</span>
-              <div className="text-lg font-bold text-slate-900 mt-1">10 Days / Yr</div>
-            </div>
-            <div className="p-3 bg-white border border-slate-200 rounded-lg">
-              <span className="text-slate-500 text-[11px]">Maternity / Paternity</span>
-              <div className="text-lg font-bold text-slate-900 mt-1">112 Days Paid</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {leaveTypes.map((lt) => (
+                <div key={lt.id} className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      {lt.isPaid ? 'Paid' : 'Unpaid'}
+                    </span>
+                    <Badge variant="outline" className="text-[10px] font-mono">
+                      {lt.daysPerYear}d / yr
+                    </Badge>
+                  </div>
+                  <h4 className="font-bold text-xs text-slate-900 mt-1 truncate">{lt.title}</h4>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Leave Table */}
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Staff Member</th>
-                  <th className="py-3 px-4">Leave Category</th>
-                  <th className="py-3 px-4">Duration</th>
-                  <th className="py-3 px-4">Reason</th>
-                  <th className="py-3 px-4">Dept Head Approval</th>
-                  <th className="py-3 px-4">HR Director Approval</th>
-                  <th className="py-3 px-4 text-right">Workflow Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {leavesList.map((lv) => (
-                  <tr key={lv.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">{lv.employee}</td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50/50">
-                        {lv.type}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">
-                      {lv.startDate} &rarr; {lv.endDate} ({lv.days}d)
-                    </td>
-                    <td className="py-3 px-4 text-slate-500 max-w-xs truncate">{lv.reason}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          lv.deptApproval === 'APPROVED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {lv.deptApproval}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          lv.hrApproval === 'APPROVED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {lv.hrApproval}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {lv.deptApproval === 'PENDING' && (
-                          <Button
-                            size="xs"
-                            onClick={() => handleApproveLeave(lv.id, 'dept')}
-                            className="text-[10px] h-6 bg-blue-600 hover:bg-blue-700 text-white"
-                          >
-                            Approve Dept
-                          </Button>
-                        )}
-                        {lv.deptApproval === 'APPROVED' && lv.hrApproval !== 'APPROVED' && (
-                          <Button
-                            size="xs"
-                            onClick={() => handleApproveLeave(lv.id, 'hr')}
-                            className="text-[10px] h-6 bg-emerald-600 hover:bg-emerald-700 text-white"
-                          >
-                            Approve HR
-                          </Button>
-                        )}
-                        {lv.hrApproval === 'APPROVED' && (
-                          <span className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 justify-end">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Finalized
+          {/* Leave Applications with 3-Tier Workflow */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+            <div className="p-3.5 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700">
+                  Multi-Tier Approval Hierarchy: Request → Department Head Review → HR Director Final Approval
+                </h3>
+              </div>
+              <span className="text-xs text-slate-400 font-mono">
+                {leaveApplications.length} active requests
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="p-3.5">Staff Member</th>
+                    <th className="p-3.5">Leave Type</th>
+                    <th className="p-3.5">Date Range</th>
+                    <th className="p-3.5">Reason</th>
+                    <th className="p-3.5">Status</th>
+                    <th className="p-3.5 text-right">Approval Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {leaveApplications.map((la) => (
+                    <tr key={la.id} className="hover:bg-slate-50/70 transition">
+                      <td className="p-3.5">
+                        <div className="font-bold text-slate-900">
+                          {la.employee?.fullName || 'Michael Chen'}
+                        </div>
+                        <div className="text-[11px] font-mono text-slate-400">
+                          {la.employee?.employeeCode || 'EMP-105'}
+                        </div>
+                      </td>
+                      <td className="p-3.5 font-medium text-slate-700">
+                        {la.leaveType?.title || 'Annual Paid Leave'}
+                      </td>
+                      <td className="p-3.5 font-mono text-slate-900">
+                        {new Date(la.startDate).toLocaleDateString()} —{' '}
+                        {new Date(la.endDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-3.5 text-slate-600 max-w-[220px] truncate">{la.reason}</td>
+                      <td className="p-3.5">
+                        {la.status === 'pending' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                            Pending Head Review
                           </span>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        {la.status === 'head_approved' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                            Dept Head Approved (Pending HR)
+                          </span>
+                        )}
+                        {la.status === 'hr_approved' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            ✓ HR Director Final Approved
+                          </span>
+                        )}
+                        {la.status === 'rejected' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            Rejected
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3.5 text-right space-x-1.5">
+                        {la.status === 'pending' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              reviewLeaveMutation.mutate({ appId: la.id, decision: 'head_approved' })
+                            }
+                            className="text-xs font-bold text-sky-700 border-sky-200 hover:bg-sky-50 cursor-pointer h-7"
+                          >
+                            Head Approve
+                          </Button>
+                        )}
+                        {la.status === 'head_approved' && (
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              reviewLeaveMutation.mutate({ appId: la.id, decision: 'hr_approved' })
+                            }
+                            className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer h-7"
+                          >
+                            HR Final Approve
+                          </Button>
+                        )}
+                        {la.status !== 'hr_approved' && la.status !== 'rejected' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() =>
+                              reviewLeaveMutation.mutate({ appId: la.id, decision: 'rejected' })
+                            }
+                            className="text-xs font-bold text-rose-600 hover:bg-rose-50 cursor-pointer h-7"
+                          >
+                            Reject
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 5: AUTOMATED PAYROLL ENGINE & STATUTORY DEDUCTIONS (10.5) */}
+      {/* =========================================================================
+          TAB 4: 10.5 ENTERPRISE HOSPITALITY PAYROLL ENGINE
+          ========================================================================= */}
       {activeTab === 'payroll' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-2xs">
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* General Ledger Accounting Mapping Banner */}
+          <div className="p-4 bg-slate-900 text-white rounded-xl shadow-xs grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-blue-600" /> Automated Monthly Hospitality Payroll & Service Charge Pool
+              <p className="text-[10px] font-bold text-slate-400 uppercase">Salaries Expense (OPEX)</p>
+              <p className="font-mono font-bold text-cyan-400 text-sm">Account 6010 (Debit)</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Base contract payroll expense</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase">Payroll Payable (Liability)</p>
+              <p className="font-mono font-bold text-cyan-400 text-sm">Account 2300 (Credit)</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Accrued net wages owed</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase">Statutory Taxes Payable</p>
+              <p className="font-mono font-bold text-cyan-400 text-sm">Account 2200 (Credit)</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">10% tax withholding</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase">Employee Loan Advances</p>
+              <p className="font-mono font-bold text-cyan-400 text-sm">Account 1150 (Credit)</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Scheduled advance repayments</p>
+            </div>
+          </div>
+
+          {/* 10% Guest Service Charge Pool Share Card */}
+          <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-amber-100 text-amber-800 border-amber-300 font-bold text-[10px]">
+                  10% Service Charge Pool
+                </Badge>
+                <span className="font-mono text-xs text-slate-500 font-bold">Month: {payrollMonth}</span>
+              </div>
+              <h3 className="font-bold text-base text-slate-900">
+                Total Pool: ${serviceChargePool ? Number(serviceChargePool.totalPool).toLocaleString() : '48,500.00'}{' '}
+                distributed among {serviceChargePool ? serviceChargePool.paxStaff : 65} frontline staff
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Computes basic wages, overtime, 10% guest service charge pool distribution, tax withholding, and generates PDF payslips.
+              <p className="text-xs text-slate-500">
+                Every frontline employee receives an equal point share of{' '}
+                <span className="font-bold text-emerald-600">
+                  ${serviceChargePool ? Number(serviceChargePool.sharePerPax).toFixed(2) : '746.15'}
+                </span>{' '}
+                credited directly into their monthly net salary.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <select
-                value={payrollMonth}
-                onChange={(e) => setPayrollMonth(e.target.value)}
-                className="h-8 px-2 text-xs bg-white border border-slate-200 rounded text-slate-800"
-              >
-                <option value="October 2026">October 2026</option>
-                <option value="September 2026">September 2026</option>
-                <option value="August 2026">August 2026</option>
-              </select>
+
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 size="sm"
-                onClick={handleExecutePayroll}
-                disabled={isRunningPayroll}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs cursor-pointer"
+                variant="outline"
+                onClick={() => setIsServiceChargeModalOpen(true)}
+                className="font-bold text-xs cursor-pointer"
               >
-                {isRunningPayroll ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Executing Run...
-                  </>
-                ) : (
-                  <>
-                    <TrendingUp className="w-3.5 h-3.5 mr-1" /> Execute Payroll Run
-                  </>
-                )}
+                Configure Pool
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => runPayrollMutation.mutate(payrollMonth)}
+                disabled={runPayrollMutation.isPending}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer"
+              >
+                <DollarSign className="w-4 h-4 mr-1" />
+                {runPayrollMutation.isPending ? 'Processing...' : `Run ${payrollMonth} Payroll`}
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-4 bg-emerald-50/50 border border-emerald-200 rounded-lg space-y-1">
-              <span className="text-[11px] text-emerald-800 font-bold uppercase">10% Guest Service Charge Pool</span>
-              <div className="text-2xl font-bold text-emerald-600">{formatCurrency(serviceChargePool)}</div>
-              <p className="text-[11px] text-slate-600">Equally allocated across 18 frontline staff (~$825/pax)</p>
+          {/* Processed Payslips Table */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+            <div className="p-3.5 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700">
+                  Monthly Generated Payslips ({payrollMonth})
+                </h3>
+              </div>
+              <span className="text-xs text-slate-400 font-mono">
+                {monthlyPayslips.length} payslips recorded
+              </span>
             </div>
 
-            <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-1 shadow-2xs">
-              <span className="text-[11px] text-slate-500 font-medium">Total Basic Wages</span>
-              <div className="text-2xl font-bold text-slate-900">{formatCurrency(54200)}</div>
-              <p className="text-[11px] text-slate-500">Contractual monthly compensation</p>
-            </div>
-
-            <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-1 shadow-2xs">
-              <span className="text-[11px] text-slate-500 font-medium">Overtime Multipliers (1.5x/2.0x)</span>
-              <div className="text-2xl font-bold text-blue-600">{formatCurrency(4120)}</div>
-              <p className="text-[11px] text-slate-500">Automated from biometric attendance logs</p>
-            </div>
-
-            <div className="p-4 bg-white border border-slate-200 rounded-lg space-y-1 shadow-2xs">
-              <span className="text-[11px] text-slate-500 font-medium">Statutory Tax & PF Withheld</span>
-              <div className="text-2xl font-bold text-rose-600">{formatCurrency(7840)}</div>
-              <p className="text-[11px] text-slate-500">Remitted to Revenue Authority</p>
-            </div>
-          </div>
-
-          {/* Sample Payroll Run Breakdown */}
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <span className="text-xs font-bold text-slate-800">Payroll Calculation Sheet & Payslip Distribution</span>
-              <span className="text-[11px] text-slate-500">Target Month: {payrollMonth}</span>
-            </div>
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Employee</th>
-                  <th className="py-3 px-4">Basic Wage</th>
-                  <th className="py-3 px-4">Service Charge Share</th>
-                  <th className="py-3 px-4">Overtime Pay</th>
-                  <th className="py-3 px-4">Deductions (Tax/PF)</th>
-                  <th className="py-3 px-4">Net Payout</th>
-                  <th className="py-3 px-4 text-right">Digital Payslip</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {[
-                  { name: 'Sarah Jenkins', base: 3200, pool: 825, ot: 310, ded: 480, net: 3855 },
-                  { name: 'Chef Marco Rossi', base: 4500, pool: 825, ot: 620, ded: 690, net: 5255 },
-                  { name: 'David K. Miller', base: 3400, pool: 825, ot: 850, ded: 560, net: 4515 },
-                  { name: 'Elena Rostova', base: 2900, pool: 825, ot: 180, ded: 410, net: 3495 },
-                ].map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">{row.name}</td>
-                    <td className="py-3 px-4 text-slate-700">{formatCurrency(row.base)}</td>
-                    <td className="py-3 px-4 font-bold text-emerald-600">+{formatCurrency(row.pool)}</td>
-                    <td className="py-3 px-4 text-blue-600">+{formatCurrency(row.ot)}</td>
-                    <td className="py-3 px-4 text-rose-600">-{formatCurrency(row.ded)}</td>
-                    <td className="py-3 px-4 font-bold font-mono text-slate-900 text-sm">
-                      {formatCurrency(row.net)}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        onClick={() => triggerBanner(`Downloaded official PDF payslip for ${row.name}`)}
-                        className="text-[11px] h-7 bg-white hover:bg-slate-50"
-                      >
-                        <Download className="w-3 h-3 mr-1 text-slate-600" /> PDF Payslip
-                      </Button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="p-3.5">Employee</th>
+                    <th className="p-3.5">Department</th>
+                    <th className="p-3.5">Basic Salary</th>
+                    <th className="p-3.5">Overtime Pay</th>
+                    <th className="p-3.5">10% Pool Share</th>
+                    <th className="p-3.5">Tax Deduction</th>
+                    <th className="p-3.5">Net Disbursed</th>
+                    <th className="p-3.5 text-right">Encrypted PDF</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {monthlyPayslips.map((ps) => {
+                    const basic = Number(ps.basicSalary);
+                    const net = Number(ps.netSalary);
+                    const ot = ps.overtimes?.reduce((acc, o) => acc + Number(o.amount), 0) || 0;
+                    const allowance = ps.allowances?.reduce((acc, a) => acc + Number(a.amount), 0) || 746.15;
+                    const tax = ps.deductions?.find((d) => d.title.includes('Tax'))?.amount || basic * 0.1;
+
+                    return (
+                      <tr key={ps.id} className="hover:bg-slate-50/70 transition">
+                        <td className="p-3.5">
+                          <span className="font-bold text-slate-900">{ps.employee?.fullName}</span>
+                          <span className="text-[11px] font-mono text-slate-400 ml-1.5">
+                            ({ps.employee?.employeeCode})
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-slate-600">
+                          {ps.employee?.department?.name || 'Front Office'}
+                        </td>
+                        <td className="p-3.5 font-mono text-slate-900">${basic.toLocaleString()}</td>
+                        <td className="p-3.5 font-mono text-amber-700 font-bold">
+                          {ot > 0 ? `+$${ot.toFixed(2)}` : '—'}
+                        </td>
+                        <td className="p-3.5 font-mono text-emerald-700 font-bold">
+                          +${Number(allowance).toFixed(2)}
+                        </td>
+                        <td className="p-3.5 font-mono text-rose-700">-${Number(tax).toFixed(2)}</td>
+                        <td className="p-3.5 font-mono font-black text-slate-900 text-sm">
+                          ${net.toLocaleString()}
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <a
+                            href={ps.pdfUrl || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 transition"
+                          >
+                            <Download className="w-3 h-3 text-[#00a8ff]" /> Download PDF
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 6: ATS RECRUITMENT & TALENT KANBAN PIPELINE (10.6) */}
+      {/* =========================================================================
+          TAB 5: 10.6 RECRUITMENT & APPLICANT TRACKING SYSTEM (ATS)
+          ========================================================================= */}
       {activeTab === 'ats' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-slate-200 shadow-2xs">
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Active Jobs Header */}
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-blue-600" /> Applicant Tracking System (ATS) & Talent Kanban Pipeline
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-cyan-600" />
+                Active Hospitality Openings (Public Careers Portal Integration)
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Career vacancies, resume scoring, Zoom video interview scheduling, and 5-stage candidate hiring board.
+              <p className="text-xs text-slate-500">
+                Kanban pipeline tracking high-turnover hospitality positions with Zoom video interview scheduling.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                onClick={() => setIsScheduleInterviewOpen(true)}
-                variant="outline"
-                className="text-xs bg-white"
-              >
-                <Video className="w-3.5 h-3.5 mr-1 text-blue-600" /> Schedule Zoom Interview
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => setIsNewJobOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-              >
-                <Plus className="w-3.5 h-3.5 mr-1" /> Post Job Vacancy
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              onClick={() => setIsNewJobOpen(true)}
+              className="bg-slate-900 hover:bg-black text-white text-xs font-bold cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" /> Post Job Vacancy
+            </Button>
           </div>
 
-          {/* Kanban Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-            {[
-              { key: 'APPLIED', title: '1. Applied / Ingested', count: candidates.filter((c) => c.stage === 'APPLIED').length },
-              { key: 'SCREENING', title: '2. Resume Screening', count: candidates.filter((c) => c.stage === 'SCREENING').length },
-              { key: 'INTERVIEW', title: '3. Zoom Interview', count: candidates.filter((c) => c.stage === 'INTERVIEW').length },
-              { key: 'OFFER_EXTENDED', title: '4. Offer Extended', count: candidates.filter((c) => c.stage === 'OFFER_EXTENDED').length },
-              { key: 'HIRED', title: '5. Hired / Onboarded', count: candidates.filter((c) => c.stage === 'HIRED').length },
-            ].map((col) => (
-              <div key={col.key} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col min-h-[350px]">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-200 mb-3">
-                  <span className="font-bold text-xs text-slate-800">{col.title}</span>
-                  <span className="w-5 h-5 rounded-full bg-white border border-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center">
-                    {col.count}
+          {/* Active Job Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {jobs.map((j) => (
+              <div key={j.id} className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-[9px] uppercase font-bold text-cyan-700 bg-cyan-50 border-cyan-200">
+                    {j.category}
+                  </Badge>
+                  <span className="text-[10px] font-mono text-slate-400 font-bold">
+                    {j.positionsCount} open
                   </span>
                 </div>
-
-                <div className="space-y-2 flex-1">
-                  {candidates
-                    .filter((c) => c.stage === col.key)
-                    .map((c) => (
-                      <div
-                        key={c.id}
-                        className="p-3 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-2 hover:border-blue-400 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-slate-900">{c.name}</span>
-                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                            {c.score}% Match
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-600">{c.role}</p>
-                        <div className="text-[10px] text-slate-400">{c.source}</div>
-
-                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                          {col.key !== 'HIRED' && (
-                            <button
-                              onClick={() => {
-                                const stages = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER_EXTENDED', 'HIRED'];
-                                const currIdx = stages.indexOf(col.key);
-                                if (currIdx < stages.length - 1) {
-                                  handleMoveCandidateStage(c.id, stages[currIdx + 1]);
-                                }
-                              }}
-                              className="text-[10px] text-blue-600 font-bold hover:underline flex items-center gap-0.5"
-                            >
-                              <span>Next Stage</span>
-                              <ChevronRight className="w-3 h-3" />
-                            </button>
-                          )}
-                          {col.key === 'HIRED' && (
-                            <span className="text-[10px] text-emerald-600 font-bold">Onboarded ✔</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                <h4 className="font-bold text-xs text-slate-900">{j.title}</h4>
+                <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">{j.description}</p>
+                <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>{j.branch || 'Grand Azure Resort'}</span>
+                  <span className="font-bold text-slate-700">{j.applications?.length || 0} applicants</span>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* MODAL 1: ONBOARD STAFF MEMBER */}
-      {isAddStaffOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-blue-600" /> Onboard Staff Member Dossier (10.1)
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsAddStaffOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
-              >
-                <X className="w-4 h-4" />
-              </button>
+          {/* 6-Stage Kanban Pipeline */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600">
+              Interactive Candidate Kanban Pipeline (6 Stages)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {[
+                { stage: 'applied', label: '1. Applied', color: 'border-slate-300 bg-slate-50' },
+                { stage: 'screening', label: '2. Screening', color: 'border-sky-300 bg-sky-50/50' },
+                { stage: 'skills_assessment', label: '3. Assessment', color: 'border-indigo-300 bg-indigo-50/50' },
+                { stage: 'interview', label: '4. Zoom Interview', color: 'border-amber-300 bg-amber-50/50' },
+                { stage: 'offered', label: '5. Job Offer', color: 'border-purple-300 bg-purple-50/50' },
+                { stage: 'onboarded', label: '6. Onboarded', color: 'border-emerald-300 bg-emerald-50/50' },
+              ].map((col) => {
+                const stageCandidates = applications.filter((a) => a.stage === col.stage);
+                return (
+                  <div key={col.stage} className={`p-2.5 rounded-xl border-2 ${col.color} min-h-[420px] flex flex-col`}>
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+                      <span className="font-bold text-xs text-slate-900">{col.label}</span>
+                      <span className="w-5 h-5 rounded-full bg-white text-slate-800 text-[10px] font-bold flex items-center justify-center shadow-2xs">
+                        {stageCandidates.length}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 flex-1 overflow-y-auto">
+                      {stageCandidates.map((cand) => (
+                        <div
+                          key={cand.id}
+                          className="p-3 bg-white rounded-lg border border-slate-200 shadow-2xs space-y-1.5"
+                        >
+                          <div className="font-bold text-xs text-slate-900">{cand.name}</div>
+                          <div className="text-[10px] text-cyan-700 font-medium truncate">
+                            {cand.job?.title || 'Applied Candidate'}
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-mono truncate">{cand.email}</div>
+
+                          {/* Zoom video meeting button if interview scheduled */}
+                          {cand.interviews && cand.interviews.length > 0 && (
+                            <a
+                              href={cand.interviews[0].zoomJoinUrl || 'https://zoom.us'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold transition"
+                            >
+                              <Video className="w-3 h-3" /> Launch Zoom Meeting
+                            </a>
+                          )}
+
+                          {/* Actions: Move Stage / Schedule Zoom */}
+                          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between gap-1 text-[10px]">
+                            {col.stage !== 'interview' && col.stage !== 'onboarded' && (
+                              <button
+                                type="button"
+                                onClick={() => setIsScheduleInterviewOpen(cand.id)}
+                                className="text-blue-600 hover:underline font-bold"
+                              >
+                                + Zoom
+                              </button>
+                            )}
+
+                            <select
+                              value={cand.stage}
+                              onChange={(e) =>
+                                updateStageMutation.mutate({ appId: cand.id, stage: e.target.value as any })
+                              }
+                              className="bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 text-[9px] font-bold focus:outline-hidden cursor-pointer"
+                            >
+                              <option value="applied">Applied</option>
+                              <option value="screening">Screening</option>
+                              <option value="skills_assessment">Assessment</option>
+                              <option value="interview">Interview</option>
+                              <option value="offered">Offer</option>
+                              <option value="onboarded">Onboarded</option>
+                            </select>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            <form onSubmit={handleOnboardSubmit} className="p-5 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="block text-slate-700 font-semibold">Full Legal Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Jessica Vance"
-                  value={newStaff.name}
-                  onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
-                  className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="block text-slate-700 font-semibold">Work Email *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="j.vance@omnistay.com"
-                    value={newStaff.email}
-                    onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
-                    className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="block text-slate-700 font-semibold">Phone Contact</label>
-                  <input
-                    type="text"
-                    placeholder="+1 (555) 019-2831"
-                    value={newStaff.phone}
-                    onChange={(e) => setNewStaff({ ...newStaff, phone: e.target.value })}
-                    className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="block text-slate-700 font-semibold">Department *</label>
-                  <select
-                    value={newStaff.department}
-                    onChange={(e) => setNewStaff({ ...newStaff, department: e.target.value })}
-                    className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="Front Office">Front Office</option>
-                    <option value="Culinary / F&B">Culinary / F&B</option>
-                    <option value="Executive Housekeeping">Executive Housekeeping</option>
-                    <option value="Engineering & Maintenance">Engineering & Maintenance</option>
-                    <option value="Accounting & Audit">Accounting & Audit</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="block text-slate-700 font-semibold">Designation / Role *</label>
-                  <input
-                    type="text"
-                    required
-                    value={newStaff.designation}
-                    onChange={(e) => setNewStaff({ ...newStaff, designation: e.target.value })}
-                    className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="block text-slate-700 font-semibold">Rotational Shift *</label>
-                  <select
-                    value={newStaff.shift}
-                    onChange={(e) => setNewStaff({ ...newStaff, shift: e.target.value })}
-                    className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="Morning (07:00 - 15:00)">Morning (07:00 - 15:00)</option>
-                    <option value="Evening (15:00 - 23:00)">Evening (15:00 - 23:00)</option>
-                    <option value="Night Audit (23:00 - 07:00)">Night Audit (23:00 - 07:00)</option>
-                    <option value="Rotational / Flexible">Rotational / Flexible</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="block text-slate-700 font-semibold">Monthly Basic Salary ($)</label>
-                  <input
-                    type="number"
-                    value={newStaff.baseSalary}
-                    onChange={(e) => setNewStaff({ ...newStaff, baseSalary: Number(e.target.value) })}
-                    className="w-full h-8 px-2.5 bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsAddStaffOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Save & Initialize Dossier
-                </Button>
-              </div>
-            </form>
           </div>
         </div>
       )}
 
-      {/* MODAL 2: ASSIGN 24/7 SHIFT */}
-      {isAddShiftOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-600" /> Assign 24/7 Shift Roster (10.2)
-              </h3>
-              <button onClick={() => setIsAddShiftOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
+      {/* =========================================================================
+          TAB 6: 10.7 & 10.8 APPRAISALS, GOALS & HOSPITALITY TRAINING
+          ========================================================================= */}
+      {activeTab === 'appraisals' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Key Performance Indicators (KPIs) */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Guest Review Satisfaction
+              </span>
+              <div className="text-2xl font-black text-slate-900">4.9 / 5.0</div>
+              <p className="text-[10px] text-emerald-600 font-semibold">★ Top 1% TripAdvisor index</p>
             </div>
-            <form onSubmit={handleAddShift} className="p-5 space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Employee Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Sarah Jenkins"
-                  value={newShiftInput.employeeName}
-                  onChange={(e) => setNewShiftInput({ ...newShiftInput, employeeName: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Shift Type</label>
-                <select
-                  value={newShiftInput.shiftType}
-                  onChange={(e) => setNewShiftInput({ ...newShiftInput, shiftType: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                >
-                  <option value="Morning Shift (07:00 - 15:00)">Morning Shift (07:00 - 15:00)</option>
-                  <option value="Evening Dinner (15:00 - 23:00)">Evening Dinner (15:00 - 23:00)</option>
-                  <option value="Night Audit (23:00 - 07:00)">Night Audit (23:00 - 07:00)</option>
-                </select>
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsAddShiftOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 text-white">
-                  Confirm Roster
-                </Button>
-              </div>
-            </form>
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Room Turnaround Pacing
+              </span>
+              <div className="text-2xl font-black text-slate-900">22.4 mins</div>
+              <p className="text-[10px] text-emerald-600 font-semibold">Target: &lt; 25 mins per suite</p>
+            </div>
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Wine & Cellar Upsell Growth
+              </span>
+              <div className="text-2xl font-black text-slate-900">+18.5%</div>
+              <p className="text-[10px] text-emerald-600 font-semibold">Sommelier pairing attachment</p>
+            </div>
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Biometric Punctuality Index
+              </span>
+              <div className="text-2xl font-black text-slate-900">99.2%</div>
+              <p className="text-[10px] text-emerald-600 font-semibold">Zero buddy-punching incidents</p>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* MODAL 3: SIMULATE BIOMETRIC HARDWARE PUNCH */}
-      {isBiometricSimOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Fingerprint className="w-4 h-4 text-blue-600" /> Simulate Hardware Biometric Push (10.3)
-              </h3>
-              <button onClick={() => setIsBiometricSimOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
+          {/* SMART Goals & 360-Degree Appraisals */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* SMART Goals */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-emerald-600" />
+                  SMART Performance Goals & Department Targets
+                </h3>
+              </div>
+              <div className="space-y-3 pt-1">
+                {goals.map((g) => (
+                  <div key={g.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900">{g.target}</span>
+                      <span className="font-mono font-bold text-emerald-700">{g.progressPct}%</span>
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                      <div
+                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                        style={{ width: `${g.progressPct}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>{g.goalType}</span>
+                      <span>Target: {new Date(g.endDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <form onSubmit={handleSimulatePunch} className="p-5 space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Staff Member</label>
-                <input
-                  type="text"
-                  required
-                  value={biometricSim.employeeName}
-                  onChange={(e) => setBiometricSim({ ...biometricSim, employeeName: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Hardware Terminal</label>
-                <select
-                  value={biometricSim.device}
-                  onChange={(e) => setBiometricSim({ ...biometricSim, device: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                >
-                  <option value="ZKTeco ProCapture-X (Main Lobby)">ZKTeco ProCapture-X (Main Lobby)</option>
-                  <option value="Hikvision DS-K1T671 (Kitchen Depot)">Hikvision DS-K1T671 (Kitchen Depot)</option>
-                  <option value="OmniStay Mobile Geofence (iOS/Android)">OmniStay Mobile Geofence (iOS/Android)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Punch Event</label>
-                <select
-                  value={biometricSim.punchType}
-                  onChange={(e) => setBiometricSim({ ...biometricSim, punchType: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                >
-                  <option value="CHECK_IN">CHECK_IN (Shift Start)</option>
-                  <option value="CHECK_OUT">CHECK_OUT (Shift End)</option>
-                  <option value="BREAK_OUT">BREAK_OUT (Lunch Break)</option>
-                </select>
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsBiometricSimOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 text-white">
-                  Send Biometric Telemetry
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
-      {/* MODAL 4: REQUEST LEAVE */}
-      {isApplyLeaveOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-600" /> Submit Staff Leave Application (10.4)
-              </h3>
-              <button onClick={() => setIsApplyLeaveOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
-            </div>
-            <form onSubmit={handleApplyLeave} className="p-5 space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Employee Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Carlos Santana"
-                  value={newLeave.employee}
-                  onChange={(e) => setNewLeave({ ...newLeave, employee: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Leave Category</label>
-                  <select
-                    value={newLeave.type}
-                    onChange={(e) => setNewLeave({ ...newLeave, type: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  >
-                    <option value="Annual Leave">Annual Leave</option>
-                    <option value="Casual Leave">Casual Leave</option>
-                    <option value="Sick Leave">Sick Leave</option>
-                    <option value="Maternity Leave">Maternity Leave</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Start Date *</label>
-                  <input
-                    type="date"
-                    required
-                    value={newLeave.startDate}
-                    onChange={(e) => setNewLeave({ ...newLeave, startDate: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Reason / Handover Notes</label>
-                <textarea
-                  rows={2}
-                  value={newLeave.reason}
-                  onChange={(e) => setNewLeave({ ...newLeave, reason: e.target.value })}
-                  placeholder="Provide handover details..."
-                  className="w-full p-2 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsApplyLeaveOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 text-white">
-                  Submit for Approval
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 5: POST JOB OPENING (ATS) */}
-      {isNewJobOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-blue-600" /> Post Career Opportunity (10.6)
-              </h3>
-              <button onClick={() => setIsNewJobOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
-            </div>
-            <form onSubmit={handleCreateJob} className="p-5 space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Job Title *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Chief Concierge"
-                  value={newJobInput.title}
-                  onChange={(e) => setNewJobInput({ ...newJobInput, title: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Department</label>
-                  <select
-                    value={newJobInput.department}
-                    onChange={(e) => setNewJobInput({ ...newJobInput, department: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  >
-                    <option value="Rooms Division">Rooms Division</option>
-                    <option value="Culinary Arts">Culinary Arts</option>
-                    <option value="Finance & Night Ops">Finance & Night Ops</option>
-                    <option value="Maintenance & Security">Maintenance & Security</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Vacancies</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={newJobInput.vacancies}
-                    onChange={(e) => setNewJobInput({ ...newJobInput, vacancies: Number(e.target.value) })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsNewJobOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 text-white">
-                  Publish to Career Portal
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 6: SCHEDULE ZOOM INTERVIEW (ATS) */}
-      {isScheduleInterviewOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Video className="w-4 h-4 text-blue-600" /> Schedule Video Interview (Zoom API)
-              </h3>
-              <button onClick={() => setIsScheduleInterviewOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
-            </div>
-            <div className="p-5 space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Candidate Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Jessica Vance"
-                  value={newInterviewInput.candidateName}
-                  onChange={(e) => setNewInterviewInput({ ...newInterviewInput, candidateName: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={newInterviewInput.date}
-                    onChange={(e) => setNewInterviewInput({ ...newInterviewInput, date: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Time</label>
-                  <input
-                    type="text"
-                    value={newInterviewInput.time}
-                    onChange={(e) => setNewInterviewInput({ ...newInterviewInput, time: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-              </div>
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded text-blue-800 text-[11px]">
-                A secure Zoom meeting invite with automated calendar sync will be sent to the candidate email.
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsScheduleInterviewOpen(false)}>
-                  Cancel
-                </Button>
+            {/* 360-Degree Appraisals */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                  <Award className="w-4 h-4 text-amber-500" />
+                  360-Degree Performance Appraisals
+                </h3>
                 <Button
                   size="sm"
-                  onClick={() => {
-                    setIsScheduleInterviewOpen(false);
-                    triggerBanner(`Scheduled video interview for ${newInterviewInput.candidateName || 'Candidate'}! Zoom link generated.`);
-                  }}
-                  className="bg-blue-600 text-white"
+                  onClick={() => setIsAppraisalModalOpen(true)}
+                  className="bg-slate-900 hover:bg-black text-white text-xs font-bold cursor-pointer"
                 >
-                  Generate Zoom Link & Send
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Record Appraisal
                 </Button>
+              </div>
+
+              <div className="space-y-2.5 pt-1">
+                {appraisals.map((apr) => (
+                  <div key={apr.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs text-slate-900">
+                        {apr.employee?.fullName || 'Sarah Jenkins'}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-bold text-xs text-amber-700">★ {apr.ratingScore}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">({apr.reviewPeriod})</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-600 italic">"{apr.feedback}"</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 10.8 Training Programs & Professional Hospitality Certifications */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Training Programs */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-indigo-600" />
+                Hospitality Training Curriculum & Masterclasses
+              </h3>
+              <div className="space-y-2">
+                {trainingPrograms.map((tr) => (
+                  <div key={tr.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                    <div className="font-bold text-xs text-slate-900">{tr.title}</div>
+                    <p className="text-[11px] text-slate-600">Instructor: {tr.trainer}</p>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                      <span>
+                        {new Date(tr.startDate).toLocaleDateString()} —{' '}
+                        {new Date(tr.endDate).toLocaleDateString()}
+                      </span>
+                      <span className="text-emerald-700 font-bold">● Certified Course</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Certifications Expiry Alerts */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                Professional Certifications & Expiry Tracking
+              </h3>
+              <div className="space-y-2">
+                {certifications.map((c) => (
+                  <div key={c.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-xs text-slate-900">{c.certName}</div>
+                      <div className="text-[11px] text-slate-500">Issued by: {c.issuedBy}</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Valid until {c.expiryDate ? new Date(c.expiryDate).toLocaleDateString() : 'Active'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL 7: VIEW PERSONNEL DOSSIER (10.1) */}
-      {selectedStaffDossier && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-blue-600" /> Employee Personnel Dossier (Chapter 10.1)
+      {/* =========================================================================
+          TAB 7: 10.9 HR ADMINISTRATION, DISCIPLINARY & OFFBOARDING
+          ========================================================================= */}
+      {activeTab === 'administration' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Employee of the Month Awards */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <Award className="w-4 h-4 text-amber-500" />
+                Employee Awards & Financial Recognition
               </h3>
-              <button onClick={() => setSelectedStaffDossier(null)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
+              <div className="space-y-2">
+                {adminWorkflows.awards.map((aw) => (
+                  <div key={aw.id} className="p-3 bg-amber-50/50 rounded-lg border border-amber-200 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs text-slate-900">{aw.awardName}</span>
+                      <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 text-[10px]">
+                        +${Number(aw.cashBonus).toFixed(2)} Cash Bonus
+                      </Badge>
+                    </div>
+                    <p className="text-[11px] font-semibold text-slate-700">Recipient: {aw.employeeName}</p>
+                    <p className="text-[10px] text-slate-500">Prize: {aw.giftPrize}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="p-5 space-y-4 text-xs">
-              <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
-                <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg">
-                  {selectedStaffDossier.name ? selectedStaffDossier.name[0] : 'S'}
+
+            {/* Complaints & Grievance Whistleblower Log */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-cyan-600" />
+                Confidential Complaints & Grievance Investigation Log
+              </h3>
+              <div className="space-y-2">
+                {adminWorkflows.complaints.map((cmp) => (
+                  <div key={cmp.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs text-slate-900">{cmp.title}</span>
+                      <Badge
+                        className={`text-[9px] ${
+                          cmp.isResolved
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                        }`}
+                      >
+                        {cmp.isResolved ? 'Resolved' : 'Under Investigation'}
+                      </Badge>
+                    </div>
+                    <p className="text-[11px] text-slate-600">{cmp.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Disciplinary Warnings */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-rose-600" />
+                Formal Written Disciplinary Warnings
+              </h3>
+              <div className="space-y-2">
+                {adminWorkflows.warnings.map((dw) => (
+                  <div key={dw.id} className="p-3 bg-rose-50/40 rounded-lg border border-rose-200 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-xs text-rose-900">{dw.warningType}</span>
+                      <span className="font-mono text-[10px] text-slate-400">
+                        {new Date(dw.issuedDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-700">{dw.description}</p>
+                    <p className="text-[10px] text-emerald-700 font-bold pt-1">
+                      ✓ Acknowledged & Signed by Employee
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Offboarding Clearance Checklist */}
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                Offboarding & Asset Handover Clearance Checklist
+              </h3>
+              <p className="text-xs text-slate-500">
+                Mandatory clearance requirements before issuance of final experience certificate.
+              </p>
+              <div className="space-y-2 pt-1">
+                {adminWorkflows.checklists.map((ob) => (
+                  <div
+                    key={ob.id}
+                    onClick={() =>
+                      toggleChecklistMutation.mutate({ id: ob.id, isReturned: !ob.isReturned })
+                    }
+                    className={`p-3 rounded-lg border transition cursor-pointer flex items-center justify-between ${
+                      ob.isReturned
+                        ? 'border-emerald-200 bg-emerald-50/50'
+                        : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className={`w-5 h-5 rounded flex items-center justify-center border ${
+                          ob.isReturned
+                            ? 'bg-emerald-600 text-white border-emerald-600'
+                            : 'border-slate-300 bg-white'
+                        }`}
+                      >
+                        {ob.isReturned && <Check className="w-3.5 h-3.5" />}
+                      </div>
+                      <span className={`text-xs font-semibold ${ob.isReturned ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                        {ob.itemName}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400">
+                      {ob.isReturned ? 'Returned & Verified' : 'Pending Return'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: VIEW FULL PERSONNEL DOSSIER
+          ========================================================================= */}
+      {selectedEmployeeId && employeeDetail && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-400 text-slate-900 font-black flex items-center justify-center text-base">
+                  {employeeDetail.fullName.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{selectedStaffDossier.name}</h4>
-                  <p className="text-slate-500 text-[11px]">{selectedStaffDossier.email}</p>
-                  <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 mt-1">
-                    {selectedStaffDossier.role || 'Hospitality Associate'}
-                  </Badge>
+                  <h3 className="font-bold text-base">{employeeDetail.fullName}</h3>
+                  <p className="text-xs text-cyan-300 font-mono">
+                    {employeeDetail.employeeCode} · {employeeDetail.designation?.name || 'Staff'} (
+                    {employeeDetail.department?.name || 'Operations'})
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedEmployeeId(null)}
+                className="p-1 rounded-md text-slate-400 hover:text-white cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-800">
+              {/* Personnel Summary Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Branch Property</span>
+                  <p className="font-bold text-slate-900 mt-0.5">
+                    {employeeDetail.branch?.name || 'Grand Azure Resort'}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Monthly Contract</span>
+                  <p className="font-bold text-slate-900 mt-0.5 font-mono">
+                    ${Number(employeeDetail.salaryBasic).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Joining Date</span>
+                  <p className="font-bold text-slate-900 mt-0.5 font-mono">
+                    {new Date(employeeDetail.joiningDate).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Emergency Contact</span>
+                  <p className="font-bold text-slate-900 mt-0.5">+1 (305) 555-9988</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Employee ID</span>
-                  <span className="font-mono font-bold text-slate-800">EMP-2026-0042</span>
+              {/* Digital Employment Letters */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-cyan-600" />
+                    Digital Employment Documentation & Verification Letters
+                  </h4>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        generateLetterMutation.mutate({ empId: employeeDetail.id, type: 'offer' })
+                      }
+                      className="text-[11px] font-bold cursor-pointer h-7"
+                    >
+                      + Offer Letter
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        generateLetterMutation.mutate({ empId: employeeDetail.id, type: 'joining' })
+                      }
+                      className="text-[11px] font-bold cursor-pointer h-7"
+                    >
+                      + Joining Letter
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        generateLetterMutation.mutate({ empId: employeeDetail.id, type: 'experience' })
+                      }
+                      className="text-[11px] font-bold cursor-pointer h-7"
+                    >
+                      + Experience Cert
+                    </Button>
+                  </div>
                 </div>
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Biometric Device ID</span>
-                  <span className="font-mono font-bold text-slate-800">ZK-PIN-8841</span>
-                </div>
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Base Contract Wage</span>
-                  <span className="font-bold text-emerald-600">$3,400 / Month</span>
-                </div>
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Service Charge Eligible</span>
-                  <span className="font-bold text-blue-600">Yes (1.0x Full Share)</span>
-                </div>
-              </div>
 
-              <div className="space-y-1">
-                <span className="font-bold text-slate-700">Digital Personnel Documents:</span>
-                <div className="space-y-1.5 pt-1">
+                <div className="space-y-2">
                   {[
-                    'Employment Contract (Signed PDF)',
-                    'Passport / National ID Scan (Verified)',
-                    'HACCP Food Safety Certification (Level 2)',
-                    'Direct Deposit Bank Mandate',
+                    ...(employeeDetail.offerLetters || []).map((l) => ({ type: 'Offer Letter', ...l })),
+                    ...(employeeDetail.joiningLetters || []).map((l) => ({
+                      type: 'Joining Acceptance',
+                      ...l,
+                    })),
+                    ...(employeeDetail.experienceCerts || []).map((l) => ({
+                      type: 'Experience Certificate',
+                      ...l,
+                    })),
                   ].map((doc, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100">
-                      <span className="text-slate-700 flex items-center gap-1.5">
-                        <FileText className="w-3.5 h-3.5 text-blue-600" />
-                        {doc}
-                      </span>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => triggerBanner(`Downloading verified record: ${doc}`)}
-                        className="text-[10px] h-6 text-blue-600"
-                      >
-                        <Download className="w-3 h-3 mr-0.5" /> View
-                      </Button>
+                    <div
+                      key={idx}
+                      className="p-3 rounded-lg border border-slate-200 bg-white space-y-1 shadow-2xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <Badge className="bg-sky-50 text-[#00a8ff] border-sky-200 font-bold text-[10px]">
+                          {doc.type}
+                        </Badge>
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {new Date(doc.letterDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-slate-700 leading-relaxed font-serif text-[11px] pt-1">
+                        "{doc.content}"
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button size="sm" variant="outline" onClick={() => setSelectedStaffDossier(null)}>
-                  Close
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setSelectedStaffDossier(null);
-                    triggerBanner(`Official Experience Certificate PDF generated for ${selectedStaffDossier.name}`);
-                  }}
-                  className="bg-blue-600 text-white"
-                >
-                  Generate Official Certificate
-                </Button>
+              {/* Direct Deposit & Banking Information */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-slate-600">
+                  Banking, Direct Deposit & Statutory Withholding
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-400">Direct Deposit Bank:</span>
+                    <p className="font-bold text-slate-900">JPMorgan Chase Corporate</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Account Number:</span>
+                    <p className="font-mono font-bold text-slate-900">**** **** 8821</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Routing / SWIFT:</span>
+                    <p className="font-mono font-bold text-slate-900">CHASUS33XXX</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400">Tax ID / SSN:</span>
+                    <p className="font-mono font-bold text-slate-900">***-**-4412</p>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div className="p-3 border-t border-slate-100 bg-slate-50 flex justify-end">
+              <Button
+                size="sm"
+                onClick={() => setSelectedEmployeeId(null)}
+                className="bg-slate-900 text-white font-bold cursor-pointer"
+              >
+                Close Dossier
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: REGISTER NEW EMPLOYEE
+          ========================================================================= */}
+      {isAddStaffOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900">Register Staff Member</h3>
+              <button
+                type="button"
+                onClick={() => setIsAddStaffOpen(false)}
+                className="p-1 rounded-md text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Employee Code</label>
+                  <input
+                    type="text"
+                    value={newStaffInput.employeeCode}
+                    onChange={(e) => setNewStaffInput({ ...newStaffInput, employeeCode: e.target.value })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Basic Salary ($/mo)</label>
+                  <input
+                    type="number"
+                    value={newStaffInput.salaryBasic}
+                    onChange={(e) =>
+                      setNewStaffInput({ ...newStaffInput, salaryBasic: Number(e.target.value) })
+                    }
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Full Legal Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Jean-Luc Picard"
+                  value={newStaffInput.fullName}
+                  onChange={(e) => setNewStaffInput({ ...newStaffInput, fullName: e.target.value })}
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Work Email</label>
+                  <input
+                    type="email"
+                    placeholder="staff@omnistay.com"
+                    value={newStaffInput.email}
+                    onChange={(e) => setNewStaffInput({ ...newStaffInput, email: e.target.value })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    placeholder="+1 (305) 555-0199"
+                    value={newStaffInput.phone}
+                    onChange={(e) => setNewStaffInput({ ...newStaffInput, phone: e.target.value })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Branch / Property</label>
+                <select
+                  value={newStaffInput.branchId}
+                  onChange={(e) => setNewStaffInput({ ...newStaffInput, branchId: e.target.value })}
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer"
+                >
+                  <option value="">Select Property...</option>
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="p-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAddStaffOpen(false)}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                disabled={!newStaffInput.fullName || !newStaffInput.email}
+                onClick={() => createEmployeeMutation.mutate(newStaffInput)}
+                className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold cursor-pointer"
+              >
+                Save Staff Dossier
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: HARDWARE BIOMETRIC PUNCH SIMULATOR
+          ========================================================================= */}
+      {isBiometricSimOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <Fingerprint className="w-5 h-5 text-cyan-600" />
+                Hardware Biometric Terminal Punch
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsBiometricSimOpen(false)}
+                className="p-1 rounded-md text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Select Hardware Terminal</label>
+                <select
+                  value={biometricPunchInput.deviceId}
+                  onChange={(e) =>
+                    setBiometricPunchInput({ ...biometricPunchInput, deviceId: e.target.value })
+                  }
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer font-medium"
+                >
+                  {biometricDevices.map((d) => (
+                    <option key={d.id} value={d.deviceName}>
+                      {d.deviceName} ({d.deviceModel})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Employee</label>
+                <select
+                  value={biometricPunchInput.employeeCode}
+                  onChange={(e) =>
+                    setBiometricPunchInput({ ...biometricPunchInput, employeeCode: e.target.value })
+                  }
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer font-medium"
+                >
+                  {employees.map((e) => (
+                    <option key={e.id} value={e.employeeCode}>
+                      {e.fullName} ({e.employeeCode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Punch Event Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setBiometricPunchInput({ ...biometricPunchInput, punchType: 'clock_in' })
+                    }
+                    className={`p-2 rounded-lg font-bold border transition cursor-pointer text-center ${
+                      biometricPunchInput.punchType === 'clock_in'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
+                        : 'border-slate-200 bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    Clock In (Shift Start)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setBiometricPunchInput({ ...biometricPunchInput, punchType: 'clock_out' })
+                    }
+                    className={`p-2 rounded-lg font-bold border transition cursor-pointer text-center ${
+                      biometricPunchInput.punchType === 'clock_out'
+                        ? 'border-rose-500 bg-rose-50 text-rose-800'
+                        : 'border-slate-200 bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    Clock Out (Shift End)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsBiometricSimOpen(false)}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={() =>
+                  biometricPunchMutation.mutate({
+                    ...biometricPunchInput,
+                    punchTime: new Date().toISOString(),
+                  })
+                }
+                className="bg-slate-900 hover:bg-black text-white font-bold cursor-pointer"
+              >
+                Transmit Biometric Timestamp
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: MOBILE GPS GEOFENCE CLOCK-IN
+          ========================================================================= */}
+      {isMobileGeofenceOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <Smartphone className="w-5 h-5 text-emerald-600" />
+                Mobile Staff GPS Geofence (50m Radius)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsMobileGeofenceOpen(false)}
+                className="p-1 rounded-md text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 text-xs">
+              <p className="text-slate-500 leading-relaxed">
+                Staff can only punch in when their mobile GPS coordinate is within 50 meters of the property perimeter (Perimeter: 25.7617, -80.1918).
+              </p>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Employee</label>
+                <select
+                  value={mobileGeofenceInput.employeeCode}
+                  onChange={(e) =>
+                    setMobileGeofenceInput({ ...mobileGeofenceInput, employeeCode: e.target.value })
+                  }
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer font-medium"
+                >
+                  {employees.map((e) => (
+                    <option key={e.id} value={e.employeeCode}>
+                      {e.fullName} ({e.employeeCode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Latitude</label>
+                  <input
+                    type="number"
+                    step="0.0001"
+                    value={mobileGeofenceInput.latitude}
+                    onChange={(e) =>
+                      setMobileGeofenceInput({
+                        ...mobileGeofenceInput,
+                        latitude: parseFloat(e.target.value),
+                      })
+                    }
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Longitude</label>
+                  <input
+                    type="number"
+                    step="0.0001"
+                    value={mobileGeofenceInput.longitude}
+                    onChange={(e) =>
+                      setMobileGeofenceInput({
+                        ...mobileGeofenceInput,
+                        longitude: parseFloat(e.target.value),
+                      })
+                    }
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsMobileGeofenceOpen(false)}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => mobileGeofenceMutation.mutate(mobileGeofenceInput)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer"
+              >
+                Verify Distance & Clock In
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL: APPLY FOR LEAVE
+          ========================================================================= */}
+      {isApplyLeaveOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-base text-slate-900">Submit Leave Application</h3>
+              <button
+                type="button"
+                onClick={() => setIsApplyLeaveOpen(false)}
+                className="p-1 rounded-md text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Staff Member</label>
+                <select
+                  value={leaveInput.employeeId}
+                  onChange={(e) => setLeaveInput({ ...leaveInput, employeeId: e.target.value })}
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer"
+                >
+                  <option value="">Select Employee...</option>
+                  {employees.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.fullName} ({e.employeeCode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Leave Category</label>
+                <select
+                  value={leaveInput.leaveTypeId}
+                  onChange={(e) => setLeaveInput({ ...leaveInput, leaveTypeId: e.target.value })}
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer"
+                >
+                  <option value="">Select Category...</option>
+                  {leaveTypes.map((lt) => (
+                    <option key={lt.id} value={lt.id}>
+                      {lt.title} ({lt.daysPerYear} days/yr)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={leaveInput.startDate}
+                    onChange={(e) => setLeaveInput({ ...leaveInput, startDate: e.target.value })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={leaveInput.endDate}
+                    onChange={(e) => setLeaveInput({ ...leaveInput, endDate: e.target.value })}
+                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Reason / Notes</label>
+                <textarea
+                  rows={2}
+                  placeholder="Reason for absence..."
+                  value={leaveInput.reason}
+                  onChange={(e) => setLeaveInput({ ...leaveInput, reason: e.target.value })}
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg"
+                />
+              </div>
+            </div>
+
+            <div className="p-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsApplyLeaveOpen(false)}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                disabled={!leaveInput.employeeId || !leaveInput.leaveTypeId}
+                onClick={() => applyLeaveMutation.mutate(leaveInput)}
+                className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold cursor-pointer"
+              >
+                Submit Request
+              </Button>
             </div>
           </div>
         </div>

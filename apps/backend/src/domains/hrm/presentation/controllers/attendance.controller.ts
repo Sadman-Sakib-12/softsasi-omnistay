@@ -45,6 +45,22 @@ export class AttendanceController {
     return this.attendanceService.getShiftSchedules();
   }
 
+  @Get('devices')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'List all connected biometric hardware terminals' })
+  getBiometricDevices() {
+    return this.attendanceService.getBiometricDevices();
+  }
+
+  @Get('logs')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'List live verified biometric and GPS geofence punch logs' })
+  getAttendanceLogs() {
+    return this.attendanceService.getAttendanceLogs();
+  }
+
   @Get('overtime/:employeeId/:month')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

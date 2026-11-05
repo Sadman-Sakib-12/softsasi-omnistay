@@ -21,6 +21,9 @@ export interface IHrmRepository {
   createShiftSchedule(data: any): Promise<any>;
   findShiftSchedules(): Promise<any[]>;
   findEmployeeAttendances(employeeId: string, startDate: Date, endDate: Date): Promise<any[]>;
+  createBiometricDevice(data: any): Promise<any>;
+  findBiometricDevices(): Promise<any[]>;
+  findAllAttendances(limit?: number): Promise<any[]>;
 
   // Leaves
   createLeaveType(data: any): Promise<any>;
@@ -30,6 +33,8 @@ export interface IHrmRepository {
   findLeaveApplications(employeeId?: string): Promise<any[]>;
   findLeaveApplicationById(id: string): Promise<any | null>;
   updateLeaveApplication(id: string, data: Record<string, any>): Promise<any>;
+  createHolidayCalendar(data: any): Promise<any>;
+  findHolidayCalendars(): Promise<any[]>;
 
   // Payroll & Loans
   upsertSalary(data: any): Promise<any>;
@@ -45,14 +50,32 @@ export interface IHrmRepository {
   findEmployeePaySlips(employeeId: string): Promise<any[]>;
   findPaySlips(tenantId: string, month: string): Promise<any[]>;
 
-  // Recruitment
+  // Recruitment & Lifecycle
   createJob(data: any): Promise<any>;
   findJobs(tenantId?: string): Promise<any[]>;
   findJobById(id: string): Promise<any | null>;
   createJobApplication(data: any): Promise<any>;
   findJobApplicationById(id: string): Promise<any | null>;
+  findAllJobApplications(jobId?: string): Promise<any[]>;
   updateJobApplication(id: string, data: Record<string, any>): Promise<any>;
   createInterviewSchedule(data: any): Promise<any>;
   createAppraisal(data: any): Promise<any>;
+  findAppraisals(employeeId?: string): Promise<any[]>;
+  createGoalTracking(data: any): Promise<any>;
+  findGoalTrackings(): Promise<any[]>;
   createEmployeeCertification(data: any): Promise<any>;
+  findEmployeeCertifications(): Promise<any[]>;
+  createTrainingProgram(data: any): Promise<any>;
+  findTrainingPrograms(): Promise<any[]>;
+  createEmployeeAward(data: any): Promise<any>;
+  findEmployeeAwards(): Promise<any[]>;
+  createEmployeeComplaint(data: any): Promise<any>;
+  findEmployeeComplaints(): Promise<any[]>;
+  createDisciplinaryWarning(data: any): Promise<any>;
+  findDisciplinaryWarnings(): Promise<any[]>;
+  createResignationRequest(data: any): Promise<any>;
+  findResignationRequests(): Promise<any[]>;
+  findOffboardingChecklists(): Promise<any[]>;
+  createOffboardingChecklist(data: any): Promise<any>;
+  updateOffboardingChecklist(id: string, data: any): Promise<any>;
 }

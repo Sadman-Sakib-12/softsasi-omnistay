@@ -100,4 +100,58 @@ export class RecruitmentApplicationService {
         : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     });
   }
+
+  async getAllApplications(jobId?: string) {
+    return this.repo.findAllJobApplications(jobId);
+  }
+
+  async getAppraisals(employeeId?: string) {
+    return this.repo.findAppraisals(employeeId);
+  }
+
+  async getGoalTrackings() {
+    return this.repo.findGoalTrackings();
+  }
+
+  async createGoalTracking(data: any) {
+    return this.repo.createGoalTracking({
+      goalType: data.goalType || 'Hospitality Target',
+      target: data.target,
+      startDate: new Date(data.startDate || Date.now()),
+      endDate: new Date(data.endDate || Date.now() + 90 * 24 * 3600 * 1000),
+      progressPct: data.progressPct || 0,
+      status: 'in_progress',
+    });
+  }
+
+  async getTrainingPrograms() {
+    return this.repo.findTrainingPrograms();
+  }
+
+  async getCertifications() {
+    return this.repo.findEmployeeCertifications();
+  }
+
+  async getAdminWorkflows() {
+    const [awards, complaints, warnings, checklists] = await Promise.all([
+      this.repo.findEmployeeAwards(),
+      this.repo.findEmployeeComplaints(),
+      this.repo.findDisciplinaryWarnings(),
+      this.repo.findOffboardingChecklists(),
+    ]);
+
+    return {
+      awards,
+      complaints,
+      warnings,
+      checklists,
+    };
+  }
+
+  async toggleOffboardingItem(id: string, isReturned: boolean) {
+    return this.repo.updateOffboardingChecklist(id, {
+      isReturned,
+      verifiedAt: isReturned ? new Date() : null,
+    });
+  }
 }

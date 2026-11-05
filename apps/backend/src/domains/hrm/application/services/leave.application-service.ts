@@ -28,6 +28,10 @@ export class LeaveApplicationService {
     return this.repo.findLeaveTypes(tenantId);
   }
 
+  async getHolidays() {
+    return this.repo.findHolidayCalendars();
+  }
+
   async applyForLeave(dto: CreateLeaveApplicationDto) {
     const employee = await this.repo.findEmployeeById(dto.employeeId);
     if (!employee) throw new NotFoundException('Employee not found');

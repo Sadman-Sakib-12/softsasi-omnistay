@@ -48,4 +48,14 @@ export class PayrollController {
   getEmployeePaySlips(@Param('employeeId') employeeId: string) {
     return this.payrollService.getEmployeePaySlips(employeeId);
   }
+
+  @Get('monthly/:month')
+  @ApiOperation({ summary: 'Get all processed payslips for a given month' })
+  getMonthlyPayroll(
+    @CurrentUser() user: AuthenticatedUserPayload,
+    @Param('month') month: string,
+  ) {
+    const tenantId = user.organizationId || '00000000-0000-0000-0000-000000000001';
+    return this.payrollService.getMonthlyPayroll(tenantId, month);
+  }
 }
