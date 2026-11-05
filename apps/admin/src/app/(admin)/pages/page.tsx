@@ -209,9 +209,11 @@ export default function StaticPagesCmsPage() {
           <tbody className="divide-y divide-slate-100">
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-slate-400">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#00a8ff]" />
-                  <span className="mt-2 block text-xs">Loading CMS pages from database...</span>
+                <td colSpan={6} className="py-12 text-center text-slate-400">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+                    <span className="text-xs font-medium text-slate-500 animate-pulse">Loading CMS pages from database...</span>
+                  </div>
                 </td>
               </tr>
             ) : filtered.length === 0 ? (
