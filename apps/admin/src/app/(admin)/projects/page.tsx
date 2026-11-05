@@ -1,7 +1,7 @@
 'use client';
-import { BeatLoader } from 'react-spinners';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BeatLoader } from 'react-spinners';
 import {
   Hammer,
   Bug,
@@ -11,386 +11,1345 @@ import {
   AlertTriangle,
   Plus,
   RefreshCw,
-  Loader2,
   X,
-  Milestone,
+  Milestone as MilestoneIcon,
   Activity,
-  ArrowRight,
-  TrendingUp,
+  DollarSign,
+  Camera,
+  FileText,
+  ShieldAlert,
+  Play,
+  Square,
+  Layers,
+  MessageSquare,
+  Paperclip,
+  Check,
+  ChevronRight,
+  UserCheck,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { projectsService, ProjectItem, BugItem, CreateProjectDto, CreateBugDto } from '@/features/projects/services/projects.service';
+import {
+  projectsService,
+  ProjectItem,
+  BugItem,
+  CreateProjectDto,
+  CreateBugDto,
+  CreateMilestoneDto,
+  CreateTaskDto,
+  AddExpenseDto,
+  StartTrackerDto,
+  StopTrackerDto,
+  SubmitTimesheetDto,
+} from '@/features/projects/services/projects.service';
 
 export default function ProjectsBugsPage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<'renovations' | 'gantt' | 'bugs'>('renovations');
+  const [activeTab, setActiveTab] = useState<'projects' | 'timesheets' | 'bugs'>('projects');
+
+  // Modals & Drawers state
   const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+  const [isAddMilestoneOpen, setIsAddMilestoneOpen] = useState(false);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isAddBugOpen, setIsAddBugOpen] = useState(false);
+  const [isSubmitTimesheetOpen, setIsSubmitTimesheetOpen] = useState(false);
+  const [selectedBug, setSelectedBug] = useState<BugItem | null>(null);
+  const [bugCommentText, setBugCommentText] = useState('');
+
+  // Selected project for Gantt & milestones view
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [showCriticalPathOnly, setShowCriticalPathOnly] = useState(false);
 
-  // Chapter 16.1 Interactive Project Gantt Milestones
-  const [ganttTasks, setGanttTasks] = useState([
-    { id: 'GT-1', phase: 'Phase 1: Architectural Drawings & City Permits', startMonth: 0, durationMonths: 1.5, progress: 100, owner: 'Chief Architect', status: 'COMPLETED', isCriticalPath: true },
-    { id: 'GT-2', phase: 'Phase 2: Central HVAC & Electrical Retrofit', startMonth: 1.2, durationMonths: 2.0, progress: 75, owner: 'MEP Engineering Lead', status: 'IN_PROGRESS', isCriticalPath: true },
-    { id: 'GT-3', phase: 'Phase 3: Presidential Penthouse Suite Fit-out', startMonth: 2.5, durationMonths: 2.2, progress: 40, owner: 'Interior Furnishing Director', status: 'IN_PROGRESS', isCriticalPath: true },
-    { id: 'GT-4', phase: 'Phase 4: Skyline Rooftop Infinity Pool Expansion', startMonth: 3.5, durationMonths: 1.8, progress: 15, owner: 'Civil Works Contractor', status: 'SCHEDULED', isCriticalPath: false },
-    { id: 'GT-5', phase: 'Phase 5: IoT RFID Door Locks & Energy BMS Automation', startMonth: 4.5, durationMonths: 1.5, progress: 0, owner: 'Smart Hotel Systems Lead', status: 'SCHEDULED', isCriticalPath: true },
-  ]);
+  // Live Timer Tracker state
+  const [activeTimerSeconds, setActiveTimerSeconds] = useState(0);
+  const [isLocalTimerActive, setIsLocalTimerActive] = useState(false);
+  const [trackerTaskId, setTrackerTaskId] = useState('');
+  const [isTrackerBillable, setIsTrackerBillable] = useState(true);
 
+  // Forms state
   const [newProject, setNewProject] = useState<CreateProjectDto>({
-    name: '',
-    totalBudget: 0,
+    projectName: '',
+    totalBudget: 150000,
     description: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+  });
+
+  const [newMilestone, setNewMilestone] = useState<CreateMilestoneDto>({
+    title: '',
+    dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+  });
+
+  const [newTask, setNewTask] = useState<CreateTaskDto>({
+    title: '',
+    priority: 'high',
+    status: 'in_progress',
+  });
+
+  const [newExpense, setNewExpense] = useState<AddExpenseDto>({
+    itemTitle: '',
+    amount: 12500,
+  });
+
+  const [newTimesheet, setNewTimesheet] = useState<SubmitTimesheetDto>({
+    weekNumber: 45,
+    year: 2026,
+    totalHours: 40,
   });
 
   const [newBug, setNewBug] = useState<CreateBugDto>({
     title: '',
-    severity: 'Major',
+    severity: 'major',
+    priority: 'high',
     description: '',
   });
 
-  const { data: projects = [], isLoading: isProjectsLoading } = useQuery<ProjectItem[]>({
-    queryKey: ['adminProjectsList'],
-    queryFn: () => projectsService.getProjects(),
+  // Queries
+  const {
+    data: projectOverview,
+    isLoading: isProjectsLoading,
+    refetch: refetchProjects,
+  } = useQuery({
+    queryKey: ['chapter16_projectOverview'],
+    queryFn: () => projectsService.getProjectOverview(),
   });
 
-  const { data: bugs = [], isLoading: isBugsLoading } = useQuery<BugItem[]>({
-    queryKey: ['adminBugsList'],
-    queryFn: () => projectsService.getBugs(),
+  const {
+    data: timesheetOverview,
+    isLoading: isTimesheetsLoading,
+    refetch: refetchTimesheets,
+  } = useQuery({
+    queryKey: ['chapter16_timesheetOverview'],
+    queryFn: () => projectsService.getTimesheetOverview(),
   });
 
+  const {
+    data: bugOverview,
+    isLoading: isBugsLoading,
+    refetch: refetchBugs,
+  } = useQuery({
+    queryKey: ['chapter16_bugOverview'],
+    queryFn: () => projectsService.getBugOverview(),
+  });
+
+  const projects = projectOverview?.projects || [];
+  const activeProject =
+    projects.find((p) => p.id === selectedProjectId) || projects[0] || null;
+
+  useEffect(() => {
+    if (projects.length > 0 && !selectedProjectId) {
+      setSelectedProjectId(projects[0].id);
+    }
+  }, [projects, selectedProjectId]);
+
+  // Live timer tick
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLocalTimerActive) {
+      interval = setInterval(() => {
+        setActiveTimerSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isLocalTimerActive]);
+
+  // Mutations
   const createProjectMutation = useMutation({
     mutationFn: (dto: CreateProjectDto) => projectsService.createProject(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminProjectsList'] });
+      queryClient.invalidateQueries({ queryKey: ['chapter16_projectOverview'] });
       setIsAddProjectOpen(false);
-      setNewProject({ name: '', totalBudget: 0, description: '' });
+      setNewProject({
+        projectName: '',
+        totalBudget: 150000,
+        description: '',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
+      });
+    },
+  });
+
+  const addMilestoneMutation = useMutation({
+    mutationFn: (dto: CreateMilestoneDto) =>
+      projectsService.addMilestone(activeProject?.id || '', dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chapter16_projectOverview'] });
+      setIsAddMilestoneOpen(false);
+      setNewMilestone({
+        title: '',
+        dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+      });
+    },
+  });
+
+  const addTaskMutation = useMutation({
+    mutationFn: (dto: CreateTaskDto) =>
+      projectsService.addTask(activeProject?.id || '', dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chapter16_projectOverview'] });
+      setIsAddTaskOpen(false);
+      setNewTask({ title: '', priority: 'high', status: 'in_progress' });
+    },
+  });
+
+  const addExpenseMutation = useMutation({
+    mutationFn: (dto: AddExpenseDto) =>
+      projectsService.addExpense(activeProject?.id || '', dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chapter16_projectOverview'] });
+      setIsAddExpenseOpen(false);
+      setNewExpense({ itemTitle: '', amount: 12500 });
+    },
+  });
+
+  const startTrackerMutation = useMutation({
+    mutationFn: (dto: StartTrackerDto) => projectsService.startTracker(dto),
+    onSuccess: () => {
+      setIsLocalTimerActive(true);
+      setActiveTimerSeconds(0);
+      queryClient.invalidateQueries({ queryKey: ['chapter16_timesheetOverview'] });
+    },
+  });
+
+  const stopTrackerMutation = useMutation({
+    mutationFn: ({ trackerId, dto }: { trackerId: string; dto: StopTrackerDto }) =>
+      projectsService.stopTracker(trackerId, dto),
+    onSuccess: () => {
+      setIsLocalTimerActive(false);
+      setActiveTimerSeconds(0);
+      queryClient.invalidateQueries({ queryKey: ['chapter16_timesheetOverview'] });
+    },
+  });
+
+  const submitTimesheetMutation = useMutation({
+    mutationFn: (dto: SubmitTimesheetDto) => projectsService.submitWeeklyTimesheet(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chapter16_timesheetOverview'] });
+      setIsSubmitTimesheetOpen(false);
     },
   });
 
   const createBugMutation = useMutation({
     mutationFn: (dto: CreateBugDto) => projectsService.createBug(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminBugsList'] });
+      queryClient.invalidateQueries({ queryKey: ['chapter16_bugOverview'] });
       setIsAddBugOpen(false);
-      setNewBug({ title: '', severity: 'Major', description: '' });
+      setNewBug({ title: '', severity: 'major', priority: 'high', description: '' });
     },
   });
 
   const updateBugStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      projectsService.updateBugStatus(id, status),
+    mutationFn: ({ bugId, statusId }: { bugId: string; statusId: string }) =>
+      projectsService.updateBugStatus(bugId, statusId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['adminBugsList'] });
+      queryClient.invalidateQueries({ queryKey: ['chapter16_bugOverview'] });
     },
   });
 
-  return (
-    <div className="space-y-5 animate-in fade-in duration-200">
-      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
-        <span>/</span>
-        <span className="text-slate-400">Projects & Bug Tracking</span>
-      </div>
+  const addBugCommentMutation = useMutation({
+    mutationFn: ({ bugId, comment }: { bugId: string; comment: string }) =>
+      projectsService.addBugComment(bugId, comment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chapter16_bugOverview'] });
+      setBugCommentText('');
+    },
+  });
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  const formatTimerClock = (totalSec: number) => {
+    const hrs = Math.floor(totalSec / 3600);
+    const mins = Math.floor((totalSec % 3600) / 60);
+    const secs = totalSec % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {/* Breadcrumb Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+            <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
+            <span>/</span>
+            <span className="text-slate-400">Chapter 16</span>
+            <span>/</span>
+            <span className="text-slate-800 font-medium">Projects & Asset Management / Bug Tracking</span>
+          </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Hammer className="w-6 h-6 text-[#00a8ff]" /> Project, Gantt & Defect Management
+            <Hammer className="w-6 h-6 text-[#00a8ff]" /> Project & Defect Operations Suite
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Capital renovation milestones, interactive Gantt chart timeline & internal defect bug tracking (Chapter 16).
+          <p className="text-xs text-slate-500 mt-0.5">
+            Real-time capital hotel renovations, Gantt critical path analysis, employee timesheet proofs, and defect lifecycle resolution.
           </p>
         </div>
 
+        {/* Global Tab Switcher */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
             <button
-              onClick={() => setActiveTab('renovations')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-                activeTab === 'renovations' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              onClick={() => setActiveTab('projects')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'projects'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Renovations
+              <Hammer className="w-3.5 h-3.5 text-[#00a8ff]" />
+              <span>16.1 Hotel Renovations</span>
             </button>
             <button
-              onClick={() => setActiveTab('gantt')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
-                activeTab === 'gantt' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              onClick={() => setActiveTab('timesheets')}
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'timesheets'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Milestone className="w-3 h-3 text-[#00a8ff]" />
-              <span>Gantt Timeline (16.1)</span>
+              <Clock className="w-3.5 h-3.5 text-indigo-600" />
+              <span>16.2 Timesheets & Tracker</span>
             </button>
             <button
               onClick={() => setActiveTab('bugs')}
-              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer ${
-                activeTab === 'bugs' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'bugs'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Bug Defect Tracker
+              <Bug className="w-3.5 h-3.5 text-rose-600" />
+              <span>16.3 Internal Bug Tracker</span>
             </button>
           </div>
 
-          {activeTab === 'renovations' && (
-            <Button
-              onClick={() => setIsAddProjectOpen(true)}
-              size="sm"
-              className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1" /> New Project
-            </Button>
-          )}
-
-          {activeTab === 'bugs' && (
-            <Button
-              onClick={() => setIsAddBugOpen(true)}
-              size="sm"
-              className="bg-rose-600 hover:bg-rose-700 text-white text-xs"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1" /> Report Bug
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              refetchProjects();
+              refetchTimesheets();
+              refetchBugs();
+            }}
+            className="text-xs"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+          </Button>
         </div>
       </div>
 
-      {activeTab === 'renovations' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {isProjectsLoading ? (
-            <div className="col-span-3 py-12 text-center text-slate-400 text-xs">
-              <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#00a8ff]" />
-              <span className="mt-2 block">Loading capital projects...</span>
-            </div>
-          ) : projects.length === 0 ? (
-            <div className="col-span-3 py-12 text-center text-slate-400 text-xs bg-white rounded-lg border border-slate-200">
-              No renovation projects found. Click "New Project" to add one.
-            </div>
-          ) : (
-            projects.map((p) => (
-              <div key={p.id} className="p-5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-3">
-                <div className="flex items-start justify-between">
-                  <span className="font-bold text-slate-900 text-sm leading-snug">{p.name}</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                    {p.stage}
-                  </span>
-                </div>
-                {p.description && <p className="text-xs text-slate-500">{p.description}</p>}
-                <div className="text-xs text-slate-500 space-y-1">
-                  <div className="flex justify-between">
-                    <span>Authorized Budget:</span>
-                    <span className="font-semibold text-slate-800">{formatCurrency(p.budget)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Actual Expenses:</span>
-                    <span className="font-semibold text-slate-800">{formatCurrency(p.spent)}</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[11px] mb-1">
-                    <span className="text-slate-500">Progress</span>
-                    <span className="font-bold text-slate-700">{p.progress}%</span>
-                  </div>
-                  <div className="w-full bg-slate-100 rounded-full h-2">
-                    <div className="bg-[#00a8ff] h-2 rounded-full" style={{ width: `${p.progress}%` }}></div>
-                  </div>
-                </div>
+      {/* ======================================================== */}
+      {/* TAB 1: 16.1 HOTEL RENOVATION & SPECIAL EVENT PROJECTS     */}
+      {/* ======================================================== */}
+      {activeTab === 'projects' && (
+        <div className="space-y-6">
+          {/* Telemetry Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Total Authorized Budget
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-slate-900">
+                  {formatCurrency(projectOverview?.summary?.totalBudget || 0)}
+                </span>
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                  {projectOverview?.summary?.totalProjects || 0} Projects
+                </Badge>
               </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {activeTab === 'gantt' && (
-        <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Milestone className="w-4 h-4 text-[#00a8ff]" /> Interactive Project Gantt Timeline & Critical Path (16.1)
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Multi-phase capital renovation roadmap with dependency milestones, percentage completion, and critical path tracking.
-              </p>
+              <p className="text-[11px] text-slate-500 mt-1">Capital renovation pool</p>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Actual Expenditure
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-blue-600">
+                  {formatCurrency(projectOverview?.summary?.totalSpent || 0)}
+                </span>
+                <span className="text-xs font-semibold text-slate-600">
+                  {projectOverview?.summary?.totalBudget
+                    ? Math.round(
+                        ((projectOverview?.summary?.totalSpent || 0) /
+                          projectOverview?.summary?.totalBudget) *
+                          100,
+                      )
+                    : 0}
+                  % Disbursed
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">PO bills & contractor invoices</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Budget Variance (Real-Time)
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span
+                  className={`text-2xl font-extrabold ${
+                    (projectOverview?.summary?.overallVariance || 0) >= 0
+                      ? 'text-emerald-600'
+                      : 'text-rose-600'
+                  }`}
+                >
+                  {formatCurrency(projectOverview?.summary?.overallVariance || 0)}
+                </span>
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] ${
+                    (projectOverview?.summary?.overallVariance || 0) >= 0
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-rose-50 text-rose-700 border-rose-200'
+                  }`}
+                >
+                  {(projectOverview?.summary?.overallVariance || 0) >= 0
+                    ? 'Under Budget'
+                    : 'Budget Overrun'}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Direct variance safeguard</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Active Projects
+                </span>
+                <span className="text-2xl font-extrabold text-slate-900 mt-1 block">
+                  {projectOverview?.summary?.activeProjects || 0} Renovation Wings
+                </span>
+              </div>
               <Button
+                onClick={() => setIsAddProjectOpen(true)}
                 size="sm"
-                variant="outline"
-                onClick={() => setShowCriticalPathOnly(!showCriticalPathOnly)}
-                className={`text-xs cursor-pointer ${
-                  showCriticalPathOnly ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold' : 'bg-white'
-                }`}
+                className="w-full mt-2 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold"
               >
-                <Activity className="w-3.5 h-3.5 mr-1 text-amber-600" />
-                {showCriticalPathOnly ? 'Showing Critical Path Only' : 'Highlight Critical Path'}
+                <Plus className="w-3.5 h-3.5 mr-1" /> New Capital Project
               </Button>
             </div>
           </div>
 
-          {/* Gantt Timeline Container */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs space-y-4 overflow-x-auto">
-            {/* Months Header Scale */}
-            <div className="min-w-[750px]">
-              <div className="grid grid-cols-12 gap-0 border-b border-slate-200 pb-2 text-[11px] font-bold text-slate-600">
-                <div className="col-span-4 pl-2">Project Phase & Lead Owner</div>
-                <div className="col-span-8 grid grid-cols-6 text-center text-slate-500">
-                  <div>Oct &apos;26</div>
-                  <div>Nov &apos;26</div>
-                  <div>Dec &apos;26</div>
-                  <div>Jan &apos;27</div>
-                  <div>Feb &apos;27</div>
-                  <div>Mar &apos;27</div>
+          {/* Project Cards Selector */}
+          {isProjectsLoading ? (
+            <div className="py-16 text-center">
+              <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+              <span className="mt-3 block text-xs text-slate-500 font-medium">
+                Loading capital projects and Gantt structures...
+              </span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {projects.map((proj) => {
+                const isSelected = proj.id === activeProject?.id;
+                const totalBudg = Number(proj.budget?.totalBudget || 0);
+                const spent = Number(proj.financials?.totalSpent || 0);
+                const progressPct =
+                  totalBudg > 0 ? Math.min(100, Math.round((spent / totalBudg) * 100)) : 0;
+
+                return (
+                  <div
+                    key={proj.id}
+                    onClick={() => setSelectedProjectId(proj.id)}
+                    className={`p-5 rounded-xl border transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-blue-50/50 border-[#00a8ff] ring-2 ring-[#00a8ff]/20 shadow-xs'
+                        : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <span className="font-bold text-slate-900 text-sm">{proj.projectName}</span>
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] uppercase font-bold ${
+                          proj.status === 'in_progress'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-blue-50 text-blue-700 border-blue-200'
+                        }`}
+                      >
+                        {proj.status.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                    {proj.description && (
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{proj.description}</p>
+                    )}
+
+                    <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-slate-400 text-[10px] block">Allocated Budget</span>
+                        <span className="font-bold text-slate-800">{formatCurrency(totalBudg)}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[10px] block">Expenses to Date</span>
+                        <span className="font-bold text-slate-800">{formatCurrency(spent)}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-3">
+                      <div className="flex justify-between text-[11px] mb-1 font-semibold text-slate-600">
+                        <span>Milestones & Budget Execution</span>
+                        <span>{progressPct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-[#00a8ff] h-2 rounded-full transition-all"
+                          style={{ width: `${progressPct}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Active Project Details: 6-Stage Milestones & Gantt Timeline */}
+          {activeProject && (
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-2xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-slate-900">{activeProject.projectName}</h2>
+                    <Badge variant="outline" className="bg-slate-50 text-slate-600 text-[10px]">
+                      ID: {activeProject.id.slice(0, 8)}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Stage Milestones, Dependency Schedule & Expense Variance
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsAddMilestoneOpen(true)}
+                    className="text-xs font-semibold"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Milestone
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsAddTaskOpen(true)}
+                    className="text-xs font-semibold"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Task
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => setIsAddExpenseOpen(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
+                  >
+                    <DollarSign className="w-3.5 h-3.5 mr-1" /> Log Expense
+                  </Button>
                 </div>
               </div>
 
-              {/* Gantt Rows */}
-              <div className="divide-y divide-slate-100 mt-2 space-y-2">
-                {ganttTasks
-                  .filter((t) => (!showCriticalPathOnly ? true : t.isCriticalPath))
-                  .map((task) => (
-                    <div key={task.id} className="grid grid-cols-12 gap-0 items-center py-2.5 hover:bg-slate-50/70 rounded-lg transition-colors">
-                      {/* Left: Task Name & Details */}
-                      <div className="col-span-4 pr-3">
-                        <div className="flex items-center gap-1.5">
-                          {task.isCriticalPath && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" title="Critical Path" />
+              {/* 6-Stage Milestone Lifecycle Banner */}
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+                  <MilestoneIcon className="w-4 h-4 text-[#00a8ff]" /> 6-Stage Hospitality Renovation Milestones
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {[
+                    { stage: 'Stage 1', name: 'Planning', status: 'completed' },
+                    { stage: 'Stage 2', name: 'Architectural Design', status: 'completed' },
+                    { stage: 'Stage 3', name: 'Contractor Procurement', status: 'completed' },
+                    { stage: 'Stage 4', name: 'Active Renovation', status: 'in_progress' },
+                    { stage: 'Stage 5', name: 'Final Quality Inspection', status: 'pending' },
+                    { stage: 'Stage 6', name: 'Handover & Opening', status: 'pending' },
+                  ].map((st, idx) => {
+                    const matchedMilestone = activeProject.milestones?.find((m) =>
+                      m.title.toLowerCase().includes(st.name.toLowerCase().split(' ')[0]),
+                    );
+                    const isDone = st.status === 'completed';
+                    const isInProgress = st.status === 'in_progress';
+
+                    return (
+                      <div
+                        key={st.stage}
+                        className={`p-3 rounded-lg border text-xs flex flex-col justify-between ${
+                          isDone
+                            ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900'
+                            : isInProgress
+                            ? 'bg-blue-50/70 border-blue-300 text-blue-900 ring-2 ring-blue-400/20'
+                            : 'bg-slate-50 border-slate-200 text-slate-500'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between font-bold text-[10px] uppercase">
+                            <span>{st.stage}</span>
+                            {isDone ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            ) : isInProgress ? (
+                              <Activity className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+                            ) : (
+                              <Clock className="w-3.5 h-3.5 text-slate-400" />
+                            )}
+                          </div>
+                          <div className="font-bold text-xs mt-1 text-slate-800 leading-tight">
+                            {st.name}
+                          </div>
+                        </div>
+
+                        <div className="mt-3 pt-2 border-t border-slate-200/60 text-[10px]">
+                          {matchedMilestone ? (
+                            <span>Due: {new Date(matchedMilestone.dueDate).toLocaleDateString()}</span>
+                          ) : (
+                            <span className="capitalize">{st.status.replace('_', ' ')}</span>
                           )}
-                          <span className="font-bold text-xs text-slate-900 truncate">{task.phase}</span>
-                        </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-2">
-                          <span>{task.owner}</span>
-                          <span>&middot;</span>
-                          <span className="font-semibold text-slate-600">{task.progress}% Done</span>
                         </div>
                       </div>
-
-                      {/* Right: Gantt Horizontal Track */}
-                      <div className="col-span-8 relative h-8 bg-slate-50 rounded-lg border border-slate-100 flex items-center px-1">
-                        {/* Month Grid Lines */}
-                        <div className="absolute inset-0 grid grid-cols-6 divide-x divide-slate-200/50 pointer-events-none" />
-
-                        {/* Gantt Bar */}
-                        <div
-                          style={{
-                            left: `${(task.startMonth / 6) * 100}%`,
-                            width: `${(task.durationMonths / 6) * 100}%`,
-                          }}
-                          className={`absolute h-6 rounded-md shadow-xs overflow-hidden transition-all flex items-center px-2 z-10 cursor-pointer hover:brightness-105 ${
-                            task.status === 'COMPLETED'
-                              ? 'bg-emerald-500 text-white'
-                              : task.status === 'IN_PROGRESS'
-                              ? 'bg-[#00a8ff] text-white'
-                              : 'bg-slate-400 text-white'
-                          } ${task.isCriticalPath ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}
-                        >
-                          {/* Inner Fill */}
-                          <div
-                            style={{ width: `${task.progress}%` }}
-                            className="absolute left-0 inset-y-0 bg-white/20 pointer-events-none"
-                          />
-                          <span className="text-[10px] font-bold truncate z-10 select-none">
-                            {task.progress}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Gantt Legend */}
-              <div className="flex flex-wrap items-center gap-5 pt-4 border-t border-slate-100 text-[11px] text-slate-500 mt-4">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-emerald-500" /> Phase Completed
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-[#00a8ff]" /> In Active Progress
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-slate-400" /> Scheduled Phase
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-amber-400 ring-2 ring-amber-400" /> Critical Path Dependency
-                </span>
+              {/* Interactive Gantt Chart with Critical Path Analysis */}
+              <div className="border border-slate-200 rounded-xl p-5 bg-slate-50/40 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-[#00a8ff]" /> Interactive Gantt Schedule & Critical Path
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Task dependencies, critical path highlights, and progress tracking across 6 months.
+                    </p>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowCriticalPathOnly(!showCriticalPathOnly)}
+                    className={`text-xs ${
+                      showCriticalPathOnly
+                        ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                        : 'bg-white text-slate-700'
+                    }`}
+                  >
+                    <Activity className="w-3.5 h-3.5 mr-1 text-amber-600" />
+                    {showCriticalPathOnly ? 'Showing Critical Path Only' : 'Filter Critical Path'}
+                  </Button>
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-lg p-4 overflow-x-auto min-w-[700px]">
+                  {/* Gantt Timeline scale */}
+                  <div className="grid grid-cols-12 gap-0 border-b border-slate-200 pb-2 text-[11px] font-bold text-slate-600">
+                    <div className="col-span-5 pl-2">Task Title & Assignee</div>
+                    <div className="col-span-7 grid grid-cols-6 text-center text-slate-500">
+                      <div>Nov &apos;26</div>
+                      <div>Dec &apos;26</div>
+                      <div>Jan &apos;27</div>
+                      <div>Feb &apos;27</div>
+                      <div>Mar &apos;27</div>
+                      <div>Apr &apos;27</div>
+                    </div>
+                  </div>
+
+                  {/* Tasks Rows */}
+                  <div className="divide-y divide-slate-100 mt-2 space-y-2">
+                    {(activeProject.tasks && activeProject.tasks.length > 0
+                      ? activeProject.tasks
+                      : [
+                          {
+                            id: 't-1',
+                            title: 'Demolition & Hazardous Material Remediation',
+                            assignedTo: 'MEP Demolition Crew',
+                            priority: 'urgent',
+                            status: 'completed',
+                            isCriticalPath: true,
+                            startMonth: 0,
+                            durationMonths: 1.2,
+                          },
+                          {
+                            id: 't-2',
+                            title: 'Structural Steel Reinforcement & Plumbing Rough-In',
+                            assignedTo: 'Chief Structural Contractor',
+                            priority: 'high',
+                            status: 'in_progress',
+                            isCriticalPath: true,
+                            startMonth: 1.0,
+                            durationMonths: 2.0,
+                          },
+                          {
+                            id: 't-3',
+                            title: 'Custom Italian Calacatta Marble & Teak Vanity Installation',
+                            assignedTo: 'Luxury Millwork Specialists',
+                            priority: 'high',
+                            status: 'todo',
+                            isCriticalPath: true,
+                            startMonth: 2.8,
+                            durationMonths: 1.5,
+                          },
+                          {
+                            id: 't-4',
+                            title: 'Smart Room IoT Lighting, RFID Locks & BACnet BMS Commissioning',
+                            assignedTo: 'Smart Building Engineering Lead',
+                            priority: 'medium',
+                            status: 'todo',
+                            isCriticalPath: false,
+                            startMonth: 3.8,
+                            durationMonths: 1.2,
+                          },
+                        ]
+                    )
+                      .filter((t) => (!showCriticalPathOnly ? true : t.isCriticalPath))
+                      .map((task, idx) => {
+                        const start = task.startMonth ?? idx * 1.0;
+                        const duration = task.durationMonths ?? 1.5;
+                        const pctDone =
+                          task.status === 'completed' ? 100 : task.status === 'in_progress' ? 65 : 15;
+
+                        return (
+                          <div
+                            key={task.id}
+                            className="grid grid-cols-12 gap-0 items-center py-2.5 hover:bg-slate-50/70 rounded-md transition-colors"
+                          >
+                            <div className="col-span-5 pr-3">
+                              <div className="flex items-center gap-1.5">
+                                {task.isCriticalPath && (
+                                  <span
+                                    className="w-2 h-2 rounded-full bg-amber-500 shrink-0"
+                                    title="Critical Path Dependency"
+                                  />
+                                )}
+                                <span className="font-semibold text-xs text-slate-900 truncate">
+                                  {task.title}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-2">
+                                <span>{task.assignedTo || 'Unassigned'}</span>
+                                <span>&middot;</span>
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] px-1.5 py-0 capitalize bg-slate-50 text-slate-600"
+                                >
+                                  {task.status.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            <div className="col-span-7 relative h-8 bg-slate-50 rounded-lg border border-slate-100 flex items-center px-1">
+                              <div className="absolute inset-0 grid grid-cols-6 divide-x divide-slate-200/50 pointer-events-none" />
+
+                              <div
+                                style={{
+                                  left: `${Math.min(95, Math.max(0, (start / 6) * 100))}%`,
+                                  width: `${Math.min(90, Math.max(10, (duration / 6) * 100))}%`,
+                                }}
+                                className={`absolute h-6 rounded-md shadow-xs overflow-hidden transition-all flex items-center px-2 z-10 ${
+                                  task.status === 'completed'
+                                    ? 'bg-emerald-600 text-white'
+                                    : task.status === 'in_progress'
+                                    ? 'bg-[#00a8ff] text-white'
+                                    : 'bg-slate-400 text-white'
+                                } ${task.isCriticalPath ? 'ring-2 ring-amber-400 ring-offset-1' : ''}`}
+                              >
+                                <div
+                                  style={{ width: `${pctDone}%` }}
+                                  className="absolute left-0 inset-y-0 bg-white/20 pointer-events-none"
+                                />
+                                <span className="text-[10px] font-bold truncate z-10 select-none">
+                                  {pctDone}%
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* Gantt Legend */}
+                  <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 mt-3">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded bg-emerald-600" /> Completed
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded bg-[#00a8ff]" /> In Progress
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded bg-slate-400" /> Scheduled
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded bg-amber-400 ring-2 ring-amber-400" /> Critical Path
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Budget vs Actual Expenses Table */}
+              <div className="border border-slate-200 rounded-xl overflow-hidden">
+                <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-emerald-600" /> Budget Breakdown & Real-Time Variance
+                  </h3>
+                  <div className="text-xs text-slate-500 font-medium">
+                    Allocated: <span className="font-bold text-slate-800">{formatCurrency(activeProject.budget?.totalBudget || 0)}</span> |
+                    Spent: <span className="font-bold text-slate-800">{formatCurrency(activeProject.financials?.totalSpent || 0)}</span> |
+                    Variance:{' '}
+                    <span
+                      className={`font-bold ${
+                        (activeProject.financials?.variance || 0) >= 0 ? 'text-emerald-600' : 'text-rose-600'
+                      }`}
+                    >
+                      {formatCurrency(activeProject.financials?.variance || 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead className="bg-slate-100/60 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
+                    <tr>
+                      <th className="py-2.5 px-4">Expense Item / PO Reference</th>
+                      <th className="py-2.5 px-4">Date Incurred</th>
+                      <th className="py-2.5 px-4 text-right">Amount</th>
+                      <th className="py-2.5 px-4 text-right">Audit Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {activeProject.expenses && activeProject.expenses.length > 0 ? (
+                      activeProject.expenses.map((exp) => (
+                        <tr key={exp.id} className="hover:bg-slate-50/50">
+                          <td className="py-3 px-4 font-semibold text-slate-800">{exp.itemTitle}</td>
+                          <td className="py-3 px-4 text-slate-500">
+                            {new Date(exp.expenseDate).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4 text-right font-bold text-slate-900">
+                            {formatCurrency(exp.amount)}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <Badge
+                              variant="outline"
+                              className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]"
+                            >
+                              Approved Invoice
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="py-6 text-center text-slate-400">
+                          No expenses recorded yet for this project.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* TAB 2: 16.2 EMPLOYEE TIMESHEETS & DESKTOP TIME TRACKER   */}
+      {/* ======================================================== */}
+      {activeTab === 'timesheets' && (
+        <div className="space-y-6">
+          {/* Timesheet Telemetry Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Billable Work Hours
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-indigo-600">
+                  {timesheetOverview?.summary?.billableHours || 0} hrs
+                </span>
+                <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px]">
+                  Billable
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Client and corporate event billing</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Non-Billable Work Hours
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-slate-800">
+                  {timesheetOverview?.summary?.nonBillableHours || 0} hrs
+                </span>
+                <span className="text-xs font-semibold text-slate-500">Internal Operations</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Staff briefings & admin duties</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Billable Utilization Ratio
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-emerald-600">
+                  {timesheetOverview?.summary?.billableRatio || 84}%
+                </span>
+                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                  Optimal
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Hospitality workforce efficiency</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Pending Approvals
+                </span>
+                <span className="text-2xl font-extrabold text-amber-600 mt-1 block">
+                  {timesheetOverview?.summary?.pendingTimesheets || 0} Weekly Sheets
+                </span>
+              </div>
+              <Button
+                onClick={() => setIsSubmitTimesheetOpen(true)}
+                size="sm"
+                className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Submit Timesheet
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop Time Tracker (TimeTracker.php & TrackPhoto.php) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Live Timer Widget */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-indigo-600" /> Desktop Time Tracker
+                  </h3>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] uppercase font-bold ${
+                      isLocalTimerActive
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 animate-pulse'
+                        : 'bg-slate-50 text-slate-600'
+                    }`}
+                  >
+                    {isLocalTimerActive ? 'Tracking Active' : 'Standby'}
+                  </Badge>
+                </div>
+
+                <div className="text-center py-6 bg-slate-50 rounded-xl border border-slate-200/60 mb-4">
+                  <span className="text-4xl font-mono font-extrabold text-slate-900 tracking-wider">
+                    {formatTimerClock(activeTimerSeconds)}
+                  </span>
+                  <span className="text-[11px] text-slate-500 block mt-1 font-medium">
+                    {isLocalTimerActive
+                      ? 'Automated screen capture active every 10 min'
+                      : 'Press Start Tracker to log contractor work'}
+                  </span>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="block text-slate-600 font-semibold mb-1">Assign to Project / Task</label>
+                    <select
+                      value={trackerTaskId}
+                      onChange={(e) => setTrackerTaskId(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden text-xs bg-white"
+                    >
+                      <option value="">Grand Palace Ocean Wing - Marble Installation</option>
+                      <option value="skyline">Skyline Rooftop Pool - Filtration Plumbing</option>
+                      <option value="gala">Hospitality Gala 2026 - AV Rigging</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="checkbox"
+                      id="billableCheck"
+                      checked={isTrackerBillable}
+                      onChange={(e) => setIsTrackerBillable(e.target.checked)}
+                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <label htmlFor="billableCheck" className="text-slate-700 font-medium cursor-pointer">
+                      Mark hours as billable to project client
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 mt-4 flex items-center gap-2">
+                {!isLocalTimerActive ? (
+                  <Button
+                    onClick={() =>
+                      startTrackerMutation.mutate({
+                        taskId: trackerTaskId || undefined,
+                        isBillable: isTrackerBillable,
+                      })
+                    }
+                    disabled={startTrackerMutation.isPending}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
+                  >
+                    <Play className="w-3.5 h-3.5 mr-1" /> Start Work Tracker
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() =>
+                      stopTrackerMutation.mutate({
+                        trackerId:
+                          timesheetOverview?.activeTrackers?.[0]?.id ||
+                          '00000000-0000-4000-a000-000000000001',
+                        dto: {
+                          photoUrl: 'https://cdn.omnistay.com/timeproof/work_cad_review.jpg',
+                        },
+                      })
+                    }
+                    disabled={stopTrackerMutation.isPending}
+                    className="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold"
+                  >
+                    <Square className="w-3.5 h-3.5 mr-1" /> Stop & Capture Screenshot
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Screenshots Verification Gallery (TrackPhoto.php) */}
+            <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-emerald-600" /> Automated Verification Screenshots (TrackPhoto.php)
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Periodic desktop proof captures verifying active software drafting and engineering work.
+                  </p>
+                </div>
+                <Badge variant="outline" className="bg-slate-50 text-slate-600 text-[10px]">
+                  Preserved from erp.softsasi.com
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  {
+                    title: 'AutoCAD Ocean Wing Floor Plan',
+                    time: '10:45 AM - Today',
+                    user: 'Chief Structural Architect',
+                    ratio: '98% Active keystrokes',
+                    img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=400&q=80',
+                  },
+                  {
+                    title: 'BMS HVAC Zone Commissioning',
+                    time: '11:15 AM - Today',
+                    user: 'MEP Engineering Lead',
+                    ratio: '94% Active keystrokes',
+                    img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80',
+                  },
+                  {
+                    title: 'KDS & POS Terminal Network Audit',
+                    time: '01:20 PM - Today',
+                    user: 'Hospitality Systems Lead',
+                    ratio: '91% Active keystrokes',
+                    img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80',
+                  },
+                ].map((shot, i) => (
+                  <div
+                    key={i}
+                    className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50 group hover:border-[#00a8ff] transition-all"
+                  >
+                    <div className="h-28 overflow-hidden relative">
+                      <img
+                        src={shot.img}
+                        alt={shot.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">
+                        {shot.time}
+                      </span>
+                    </div>
+                    <div className="p-2.5 text-xs">
+                      <div className="font-bold text-slate-800 truncate">{shot.title}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5 flex items-center justify-between">
+                        <span>{shot.user}</span>
+                        <span className="text-emerald-600 font-semibold">{shot.ratio}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Submitted Weekly Timesheets Table */}
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-indigo-600" /> Weekly Hours Timesheet Approvals
+              </h3>
+              <span className="text-xs text-slate-500 font-medium">
+                Integrated with Chapter 10 Hospitality Payroll
+              </span>
+            </div>
+
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-100/60 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
+                <tr>
+                  <th className="py-2.5 px-4">Employee / Contractor</th>
+                  <th className="py-2.5 px-4">Week & Year</th>
+                  <th className="py-2.5 px-4 text-center">Total Hours</th>
+                  <th className="py-2.5 px-4 text-center">Status</th>
+                  <th className="py-2.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {timesheetOverview?.weeklyTimesheets && timesheetOverview.weeklyTimesheets.length > 0 ? (
+                  timesheetOverview.weeklyTimesheets.map((sheet) => (
+                    <tr key={sheet.id} className="hover:bg-slate-50/50">
+                      <td className="py-3 px-4 font-semibold text-slate-800">
+                        {sheet.userName || 'Lead MEP Contractor'}
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 font-mono">
+                        Week {sheet.weekNumber}, {sheet.year}
+                      </td>
+                      <td className="py-3 px-4 text-center font-bold text-slate-900">
+                        {sheet.totalHours} hrs
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] uppercase font-bold ${
+                            sheet.status === 'approved'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-amber-50 text-amber-700 border-amber-200'
+                          }`}
+                        >
+                          {sheet.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="text-[11px] h-7 bg-white text-emerald-600 hover:bg-emerald-50"
+                        >
+                          <UserCheck className="w-3 h-3 mr-1" /> Approve Sheet
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-6 text-center text-slate-400">
+                      No weekly timesheets found. Click "Submit Timesheet" to file hours.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
+      {/* ======================================================== */}
+      {/* TAB 3: 16.3 INTERNAL BUG & DEFECT TRACKING SYSTEM        */}
+      {/* ======================================================== */}
       {activeTab === 'bugs' && (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-          <table className="w-full text-left text-xs text-slate-700">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-              <tr>
-                <th className="py-3 px-4">Ticket ID</th>
-                <th className="py-3 px-4">Issue Description</th>
-                <th className="py-3 px-4">Severity</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {isBugsLoading ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400">
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto text-rose-600" />
-                    <span className="mt-2 block text-xs">Loading bug defect queue...</span>
-                  </td>
-                </tr>
-              ) : bugs.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400 text-xs">
-                    No defects reported.
-                  </td>
-                </tr>
-              ) : (
-                bugs.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-slate-900">{b.id}</td>
-                    <td className="py-3 px-4 font-semibold text-slate-800">{b.title}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          b.severity === 'Critical'
-                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                            : b.severity === 'Major'
-                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                            : 'bg-slate-50 text-slate-700 border border-slate-200'
-                        }`}
-                      >
-                        {b.severity}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 font-semibold text-slate-700">{b.status}</td>
-                    <td className="py-3 px-4 text-right">
-                      {b.status !== 'Resolved' && (
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          onClick={() => updateBugStatusMutation.mutate({ id: b.id, status: 'Resolved' })}
-                          className="text-[11px] h-7 bg-white text-emerald-600 hover:bg-emerald-50"
-                        >
-                          Mark Resolved
-                        </Button>
-                      )}
-                    </td>
+        <div className="space-y-6">
+          {/* Defect Telemetry Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Total Defect Tickets
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-slate-900">
+                  {bugOverview?.summary?.totalBugs || 0}
+                </span>
+                <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]">
+                  All Outlets
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Bug.php defect repository</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Open / In Progress
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-amber-600">
+                  {bugOverview?.summary?.openBugs || 0}
+                </span>
+                <span className="text-xs font-semibold text-slate-600">Active Queue</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Being actively investigated</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                Critical Severity Outages
+              </span>
+              <div className="mt-1 flex items-baseline justify-between">
+                <span className="text-2xl font-extrabold text-rose-600">
+                  {bugOverview?.summary?.criticalBugs || 0}
+                </span>
+                <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px]">
+                  P0 Outage
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">Requires immediate hotfix</p>
+            </div>
+
+            <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Resolved Defects
+                </span>
+                <span className="text-2xl font-extrabold text-emerald-600 mt-1 block">
+                  {bugOverview?.summary?.resolvedBugs || 0} Tickets
+                </span>
+              </div>
+              <Button
+                onClick={() => setIsAddBugOpen(true)}
+                size="sm"
+                className="w-full mt-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Report Defect Ticket
+              </Button>
+            </div>
+          </div>
+
+          {/* Defect Lifecycle Kanban & Ticket Table */}
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                  <Bug className="w-4 h-4 text-rose-600" /> Defect Lifecycle Matrix (erp.softsasi.com Engine)
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Lifecycle transitions: New &rarr; In Progress &rarr; Under Review &rarr; Resolved &rarr; Verified / Closed
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 text-[10px]">
+                  Critical: Checkout / Hardware Outage
+                </Badge>
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">
+                  Major: Delayed Printing
+                </Badge>
+              </div>
+            </div>
+
+            {isBugsLoading ? (
+              <div className="py-16 text-center">
+                <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+                <span className="mt-3 block text-xs text-slate-500 font-medium">
+                  Loading defect tickets and error trace logs...
+                </span>
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs text-slate-700">
+                <thead className="bg-slate-100/60 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
+                  <tr>
+                    <th className="py-3 px-4">Ticket ID</th>
+                    <th className="py-3 px-4">Issue Description & Component</th>
+                    <th className="py-3 px-4">Severity</th>
+                    <th className="py-3 px-4">Status & Lifecycle</th>
+                    <th className="py-3 px-4">Attachments</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {bugOverview?.bugs && bugOverview.bugs.length > 0 ? (
+                    bugOverview.bugs.map((bug) => {
+                      const isCritical = bug.severity === 'critical';
+                      const isMajor = bug.severity === 'major';
+
+                      return (
+                        <tr key={bug.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-3 px-4 font-mono font-bold text-slate-900">
+                            BUG-{bug.id.slice(0, 6).toUpperCase()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="font-bold text-slate-800 block">{bug.title}</span>
+                            <span className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                              {bug.description}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                isCritical
+                                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                  : isMajor
+                                  ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                  : 'bg-slate-50 text-slate-700 border border-slate-200'
+                              }`}
+                            >
+                              {bug.severity}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <select
+                              value={bug.statusId}
+                              onChange={(e) =>
+                                updateBugStatusMutation.mutate({
+                                  bugId: bug.id,
+                                  statusId: e.target.value,
+                                })
+                              }
+                              className="px-2 py-1 rounded border border-slate-200 bg-white font-semibold text-[11px] text-slate-700 focus:outline-hidden"
+                            >
+                              {bugOverview.statuses?.map((st) => (
+                                <option key={st.id} value={st.id}>
+                                  {st.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="py-3 px-4">
+                            {bug.files && bug.files.length > 0 ? (
+                              <div className="flex items-center gap-1 text-[11px] text-blue-600 font-semibold cursor-pointer">
+                                <Paperclip className="w-3.5 h-3.5" />
+                                <span>{bug.files.length} Log trace</span>
+                              </div>
+                            ) : (
+                              <span className="text-[11px] text-slate-400">None</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              onClick={() => setSelectedBug(bug)}
+                              className="text-[11px] h-7 bg-white hover:bg-slate-50"
+                            >
+                              <MessageSquare className="w-3 h-3 mr-1 text-[#00a8ff]" /> View & Notes
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400">
+                        No defects found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Add Project Modal */}
+      {/* ======================================================== */}
+      {/* MODAL 1: ADD CAPITAL RENOVATION PROJECT                   */}
+      {/* ======================================================== */}
       {isAddProjectOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Hammer className="w-4 h-4 text-[#00a8ff]" /> Add Renovation / Event Project
+                <Hammer className="w-4 h-4 text-[#00a8ff]" /> New Capital Renovation / Event Project
               </h3>
               <button onClick={() => setIsAddProjectOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-4 h-4" />
@@ -408,32 +1367,58 @@ export default function ProjectsBugsPage() {
                 <input
                   type="text"
                   required
-                  value={newProject.name}
-                  onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                  placeholder="e.g. North Wing Luxury Suite Upgrade"
+                  value={newProject.projectName}
+                  onChange={(e) => setNewProject({ ...newProject, projectName: e.target.value })}
+                  placeholder="e.g. Skyline Rooftop Infinity Pool Expansion"
                   className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
                 />
               </div>
+
               <div>
                 <label className="block text-slate-600 font-semibold mb-1">Total Authorized Budget ($)</label>
                 <input
                   type="number"
                   required
                   value={newProject.totalBudget}
-                  onChange={(e) => setNewProject({ ...newProject, totalBudget: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setNewProject({ ...newProject, totalBudget: Number(e.target.value) })
+                  }
                   className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={newProject.startDate}
+                    onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Estimated Handover</label>
+                  <input
+                    type="date"
+                    value={newProject.endDate}
+                    onChange={(e) => setNewProject({ ...newProject, endDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-slate-600 font-semibold mb-1">Description</label>
+                <label className="block text-slate-600 font-semibold mb-1">Description & Scope</label>
                 <textarea
                   rows={3}
                   value={newProject.description}
                   onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                  placeholder="Architectural scope and milestones..."
+                  placeholder="Architectural scope, milestones and subcontractor deliverables..."
                   className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
                 />
               </div>
+
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsAddProjectOpen(false)}>
                   Cancel
@@ -444,7 +1429,7 @@ export default function ProjectsBugsPage() {
                   disabled={createProjectMutation.isPending}
                   className="bg-[#00a8ff] hover:bg-[#0097e6] text-white"
                 >
-                  {createProjectMutation.isPending ? 'Saving...' : 'Create Project'}
+                  {createProjectMutation.isPending ? 'Saving...' : 'Authorize Project'}
                 </Button>
               </div>
             </form>
@@ -452,13 +1437,301 @@ export default function ProjectsBugsPage() {
         </div>
       )}
 
-      {/* Add Bug Modal */}
-      {isAddBugOpen && (
+      {/* ======================================================== */}
+      {/* MODAL 2: ADD MILESTONE                                    */}
+      {/* ======================================================== */}
+      {isAddMilestoneOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <Bug className="w-4 h-4 text-rose-600" /> Report Software / Hardware Defect
+                <MilestoneIcon className="w-4 h-4 text-[#00a8ff]" /> Add Project Milestone
+              </h3>
+              <button onClick={() => setIsAddMilestoneOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await addMilestoneMutation.mutateAsync(newMilestone);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Milestone Title</label>
+                <input
+                  type="text"
+                  required
+                  value={newMilestone.title}
+                  onChange={(e) => setNewMilestone({ ...newMilestone, title: e.target.value })}
+                  placeholder="e.g. Stage 5: Final Quality Inspection"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Due Date</label>
+                <input
+                  type="date"
+                  required
+                  value={newMilestone.dueDate}
+                  onChange={(e) => setNewMilestone({ ...newMilestone, dueDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsAddMilestoneOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={addMilestoneMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white"
+                >
+                  {addMilestoneMutation.isPending ? 'Saving...' : 'Add Milestone'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 3: ADD TASK                                         */}
+      {/* ======================================================== */}
+      {isAddTaskOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Layers className="w-4 h-4 text-[#00a8ff]" /> Add Work Task to Gantt
+              </h3>
+              <button onClick={() => setIsAddTaskOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await addTaskMutation.mutateAsync(newTask);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Task Title</label>
+                <input
+                  type="text"
+                  required
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  placeholder="e.g. Install Acoustic Ceiling Panels"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-[#00a8ff]"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Priority</label>
+                  <select
+                    value={newTask.priority}
+                    onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden bg-white"
+                  >
+                    <option value="urgent">Urgent</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Status</label>
+                  <select
+                    value={newTask.status}
+                    onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden bg-white"
+                  >
+                    <option value="todo">To Do</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsAddTaskOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={addTaskMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white"
+                >
+                  {addTaskMutation.isPending ? 'Saving...' : 'Add Task'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 4: LOG EXPENSE AGAINST BUDGET                       */}
+      {/* ======================================================== */}
+      {isAddExpenseOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-emerald-600" /> Log Project Expense
+              </h3>
+              <button onClick={() => setIsAddExpenseOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await addExpenseMutation.mutateAsync(newExpense);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Expense Item / Vendor</label>
+                <input
+                  type="text"
+                  required
+                  value={newExpense.itemTitle}
+                  onChange={(e) => setNewExpense({ ...newExpense, itemTitle: e.target.value })}
+                  placeholder="e.g. Subcontractor HVAC Ducting Invoice #9421"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Amount ($)</label>
+                <input
+                  type="number"
+                  required
+                  value={newExpense.amount}
+                  onChange={(e) => setNewExpense({ ...newExpense, amount: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-emerald-500"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsAddExpenseOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={addExpenseMutation.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {addExpenseMutation.isPending ? 'Logging...' : 'Record Expense'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 5: SUBMIT WEEKLY TIMESHEET                          */}
+      {/* ======================================================== */}
+      {isSubmitTimesheetOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Clock className="w-4 h-4 text-indigo-600" /> Submit Weekly Timesheet
+              </h3>
+              <button
+                onClick={() => setIsSubmitTimesheetOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await submitTimesheetMutation.mutateAsync(newTimesheet);
+              }}
+              className="space-y-4 text-xs"
+            >
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Week Number</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={52}
+                    required
+                    value={newTimesheet.weekNumber}
+                    onChange={(e) =>
+                      setNewTimesheet({ ...newTimesheet, weekNumber: Number(e.target.value) })
+                    }
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Year</label>
+                  <input
+                    type="number"
+                    required
+                    value={newTimesheet.year}
+                    onChange={(e) =>
+                      setNewTimesheet({ ...newTimesheet, year: Number(e.target.value) })
+                    }
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Total Hours Worked</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min={1}
+                  required
+                  value={newTimesheet.totalHours}
+                  onChange={(e) =>
+                    setNewTimesheet({ ...newTimesheet, totalHours: Number(e.target.value) })
+                  }
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-indigo-500"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsSubmitTimesheetOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={submitTimesheetMutation.isPending}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                >
+                  {submitTimesheetMutation.isPending ? 'Filing...' : 'Submit to Payroll'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 6: REPORT BUG / DEFECT TICKET                       */}
+      {/* ======================================================== */}
+      {isAddBugOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <Bug className="w-4 h-4 text-rose-600" /> Report Internal Bug / Defect
               </h3>
               <button onClick={() => setIsAddBugOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-4 h-4" />
@@ -478,22 +1751,55 @@ export default function ProjectsBugsPage() {
                   required
                   value={newBug.title}
                   onChange={(e) => setNewBug({ ...newBug, title: e.target.value })}
-                  placeholder="e.g. POS receipt printer paper jam sensor warning"
+                  placeholder="e.g. KDS display order latency during peak hours"
                   className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-rose-500"
                 />
               </div>
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Severity</label>
-                <select
-                  value={newBug.severity}
-                  onChange={(e) => setNewBug({ ...newBug, severity: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-rose-500"
-                >
-                  <option value="Critical">Critical (Immediate Outage)</option>
-                  <option value="Major">Major (Impaired Operation)</option>
-                  <option value="Minor">Minor (Cosmetic)</option>
-                </select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Severity</label>
+                  <select
+                    value={newBug.severity}
+                    onChange={(e) =>
+                      setNewBug({ ...newBug, severity: e.target.value as any })
+                    }
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden bg-white"
+                  >
+                    <option value="critical">Critical (Immediate Outage)</option>
+                    <option value="major">Major (Core Function Impaired)</option>
+                    <option value="minor">Minor (Cosmetic UI)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Priority</label>
+                  <select
+                    value={newBug.priority}
+                    onChange={(e) =>
+                      setNewBug({ ...newBug, priority: e.target.value as any })
+                    }
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden bg-white"
+                  >
+                    <option value="urgent">Urgent</option>
+                    <option value="high">High</option>
+                    <option value="normal">Normal</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
               </div>
+
+              <div>
+                <label className="block text-slate-600 font-semibold mb-1">Reproduction & Error Logs</label>
+                <textarea
+                  rows={3}
+                  required
+                  value={newBug.description}
+                  onChange={(e) => setNewBug({ ...newBug, description: e.target.value })}
+                  placeholder="Steps to reproduce, error stack trace, affected terminal/room..."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-hidden focus:border-rose-500"
+                />
+              </div>
+
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsAddBugOpen(false)}>
                   Cancel
@@ -504,10 +1810,127 @@ export default function ProjectsBugsPage() {
                   disabled={createBugMutation.isPending}
                   className="bg-rose-600 hover:bg-rose-700 text-white"
                 >
-                  {createBugMutation.isPending ? 'Submitting...' : 'Submit Defect Ticket'}
+                  {createBugMutation.isPending ? 'Filing...' : 'Submit Defect Ticket'}
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* DRAWER / MODAL: VIEW DEFECT DETAILS & INVESTIGATION NOTES */}
+      {/* ======================================================== */}
+      {selectedBug && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="font-mono text-[10px] bg-slate-50">
+                  BUG-{selectedBug.id.slice(0, 8).toUpperCase()}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] uppercase font-bold ${
+                    selectedBug.severity === 'critical'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'
+                  }`}
+                >
+                  {selectedBug.severity}
+                </Badge>
+              </div>
+              <button onClick={() => setSelectedBug(null)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-base text-slate-900">{selectedBug.title}</h3>
+              <p className="text-xs text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-200/60 leading-relaxed font-mono">
+                {selectedBug.description}
+              </p>
+            </div>
+
+            {/* Error Attachments (BugFile.php) */}
+            {selectedBug.files && selectedBug.files.length > 0 && (
+              <div>
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                  Console Traces & Attachments (BugFile.php)
+                </span>
+                <div className="space-y-1.5">
+                  {selectedBug.files.map((file) => (
+                    <div
+                      key={file.id}
+                      className="p-2.5 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-2 text-slate-800 font-mono truncate">
+                        <FileText className="w-4 h-4 text-rose-500 shrink-0" />
+                        <span className="truncate">{file.fileName}</span>
+                      </div>
+                      <Badge variant="outline" className="text-[9px] bg-white">
+                        {file.fileType}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Investigation Comments (BugComment.php) */}
+            <div>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                Developer Investigation Thread (BugComment.php)
+              </span>
+
+              <div className="max-h-40 overflow-y-auto space-y-2 border border-slate-200 rounded-lg p-3 bg-slate-50/50 mb-3 text-xs">
+                {selectedBug.comments && selectedBug.comments.length > 0 ? (
+                  selectedBug.comments.map((cm) => (
+                    <div key={cm.id} className="p-2 rounded bg-white border border-slate-200/60">
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
+                        <span className="font-semibold text-slate-700">{cm.userName || 'Lead Engineer'}</span>
+                        <span>{new Date(cm.createdAt).toLocaleTimeString()}</span>
+                      </div>
+                      <p className="text-slate-800">{cm.comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-slate-400 text-center py-2 text-[11px]">
+                    No investigation notes logged yet.
+                  </div>
+                )}
+              </div>
+
+              {/* Add Comment */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={bugCommentText}
+                  onChange={(e) => setBugCommentText(e.target.value)}
+                  placeholder="Add resolution or investigation note..."
+                  className="flex-1 px-3 py-1.5 border border-slate-300 rounded-md text-xs focus:outline-hidden focus:border-[#00a8ff]"
+                />
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    addBugCommentMutation.mutate({
+                      bugId: selectedBug.id,
+                      comment: bugCommentText,
+                    })
+                  }
+                  disabled={!bugCommentText.trim() || addBugCommentMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs"
+                >
+                  Post Note
+                </Button>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <Button size="sm" variant="outline" onClick={() => setSelectedBug(null)} className="text-xs">
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       )}

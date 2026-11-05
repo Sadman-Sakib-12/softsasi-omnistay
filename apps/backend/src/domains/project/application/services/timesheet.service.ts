@@ -65,4 +65,8 @@ export class TimesheetService {
   async getWeeklyTimesheets(userId: string) {
     return this.repo.findWeeklyTimesheets(userId);
   }
+
+  async getOverview() {
+    return this.repo.getTimesheetOverview();
+  }
 }

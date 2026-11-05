@@ -65,4 +65,8 @@ export class BugTrackerService {
   async getStatuses() {
     return this.repo.findBugStatuses();
   }
+
+  async getOverview() {
+    return this.repo.getBugOverview();
+  }
 }

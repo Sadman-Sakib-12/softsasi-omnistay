@@ -132,6 +132,42 @@ describe('Chapter 16: Project & Asset Management / Bug Tracking', () => {
       mockStatuses.push(st);
       return st;
     },
+    async getProjectOverview(tenantId) {
+      return {
+        tenantId,
+        projects: mockProjects,
+        summary: {
+          totalProjects: mockProjects.length,
+          activeProjects: mockProjects.filter((p) => p.status === 'in_progress').length,
+          totalBudget: mockBudgets.reduce((s, b) => s + Number(b.totalBudget), 0),
+          totalSpent: mockExpenses.reduce((s, e) => s + Number(e.amount), 0),
+        },
+      };
+    },
+    async getTimesheetOverview() {
+      return {
+        activeTrackers: mockTimeLogs.filter((t) => !t.endTime),
+        recentLogs: mockTimeLogs,
+        weeklyTimesheets: mockWeekly,
+        summary: {
+          totalTrackers: mockTimeLogs.length,
+          billableHours: 42.5,
+          nonBillableHours: 8.0,
+          pendingTimesheets: mockWeekly.filter((w) => w.status === 'submitted').length,
+        },
+      };
+    },
+    async getBugOverview() {
+      return {
+        bugs: mockBugs,
+        statuses: mockStatuses,
+        summary: {
+          totalBugs: mockBugs.length,
+          openBugs: mockBugs.filter((b) => b.statusId !== 'stat-3').length,
+          criticalBugs: mockBugs.filter((b) => b.severity === 'critical').length,
+        },
+      };
+    },
   };
 
   const projectService = new ProjectService(mockRepo);
@@ -212,5 +248,19 @@ describe('Chapter 16: Project & Asset Management / Bug Tracking', () => {
       comment: 'Optimized BullMQ Redis consumer concurrency from 1 to 5.',
     });
     expect(comment.comment).toContain('Optimized BullMQ Redis consumer');
+  });
+
+  it('16.4: should return comprehensive enterprise overviews for projects, timesheets, and bugs', async () => {
+    const projOverview = await projectService.getOverview('tenant-1');
+    expect(projOverview.projects.length).toBeGreaterThan(0);
+    expect(projOverview.summary.totalBudget).toBe(50000);
+
+    const timeOverview = await timesheetService.getOverview();
+    expect(timeOverview.summary.billableHours).toBe(42.5);
+    expect(timeOverview.weeklyTimesheets.length).toBeGreaterThan(0);
+
+    const bugOverview = await bugService.getOverview();
+    expect(bugOverview.statuses.length).toBe(3);
+    expect(bugOverview.summary.totalBugs).toBeGreaterThan(0);
   });
 });

@@ -104,4 +104,8 @@ export class ProjectService {
       },
     };
   }
+
+  async getOverview(tenantId?: string) {
+    return this.repo.getProjectOverview(tenantId);
+  }
 }

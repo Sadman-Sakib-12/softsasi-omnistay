@@ -36,4 +36,9 @@ export interface IProjectRepository {
   createBugComment(data: { bugId: string; userId: string; comment: string }): Promise<any>;
   findBugStatuses(): Promise<any[]>;
   createBugStatus(data: { name: string; displayOrder?: number }): Promise<any>;
+
+  // Enterprise Overviews (Chapter 16)
+  getProjectOverview(tenantId?: string): Promise<any>;
+  getTimesheetOverview(): Promise<any>;
+  getBugOverview(): Promise<any>;
 }
