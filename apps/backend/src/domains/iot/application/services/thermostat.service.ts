@@ -54,4 +54,12 @@ export class ThermostatService {
     await this.getThermostat(thermostatId);
     return this.repo.findEnergyLogs(thermostatId);
   }
+
+  async getScenes() {
+    return this.repo.getScenes();
+  }
+
+  async triggerScene(roomId: string, sceneId: string) {
+    return this.repo.triggerScene(roomId, sceneId);
+  }
 }

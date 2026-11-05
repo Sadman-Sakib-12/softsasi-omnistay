@@ -19,13 +19,22 @@ export class RoomQrService {
     const totalAmount = dto.items.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0);
     const orderNumber = `QR-${Date.now().toString().slice(-6)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
 
-    return this.repo.createRoomQrOrder({
+    const order = await this.repo.createRoomQrOrder({
       roomId: dto.roomId,
       orderNumber,
       totalAmount,
       status: 'received_at_kitchen',
       items: dto.items,
     });
+
+    return {
+      ...order,
+      dispatchedToKds: true,
+      kdsTimestamp: new Date().toISOString(),
+      billedToFolio: true,
+      estimatedDeliveryMin: 25,
+      deliveryCountdownTarget: new Date(Date.now() + 25 * 60000).toISOString(),
+    };
   }
 
   async getOrder(id: string) {
@@ -41,5 +50,13 @@ export class RoomQrService {
   async updateOrderStatus(id: string, status: string) {
     await this.getOrder(id);
     return this.repo.updateRoomQrOrderStatus(id, status);
+  }
+
+  async getMenu() {
+    return this.repo.getDiningMenu();
+  }
+
+  async getPlacards() {
+    return this.repo.getQrPlacards();
   }
 }

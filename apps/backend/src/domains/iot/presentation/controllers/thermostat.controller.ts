@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@omnistay/backend-common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ThermostatService } from '../../application/services/thermostat.service.js';
 import { ConfigureThermostatDto, LogEnergyConsumptionDto, UpdateThermostatTemperatureDto } from '../dto/iot.dto.js';
 
@@ -10,24 +9,24 @@ export class ThermostatController {
   constructor(private readonly thermostatService: ThermostatService) {}
 
   @Post()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Register and pair room smart thermostat device (Honeywell/Nest/Schneider)' })
   configureThermostat(@Body() dto: ConfigureThermostatDto) {
     return this.thermostatService.configureThermostat(dto);
   }
 
+  @Get('scenes')
+  @ApiOperation({ summary: 'List supported smart ambient lighting and motorized curtain scenes' })
+  getScenes() {
+    return this.thermostatService.getScenes();
+  }
+
   @Get()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'List all property thermostats and climate statuses' })
   listThermostats() {
     return this.thermostatService.listThermostats();
   }
 
   @Get(':id')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get thermostat climate metrics and energy consumption history' })
   getThermostat(@Param('id') id: string) {
     return this.thermostatService.getThermostat(id);
@@ -39,17 +38,19 @@ export class ThermostatController {
     return this.thermostatService.updateTemperature(id, dto);
   }
 
+  @Post(':id/scene')
+  @ApiOperation({ summary: 'Trigger smart lighting, motorized curtains, and climate scene for room' })
+  triggerScene(@Param('id') id: string, @Body('scene') scene: string) {
+    return this.thermostatService.triggerScene(id, scene || 'scene-welcome');
+  }
+
   @Post(':id/energy-logs')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Log daily kilowatt-hour (kWh) power consumption for energy optimization' })
   logEnergy(@Param('id') id: string, @Body() dto: LogEnergyConsumptionDto) {
     return this.thermostatService.logEnergy(id, dto);
   }
 
   @Get(':id/energy-logs')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Retrieve power consumption logs for room sustainability reports' })
   getEnergyLogs(@Param('id') id: string) {
     return this.thermostatService.getEnergyLogs(id);

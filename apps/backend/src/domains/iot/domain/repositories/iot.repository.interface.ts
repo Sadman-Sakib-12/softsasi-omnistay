@@ -8,6 +8,7 @@ export interface IIotRepository {
   findLockBySerial(deviceSerial: string): Promise<any | null>;
   updateLock(id: string, data: Record<string, any>): Promise<any>;
   listLocks(): Promise<any[]>;
+  getLockTelemetry(): Promise<any>;
 
   // Smart Lock Keys
   createLockKey(data: { lockId: string; guestId?: string; keyType: string; keyToken: string; validFrom: Date; validUntil: Date }): Promise<any>;
@@ -26,10 +27,18 @@ export interface IIotRepository {
   listThermostats(): Promise<any[]>;
   createEnergyLog(data: { thermostatId: string; kwhConsumed: number; loggedDate: Date }): Promise<any>;
   findEnergyLogs(thermostatId: string): Promise<any[]>;
+  getScenes(): Promise<any[]>;
+  triggerScene(roomId: string, scene: string): Promise<any>;
 
-  // Room QR Orders
+  // Pre-Arrival & Contactless Check-in
+  getPreArrivalQueue(): Promise<any[]>;
+  sendPreArrivalNotification(bookingId: string, channel: string): Promise<any>;
+
+  // Room QR Orders & Menu
   createRoomQrOrder(data: { roomId: string; orderNumber: string; totalAmount: number; status?: string; items: { itemTitle: string; quantity: number; price: number }[] }): Promise<any>;
   findRoomQrOrderById(id: string): Promise<any | null>;
   findRoomQrOrdersByRoomId(roomId: string): Promise<any[]>;
   updateRoomQrOrderStatus(id: string, status: string): Promise<any>;
+  getDiningMenu(): Promise<any[]>;
+  getQrPlacards(): Promise<any[]>;
 }

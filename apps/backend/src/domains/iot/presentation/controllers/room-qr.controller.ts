@@ -8,6 +8,18 @@ import { CreateRoomQrOrderDto } from '../dto/iot.dto.js';
 export class RoomQrController {
   constructor(private readonly roomQrService: RoomQrService) {}
 
+  @Get('menu')
+  @ApiOperation({ summary: 'List in-room interactive dining menu with HD photography and wine pairings' })
+  getMenu() {
+    return this.roomQrService.getMenu();
+  }
+
+  @Get('placards')
+  @ApiOperation({ summary: 'List acrylic bedside & desk QR placard tokens and direct portal links' })
+  getPlacards() {
+    return this.roomQrService.getPlacards();
+  }
+
   @Post('orders')
   @ApiOperation({ summary: 'Submit instant contactless in-room dining / minibar order via QR code' })
   createOrder(@Body() dto: CreateRoomQrOrderDto) {

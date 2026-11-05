@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ContactlessCheckInService } from '../../application/services/contactless-checkin.service.js';
 import { ContactlessSelfCheckInDto, PassportOcrRequestDto } from '../dto/iot.dto.js';
@@ -18,5 +18,17 @@ export class ContactlessController {
   @ApiOperation({ summary: 'Complete web mobile self check-in, sign terms digitally, and receive mobile key' })
   processSelfCheckIn(@Body() dto: ContactlessSelfCheckInDto) {
     return this.checkInService.processSelfCheckIn(dto);
+  }
+
+  @Get('pre-arrival-queue')
+  @ApiOperation({ summary: 'List 24-hour pre-arrival notifications and express check-in link statuses' })
+  getPreArrivalQueue() {
+    return this.checkInService.getPreArrivalQueue();
+  }
+
+  @Post('send-notification')
+  @ApiOperation({ summary: 'Dispatch 24-hour pre-arrival notification via WhatsApp / Email' })
+  sendNotification(@Body() body: { bookingId: string; channel?: string }) {
+    return this.checkInService.sendPreArrivalNotification(body.bookingId, body.channel || 'WhatsApp & Email');
   }
 }
