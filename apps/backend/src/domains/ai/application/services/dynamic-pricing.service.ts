@@ -17,6 +17,10 @@ export class DynamicYieldPricingService {
     private readonly aiRepo: IAiRepository,
   ) {}
 
+  async getPricingOverview(propertyId?: string) {
+    return this.aiRepo.getPricingOverview(propertyId);
+  }
+
   async evaluateRate(req: EvaluateDynamicPricingRequest): Promise<DynamicPricingResult> {
     const evaluation: DynamicPricingEvaluationResult = calculateSurgePricing(
       req.baseRate,

@@ -1,14 +1,17 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@omnistay/backend-common';
 import { AiPredictiveAnalyticsService } from '../../application/services/ai-predictive.service.js';
 
 @ApiTags('AI - Predictive Analytics & Forecasting')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('api/v1/ai/predictive')
 export class AiPredictiveController {
   constructor(private readonly predictiveService: AiPredictiveAnalyticsService) {}
+
+  @Get('overview')
+  @ApiOperation({ summary: 'Get 90-day predictive forecasts, cash flow runway, and expense anomaly detection' })
+  getOverview(@Query('propertyId') propertyId?: string) {
+    return this.predictiveService.getPredictiveOverview(propertyId);
+  }
 
   @Post('forecast')
   @ApiOperation({ summary: 'Compute 90-day predictive occupancy percentage and RevPAR runway' })

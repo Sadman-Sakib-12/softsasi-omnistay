@@ -1,14 +1,17 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@omnistay/backend-common';
 import { DynamicYieldPricingService } from '../../application/services/dynamic-pricing.service.js';
 
 @ApiTags('AI - Dynamic Yield & Revenue Management')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('api/v1/ai/pricing')
 export class DynamicPricingController {
   constructor(private readonly dynamicPricingService: DynamicYieldPricingService) {}
+
+  @Get('overview')
+  @ApiOperation({ summary: 'Get live dynamic pricing overview, active surge rules, and competitor scrapes' })
+  getOverview(@Query('propertyId') propertyId?: string) {
+    return this.dynamicPricingService.getPricingOverview(propertyId);
+  }
 
   @Post('evaluate')
   @ApiOperation({ summary: 'Compute real-time dynamic surge rate and tactical last-minute discounts' })

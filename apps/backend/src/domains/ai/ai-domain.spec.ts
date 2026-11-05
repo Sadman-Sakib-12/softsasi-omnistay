@@ -119,6 +119,32 @@ class MockAiRepository implements IAiRepository {
   async findCompetitorPriceScrapes(propertyId: string) {
     return this.competitorScrapes.filter((s) => s.propertyId === propertyId);
   }
+  async getConfiguredAgents(tenantId: string) {
+    return [
+      { id: 'ag-1', name: 'Store Assistant', model: 'gpt-4o-mini', status: 'Published' },
+    ];
+  }
+  async getTelemetry(tenantId: string) {
+    return {
+      totalInquiries: 148,
+      conversationalBookings: 32,
+      directInChatRevenue: 14850.0,
+      guestSentimentScore: 96.8,
+    };
+  }
+  async getPricingOverview(propertyId?: string) {
+    return {
+      currentOccupancyPct: 88.5,
+      recommendedSurgeMultiplier: 1.25,
+      activeRules: [],
+    };
+  }
+  async getPredictiveOverview(propertyId?: string) {
+    return {
+      ninetyDayForecasts: [],
+      cashFlowRunway: { netCashRunwaySurplus: 840000.0 },
+    };
+  }
 }
 
 describe('Phase 8: AI Suite & Intelligent Automation', () => {
@@ -337,6 +363,22 @@ describe('Phase 8: AI Suite & Intelligent Automation', () => {
       });
 
       expect(anomaly.isAnomaly).toBe(true);
+    });
+
+    it('should retrieve configured agents, conversational telemetry, pricing and predictive overviews (Chapter 14)', async () => {
+      const agents = await conciergeService.getConfiguredAgents('tenant-1');
+      expect(agents.length).toBeGreaterThan(0);
+      expect(agents[0].name).toBe('Store Assistant');
+
+      const telemetry = await conciergeService.getTelemetry('tenant-1');
+      expect(telemetry.totalInquiries).toBe(148);
+      expect(telemetry.directInChatRevenue).toBe(14850.0);
+
+      const pricingOverview = await dynamicPricingService.getPricingOverview('prop-1');
+      expect(pricingOverview.currentOccupancyPct).toBe(88.5);
+
+      const predictiveOverview = await predictiveService.getPredictiveOverview('prop-1');
+      expect(predictiveOverview.cashFlowRunway.netCashRunwaySurplus).toBe(840000.0);
     });
   });
 });

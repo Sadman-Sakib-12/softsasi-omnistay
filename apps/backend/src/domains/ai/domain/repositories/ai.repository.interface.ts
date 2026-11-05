@@ -3,6 +3,8 @@ export const AI_REPOSITORY_TOKEN = Symbol('IAiRepository');
 export interface IAiRepository {
   findConfigByTenantId(tenantId: string): Promise<any | null>;
   upsertConfig(tenantId: string, data: any): Promise<any>;
+  getConfiguredAgents(tenantId: string): Promise<any[]>;
+  getTelemetry(tenantId: string): Promise<any>;
 
   findConversationBySession(sessionId: string): Promise<any | null>;
   createConversation(data: any): Promise<any>;
@@ -19,12 +21,14 @@ export interface IAiRepository {
 
   createDynamicPricingLog(data: any): Promise<any>;
   findDynamicPricingLogs(roomTypeId: string, limit?: number): Promise<any[]>;
+  getPricingOverview(propertyId?: string): Promise<any>;
 
   createMarketingCampaign(data: any): Promise<any>;
   findMarketingCampaigns(tenantId: string): Promise<any[]>;
 
   createPredictiveForecast(data: any): Promise<any>;
   findPredictiveForecasts(propertyId: string): Promise<any[]>;
+  getPredictiveOverview(propertyId?: string): Promise<any>;
 
   createCompetitorPriceScrape(data: any): Promise<any>;
   findCompetitorPriceScrapes(propertyId: string): Promise<any[]>;

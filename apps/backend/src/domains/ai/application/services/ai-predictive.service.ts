@@ -17,6 +17,10 @@ export class AiPredictiveAnalyticsService {
     private readonly aiRepo: IAiRepository,
   ) {}
 
+  async getPredictiveOverview(propertyId?: string) {
+    return this.aiRepo.getPredictiveOverview(propertyId);
+  }
+
   async generateForecast(req: PredictiveForecastRequest): Promise<PredictiveForecastResult> {
     const forecast = calculate90DayForecast(
       req.totalRooms,

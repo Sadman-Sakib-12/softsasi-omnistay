@@ -18,6 +18,14 @@ export class AiConciergeService {
     private readonly aiRepo: IAiRepository,
   ) {}
 
+  async getConfiguredAgents(tenantId: string) {
+    return this.aiRepo.getConfiguredAgents(tenantId);
+  }
+
+  async getTelemetry(tenantId: string) {
+    return this.aiRepo.getTelemetry(tenantId);
+  }
+
   async configureConcierge(tenantId: string, data: {
     agentName: string;
     systemPrompt: string;

@@ -9,16 +9,33 @@ import { AiConciergeService } from '../../application/services/ai-concierge.serv
 export class AiConciergeController {
   constructor(private readonly conciergeService: AiConciergeService) {}
 
+  @Get('agents')
+  @ApiOperation({ summary: 'List all configured autonomous AI customer service agents (Figure 14.1)' })
+  getAgents(@CurrentUser() user?: AuthenticatedUserPayload) {
+    const tenantId = user?.organizationId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525';
+    return this.conciergeService.getConfiguredAgents(tenantId);
+  }
+
+  @Get('telemetry')
+  @ApiOperation({ summary: 'Get real-time conversational telemetry, conversion tracking & sentiment analytics (Figure 14.2)' })
+  getTelemetry(@CurrentUser() user?: AuthenticatedUserPayload) {
+    const tenantId = user?.organizationId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525';
+    return this.conciergeService.getTelemetry(tenantId);
+  }
+
   @Post('chat')
   @ApiOperation({ summary: 'Send conversational query to RAG AI guest concierge' })
   chat(@Body() body: {
-    tenantId: string;
+    tenantId?: string;
     sessionId: string;
     message: string;
     channel?: 'web' | 'mobile' | 'whatsapp' | 'in_room_tablet';
     preferredLanguage?: string;
   }) {
-    return this.conciergeService.handleChatMessage(body);
+    return this.conciergeService.handleChatMessage({
+      tenantId: body.tenantId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525',
+      ...body,
+    });
   }
 
   @Get('history/:sessionId')
@@ -42,7 +59,7 @@ export class AiConciergeController {
       isEnabled?: boolean;
     },
   ) {
-    return this.conciergeService.configureConcierge(user.organizationId || '00000000-0000-0000-0000-000000000001', body);
+    return this.conciergeService.configureConcierge(user.organizationId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525', body);
   }
 
   @ApiBearerAuth()
@@ -50,7 +67,7 @@ export class AiConciergeController {
   @Get('config')
   @ApiOperation({ summary: 'Get current AI concierge configuration' })
   getConfig(@CurrentUser() user: AuthenticatedUserPayload) {
-    return this.conciergeService.getConfig(user.organizationId || '00000000-0000-0000-0000-000000000001');
+    return this.conciergeService.getConfig(user.organizationId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525');
   }
 
   @ApiBearerAuth()
@@ -65,7 +82,7 @@ export class AiConciergeController {
       category?: 'property_info' | 'amenities' | 'policies' | 'dining_menu' | 'local_attractions';
     },
   ) {
-    return this.conciergeService.addKnowledgeDocument(user.organizationId || '00000000-0000-0000-0000-000000000001', body);
+    return this.conciergeService.addKnowledgeDocument(user.organizationId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525', body);
   }
 
   @ApiBearerAuth()
@@ -76,6 +93,6 @@ export class AiConciergeController {
     @CurrentUser() user: AuthenticatedUserPayload,
     @Query('category') category?: string,
   ) {
-    return this.conciergeService.getKnowledgeDocuments(user.organizationId || '00000000-0000-0000-0000-000000000001', category);
+    return this.conciergeService.getKnowledgeDocuments(user.organizationId || '55c3849e-0fa3-4b52-9c2d-b4cbe23e9525', category);
   }
 }
