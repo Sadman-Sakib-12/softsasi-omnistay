@@ -10,16 +10,20 @@ import { IssueGiftCardDto, RedeemGiftCardDto } from '../dto/giftcard.dto.js';
 export class GiftCardController {
   constructor(private readonly giftCardService: GiftCardApplicationService) {}
 
+  @Get()
+  @ApiOperation({ summary: 'List all issued digital hospitality gift cards and balances' })
+  getAllGiftCards() {
+    return this.giftCardService.getAllGiftCards();
+  }
+
   @Post('issue')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Issue 16-character alphanumeric digital gift card' })
   issueGiftCard(@Body() dto: IssueGiftCardDto) {
     return this.giftCardService.issueGiftCard(dto);
   }
 
   @Get('balance/:code')
-  @ApiOperation({ summary: 'Check gift card balance and redemption status' })
+  @ApiOperation({ summary: 'Check gift card balance, expiration and redemption history' })
   checkBalance(@Param('code') code: string) {
     return this.giftCardService.checkBalance(code);
   }

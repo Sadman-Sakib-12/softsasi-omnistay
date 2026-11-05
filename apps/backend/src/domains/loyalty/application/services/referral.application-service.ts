@@ -13,6 +13,30 @@ export class ReferralApplicationService {
     private readonly walletService: WalletApplicationService,
   ) {}
 
+  async getAllReferralLinks() {
+    const links = await this.loyaltyRepo.findAllReferralLinks();
+    return links.map((link) => {
+      const commissions = link.commissions || [];
+      const totalCommissions = commissions.reduce(
+        (sum: number, c: any) => sum + Number(c.commissionAmt),
+        0,
+      );
+      const conversionRate =
+        link.clicksCount > 0
+          ? Math.round((commissions.length / link.clicksCount) * 10000) / 100
+          : 0;
+
+      return {
+        ...link,
+        totalCommissions,
+        convertedBookings: commissions.length,
+        conversionRate,
+        trackingUrl: `https://omnistay.com/book?ref=${link.referralCode}`,
+        qrCodePayload: `omnistay://referral?code=${link.referralCode}`,
+      };
+    });
+  }
+
   async getOrCreateReferralLink(userId: string, dto?: GenerateReferralLinkDto) {
     let link = await this.loyaltyRepo.findReferralLinkByUserId(userId);
 
@@ -28,7 +52,12 @@ export class ReferralApplicationService {
       });
     }
 
-    return link;
+    return {
+      ...link,
+      trackingUrl: `https://omnistay.com/book?ref=${link.referralCode}`,
+      qrCodePayload: `omnistay://referral?code=${link.referralCode}`,
+      incentiveTerms: 'Double-sided referral: Friend receives $25 off first booking; you receive $25 wallet credit upon completion of stay.',
+    };
   }
 
   async recordClick(referralCode: string) {
@@ -44,7 +73,7 @@ export class ReferralApplicationService {
 
     const rewardAmount = dto.rewardAmount ?? 25.0;
 
-    // Record commission
+    // Record commission record in ledger
     const commission = await this.loyaltyRepo.createReferralCommission({
       referralLinkId: link.id,
       bookingId: dto.bookingId,
@@ -52,16 +81,18 @@ export class ReferralApplicationService {
       status: 'approved',
     });
 
-    // Credit reward to referrer's digital wallet via application service
+    // Credit $25 reward to referrer's digital wallet directly
     await this.walletService.topUp(link.userId, {
       amount: rewardAmount,
-      description: `Referral bonus reward for booking ${dto.bookingId}`,
+      description: `Double-sided referral bonus credit ($25 reward for booking ${dto.bookingId})`,
     });
 
     return {
       commission,
       rewardAmount,
       referrerUserId: link.userId,
+      referredGuestDiscount: 25.0,
+      message: 'Double-sided referral completed: $25 credited to referrer wallet, $25 discount applied to guest booking.',
     };
   }
 
@@ -69,17 +100,24 @@ export class ReferralApplicationService {
     const link = await this.loyaltyRepo.findReferralLinkByUserId(userId);
     if (!link) return null;
 
-    const totalEarned = (link.commissions || []).reduce(
+    const commissions = link.commissions || [];
+    const totalEarned = commissions.reduce(
       (sum: number, c: any) => sum + Number(c.commissionAmt),
       0,
     );
+    const conversionRate =
+      link.clicksCount > 0
+        ? Math.round((commissions.length / link.clicksCount) * 10000) / 100
+        : 0;
 
     return {
       referralCode: link.referralCode,
+      trackingUrl: `https://omnistay.com/book?ref=${link.referralCode}`,
       clicksCount: link.clicksCount,
-      totalReferrals: link.commissions ? link.commissions.length : 0,
+      totalReferrals: commissions.length,
+      conversionRate,
       totalEarned,
-      commissions: link.commissions || [],
+      commissions,
     };
   }
 }

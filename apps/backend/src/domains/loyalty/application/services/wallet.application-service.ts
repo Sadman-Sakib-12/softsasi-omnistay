@@ -10,6 +10,14 @@ export class WalletApplicationService {
     private readonly loyaltyRepo: ILoyaltyRepository,
   ) {}
 
+  async getSummary() {
+    return this.loyaltyRepo.getWalletSummary();
+  }
+
+  async getAllWallets() {
+    return this.loyaltyRepo.findAllWallets();
+  }
+
   async getOrCreateWallet(userId: string, currency = 'USD') {
     let wallet = await this.loyaltyRepo.findWalletByUserId(userId);
 
@@ -32,22 +40,38 @@ export class WalletApplicationService {
       throw new BadRequestException('Wallet is locked. Please contact support.');
     }
 
+    // Chapter 13.1 Promotional Bonus Engine: Top-up $500, receive $50 bonus credit
+    const bonusCredit = dto.amount >= 500 ? Math.floor(dto.amount / 500) * 50 : 0;
+    const totalCredit = dto.amount + bonusCredit;
+
     const updated = await this.loyaltyRepo.updateWallet(wallet.id, {
       balance: {
-        increment: dto.amount,
+        increment: totalCredit,
       },
     });
 
-    const transaction = await this.loyaltyRepo.createWalletTransaction({
+    const depositTx = await this.loyaltyRepo.createWalletTransaction({
       walletId: wallet.id,
       amount: dto.amount,
       type: 'deposit',
-      description: dto.description || 'Digital wallet credit top-up',
+      description: dto.description || `Pre-paid digital wallet credit top-up (${dto.currency || 'USD'})`,
     });
+
+    let bonusTx = null;
+    if (bonusCredit > 0) {
+      bonusTx = await this.loyaltyRepo.createWalletTransaction({
+        walletId: wallet.id,
+        amount: bonusCredit,
+        type: 'bonus',
+        description: `Promotional bonus credit ($50 bonus per $500 top-up milestone)`,
+      });
+    }
 
     return {
       wallet: updated,
-      transaction,
+      transaction: depositTx,
+      bonusCredit,
+      bonusTransaction: bonusTx,
     };
   }
 
@@ -75,7 +99,7 @@ export class WalletApplicationService {
       amount: dto.amount,
       type: 'payment',
       referenceId: dto.referenceId,
-      description: dto.description || '1-click checkout payment',
+      description: dto.description || '1-click checkout payment (zero 3D-secure gateway latency)',
     });
 
     return {
@@ -98,7 +122,7 @@ export class WalletApplicationService {
       amount: dto.amount,
       type: 'refund',
       referenceId: dto.referenceId,
-      description: dto.description || 'Instant booking refund credit',
+      description: dto.description || 'Instant automated cancellation refund (<1s turnaround)',
     });
 
     return {

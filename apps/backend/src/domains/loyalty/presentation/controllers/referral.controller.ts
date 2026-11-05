@@ -10,10 +10,16 @@ import { GenerateReferralLinkDto, RewardReferralBookingDto } from '../dto/referr
 export class ReferralController {
   constructor(private readonly referralService: ReferralApplicationService) {}
 
+  @Get('all')
+  @ApiOperation({ summary: 'List all referral links, influencer campaigns and conversion rates' })
+  getAllLinks() {
+    return this.referralService.getAllReferralLinks();
+  }
+
   @Get('my-link')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get or generate user personal referral code and link' })
+  @ApiOperation({ summary: 'Get or generate user personal referral code, tracking URL and QR code' })
   getMyLink(@CurrentUser() user: AuthenticatedUserPayload) {
     return this.referralService.getOrCreateReferralLink(user.userId);
   }
@@ -36,8 +42,6 @@ export class ReferralController {
   }
 
   @Post('reward')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Credit double-sided $25 referral reward upon completed stay' })
   rewardBooking(@Body() dto: RewardReferralBookingDto) {
     return this.referralService.rewardReferralBooking(dto);

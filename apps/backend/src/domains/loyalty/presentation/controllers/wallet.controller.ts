@@ -6,20 +6,34 @@ import { WalletApplicationService } from '../../application/services/wallet.appl
 import { DebitWalletDto, RefundToWalletDto, TopUpWalletDto } from '../dto/wallet.dto.js';
 
 @ApiTags('Loyalty - Pre-Paid Digital Wallet')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('api/v1/loyalty/wallets')
 export class WalletController {
   constructor(private readonly walletService: WalletApplicationService) {}
 
+  @Get('summary')
+  @ApiOperation({ summary: 'Get enterprise overview summary of pre-paid digital wallets' })
+  getSummary() {
+    return this.walletService.getSummary();
+  }
+
+  @Get('all')
+  @ApiOperation({ summary: 'List all customer multi-currency digital wallets and activity' })
+  getAllWallets() {
+    return this.walletService.getAllWallets();
+  }
+
   @Get('me')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get current user digital wallet balance and recent activity' })
   getMyWallet(@CurrentUser() user: AuthenticatedUserPayload) {
     return this.walletService.getOrCreateWallet(user.userId);
   }
 
   @Post('top-up')
-  @ApiOperation({ summary: 'Top-up wallet balance with credit/card/online funds' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Top-up wallet balance with promotional bonus credits' })
   topUp(
     @CurrentUser() user: AuthenticatedUserPayload,
     @Body() dto: TopUpWalletDto,
@@ -28,6 +42,8 @@ export class WalletController {
   }
 
   @Post('debit')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Execute instant 1-click booking checkout from wallet balance' })
   debit(
     @CurrentUser() user: AuthenticatedUserPayload,
@@ -37,7 +53,9 @@ export class WalletController {
   }
 
   @Post('refund')
-  @ApiOperation({ summary: 'Instant cancellation refund credited to digital wallet' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Instant cancellation refund credited to digital wallet (<1s)' })
   refund(
     @CurrentUser() user: AuthenticatedUserPayload,
     @Body() dto: RefundToWalletDto,

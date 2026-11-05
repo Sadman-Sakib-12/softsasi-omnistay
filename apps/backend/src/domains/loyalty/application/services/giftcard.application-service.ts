@@ -11,8 +11,12 @@ export class GiftCardApplicationService {
     private readonly loyaltyRepo: ILoyaltyRepository,
   ) {}
 
+  async getAllGiftCards() {
+    return this.loyaltyRepo.findAllGiftCards();
+  }
+
   async issueGiftCard(dto: IssueGiftCardDto) {
-    // Pure domain rule code generation
+    // Pure domain rule 16-character alphanumeric code generation
     const code = generateGiftCardCode();
 
     return this.loyaltyRepo.createGiftCard({
@@ -41,6 +45,7 @@ export class GiftCardApplicationService {
       isRedeemed: card.isRedeemed,
       isExpired: Boolean(isExpired),
       expiresAt: card.expiresAt,
+      redemptions: card.redemptions || [],
     };
   }
 
@@ -62,7 +67,7 @@ export class GiftCardApplicationService {
       );
     }
 
-    const remainingVal = Number(card.currentVal) - dto.amount;
+    const remainingVal = Math.round((Number(card.currentVal) - dto.amount) * 100) / 100;
     const isNowRedeemed = remainingVal <= 0;
 
     const updatedCard = await this.loyaltyRepo.updateGiftCard(card.id, {

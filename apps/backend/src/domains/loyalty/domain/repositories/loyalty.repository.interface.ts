@@ -2,6 +2,13 @@ export const LOYALTY_REPOSITORY_TOKEN = Symbol('ILoyaltyRepository');
 
 export interface ILoyaltyRepository {
   findWalletByUserId(userId: string): Promise<any | null>;
+  findAllWallets(): Promise<any[]>;
+  getWalletSummary(): Promise<{
+    totalStoredValueLiability: number;
+    totalActiveWallets: number;
+    totalTopUpVolume: number;
+    instantRefundVolume: number;
+  }>;
   createWallet(data: { userId: string; currency: string; balance: number; isLocked: boolean }): Promise<any>;
   updateWallet(id: string, data: Record<string, any>): Promise<any>;
   createWalletTransaction(data: {
@@ -17,12 +24,14 @@ export interface ILoyaltyRepository {
   findTiers(): Promise<any[]>;
   findBaseTier(): Promise<any | null>;
   findTierForPoints(points: number): Promise<any | null>;
+  findAllMembers(): Promise<any[]>;
   findMemberByUserId(userId: string): Promise<any | null>;
   createMember(data: { userId: string; tierId: string; points: number }): Promise<any>;
   updateMember(id: string, data: Record<string, any>): Promise<any>;
   createPointsLedger(data: { memberId: string; pointsDelta: number; reason: string }): Promise<any>;
   findPointsLedger(memberId: string): Promise<any[]>;
 
+  findAllGiftCards(): Promise<any[]>;
   createGiftCard(data: {
     code: string;
     initialVal: number;
@@ -38,6 +47,7 @@ export interface ILoyaltyRepository {
   createGiftCardRedemption(data: { giftCardId: string; userId: string; amountUsed: number }): Promise<any>;
   findGiftCardRedemptions(giftCardId: string): Promise<any[]>;
 
+  findAllReferralLinks(): Promise<any[]>;
   findReferralLinkByUserId(userId: string): Promise<any | null>;
   findReferralLinkByCode(referralCode: string): Promise<any | null>;
   createReferralLink(data: { userId: string; referralCode: string; clicksCount: number }): Promise<any>;

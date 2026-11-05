@@ -25,6 +25,18 @@ export class LoyaltyProgramController {
     return this.loyaltyService.getTiers();
   }
 
+  @Get('members')
+  @ApiOperation({ summary: 'List all active loyalty members and points balances' })
+  getAllMembers() {
+    return this.loyaltyService.getAllMembers();
+  }
+
+  @Get('catalog')
+  @ApiOperation({ summary: 'List points redemption catalog rewards (cash discounts, spa, dining)' })
+  getCatalog() {
+    return this.loyaltyService.getCatalog();
+  }
+
   @Get('me')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -47,7 +59,7 @@ export class LoyaltyProgramController {
   @Post('redeem')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Redeem loyalty points for checkout cash discount' })
+  @ApiOperation({ summary: 'Redeem loyalty points for checkout cash discount or catalog perks' })
   redeemPoints(
     @CurrentUser() user: AuthenticatedUserPayload,
     @Body() dto: RedeemPointsDto,
