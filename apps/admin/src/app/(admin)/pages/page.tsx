@@ -2,6 +2,7 @@
 import { BeatLoader } from 'react-spinners';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   FileText,
   Plus,
@@ -168,16 +169,13 @@ export default function StaticPagesCmsPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            setPreviewMode('editor');
-            setIsAddOpen(true);
-          }}
+        <Link
+          href="/themes?create=true"
           className="h-9 px-4 bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold rounded-lg inline-flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>Add New Page</span>
-        </button>
+          <span>+ Add New Page (Gutenberg)</span>
+        </Link>
       </div>
 
       {/* Search and count */}
@@ -262,16 +260,13 @@ export default function StaticPagesCmsPage() {
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        onClick={() => {
-                          setEditingPage({ ...p });
-                          setPreviewMode('editor');
-                        }}
+                      <Link
+                        href={`/themes?slug=${encodeURIComponent(p.slug.replace(/^\//, ''))}`}
                         className="p-1.5 text-slate-600 hover:text-[#00a8ff] hover:bg-sky-50 rounded-lg transition-colors cursor-pointer"
-                        title="Edit Page Content & SEO"
+                        title="Edit Page in WordPress Gutenberg Block Editor"
                       >
                         <Edit3 className="w-4 h-4" />
-                      </button>
+                      </Link>
                       <button
                         onClick={() => handleDelete(p.id, p.title)}
                         className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"

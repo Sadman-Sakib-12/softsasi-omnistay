@@ -40,10 +40,17 @@ import {
 
 interface GutenbergEditorProps {
   initialSlug?: string;
+  initialPageId?: string;
+  isCreateMode?: boolean;
   onOpenThemeCustomizer?: () => void;
 }
 
-export function GutenbergEditor({ initialSlug, onOpenThemeCustomizer }: GutenbergEditorProps) {
+export function GutenbergEditor({
+  initialSlug,
+  initialPageId,
+  isCreateMode,
+  onOpenThemeCustomizer,
+}: GutenbergEditorProps) {
   const queryClient = useQueryClient();
 
   // Queries
@@ -111,20 +118,29 @@ export function GutenbergEditor({ initialSlug, onOpenThemeCustomizer }: Gutenber
   // Select initial page when pages load
   useEffect(() => {
     if (pages.length > 0 && !selectedPageId) {
-      // Find matching page by slug or pick first page
+      if (isCreateMode) {
+        handleCreateNewPage();
+        return;
+      }
+
+      // Find matching page by id, slug or pick first page
       let target = pages[0];
-      if (initialSlug) {
+      if (initialPageId) {
+        const found = pages.find((p) => p.id === initialPageId);
+        if (found) target = found;
+      } else if (initialSlug) {
+        const cleanTarget = initialSlug.replace(/^\//, '');
         const found = pages.find(
           (p) =>
             p.slug === initialSlug ||
             p.slug === `/${initialSlug}` ||
-            p.slug.replace(/^\//, '') === initialSlug
+            p.slug.replace(/^\//, '') === cleanTarget
         );
         if (found) target = found;
       }
       loadPage(target);
     }
-  }, [pages, initialSlug, selectedPageId]);
+  }, [pages, initialSlug, initialPageId, isCreateMode, selectedPageId]);
 
   const loadPage = (page: CustomPageItem) => {
     setSelectedPageId(page.id);

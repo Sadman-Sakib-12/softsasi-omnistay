@@ -48,3 +48,4 @@ export class UpdateDepartmentBudgetDto {
   @IsString()
   departmentName?: string;
 }
+

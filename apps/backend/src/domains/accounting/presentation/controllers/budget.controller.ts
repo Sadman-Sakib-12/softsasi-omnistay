@@ -86,3 +86,4 @@ export class BudgetController {
     return this.budgetService.updateDepartmentBudget(user.organizationId || '', id, dto, user);
   }
 }
+

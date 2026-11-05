@@ -27,7 +27,80 @@ export class WarehouseApplicationService {
   }
 
   async getWarehouses(tenantId: string) {
-    return this.repo.findWarehouses(tenantId);
+    let list = await this.repo.findWarehouses(tenantId);
+    if (!list || list.length === 0) {
+      await this.seedDefaultWarehouses(tenantId);
+      list = await this.repo.findWarehouses(tenantId);
+    }
+    return list;
+  }
+
+  private async seedDefaultWarehouses(tenantId: string) {
+    const defaults = [
+      {
+        name: 'Central Logistics Depot (Basement 2)',
+        code: 'WH-CRW-01',
+        address: 'B2 Primary Inbound Receiving Depot',
+        bins: [
+          { binCode: 'BIN-PLT-A1', zone: 'Zone A - Pallet Racks' },
+          { binCode: 'BIN-BLK-A2', zone: 'Zone B - Bulk Receiving' },
+        ],
+      },
+      {
+        name: 'Culinary Cold Room & Dry Pantry',
+        code: 'WH-KCS-02',
+        address: 'Kitchen Main Walk-in Freezer (-18°C)',
+        bins: [
+          { binCode: 'BIN-FRZ-C1', zone: 'Zone C - Walk-in Freezer' },
+          { binCode: 'BIN-CHL-D1', zone: 'Zone D - Meat Chiller' },
+        ],
+      },
+      {
+        name: 'Sommelier Beverage & Wine Cellar',
+        code: 'WH-BWC-03',
+        address: 'Level -1 Sommelier Cellar 12°C',
+        bins: [
+          { binCode: 'BIN-WIN-E1', zone: 'Zone E - Vintage Bordeaux' },
+          { binCode: 'BIN-SPR-F1', zone: 'Zone F - Spirits Vault' },
+        ],
+      },
+      {
+        name: 'Floor 3 & 4 Housekeeping Linen Storage',
+        code: 'WH-HLC-04',
+        address: 'Level 3 Clean Linen Par Cupboard',
+        bins: [
+          { binCode: 'BIN-LIN-G1', zone: 'Zone G - Bath Linens' },
+          { binCode: 'BIN-SHT-H1', zone: 'Zone H - Bed Sheets' },
+        ],
+      },
+      {
+        name: 'Mobile Mini-Bar Replenishment Fleet',
+        code: 'WH-MBC-05',
+        address: 'Floors 1-8 Mobile Service Carts',
+        bins: [{ binCode: 'BIN-CRT-M1', zone: 'Zone M - Cart Replenishment' }],
+      },
+    ];
+
+    for (const d of defaults) {
+      try {
+        const wh = await this.repo.createWarehouse({
+          tenantId,
+          name: d.name,
+          code: d.code,
+          address: d.address,
+          isActive: true,
+        });
+        for (const b of d.bins) {
+          await this.repo.createBin({
+            warehouseId: wh.id,
+            binCode: b.binCode,
+            zone: b.zone,
+          });
+        }
+      } catch {
+        // Skip duplicate or race condition
+      }
+    }
   }
 
   async createBin(warehouseId: string, dto: CreateWarehouseBinDto) {

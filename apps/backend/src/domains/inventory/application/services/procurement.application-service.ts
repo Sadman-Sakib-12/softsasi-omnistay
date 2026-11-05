@@ -47,7 +47,77 @@ export class ProcurementApplicationService {
   }
 
   async getPurchaseOrders(tenantId: string) {
-    return this.repo.findPurchases(tenantId);
+    let list = await this.repo.findPurchases(tenantId);
+    if (!list || list.length === 0) {
+      await this.seedDefaultPurchases(tenantId);
+      list = await this.repo.findPurchases(tenantId);
+    }
+    return list;
+  }
+
+  private async seedDefaultPurchases(tenantId: string) {
+    const products = await this.repo.findProducts(tenantId);
+    if (!products || products.length === 0) return;
+
+    const towel = products.find((p: any) => p.sku === 'LIN-TOW-001') || products[0];
+    const beef = products.find((p: any) => p.sku === 'KIT-MEAT-004') || products[1] || products[0];
+
+    try {
+      // 1. PO-2026-091: Linens (Received with GRN)
+      const po1 = await this.repo.createPurchase({
+        tenantId,
+        poNumber: 'PO-2026-091',
+        totalCost: 2900.0,
+        status: 'received',
+        products: {
+          create: [
+            {
+              productId: towel.id,
+              quantity: 200,
+              unitCost: 14.5,
+              totalCost: 2900.0,
+            },
+          ],
+        },
+      });
+
+      await this.repo.createGoodsReceivedNote({
+        purchaseId: po1.id,
+        grnNumber: 'GRN-100291',
+        receivedDate: new Date(),
+        status: 'accepted',
+        items: {
+          create: [
+            {
+              itemTitle: `${towel.name} (200 Units Delivery)`,
+              qtyOrdered: 200,
+              qtyReceived: 200,
+              isDamaged: false,
+            },
+          ],
+        },
+      });
+
+      // 2. PO-2026-092: Gourmet Beef (Approved & Transmitted)
+      await this.repo.createPurchase({
+        tenantId,
+        poNumber: 'PO-2026-092',
+        totalCost: 2100.0,
+        status: 'approved',
+        products: {
+          create: [
+            {
+              productId: beef.id,
+              quantity: 50,
+              unitCost: 42.0,
+              totalCost: 2100.0,
+            },
+          ],
+        },
+      });
+    } catch {
+      // Skip if already seeded
+    }
   }
 
   async receiveGoods(dto: CreateGoodsReceivedNoteDto, defaultWarehouseId?: string) {

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { GutenbergEditor } from '@/components/gutenberg/gutenberg-editor';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, ThemeConfig } from '@/features/content/services/content.service';
@@ -61,6 +62,22 @@ export function applyThemeStyles(themeId: string) {
   }
 }
 
+function WebsiteBuilderContent({ onOpenTheme }: { onOpenTheme: () => void }) {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug') || undefined;
+  const pageId = searchParams.get('pageId') || undefined;
+  const isCreate = searchParams.get('create') === 'true';
+
+  return (
+    <GutenbergEditor
+      initialSlug={slug}
+      initialPageId={pageId}
+      isCreateMode={isCreate}
+      onOpenThemeCustomizer={onOpenTheme}
+    />
+  );
+}
+
 export default function WebsiteBuilderThemesPage() {
   const queryClient = useQueryClient();
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
@@ -85,8 +102,19 @@ export default function WebsiteBuilderThemesPage() {
 
   return (
     <div className="relative w-full h-full">
-      {/* Authentic WordPress Gutenberg Block Editor */}
-      <GutenbergEditor onOpenThemeCustomizer={() => setIsThemeModalOpen(true)} />
+      {/* Authentic WordPress Gutenberg Block Editor with Query Param Hydration */}
+      <Suspense
+        fallback={
+          <div className="h-[80vh] flex flex-col items-center justify-center gap-3">
+            <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+            <p className="text-slate-500 text-sm font-medium animate-pulse">
+              Loading OmniStay Gutenberg Block Editor...
+            </p>
+          </div>
+        }
+      >
+        <WebsiteBuilderContent onOpenTheme={() => setIsThemeModalOpen(true)} />
+      </Suspense>
 
       {/* Theme Presets & Palette Modal */}
       {isThemeModalOpen && (
