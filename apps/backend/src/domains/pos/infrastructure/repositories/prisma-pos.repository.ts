@@ -40,6 +40,10 @@ export class PrismaPosRepository implements IPosRepository {
     });
   }
 
+  async createTerminal(data: any): Promise<any> {
+    return this.prisma.posTerminal.create({ data });
+  }
+
   async createTable(data: any): Promise<any> {
     return this.prisma.diningTable.create({ data });
   }
@@ -119,6 +123,19 @@ export class PrismaPosRepository implements IPosRepository {
         roomChargeLogs: true,
         outlet: true,
       },
+    });
+  }
+
+  async findOrdersByOutlet(outletId: string): Promise<any[]> {
+    return this.prisma.posOrder.findMany({
+      where: { outletId },
+      include: {
+        items: { include: { modifiers: true } },
+        payments: true,
+        table: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
     });
   }
 
@@ -242,6 +259,17 @@ export class PrismaPosRepository implements IPosRepository {
   async findActiveShiftByTerminal(terminalId: string): Promise<any | null> {
     return this.prisma.posCashierShift.findFirst({
       where: { terminalId, endedAt: null },
+    });
+  }
+
+  async findAnyActiveShift(): Promise<any | null> {
+    return this.prisma.posCashierShift.findFirst({
+      where: { endedAt: null },
+      include: {
+        terminal: true,
+        cashDrops: true,
+      },
+      orderBy: { startedAt: 'desc' },
     });
   }
 

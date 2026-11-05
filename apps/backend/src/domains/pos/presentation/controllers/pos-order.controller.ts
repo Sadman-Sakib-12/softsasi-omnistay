@@ -28,6 +28,12 @@ export class PosOrderController {
     return this.orderService.getOrderById(id);
   }
 
+  @Get('outlet/:outletId')
+  @ApiOperation({ summary: 'Get recent orders for an outlet' })
+  getOrdersByOutlet(@Param('outletId') outletId: string) {
+    return this.orderService.getOrdersByOutlet(outletId);
+  }
+
   @Post(':id/settle')
   @ApiOperation({ summary: 'Settle order with cash, card, room charge, or digital wallet' })
   settleOrder(

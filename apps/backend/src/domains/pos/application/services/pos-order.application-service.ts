@@ -97,6 +97,10 @@ export class PosOrderApplicationService {
     return order;
   }
 
+  async getOrdersByOutlet(outletId: string) {
+    return this.repo.findOrdersByOutlet(outletId);
+  }
+
   async settleOrder(orderId: string, dto: SettlePosOrderDto) {
     const order = await this.getOrderById(orderId);
     if (order.status === 'completed') {

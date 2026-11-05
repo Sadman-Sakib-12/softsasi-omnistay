@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import { PosShiftApplicationService } from '../../application/services/pos-shift.application-service.js';
 import { CloseCashierShiftDto, OpenCashierShiftDto, RecordCashDropDto } from '../dto/pos-shift.dto.js';
@@ -10,6 +10,13 @@ import { CloseCashierShiftDto, OpenCashierShiftDto, RecordCashDropDto } from '..
 @Controller('api/v1/pos/shifts')
 export class PosShiftController {
   constructor(private readonly shiftService: PosShiftApplicationService) {}
+
+  @Get('active')
+  @ApiQuery({ name: 'terminalId', required: false })
+  @ApiOperation({ summary: 'Get current active cashier shift' })
+  getActiveShift(@Query('terminalId') terminalId?: string) {
+    return this.shiftService.getActiveShift(terminalId);
+  }
 
   @Post('open')
   @ApiOperation({ summary: 'Open new cashier shift with starting cash float ($500)' })

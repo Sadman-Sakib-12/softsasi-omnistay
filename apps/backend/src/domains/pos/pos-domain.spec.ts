@@ -41,6 +41,7 @@ describe('POS Domain — Clean Architecture & DDD Test Suite', () => {
     beforeEach(() => {
       mockRepo = {
         createOutlet: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'out-1', ...data })),
+        createTerminal: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'term-1', ...data })),
         findOutlets: vi.fn().mockResolvedValue([{ id: 'out-1', outletName: 'Beachside Grill' }]),
         findOutletById: vi.fn().mockImplementation((tenantId, id) => {
           if (id === 'out-1') return Promise.resolve({ id: 'out-1', outletName: 'Beachside Grill', tenantId });
@@ -81,6 +82,7 @@ describe('POS Domain — Clean Architecture & DDD Test Suite', () => {
           items: [{ itemName: 'Ribeye Steak', quantity: 2, unitPrice: 50.0 }],
           payments: [],
         }),
+        findOrdersByOutlet: vi.fn().mockResolvedValue([]),
         updateOrder: vi.fn().mockImplementation((id, data) => Promise.resolve({ id, ...data })),
         createPayment: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'pay-1', ...data })),
         findPaymentsByOrderId: vi.fn().mockResolvedValue([{ id: 'pay-1', amount: 115.0 }]),
@@ -113,6 +115,7 @@ describe('POS Domain — Clean Architecture & DDD Test Suite', () => {
         createRoomChargeLog: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'rcl-1', ...data })),
 
         findActiveShiftByTerminal: vi.fn().mockResolvedValue(null),
+        findAnyActiveShift: vi.fn().mockResolvedValue(null),
         findShiftById: vi.fn().mockResolvedValue({
           id: 'sh-1',
           terminalId: 'term-1',

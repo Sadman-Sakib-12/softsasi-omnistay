@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   UtensilsCrossed,
   Plus,
@@ -10,7 +10,6 @@ import {
   Receipt,
   CheckCircle2,
   BedDouble,
-  Loader2,
   Store,
   DollarSign,
   Coffee,
@@ -23,556 +22,526 @@ import {
   AlertTriangle,
   Compass,
   Move,
+  Wine,
+  Sparkles,
+  Split,
+  ArrowRightLeft,
+  ShieldCheck,
+  UserCheck,
+  FileText,
+  BadgeAlert,
+  ChevronRight,
+  TrendingUp,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
-import { posApi } from '@omnistay/api-client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { BeatLoader } from 'react-spinners';
+import {
+  posService,
+  PosOutlet,
+  DiningTableItem,
+  PosMenuItem,
+  PosOutletDetail,
+  KdsTicket,
+  RoomVerificationResult,
+  CashierShift,
+  XReportResult,
+  ZReportResult,
+} from '@/features/pos/services/pos.service';
 import { SignaturePad } from '@/components/ui/signature-pad';
 
-interface DiningTable {
-  id: string;
-  tableNumber: string;
-  section: string;
-  capacity: number;
-  status: 'Vacant' | 'Seated' | 'Kitchen Cooking' | 'Served';
-  currentBill?: number;
-  server?: string;
-  x?: number; // X position percentage (0-100)
-  y?: number; // Y position percentage (0-100)
-  shape?: 'round' | 'rect' | 'booth' | 'bar';
-}
-
-// Chapter 9: Omnichannel Point of Sale (POS) & F&B Operations Architecture
+// CHAPTER 9: OMNI-CHANNEL POINT OF SALE (POS) & F&B OPERATIONS
 export default function PosEnterprisePage() {
-  const [activeTab, setActiveTab] = useState<'tables' | 'terminal' | 'kds' | 'charge' | 'shift'>('tables');
+  const queryClient = useQueryClient();
 
-  // Load real POS outlets from database
-  const { data: outlets = [] } = useQuery({
-    queryKey: ['posOutlets'],
-    queryFn: () => posApi.getOutlets(),
-  });
+  // 5 Specialized Chapter 9 Tabs
+  const [activeTab, setActiveTab] = useState<'terminal' | 'tables' | 'kds' | 'charge' | 'shift'>('terminal');
 
-  const [selectedOutlet, setSelectedOutlet] = useState('Skyline Rooftop Lounge');
-
-  const currentOutletId = outlets.find((o: any) => o.name === selectedOutlet || o.id === selectedOutlet)?.id || outlets[0]?.id;
-
-  // Load real outlet tables and menu from database
-  const { data: outletDetails } = useQuery({
-    queryKey: ['posOutletDetails', currentOutletId],
-    queryFn: () => (currentOutletId ? posApi.getOutletById(currentOutletId) : null),
-    enabled: !!currentOutletId,
-  });
-
-  // Load real KDS queue from database
-  const { data: realKdsQueue = [] } = useQuery({
-    queryKey: ['posKdsQueue', currentOutletId],
-    queryFn: () => (currentOutletId ? posApi.getKdsQueue(currentOutletId) : []),
-    enabled: !!currentOutletId,
-  });
-
-  // Notifications
-  const [alertBanner, setAlertBanner] = useState<string | null>(null);
-  const triggerBanner = (msg: string) => {
-    setAlertBanner(msg);
-    setTimeout(() => setAlertBanner(null), 4000);
+  // Toast / Alert banner
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // 9.3 Dining Tables State & Floorplan Canvas View
-  const [floorplanView, setFloorplanView] = useState<'canvas' | 'grid'>('canvas');
-  const [posSignatureData, setPosSignatureData] = useState<string>('');
-
-  const [tables, setTables] = useState<DiningTable[]>([
-    { id: 't-1', tableNumber: 'Table T-01', section: 'Main Dining', capacity: 2, status: 'Vacant', x: 28, y: 38, shape: 'round' },
-    { id: 't-2', tableNumber: 'Table T-02', section: 'Main Dining', capacity: 4, status: 'Seated', currentBill: 84.5, server: 'Alex K.', x: 48, y: 38, shape: 'round' },
-    { id: 't-3', tableNumber: 'Table T-03', section: 'Window View', capacity: 4, status: 'Kitchen Cooking', currentBill: 142.0, server: 'Maria S.', x: 74, y: 28, shape: 'rect' },
-    { id: 't-4', tableNumber: 'Table T-04', section: 'Window View', capacity: 6, status: 'Served', currentBill: 235.0, server: 'Alex K.', x: 74, y: 68, shape: 'rect' },
-    { id: 't-5', tableNumber: 'Table T-05', section: 'Outdoor Terrace', capacity: 2, status: 'Vacant', x: 28, y: 75, shape: 'round' },
-    { id: 't-6', tableNumber: 'Table T-06', section: 'Outdoor Terrace', capacity: 4, status: 'Kitchen Cooking', currentBill: 98.0, server: 'Maria S.', x: 48, y: 75, shape: 'round' },
-    { id: 't-7', tableNumber: 'VIP Booth A', section: 'VIP Lounge', capacity: 8, status: 'Served', currentBill: 410.0, server: 'Duty Captain', x: 90, y: 48, shape: 'booth' },
-    { id: 't-8', tableNumber: 'Bar Stool 1', section: 'Beverage Bar', capacity: 1, status: 'Seated', currentBill: 35.0, server: 'Bartender Leo', x: 12, y: 18, shape: 'bar' },
-  ]);
-
-  // Synchronize real tables from backend when loaded
-  React.useEffect(() => {
-    if (outletDetails?.tables && outletDetails.tables.length > 0) {
-      setTables(
-        outletDetails.tables.map((t: any) => ({
-          id: t.id,
-          tableNumber: t.name || t.tableNumber || `Table ${t.tableCode || t.id.slice(-2)}`,
-          section: t.section || 'Main Dining',
-          capacity: t.capacity || 4,
-          status: (t.status || 'Vacant') as any,
-          currentBill: t.currentBill,
-          server: t.server,
-        }))
-      );
-    }
-  }, [outletDetails]);
-
-  const [selectedTableForOrder, setSelectedTableForOrder] = useState<DiningTable | null>(null);
-  const [isAddTableOpen, setIsAddTableOpen] = useState(false);
-  const [newTableInput, setNewTableInput] = useState({
-    tableNumber: '',
-    section: 'Main Dining',
-    capacity: 4,
+  // ---------------------------------------------------------------------------
+  // 9.1 OUTLET SELECTOR & REAL BACKEND QUERIES
+  // ---------------------------------------------------------------------------
+  const { data: outlets = [], isLoading: isLoadingOutlets } = useQuery<PosOutlet[]>({
+    queryKey: ['posOutlets'],
+    queryFn: () => posService.getOutlets(),
   });
 
-  // 9.1 POS Touch Terminal Ordering State
-  const menuCategories = ['All Items', 'Starters', 'Mains & Steaks', 'Woodfired Pizza', 'Desserts', 'Artisan Cocktails', 'Fine Wines'];
-  const [selectedCategory, setSelectedCategory] = useState('All Items');
+  const [selectedOutletId, setSelectedOutletId] = useState<string>('');
 
-  const menuItems = [
-    { id: 'm-1', name: 'Black Truffle Risotto', category: 'Mains & Steaks', price: 34.0, uom: 'Portion' },
-    { id: 'm-2', name: 'Wagyu Ribeye Steak (300g)', category: 'Mains & Steaks', price: 68.0, uom: 'Portion' },
-    { id: 'm-3', name: 'Burrata di Puglia Salad', category: 'Starters', price: 21.0, uom: 'Portion' },
-    { id: 'm-4', name: 'Crispy Calamari Fritti', category: 'Starters', price: 18.5, uom: 'Portion' },
-    { id: 'm-5', name: 'Tartufo & Porcini Pizza', category: 'Woodfired Pizza', price: 28.0, uom: 'Portion' },
-    { id: 'm-6', name: 'Valrhona Chocolate Fondant', category: 'Desserts', price: 16.0, uom: 'Portion' },
-    { id: 'm-7', name: 'Smoked Bourbon Old Fashioned', category: 'Artisan Cocktails', price: 19.0, uom: 'Glass' },
-    { id: 'm-8', name: 'Château Margaux 2018', category: 'Fine Wines', price: 145.0, uom: 'Bottle' },
-  ];
+  useEffect(() => {
+    if (outlets.length > 0 && !selectedOutletId) {
+      setSelectedOutletId(outlets[0].id);
+    }
+  }, [outlets, selectedOutletId]);
 
-  const [activeCart, setActiveCart] = useState<any[]>([]);
+  const activeOutletId = selectedOutletId || (outlets[0]?.id ?? '');
 
-  const addToCart = (item: any) => {
+  // Outlet Detail (Tables, Menus, Terminals)
+  const { data: outletDetail, isLoading: isLoadingOutletDetail, refetch: refetchOutletDetail } = useQuery<PosOutletDetail | null>({
+    queryKey: ['posOutletDetail', activeOutletId],
+    queryFn: () => (activeOutletId ? posService.getOutletById(activeOutletId) : null),
+    enabled: Boolean(activeOutletId),
+  });
+
+  // Real KDS Queue
+  const { data: kdsQueue = [], isLoading: isLoadingKds, refetch: refetchKds } = useQuery<KdsTicket[]>({
+    queryKey: ['posKdsQueue', activeOutletId],
+    queryFn: () => (activeOutletId ? posService.getKdsQueue(activeOutletId) : []),
+    enabled: Boolean(activeOutletId),
+    refetchInterval: 15000, // Poll every 15s for live kitchen tickets
+  });
+
+  // Active Terminal for Shift
+  const activeTerminal = outletDetail?.terminals?.[0];
+
+  // Real Cashier Shift
+  const { data: activeShift, isLoading: isLoadingShift, refetch: refetchShift } = useQuery<CashierShift | null>({
+    queryKey: ['posActiveShift', activeTerminal?.id],
+    queryFn: () => posService.getActiveShift(activeTerminal?.id),
+    enabled: Boolean(activeTerminal?.id),
+  });
+
+  // ---------------------------------------------------------------------------
+  // 9.1 POS TOUCH TERMINAL CART & ORDERING STATE
+  // ---------------------------------------------------------------------------
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [activeCart, setActiveCart] = useState<
+    Array<{
+      id: string;
+      name: string;
+      price: number;
+      qty: number;
+      notes?: string;
+    }>
+  >([]);
+
+  const [selectedTableForOrder, setSelectedTableForOrder] = useState<DiningTableItem | null>(null);
+  const [serverName, setServerName] = useState('Alexander Jenkins (Waitstaff)');
+  const [guestCount, setGuestCount] = useState(2);
+
+  // Settlement Modals
+  const [isSettleOpen, setIsSettleOpen] = useState(false);
+  const [isSplitCheckOpen, setIsSplitCheckOpen] = useState(false);
+  const [splitCount, setSplitCount] = useState(2);
+
+  // Cart Totals: 10% Service Charge + 5% Dining Tax
+  const cartSubtotal = activeCart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const cartServiceCharge = Math.round(cartSubtotal * 0.1 * 100) / 100;
+  const cartTax = Math.round(cartSubtotal * 0.05 * 100) / 100;
+  const cartGrandTotal = Math.round((cartSubtotal + cartServiceCharge + cartTax) * 100) / 100;
+
+  const addToCart = (item: PosMenuItem) => {
     const existing = activeCart.find((i) => i.id === item.id);
     if (existing) {
       setActiveCart(activeCart.map((i) => (i.id === item.id ? { ...i, qty: i.qty + 1 } : i)));
     } else {
-      setActiveCart([...activeCart, { ...item, qty: 1 }]);
+      setActiveCart([...activeCart, { id: item.id, name: item.itemName, price: item.price, qty: 1 }]);
     }
   };
 
-  const removeFromCart = (id: string) => {
-    setActiveCart(activeCart.filter((i) => i.id !== id));
+  const updateCartQty = (id: string, delta: number) => {
+    setActiveCart(
+      activeCart
+        .map((i) => (i.id === id ? { ...i, qty: i.qty + delta } : i))
+        .filter((i) => i.qty > 0)
+    );
   };
 
-  const cartSubtotal = activeCart.reduce((acc, i) => acc + i.price * i.qty, 0);
-  const cartVat = cartSubtotal * 0.1; // 10% VAT
-  const cartService = cartSubtotal * 0.1; // 10% Service Charge
-  const cartGrandTotal = cartSubtotal + cartVat + cartService;
+  // ---------------------------------------------------------------------------
+  // 9.2 TABLE MANAGEMENT & FLOOR PLANS STATE
+  // ---------------------------------------------------------------------------
+  const [floorplanView, setFloorplanView] = useState<'canvas' | 'grid'>('canvas');
+  const [isAddTableOpen, setIsAddTableOpen] = useState(false);
+  const [newTable, setNewTable] = useState({ tableNumber: 'Table T-07', seatingCap: 4, posX: 30, posY: 50 });
 
-  // 9.2 KDS Kitchen Queue State
-  const [kdsTickets, setKdsTickets] = useState([
-    {
-      orderId: 'KDS-8841',
-      table: 'Table T-03',
-      station: 'Grill Station',
-      elapsedMinutes: 8,
-      status: 'COOKING',
-      items: ['1x Wagyu Ribeye Steak (Medium Rare)', '1x Truffle Fries (Extra Crispy)'],
-    },
-    {
-      orderId: 'KDS-8842',
-      table: 'Table T-06',
-      station: 'Pizza & Oven',
-      elapsedMinutes: 14,
-      status: 'COOKING',
-      items: ['2x Tartufo & Porcini Pizza', '1x Burrata Salad'],
-    },
-    {
-      orderId: 'KDS-8843',
-      table: 'Room 502 (In-Room)',
-      station: 'Pantry / Expeditor',
-      elapsedMinutes: 4,
-      status: 'COOKING',
-      items: ['1x Black Truffle Risotto', '1x Chocolate Fondant'],
-    },
-  ]);
+  const [isTransferTableOpen, setIsTransferTableOpen] = useState(false);
+  const [transferState, setTransferState] = useState({ sourceTableId: '', targetTableId: '', reason: 'Guest requested window view' });
 
-  // 9.4 Folio Charge State
-  const [chargeRoomNumber, setChargeRoomNumber] = useState('');
-  const [chargeAmount, setChargeAmount] = useState('');
-  const [isCharging, setIsCharging] = useState(false);
+  const [isMergeTablesOpen, setIsMergeTablesOpen] = useState(false);
+  const [mergePrimaryId, setMergePrimaryId] = useState('');
+  const [mergeSelectedIds, setMergeSelectedIds] = useState<string[]>([]);
 
-  // 9.5 Cashier Shift X/Z Report State
-  const [shiftData, setShiftData] = useState({
-    cashierName: 'Alex Jenkins (Drawer #2)',
-    openedAt: 'Today, 07:00 AM',
-    openingFloat: 300.0,
-    cashSales: 1240.0,
-    cardSettlements: 2890.0,
-    roomCharges: 1450.0,
-    totalGrossRevenue: 5580.0,
-    blindDropCount: 1540.0,
-    variance: 0.0,
-    status: 'OPEN',
+  // ---------------------------------------------------------------------------
+  // 9.3 KDS FILTER STATE
+  // ---------------------------------------------------------------------------
+  const [kdsStationFilter, setKdsStationFilter] = useState<string>('All');
+
+  // ---------------------------------------------------------------------------
+  // 9.4 TWO-WAY ROOM CHARGE STATE
+  // ---------------------------------------------------------------------------
+  const [roomNumberInput, setRoomNumberInput] = useState('302');
+  const [isVerifyingRoom, setIsVerifyingRoom] = useState(false);
+  const [roomVerification, setRoomVerification] = useState<RoomVerificationResult | null>(null);
+  const [chargeAmountInput, setChargeAmountInput] = useState('145.00');
+  const [posSignatureData, setPosSignatureData] = useState<string>('');
+
+  // ---------------------------------------------------------------------------
+  // 9.5 CASHIER SHIFT MANAGEMENT STATE
+  // ---------------------------------------------------------------------------
+  const [isOpenShiftModalOpen, setIsOpenShiftModalOpen] = useState(false);
+  const [openShiftFloat, setOpenShiftFloat] = useState(500.0);
+  const [isCashDropOpen, setIsCashDropOpen] = useState(false);
+  const [cashDropInput, setCashDropInput] = useState({ amount: 300.0, reason: 'Mid-day safe drop (excess cash limit)' });
+
+  const [isXReportOpen, setIsXReportOpen] = useState(false);
+  const [xReportData, setXReportData] = useState<XReportResult | null>(null);
+
+  const [isZReportOpen, setIsZReportOpen] = useState(false);
+  const [zReportData, setZReportData] = useState<ZReportResult | null>(null);
+  const [closingPhysicalCash, setClosingPhysicalCash] = useState(500.0);
+
+  // ---------------------------------------------------------------------------
+  // LIVE MUTATIONS
+  // ---------------------------------------------------------------------------
+  const createOrderMutation = useMutation({
+    mutationFn: async (settleImmediate?: { paymentMode: string }) => {
+      if (!activeOutletId) throw new Error('No active outlet selected');
+      const order = await posService.createOrder({
+        outletId: activeOutletId,
+        terminalId: activeTerminal?.id,
+        tableId: selectedTableForOrder?.id,
+        guestCount,
+        serverName,
+        items: activeCart.map((i) => ({
+          itemName: i.name,
+          quantity: i.qty,
+          unitPrice: i.price,
+          notes: i.notes,
+        })),
+      });
+
+      if (settleImmediate) {
+        await posService.settleOrder((order as any).id, {
+          paymentMode: settleImmediate.paymentMode,
+          amount: (order as any).totalAmount,
+        });
+      }
+
+      return order;
+    },
+    onSuccess: (order: any) => {
+      queryClient.invalidateQueries({ queryKey: ['posOutletDetail', activeOutletId] });
+      queryClient.invalidateQueries({ queryKey: ['posKdsQueue', activeOutletId] });
+      setActiveCart([]);
+      setSelectedTableForOrder(null);
+      setIsSettleOpen(false);
+      showToast(`Order ${order?.orderNumber || 'created'} successfully fired to Kitchen Display System (KDS)!`);
+    },
+    onError: (err: any) => showToast(`Failed to ring up order: ${err?.message || 'Error'}`),
   });
 
-  // Handlers
-  const handleFireToKitchen = () => {
-    if (activeCart.length === 0) return;
-    const ticket = {
-      orderId: `KDS-${Date.now().toString().slice(-4)}`,
-      table: selectedTableForOrder?.tableNumber || 'Table T-02',
-      station: 'Main Kitchen Expeditor',
-      elapsedMinutes: 1,
-      status: 'COOKING',
-      items: activeCart.map((i) => `${i.qty}x ${i.name}`),
-    };
-    setKdsTickets([ticket, ...kdsTickets]);
-    setActiveCart([]);
-    setSelectedTableForOrder(null);
-    triggerBanner(`Order ${ticket.orderId} fired to Kitchen Display System (KDS)!`);
-  };
+  const updateTableStatusMutation = useMutation({
+    mutationFn: ({ tableId, status }: { tableId: string; status: string }) =>
+      posService.updateTableStatus(tableId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posOutletDetail', activeOutletId] });
+      showToast('Table dining status updated.');
+    },
+  });
 
-  const handleChargeToRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chargeRoomNumber || !chargeAmount) return;
-    if (!posSignatureData) {
-      triggerBanner('Guest signature on pad is required to authorize room folio charge (Chapter 9.4).');
-      return;
-    }
-    setIsCharging(true);
+  const createTableMutation = useMutation({
+    mutationFn: () => posService.createTable(activeOutletId, newTable),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posOutletDetail', activeOutletId] });
+      setIsAddTableOpen(false);
+      showToast(`Table ${newTable.tableNumber} added to floor plan.`);
+    },
+  });
+
+  const transferTableMutation = useMutation({
+    mutationFn: () =>
+      posService.transferTable(transferState.sourceTableId, transferState.targetTableId, transferState.reason),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: ['posOutletDetail', activeOutletId] });
+      setIsTransferTableOpen(false);
+      showToast(res?.message || 'Table transferred successfully.');
+    },
+    onError: (err: any) => showToast(`Transfer error: ${err?.message || 'Error'}`),
+  });
+
+  const mergeTablesMutation = useMutation({
+    mutationFn: () => posService.mergeTables(mergePrimaryId, mergeSelectedIds),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: ['posOutletDetail', activeOutletId] });
+      setIsMergeTablesOpen(false);
+      showToast(res?.message || 'Tables merged successfully.');
+    },
+    onError: (err: any) => showToast(`Merge error: ${err?.message || 'Error'}`),
+  });
+
+  const bumpKdsMutation = useMutation({
+    mutationFn: ({ ticketId, status }: { ticketId: string; status: 'queued' | 'cooking' | 'ready' | 'served' }) =>
+      posService.updateKdsTicketStatus(ticketId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posKdsQueue', activeOutletId] });
+      queryClient.invalidateQueries({ queryKey: ['posOutletDetail', activeOutletId] });
+      showToast('KDS Ticket bumped to next station state.');
+    },
+  });
+
+  const handleVerifyRoom = async () => {
+    if (!roomNumberInput.trim()) return;
+    setIsVerifyingRoom(true);
     try {
-      await posApi.chargeToRoom({
-        propertyId: '00000000-0000-0000-0000-000000000001',
-        roomNumber: chargeRoomNumber,
-        amount: Number(chargeAmount),
-        outletName: selectedOutlet,
-      });
-      triggerBanner(`Successfully charged ${formatCurrency(Number(chargeAmount))} to Room #${chargeRoomNumber} guest folio with signed e-authorization!`);
-      setChargeRoomNumber('');
-      setChargeAmount('');
-      setPosSignatureData('');
-    } catch {
-      triggerBanner(`Verified Room #${chargeRoomNumber} and posted ${formatCurrency(Number(chargeAmount))} folio charge.`);
-      setPosSignatureData('');
+      const res = await posService.verifyRoomForCharge('00000000-0000-0000-0000-000000000001', roomNumberInput.trim());
+      setRoomVerification(res);
+      if (res.isOccupied) {
+        showToast(`Verified Room #${res.roomNumber}: Checked in as ${res.guestName}`);
+      } else {
+        showToast(`Room #${res.roomNumber} has no active checked-in guest.`);
+      }
+    } catch (err: any) {
+      showToast(`Verification failed: ${err?.message || 'Room not found'}`);
     } finally {
-      setIsCharging(false);
+      setIsVerifyingRoom(false);
     }
   };
 
-  const handlePrintXZReport = (type: 'X' | 'Z') => {
-    triggerBanner(`Generated Official Cashier Shift ${type}-Report! Settlement audit printed.`);
+  const chargeToRoomMutation = useMutation({
+    mutationFn: async () => {
+      if (!roomVerification?.isOccupied) throw new Error('Please verify room occupancy first');
+      if (!posSignatureData) throw new Error('Guest digital signature is required (Chapter 9.4)');
+
+      return await posService.chargeToRoom({
+        orderId: 'direct',
+        roomNumber: roomVerification.roomNumber,
+        guestName: roomVerification.guestName || 'In-House Guest',
+        amount: parseFloat(chargeAmountInput) || 50,
+        signatureUrl: posSignatureData,
+      });
+    },
+    onSuccess: () => {
+      showToast(`Successfully charged ${formatCurrency(parseFloat(chargeAmountInput))} to Room #${roomVerification?.roomNumber} folio!`);
+      setPosSignatureData('');
+      setRoomVerification(null);
+    },
+    onError: (err: any) => showToast(`Charge error: ${err?.message || 'Failed to charge folio'}`),
+  });
+
+  const openShiftMutation = useMutation({
+    mutationFn: () => {
+      if (!activeTerminal?.id) throw new Error('No terminal available');
+      return posService.openShift({
+        terminalId: activeTerminal.id,
+        cashierName: serverName,
+        openingFloat: openShiftFloat,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posActiveShift', activeTerminal?.id] });
+      setIsOpenShiftModalOpen(false);
+      showToast(`Cashier shift opened with starting float: ${formatCurrency(openShiftFloat)}`);
+    },
+    onError: (err: any) => showToast(`Failed to open shift: ${err?.message || 'Error'}`),
+  });
+
+  const cashDropMutation = useMutation({
+    mutationFn: () => {
+      if (!activeShift?.id) throw new Error('No active shift');
+      return posService.recordCashDrop(activeShift.id, cashDropInput.amount, cashDropInput.reason);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posActiveShift', activeTerminal?.id] });
+      setIsCashDropOpen(false);
+      showToast(`Safe cash drop recorded: ${formatCurrency(cashDropInput.amount)}`);
+    },
+  });
+
+  const handleGenerateXReport = async () => {
+    if (!activeShift?.id) return;
+    try {
+      const rep = await posService.getXReport(activeShift.id);
+      setXReportData(rep);
+      setIsXReportOpen(true);
+    } catch (err: any) {
+      showToast(`X-Report error: ${err?.message || 'Error'}`);
+    }
   };
+
+  const closeZReportMutation = useMutation({
+    mutationFn: () => {
+      if (!activeShift?.id) throw new Error('No active shift');
+      return posService.closeShiftZReport(activeShift.id, closingPhysicalCash);
+    },
+    onSuccess: (rep) => {
+      queryClient.invalidateQueries({ queryKey: ['posActiveShift', activeTerminal?.id] });
+      setZReportData(rep);
+      showToast(`Shift closed! Z-Report balancing: ${rep.balancingStatus.toUpperCase()}`);
+    },
+    onError: (err: any) => showToast(`Z-Report error: ${err?.message || 'Error'}`),
+  });
+
+  // Flat menu items from all categories
+  const allMenuItems: PosMenuItem[] = [];
+  const categoriesList: string[] = ['All'];
+  (outletDetail?.menus || []).forEach((menu) => {
+    (menu.categories || []).forEach((cat) => {
+      if (!categoriesList.includes(cat.categoryName)) {
+        categoriesList.push(cat.categoryName);
+      }
+      (cat.items || []).forEach((it) => {
+        allMenuItems.push(it);
+      });
+    });
+  });
+
+  const filteredMenuItems = allMenuItems.filter((it) => {
+    if (selectedCategory === 'All') return true;
+    const cat = (outletDetail?.menus || [])
+      .flatMap((m) => m.categories)
+      .find((c) => c.id === it.categoryId);
+    return cat?.categoryName === selectedCategory;
+  });
+
+  const tablesList = outletDetail?.tables || [];
 
   return (
-    <div className="space-y-5 animate-in fade-in duration-200">
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-top-3">
+          <Sparkles className="w-4 h-4 text-[#00a8ff]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-blue-600 font-semibold"># Dashboard</span>
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
         <span>/</span>
-        <span className="text-slate-400">Point of Sale (POS)</span>
+        <span className="text-slate-400">Chapter 9: Omni-Channel Point of Sale (POS) & F&B Operations</span>
       </div>
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <UtensilsCrossed className="w-6 h-6 text-blue-600" /> Omnichannel Point of Sale (POS) & F&B Operations
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Visual table floorplans, high-speed touch ordering, KDS routing, two-way room folio settlement & X/Z shifts (Chapter 9).
+      {/* Header & Multi-Outlet Selector */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-800 to-[#00a8ff] p-6 rounded-2xl text-white shadow-xl">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <UtensilsCrossed className="w-7 h-7 text-[#00a8ff]" />
+            <h1 className="text-2xl font-black tracking-tight">Omni-Channel POS & Dining Operations</h1>
+          </div>
+          <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+            Multi-outlet touch terminals, visual floor plans, real-time Kitchen Display System (KDS), room folio charges, and cashier shift X/Z balancing.
           </p>
         </div>
 
-        {/* Outlet Switcher */}
-        <div className="flex items-center gap-2">
-          <select
-            value={selectedOutlet}
-            onChange={(e) => setSelectedOutlet(e.target.value)}
-            className="h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 font-semibold"
-          >
-            <option value="Skyline Rooftop Lounge">Skyline Rooftop Lounge</option>
-            <option value="The Grand Bistro">The Grand Bistro</option>
-            <option value="Poolside Bar & Grill">Poolside Bar & Grill</option>
-            <option value="Executive Club Lounge">Executive Club Lounge</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Alert Banner */}
-      {alertBanner && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center justify-between shadow-2xs">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-semibold">{alertBanner}</span>
-          </div>
-          <button onClick={() => setAlertBanner(null)} className="text-emerald-600 hover:text-emerald-800">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Multi-Tab Navigation */}
-      <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 overflow-x-auto text-xs">
-        <button
-          onClick={() => setActiveTab('tables')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'tables' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <LayoutGrid className="w-3.5 h-3.5 text-blue-600" />
-          <span>Dining Table Floorplan (9.3)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('terminal')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'terminal' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Coffee className="w-3.5 h-3.5 text-blue-600" />
-          <span>Touch Order Terminal (9.1)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('kds')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'kds' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Monitor className="w-3.5 h-3.5 text-blue-600" />
-          <span>Kitchen KDS Display (9.2)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('charge')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'charge' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <BedDouble className="w-3.5 h-3.5 text-blue-600" />
-          <span>Room Folio Settlement (9.4)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('shift')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'shift' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Receipt className="w-3.5 h-3.5 text-blue-600" />
-          <span>Cashier Shift X/Z Report (9.5)</span>
-        </button>
-      </div>
-
-      {/* TAB 1: DINING TABLE FLOORPLAN (9.3) */}
-      {activeTab === 'tables' && (
-        <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <LayoutGrid className="w-4 h-4 text-blue-600" /> Dining Table Floorplan & Real-Time Status Canvas (9.3)
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Visual seat allocation: Vacant (Green), Seated (Blue), Kitchen Cooking (Amber), Served / Tab Open (Purple).
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-slate-100 p-0.5 rounded-lg border border-slate-200 flex text-xs">
-                <button
-                  type="button"
-                  onClick={() => setFloorplanView('canvas')}
-                  className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                    floorplanView === 'canvas'
-                      ? 'bg-white text-blue-600 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  2D Floorplan Canvas
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFloorplanView('grid')}
-                  className={`px-3 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                    floorplanView === 'grid'
-                      ? 'bg-white text-blue-600 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Card Grid
-                </button>
-              </div>
-              <Button
-                size="sm"
-                onClick={() => setIsAddTableOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5 mr-1" /> Add Dining Table
-              </Button>
-            </div>
-          </div>
-
-          {/* 2D Interactive Canvas View */}
-          {floorplanView === 'canvas' && (
-            <div className="relative w-full h-[540px] bg-slate-900 rounded-2xl border-2 border-slate-800 shadow-xl overflow-hidden p-4 select-none">
-              {/* Floor Background Grid & Zones */}
-              <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
-
-              {/* Architectural Zones */}
-              <div className="absolute top-3 left-4 text-[11px] font-bold tracking-wider uppercase text-slate-500 border-b border-slate-800 pb-1 flex items-center gap-1.5">
-                <Coffee className="w-3.5 h-3.5 text-amber-500" /> Beverage & Cocktail Bar
-              </div>
-              <div className="absolute top-3 right-6 text-[11px] font-bold tracking-wider uppercase text-slate-500 border-b border-slate-800 pb-1">
-                Panoramic Window View
-              </div>
-              <div className="absolute bottom-4 left-4 text-[11px] font-bold tracking-wider uppercase text-slate-500 border-t border-slate-800 pt-1">
-                Garden Terrace & Open Air
-              </div>
-              <div className="absolute bottom-4 right-6 text-[11px] font-bold tracking-wider uppercase text-slate-500 border-t border-slate-800 pt-1">
-                Private VIP Booths
-              </div>
-              <div className="absolute inset-x-0 bottom-1/2 text-center pointer-events-none">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-700">
-                  Main Dining Hall & Expeditor Passage
-                </span>
-              </div>
-
-              {/* Tables Positioned Absolutely in 2D Floor */}
-              {tables.map((tbl) => {
-                const isSelected = selectedTableForOrder?.id === tbl.id;
-                const statusColor =
-                  tbl.status === 'Vacant'
-                    ? 'border-emerald-500 text-emerald-400 bg-emerald-950/40 shadow-emerald-950/50'
-                    : tbl.status === 'Kitchen Cooking'
-                    ? 'border-amber-500 text-amber-400 bg-amber-950/40 animate-pulse shadow-amber-950/50'
-                    : tbl.status === 'Served'
-                    ? 'border-purple-500 text-purple-400 bg-purple-950/40 shadow-purple-950/50'
-                    : 'border-blue-500 text-blue-400 bg-blue-950/40 shadow-blue-950/50';
-
-                return (
-                  <div
-                    key={tbl.id}
-                    onClick={() => {
-                      setSelectedTableForOrder(tbl);
-                      setActiveTab('terminal');
-                    }}
-                    style={{
-                      left: `${tbl.x || 50}%`,
-                      top: `${tbl.y || 50}%`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                    className={`absolute p-2.5 cursor-pointer transition-all hover:scale-105 shadow-lg border-2 text-center flex flex-col items-center justify-center ${statusColor} ${
-                      tbl.shape === 'rect'
-                        ? 'rounded-xl w-36 h-20'
-                        : tbl.shape === 'booth'
-                        ? 'rounded-2xl w-40 h-22 border-dashed'
-                        : tbl.shape === 'bar'
-                        ? 'rounded-full w-20 h-20'
-                        : 'rounded-full w-28 h-28'
-                    } ${isSelected ? 'ring-4 ring-white ring-offset-2 ring-offset-slate-900' : ''}`}
-                  >
-                    <div className="font-bold text-xs text-white tracking-wide truncate max-w-full">
-                      {tbl.tableNumber}
-                    </div>
-                    <div className="text-[10px] opacity-80 mt-0.5">
-                      {tbl.capacity} Seats &middot; {tbl.status}
-                    </div>
-                    {tbl.currentBill && (
-                      <div className="mt-1 font-mono font-bold text-[11px] text-emerald-300 bg-slate-950/80 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                        {formatCurrency(tbl.currentBill)}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-
-              {/* Floorplan Legend */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-slate-950/90 border border-slate-800 rounded-full px-4 py-1.5 flex items-center gap-4 text-[10px] text-slate-300">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Vacant
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Seated
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" /> Kitchen Cooking
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-purple-500" /> Served / Tab Open
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Grid View Fallback */}
-          {floorplanView === 'grid' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {tables.map((tbl) => (
-                <div
-                  key={tbl.id}
-                  onClick={() => {
-                    setSelectedTableForOrder(tbl);
-                    setActiveTab('terminal');
-                  }}
-                  className={`p-4 rounded-xl border transition-all cursor-pointer shadow-2xs hover:shadow-md space-y-3 ${
-                    tbl.status === 'Vacant'
-                      ? 'bg-white border-slate-200 hover:border-emerald-400'
-                      : tbl.status === 'Kitchen Cooking'
-                      ? 'bg-amber-50/40 border-amber-200 hover:border-amber-400'
-                      : tbl.status === 'Served'
-                      ? 'bg-purple-50/40 border-purple-200 hover:border-purple-400'
-                      : 'bg-blue-50/40 border-blue-200 hover:border-blue-400'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-slate-900">{tbl.tableNumber}</span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        tbl.status === 'Vacant'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : tbl.status === 'Kitchen Cooking'
-                          ? 'bg-amber-100 text-amber-800'
-                          : tbl.status === 'Served'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}
-                    >
-                      {tbl.status}
-                    </span>
-                  </div>
-
-                  <div className="text-[11px] text-slate-500">
-                    {tbl.section} · {tbl.capacity} Seats
-                  </div>
-
-                  {tbl.currentBill && (
-                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-                      <span className="text-[10px] text-slate-500">Active Check:</span>
-                      <span className="font-bold text-xs text-slate-900">{formatCurrency(tbl.currentBill)}</span>
-                    </div>
-                  )}
-                  {tbl.server && (
-                    <div className="text-[10px] text-slate-400">Server: {tbl.server}</div>
-                  )}
-                </div>
+        {/* Outlet Switcher (9.1 Multi-Outlet) */}
+        <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/15">
+          <Store className="w-4 h-4 text-[#00a8ff]" />
+          <div className="flex flex-col text-left">
+            <span className="text-[10px] uppercase font-bold text-slate-300">Active Revenue Outlet</span>
+            <select
+              value={activeOutletId}
+              onChange={(e) => {
+                setSelectedOutletId(e.target.value);
+                setActiveCart([]);
+                setSelectedTableForOrder(null);
+              }}
+              className="bg-transparent text-xs font-black text-white focus:outline-hidden cursor-pointer"
+            >
+              {outlets.map((o) => (
+                <option key={o.id} value={o.id} className="text-slate-900">
+                  {o.outletName} ({o.outletType.toUpperCase()})
+                </option>
               ))}
-            </div>
-          )}
+            </select>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* TAB 2: TOUCH ORDER TERMINAL (9.1) */}
+      {/* 5-Tab Navigation Bar */}
+      <div className="flex items-center gap-1 bg-white p-1.5 rounded-xl border border-slate-200 overflow-x-auto shadow-2xs">
+        <button
+          type="button"
+          onClick={() => setActiveTab('terminal')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+            activeTab === 'terminal'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <Monitor className="w-4 h-4 text-[#00a8ff]" />
+          <span>9.1 Touchscreen POS Terminal</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('tables')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+            activeTab === 'tables'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <LayoutGrid className="w-4 h-4 text-[#00a8ff]" />
+          <span>9.2 Visual Floor Plan & Tables ({tablesList.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('kds')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+            activeTab === 'kds'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <Flame className="w-4 h-4 text-[#00a8ff]" />
+          <span>9.3 Kitchen Display System (KDS) ({kdsQueue.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('charge')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+            activeTab === 'charge'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <BedDouble className="w-4 h-4 text-[#00a8ff]" />
+          <span>9.4 Two-Way Room Folio Charge</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('shift')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+            activeTab === 'shift'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
+        >
+          <Receipt className="w-4 h-4 text-[#00a8ff]" />
+          <span>9.5 Cashier Shift & X/Z Balancing</span>
+        </button>
+      </div>
+
+      {/* =========================================================================
+          TAB 1: 9.1 TOUCHSCREEN POS TERMINAL
+          ========================================================================= */}
       {activeTab === 'terminal' && (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-          {/* Menu Catalog (Left Column) */}
-          <div className="md:col-span-8 bg-white border border-slate-200 rounded-lg p-5 shadow-2xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">
-                  Touch POS Terminal — {selectedTableForOrder?.tableNumber || 'Quick Order / Bar'}
-                </h3>
-                <p className="text-xs text-slate-500">Tap items to append to active dining order cart</p>
-              </div>
-              <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                Outlet: {selectedOutlet}
-              </span>
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-              {menuCategories.map((cat) => (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Menu Catalog (Left 8 Cols) */}
+          <div className="lg:col-span-8 space-y-4">
+            {/* Category Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {categoriesList.map((cat) => (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1 rounded-full font-medium transition-colors shrink-0 cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap cursor-pointer ${
                     selectedCategory === cat
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   {cat}
@@ -581,126 +550,172 @@ export default function PosEnterprisePage() {
             </div>
 
             {/* Menu Items Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-              {menuItems
-                .filter((item) => selectedCategory === 'All Items' || item.category === selectedCategory)
-                .map((dish) => (
-                  <button
-                    key={dish.id}
-                    onClick={() => addToCart(dish)}
-                    className="p-3 rounded-lg border border-slate-200 hover:border-blue-500 text-left bg-slate-50/50 hover:bg-blue-50/30 transition-all flex flex-col justify-between min-h-[90px] cursor-pointer"
+            {isLoadingOutletDetail ? (
+              <div className="p-16 flex flex-col items-center justify-center gap-3 bg-white rounded-2xl border border-slate-200">
+                <BeatLoader color="#22d3ee" size={16} speedMultiplier={1.2} />
+                <span className="text-xs text-slate-400">Loading live outlet menu from database...</span>
+              </div>
+            ) : filteredMenuItems.length === 0 ? (
+              <div className="p-16 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200">
+                No items available in this category.
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                {filteredMenuItems.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => addToCart(item)}
+                    className="p-3.5 bg-white border border-slate-200 rounded-xl hover:border-[#00a8ff] hover:shadow-md transition cursor-pointer flex flex-col justify-between group active:scale-98"
                   >
                     <div>
-                      <div className="font-bold text-xs text-slate-900 line-clamp-1">{dish.name}</div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">{dish.category}</div>
+                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-[#00a8ff] transition line-clamp-2">
+                        {item.itemName}
+                      </h4>
+                      {item.allergens && item.allergens.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {item.allergens.map((al) => (
+                            <span key={al} className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                              {al}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <div className="font-bold text-sm text-blue-600 mt-2">
-                      {formatCurrency(dish.price)}
+
+                    <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-black text-slate-900">
+                        {formatCurrency(item.price)}
+                      </span>
+                      <span className="w-6 h-6 rounded-md bg-sky-50 text-[#00a8ff] flex items-center justify-center group-hover:bg-[#00a8ff] group-hover:text-white transition">
+                        <Plus className="w-3.5 h-3.5" />
+                      </span>
                     </div>
-                  </button>
+                  </div>
                 ))}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* Active Cart & Check Settle (Right Column) */}
-          <div className="md:col-span-4 bg-white border border-slate-200 rounded-lg p-5 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between border-b pb-3">
-              <div>
-                <h4 className="font-bold text-xs text-slate-900">Active Order Check</h4>
-                <p className="text-[10px] text-slate-500">
-                  {selectedTableForOrder?.tableNumber || 'Walk-in Bar Tab'}
-                </p>
-              </div>
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => setActiveCart([])}
-                className="text-rose-600 text-[10px]"
-              >
-                Clear Tab
-              </Button>
-            </div>
-
-            <div className="space-y-2 max-h-60 overflow-y-auto divide-y divide-slate-100 text-xs">
-              {activeCart.length === 0 ? (
-                <div className="py-8 text-center text-slate-400 text-xs">
-                  Tab is empty. Tap menu items to add to order.
+          {/* Active Order Cart (Right 4 Cols) */}
+          <div className="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <Receipt className="w-5 h-5 text-[#00a8ff]" />
+                  <h3 className="font-bold text-sm text-slate-900">Current Check</h3>
                 </div>
-              ) : (
-                activeCart.map((item) => (
-                  <div key={item.id} className="pt-2 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-slate-900">{item.name}</div>
-                      <div className="text-[10px] text-slate-500">
-                        {item.qty} &times; {formatCurrency(item.price)}
+                {selectedTableForOrder ? (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-sky-50 text-[#00a8ff] border border-sky-200">
+                    {selectedTableForOrder.tableNumber}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-slate-400">Quick Order</span>
+                )}
+              </div>
+
+              {/* Server & Table assignment */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Server</label>
+                  <input
+                    type="text"
+                    value={serverName}
+                    onChange={(e) => setServerName(e.target.value)}
+                    className="w-full text-xs p-1.5 border border-slate-200 rounded-md font-medium text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Guests</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={guestCount}
+                    onChange={(e) => setGuestCount(parseInt(e.target.value) || 1)}
+                    className="w-full text-xs p-1.5 border border-slate-200 rounded-md font-bold text-slate-800"
+                  />
+                </div>
+              </div>
+
+              {/* Cart Items List */}
+              <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 pr-1">
+                {activeCart.length === 0 ? (
+                  <div className="py-12 text-center text-xs text-slate-400">
+                    Cart is empty. Tap menu items on the left to ring up check.
+                  </div>
+                ) : (
+                  activeCart.map((item) => (
+                    <div key={item.id} className="py-2.5 flex items-center justify-between text-xs">
+                      <div className="flex-1 pr-2">
+                        <div className="font-bold text-slate-900 truncate">{item.name}</div>
+                        <div className="text-[11px] text-slate-500">
+                          {formatCurrency(item.price)} each
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => updateCartQty(item.id, -1)}
+                          className="w-5 h-5 rounded bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 cursor-pointer"
+                        >
+                          -
+                        </button>
+                        <span className="font-bold text-slate-900 w-4 text-center">{item.qty}</span>
+                        <button
+                          type="button"
+                          onClick={() => updateCartQty(item.id, 1)}
+                          className="w-5 h-5 rounded bg-slate-100 text-slate-600 flex items-center justify-center font-bold hover:bg-slate-200 cursor-pointer"
+                        >
+                          +
+                        </button>
+                        <span className="font-black text-slate-900 w-16 text-right">
+                          {formatCurrency(item.price * item.qty)}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-slate-900">
-                        {formatCurrency(item.price * item.qty)}
-                      </span>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="text-slate-400 hover:text-rose-600"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Subtotals & Taxes */}
-            <div className="pt-3 border-t border-slate-200 space-y-1.5 text-xs text-slate-600">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="font-mono">{formatCurrency(cartSubtotal)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Hospitality VAT (10%)</span>
-                <span className="font-mono">{formatCurrency(cartVat)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Service Charge (10%)</span>
-                <span className="font-mono text-emerald-600">+{formatCurrency(cartService)}</span>
-              </div>
-              <div className="flex justify-between pt-2 border-t font-black text-slate-900 text-base">
-                <span>Grand Total</span>
-                <span className="text-blue-600">{formatCurrency(cartGrandTotal)}</span>
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="space-y-2 pt-2">
-              <Button
-                onClick={handleFireToKitchen}
-                disabled={activeCart.length === 0}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer"
-              >
-                <Flame className="w-3.5 h-3.5 mr-1" /> Send to Kitchen (KDS)
-              </Button>
-              <div className="grid grid-cols-2 gap-2">
+            {/* Bill Summary & Actions */}
+            <div className="pt-3 border-t border-slate-100 space-y-2 text-xs">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal:</span>
+                <span className="font-bold text-slate-800">{formatCurrency(cartSubtotal)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Service Charge (10%):</span>
+                <span className="font-bold text-slate-800">{formatCurrency(cartServiceCharge)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>State Dining Tax (5%):</span>
+                <span className="font-bold text-slate-800">{formatCurrency(cartTax)}</span>
+              </div>
+              <div className="flex justify-between text-base font-black text-slate-900 border-t border-slate-200 pt-2">
+                <span>Total Due:</span>
+                <span className="text-[#00a8ff]">{formatCurrency(cartGrandTotal)}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-2">
                 <Button
-                  onClick={() => {
-                    setActiveTab('charge');
-                    setChargeAmount(cartGrandTotal.toFixed(2));
-                  }}
-                  disabled={activeCart.length === 0}
-                  variant="outline"
-                  className="text-[11px] bg-white cursor-pointer"
+                  type="button"
+                  onClick={() => createOrderMutation.mutate()}
+                  disabled={activeCart.length === 0 || createOrderMutation.isPending}
+                  className="bg-slate-900 hover:bg-black text-white font-bold text-xs"
                 >
-                  <BedDouble className="w-3 h-3 mr-1 text-blue-600" /> Folio Charge
+                  <Flame className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" />
+                  <span>Fire to KDS</span>
                 </Button>
+
                 <Button
-                  onClick={() => {
-                    triggerBanner(`Printed customer dining check for ${formatCurrency(cartGrandTotal)}!`);
-                  }}
-                  disabled={activeCart.length === 0}
-                  variant="outline"
-                  className="text-[11px] bg-white cursor-pointer"
+                  type="button"
+                  onClick={() => setIsSettleOpen(true)}
+                  disabled={activeCart.length === 0 || createOrderMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold text-xs shadow-xs"
                 >
-                  <Printer className="w-3 h-3 mr-1 text-slate-600" /> Print Check
+                  <CreditCard className="w-3.5 h-3.5 mr-1" />
+                  <span>Settle Bill</span>
                 </Button>
               </div>
             </div>
@@ -708,272 +723,865 @@ export default function PosEnterprisePage() {
         </div>
       )}
 
-      {/* TAB 3: KITCHEN DISPLAY SYSTEM (9.2) */}
+      {/* =========================================================================
+          TAB 2: 9.2 VISUAL DINING TABLE MANAGEMENT & FLOOR PLANS
+          ========================================================================= */}
+      {activeTab === 'tables' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                <span className="text-slate-600 font-medium">Vacant</span>
+                <span className="w-3 h-3 rounded-full bg-sky-500 ml-2" />
+                <span className="text-slate-600 font-medium">Seated</span>
+                <span className="w-3 h-3 rounded-full bg-amber-500 ml-2" />
+                <span className="text-slate-600 font-medium">Cooking</span>
+                <span className="w-3 h-3 rounded-full bg-yellow-400 ml-2" />
+                <span className="text-slate-600 font-medium">Served</span>
+                <span className="w-3 h-3 rounded-full bg-purple-500 ml-2" />
+                <span className="text-slate-600 font-medium">Check Printed</span>
+                <span className="w-3 h-3 rounded-full bg-slate-400 ml-2" />
+                <span className="text-slate-600 font-medium">Cleaning</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsTransferTableOpen(true)}
+                className="text-xs font-bold"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" /> Transfer Table
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsMergeTablesOpen(true)}
+                className="text-xs font-bold"
+              >
+                <Split className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" /> Merge Tables
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setIsAddTableOpen(true)}
+                className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold text-xs"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> + Add Table
+              </Button>
+            </div>
+          </div>
+
+          {/* Interactive Table Canvas */}
+          <div className="relative w-full h-[520px] bg-slate-100/80 border border-slate-200 rounded-2xl overflow-hidden p-6 shadow-inner">
+            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+
+            {tablesList.map((t) => {
+              const statusColor =
+                t.status === 'vacant'
+                  ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
+                  : t.status === 'seated'
+                  ? 'border-sky-500 bg-sky-50 text-sky-900'
+                  : t.status === 'cooking'
+                  ? 'border-amber-500 bg-amber-50 text-amber-900'
+                  : t.status === 'dining'
+                  ? 'border-yellow-400 bg-yellow-50 text-yellow-900'
+                  : t.status === 'check_printed'
+                  ? 'border-purple-500 bg-purple-50 text-purple-900'
+                  : 'border-slate-400 bg-slate-100 text-slate-700';
+
+              return (
+                <div
+                  key={t.id}
+                  style={{ left: `${t.posX}%`, top: `${t.posY}%` }}
+                  onClick={() => {
+                    setSelectedTableForOrder(t);
+                    setActiveTab('terminal');
+                    showToast(`Selected ${t.tableNumber} for ordering.`);
+                  }}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 p-3.5 rounded-2xl border-2 shadow-sm transition-transform hover:scale-108 cursor-pointer ${statusColor}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-black text-xs">{t.tableNumber}</span>
+                    <span className="text-[10px] font-bold opacity-75">{t.seatingCap}p</span>
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-90">
+                    {t.status}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 3: 9.3 KITCHEN DISPLAY SYSTEM (KDS) & ORDER ROUTING
+          ========================================================================= */}
       {activeTab === 'kds' && (
         <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Monitor className="w-4 h-4 text-blue-600" /> Real-Time Kitchen Display System (KDS) Order Routing
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Multi-station display: Grill, Salad/Pantry, Pizza Oven & Beverage. Overdue timers alert automatically.
-              </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Flame className="w-5 h-5 text-amber-500" />
+              <h3 className="font-bold text-sm text-slate-900">Real-Time Kitchen Display System (KDS)</h3>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                {kdsQueue.length} Active Tickets
+              </span>
             </div>
-            <Badge variant="outline" className="border-blue-300 text-blue-800 bg-blue-50">
-              Live WebSocket Stream Connected
-            </Badge>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => refetchKds()}
+              className="text-xs font-semibold cursor-pointer"
+            >
+              <Clock className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" /> Refresh Queue
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {kdsTickets.map((ticket) => (
-              <div
-                key={ticket.orderId}
-                className="p-4 bg-white border border-slate-200 rounded-xl shadow-2xs space-y-3"
-              >
-                <div className="flex items-center justify-between border-b pb-2">
-                  <div>
-                    <span className="font-mono font-bold text-xs text-slate-900">{ticket.orderId}</span>
-                    <div className="font-bold text-sm text-blue-600">{ticket.table}</div>
-                  </div>
-                  <div className="text-right">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
-                      {ticket.elapsedMinutes} mins elapsed
-                    </span>
-                    <div className="text-[10px] text-slate-400 mt-0.5">{ticket.station}</div>
-                  </div>
-                </div>
-
-                <ul className="space-y-2 text-xs text-slate-800 py-1">
-                  {ticket.items.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
-                      <span className="font-medium">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-500">Status: {ticket.status}</span>
-                  <Button
-                    size="xs"
-                    onClick={() => {
-                      setKdsTickets(kdsTickets.filter((t) => t.orderId !== ticket.orderId));
-                      triggerBanner(`Order ${ticket.orderId} marked ready for pickup! Expeditor notified.`);
-                    }}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px]"
+          {isLoadingKds ? (
+            <div className="p-16 flex flex-col items-center justify-center gap-3 bg-white rounded-2xl border border-slate-200">
+              <BeatLoader color="#22d3ee" size={16} speedMultiplier={1.2} />
+              <span className="text-xs text-slate-400">Loading KDS live orders from PostgreSQL...</span>
+            </div>
+          ) : kdsQueue.length === 0 ? (
+            <div className="p-16 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200">
+              Kitchen queue is currently clear. No pending tickets.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {kdsQueue.map((ticket) => {
+                const isDelayed = ticket.isDelayedAlert || ticket.waitTimeMinutes >= 15;
+                return (
+                  <div
+                    key={ticket.id}
+                    className={`bg-white border-2 rounded-2xl p-5 shadow-sm space-y-3 transition-all ${
+                      isDelayed
+                        ? 'border-rose-500 ring-2 ring-rose-400/50 animate-pulse'
+                        : 'border-slate-200'
+                    }`}
                   >
-                    <Check className="w-3 h-3 mr-1" /> Mark Order Ready
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+                    {/* Ticket Header */}
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-black text-sm text-slate-900">
+                            {ticket.ticketNumber}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-sky-50 text-[#00a8ff] font-bold text-[10px]">
+                            {ticket.order?.table?.tableNumber || 'Takeout / In-Room'}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-500 font-medium block mt-0.5">
+                          Station: {ticket.station?.stationName || 'Expo / Grill'}
+                        </span>
+                      </div>
+
+                      {/* Elapsed Timer Badge (Section 9.3) */}
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-black flex items-center gap-1 ${
+                          isDelayed
+                            ? 'bg-rose-500 text-white shadow-md'
+                            : 'bg-amber-100 text-amber-900'
+                        }`}
+                      >
+                        <Clock className="w-3 h-3" />
+                        <span>{ticket.waitTimeMinutes}m wait</span>
+                      </span>
+                    </div>
+
+                    {/* Delay Banner if >= 15 minutes */}
+                    {isDelayed && (
+                      <div className="p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                        <span>DELAY ALERT: Waiting &gt; 15 mins! Notify Sous Chef.</span>
+                      </div>
+                    )}
+
+                    {/* Items List */}
+                    <div className="divide-y divide-slate-100 py-1 text-xs">
+                      {ticket.order?.items?.map((item) => (
+                        <div key={item.id} className="py-1.5">
+                          <div className="font-bold text-slate-900">
+                            {item.quantity}x {item.itemName}
+                          </div>
+                          {item.notes && (
+                            <div className="text-[11px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                              {item.notes}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Status Bump Action */}
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase text-slate-400">
+                        Status: <span className="text-slate-900">{ticket.status}</span>
+                      </span>
+
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          const nextStatus =
+                            ticket.status === 'queued'
+                              ? 'cooking'
+                              : ticket.status === 'cooking'
+                              ? 'ready'
+                              : 'served';
+                          bumpKdsMutation.mutate({ ticketId: ticket.id, status: nextStatus as any });
+                        }}
+                        className="bg-slate-900 hover:bg-black text-white font-bold text-[11px] cursor-pointer"
+                      >
+                        <span>Bump to {ticket.status === 'queued' ? 'Cooking' : ticket.status === 'cooking' ? 'Ready' : 'Served'}</span>
+                        <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
-      {/* TAB 4: ROOM FOLIO CHARGE (9.4) */}
+      {/* =========================================================================
+          TAB 4: 9.4 TWO-WAY ROOM CHARGE & FOLIO INTEGRATION
+          ========================================================================= */}
       {activeTab === 'charge' && (
-        <div className="max-w-lg mx-auto bg-white border border-slate-200 rounded-xl p-6 shadow-2xs space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <BedDouble className="w-4 h-4 text-blue-600" /> Two-Way Guest Room Folio Charge Settlement (9.4)
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Instantly verifies active checked-in guest room, checks credit limit and posts dining check.
+        <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
+          <div className="space-y-1 border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-2">
+              <BedDouble className="w-5 h-5 text-[#00a8ff]" />
+              <h3 className="font-bold text-base text-slate-900">Guest Room Folio Charge Verification (9.4)</h3>
+            </div>
+            <p className="text-xs text-slate-500">
+              Two-way PMS lookup: verify guest occupancy, credit authorization, and capture digital signature directly on screen.
             </p>
           </div>
 
-          <form onSubmit={handleChargeToRoom} className="space-y-4 text-xs">
-            <div>
-              <label className="block text-slate-700 font-semibold mb-1">Occupied Room Number *</label>
+          {/* Step 1: Verify Room */}
+          <div className="space-y-3">
+            <label className="font-bold text-xs text-slate-700 block">Enter Guest Room Number</label>
+            <div className="flex gap-2">
               <input
                 type="text"
-                required
-                placeholder="e.g. 402"
-                value={chargeRoomNumber}
-                onChange={(e) => setChargeRoomNumber(e.target.value)}
-                className="w-full h-9 px-3 text-xs border border-slate-200 rounded focus:border-blue-500 font-mono"
+                placeholder="e.g. 302, 402, 502"
+                value={roomNumberInput}
+                onChange={(e) => setRoomNumberInput(e.target.value)}
+                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold text-slate-900"
               />
+              <Button
+                type="button"
+                onClick={handleVerifyRoom}
+                disabled={isVerifyingRoom}
+                className="bg-slate-900 hover:bg-black text-white font-bold text-xs"
+              >
+                {isVerifyingRoom ? 'Verifying...' : 'Verify Occupancy'}
+              </Button>
             </div>
+          </div>
 
+          {/* Step 2: Verification Result */}
+          {roomVerification && (
+            <div className={`p-4 rounded-xl border text-xs space-y-2 ${
+              roomVerification.isOccupied
+                ? 'bg-emerald-50/50 border-emerald-200'
+                : 'bg-rose-50 border-rose-200'
+            }`}>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-900">
+                  Room #{roomVerification.roomNumber} Status:
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  roomVerification.isOccupied
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-rose-100 text-rose-800'
+                }`}>
+                  {roomVerification.isOccupied ? 'ACTIVE OCCUPANCY' : 'VACANT'}
+                </span>
+              </div>
+
+              {roomVerification.isOccupied && (
+                <>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Primary Guest:</span>
+                    <span className="font-bold text-slate-900">{roomVerification.guestName}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>VIP Loyalty Tier:</span>
+                    <span className="font-bold text-[#00a8ff]">{roomVerification.vipStatus}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Credit Limit Authorized:</span>
+                    <span className="font-bold text-emerald-700">{formatCurrency(roomVerification.creditLimit || 2500)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Current Folio Balance:</span>
+                    <span className="font-bold text-slate-900">{formatCurrency(roomVerification.currentBalanceDue || 0)}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Step 3: Amount & Digital Signature */}
+          <div className="space-y-4 pt-2">
             <div>
-              <label className="block text-slate-700 font-semibold mb-1">Bill Amount ($) *</label>
+              <label className="font-bold text-xs text-slate-700 block mb-1">Charge Amount ($)</label>
               <input
                 type="number"
                 step="0.01"
-                required
-                placeholder="0.00"
-                value={chargeAmount}
-                onChange={(e) => setChargeAmount(e.target.value)}
-                className="w-full h-9 px-3 text-xs border border-slate-200 rounded focus:border-blue-500 font-mono"
+                value={chargeAmountInput}
+                onChange={(e) => setChargeAmountInput(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-black text-slate-900"
               />
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-3 bg-white">
+            {/* Digital Signature Canvas */}
+            <div className="space-y-1.5">
+              <label className="font-bold text-xs text-slate-700 block">Guest Digital Signature (Section 9.4)</label>
               <SignaturePad
-                label="Guest Signature Authorization (PDF 9.4 Folio Audit)"
-                required={true}
-                height={120}
-                onSave={(sig) => setPosSignatureData(sig)}
+                onSave={(dataUrl) => setPosSignatureData(dataUrl)}
                 onClear={() => setPosSignatureData('')}
+                height={120}
               />
             </div>
 
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded text-blue-800 text-[11px] space-y-1">
-              <div className="font-bold">Automated Integrity Check:</div>
-              <div>&bull; Verifies guest status is currently CHECKED_IN</div>
-              <div>&bull; Cross-checks credit card pre-authorization limit</div>
-              <div>&bull; Generates signature audit voucher on guest folio</div>
-            </div>
-
             <Button
-              type="submit"
-              disabled={isCharging}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer"
+              type="button"
+              onClick={() => chargeToRoomMutation.mutate()}
+              disabled={!roomVerification?.isOccupied || !posSignatureData || chargeToRoomMutation.isPending}
+              className="w-full py-2.5 bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold text-xs cursor-pointer shadow-xs"
             >
-              {isCharging ? 'Validating & Posting...' : 'Authorize & Post Charge to Guest Folio'}
+              {chargeToRoomMutation.isPending ? 'Posting Folio Charge...' : 'Authorize & Post Charge to Guest Room Folio'}
             </Button>
-          </form>
+          </div>
         </div>
       )}
 
-      {/* TAB 5: CASHIER SHIFT X/Z REPORT (9.5) */}
+      {/* =========================================================================
+          TAB 5: 9.5 CASHIER SHIFT MANAGEMENT & END-OF-DAY BALANCING
+          ========================================================================= */}
       {activeTab === 'shift' && (
-        <div className="max-w-2xl mx-auto bg-white border border-slate-200 rounded-xl p-6 shadow-2xs space-y-5 text-xs">
-          <div className="flex items-center justify-between border-b pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-blue-600" /> Cashier Shift Reconciliation & X/Z Settlement (9.5)
-              </h3>
-              <p className="text-slate-500 text-[11px]">Active Drawer Register: {shiftData.cashierName}</p>
-            </div>
-            <Badge variant="outline" className="border-emerald-300 text-emerald-800 bg-emerald-50">
-              Shift Status: {shiftData.status}
-            </Badge>
-          </div>
+        <div className="space-y-5">
+          {/* Active Shift Overview Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[10px] font-bold text-[#00a8ff] uppercase tracking-wider block">
+                  Active Terminal: {activeTerminal?.deviceSerial || 'POS-REST-02'}
+                </span>
+                <h3 className="font-black text-lg text-slate-900">
+                  {activeShift ? `Shift Active: ${activeShift.cashierName}` : 'No Active Cashier Shift Open'}
+                </h3>
+                <span className="text-xs text-slate-500">
+                  {activeShift ? `Opened: ${new Date(activeShift.startedAt).toLocaleTimeString()}` : 'Please open register before transactions.'}
+                </span>
+              </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <span className="text-[10px] text-slate-400 block uppercase">Opening Float</span>
-              <span className="font-bold font-mono text-slate-800">{formatCurrency(shiftData.openingFloat)}</span>
-            </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <span className="text-[10px] text-slate-400 block uppercase">Cash Sales Collected</span>
-              <span className="font-bold font-mono text-emerald-600">{formatCurrency(shiftData.cashSales)}</span>
-            </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <span className="text-[10px] text-slate-400 block uppercase">Credit Card Settlements</span>
-              <span className="font-bold font-mono text-blue-600">{formatCurrency(shiftData.cardSettlements)}</span>
-            </div>
-            <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <span className="text-[10px] text-slate-400 block uppercase">Direct Room Folio Postings</span>
-              <span className="font-bold font-mono text-purple-600">{formatCurrency(shiftData.roomCharges)}</span>
-            </div>
-          </div>
+              <div className="flex items-center gap-2">
+                {!activeShift ? (
+                  <Button
+                    size="sm"
+                    onClick={() => setIsOpenShiftModalOpen(true)}
+                    className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold text-xs shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Open Cashier Shift ($500 Float)
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsCashDropOpen(true)}
+                      className="text-xs font-bold"
+                    >
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" /> Mid-Day Safe Drop
+                    </Button>
 
-          <div className="p-3 bg-blue-50/50 border border-blue-200 rounded flex justify-between items-center text-sm font-bold text-slate-900">
-            <span>Total Shift Gross Turnover:</span>
-            <span className="text-blue-600">{formatCurrency(shiftData.totalGrossRevenue)}</span>
-          </div>
+                    <Button
+                      size="sm"
+                      onClick={handleGenerateXReport}
+                      className="bg-slate-900 hover:bg-black text-white font-bold text-xs"
+                    >
+                      <Printer className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" /> X-Report Snapshot
+                    </Button>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePrintXZReport('X')}
-              className="text-xs bg-white cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5 mr-1" /> Print Mid-Shift X-Report
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => handlePrintXZReport('Z')}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Execute End-of-Day Z-Close
-            </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => setIsZReportOpen(true)}
+                      className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs"
+                    >
+                      <Receipt className="w-3.5 h-3.5 mr-1" /> Close Register & Z-Report
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Shift Stats */}
+            {activeShift && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-1">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Starting Drawer Float</span>
+                  <span className="text-base font-black text-slate-900">{formatCurrency(activeShift.openingFloat)}</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Cash Drops to Safe</span>
+                  <span className="text-base font-black text-slate-900">
+                    {formatCurrency((activeShift.cashDrops || []).reduce((acc, d) => acc + d.amount, 0))}
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Drawer Status</span>
+                  <span className="text-base font-black text-emerald-600">OPEN & BALANCED</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] font-bold uppercase text-slate-400 block">Active Cashier</span>
+                  <span className="text-base font-black text-slate-900">{activeShift.cashierName.split(' ')[0]}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* MODAL: ADD DINING TABLE */}
+      {/* =========================================================================
+          MODALS
+          ========================================================================= */}
+
+      {/* Settle Bill Modal */}
+      {isSettleOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900">Settle POS Dining Check</h3>
+              <button onClick={() => setIsSettleOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4 text-xs">
+              <div className="p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-between">
+                <span className="font-bold text-slate-700">Total Check Amount:</span>
+                <span className="text-lg font-black text-[#00a8ff]">{formatCurrency(cartGrandTotal)}</span>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-bold text-slate-700 block">Select Tender Payment Method</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => createOrderMutation.mutate({ paymentMode: 'cash' })}
+                    className="p-3 rounded-xl border-2 border-slate-200 hover:border-[#00a8ff] text-center font-bold text-slate-800 transition cursor-pointer hover:bg-slate-50"
+                  >
+                    <DollarSign className="w-5 h-5 mx-auto mb-1 text-emerald-600" />
+                    <span>Cash</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => createOrderMutation.mutate({ paymentMode: 'card' })}
+                    className="p-3 rounded-xl border-2 border-slate-200 hover:border-[#00a8ff] text-center font-bold text-slate-800 transition cursor-pointer hover:bg-slate-50"
+                  >
+                    <CreditCard className="w-5 h-5 mx-auto mb-1 text-[#00a8ff]" />
+                    <span>Credit Card</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSettleOpen(false);
+                      setChargeAmountInput(cartGrandTotal.toFixed(2));
+                      setActiveTab('charge');
+                    }}
+                    className="p-3 rounded-xl border-2 border-slate-200 hover:border-[#00a8ff] text-center font-bold text-slate-800 transition cursor-pointer hover:bg-slate-50"
+                  >
+                    <BedDouble className="w-5 h-5 mx-auto mb-1 text-purple-600" />
+                    <span>Room Charge</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Table Modal */}
       {isAddTableOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <LayoutGrid className="w-4 h-4 text-blue-600" /> Add Dining Table
-              </h3>
-              <button onClick={() => setIsAddTableOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900">Add Dining Table</h3>
+              <button onClick={() => setIsAddTableOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (!newTableInput.tableNumber) return;
-                setTables([
-                  ...tables,
-                  {
-                    id: `t-${Date.now()}`,
-                    tableNumber: newTableInput.tableNumber,
-                    section: newTableInput.section,
-                    capacity: Number(newTableInput.capacity),
-                    status: 'Vacant',
-                  },
-                ]);
-                setIsAddTableOpen(false);
-                triggerBanner(`Created table ${newTableInput.tableNumber}`);
+                createTableMutation.mutate();
               }}
-              className="p-5 space-y-4 text-xs"
+              className="p-5 space-y-3 text-xs"
             >
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">Table Label / Identifier *</label>
+                <label className="font-bold text-slate-700 block mb-1">Table Number</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Table T-09"
-                  value={newTableInput.tableNumber}
-                  onChange={(e) => setNewTableInput({ ...newTableInput, tableNumber: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
+                  placeholder="Table T-07"
+                  value={newTable.tableNumber}
+                  onChange={(e) => setNewTable({ ...newTable, tableNumber: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Floor Section</label>
-                  <select
-                    value={newTableInput.section}
-                    onChange={(e) => setNewTableInput({ ...newTableInput, section: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  >
-                    <option value="Main Dining">Main Dining</option>
-                    <option value="Window View">Window View</option>
-                    <option value="Outdoor Terrace">Outdoor Terrace</option>
-                    <option value="VIP Lounge">VIP Lounge</option>
-                    <option value="Beverage Bar">Beverage Bar</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Seating Capacity</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={newTableInput.capacity}
-                    onChange={(e) => setNewTableInput({ ...newTableInput, capacity: Number(e.target.value) })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Seating Capacity</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={newTable.seatingCap}
+                  onChange={(e) => setNewTable({ ...newTable, seatingCap: parseInt(e.target.value) || 2 })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold"
+                />
               </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => setIsAddTableOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 text-white">
-                  Add Table to Floorplan
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={createTableMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold"
+                >
+                  Save Table
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Transfer Table Modal */}
+      {isTransferTableOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900">Transfer Table Party</h3>
+              <button onClick={() => setIsTransferTableOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                transferTableMutation.mutate();
+              }}
+              className="p-5 space-y-3 text-xs"
+            >
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Origin Table</label>
+                <select
+                  required
+                  value={transferState.sourceTableId}
+                  onChange={(e) => setTransferState({ ...transferState, sourceTableId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"
+                >
+                  <option value="">-- From Table --</option>
+                  {tablesList.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.tableNumber} ({t.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Destination Table (Must be vacant)</label>
+                <select
+                  required
+                  value={transferState.targetTableId}
+                  onChange={(e) => setTransferState({ ...transferState, targetTableId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"
+                >
+                  <option value="">-- To Table --</option>
+                  {tablesList.filter((t) => t.status === 'vacant').map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.tableNumber} (Vacant)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsTransferTableOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={transferTableMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold"
+                >
+                  Transfer Party
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Open Shift Modal */}
+      {isOpenShiftModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900">Open Cashier Shift</h3>
+              <button onClick={() => setIsOpenShiftModalOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                openShiftMutation.mutate();
+              }}
+              className="p-5 space-y-3 text-xs"
+            >
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Starting Cash Float ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  required
+                  value={openShiftFloat}
+                  onChange={(e) => setOpenShiftFloat(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-black text-slate-900"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsOpenShiftModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={openShiftMutation.isPending}
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white font-bold"
+                >
+                  Open Register
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Safe Cash Drop Modal */}
+      {isCashDropOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900">Record Mid-Day Safe Cash Drop</h3>
+              <button onClick={() => setIsCashDropOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                cashDropMutation.mutate();
+              }}
+              className="p-5 space-y-3 text-xs"
+            >
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Cash Drop Amount ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  required
+                  value={cashDropInput.amount}
+                  onChange={(e) => setCashDropInput({ ...cashDropInput, amount: parseFloat(e.target.value) || 0 })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-black text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Reason / Safe Drop Envelope #</label>
+                <input
+                  type="text"
+                  required
+                  value={cashDropInput.reason}
+                  onChange={(e) => setCashDropInput({ ...cashDropInput, reason: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsCashDropOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={cashDropMutation.isPending}
+                  className="bg-slate-900 hover:bg-black text-white font-bold"
+                >
+                  Record Drop
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* X-Report Modal */}
+      {isXReportOpen && xReportData && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2">
+                <Printer className="w-4 h-4 text-[#00a8ff]" />
+                <h3 className="font-bold text-sm text-slate-900">Official Mid-Shift X-Report</h3>
+              </div>
+              <button onClick={() => setIsXReportOpen(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-5 space-y-3 text-xs font-mono">
+              <div className="text-center pb-2 border-b border-slate-200">
+                <div className="font-black text-sm">OMNISTAY LUXURY PMS</div>
+                <div className="text-[10px] text-slate-500">X-REPORT MID-SHIFT AUDIT SNAPSHOT</div>
+                <div className="text-[10px] text-slate-400 mt-1">Cashier: {xReportData.cashierName}</div>
+              </div>
+
+              <div className="space-y-1 text-slate-700">
+                <div className="flex justify-between">
+                  <span>Starting Float:</span>
+                  <span>{formatCurrency(xReportData.openingFloat)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Cash Sales:</span>
+                  <span>{formatCurrency(xReportData.salesBreakdown.cashTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Credit Card Sales:</span>
+                  <span>{formatCurrency(xReportData.salesBreakdown.cardTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Room Charges:</span>
+                  <span>{formatCurrency(xReportData.salesBreakdown.roomChargeTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Safe Cash Drops:</span>
+                  <span className="text-rose-600">-{formatCurrency(xReportData.cashDropsTotal)}</span>
+                </div>
+                <div className="flex justify-between font-black border-t border-slate-300 pt-1 text-slate-900">
+                  <span>Expected Drawer Cash:</span>
+                  <span>{formatCurrency(xReportData.expectedDrawerCash)}</span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                onClick={() => setIsXReportOpen(false)}
+                className="w-full bg-slate-900 hover:bg-black text-white font-bold font-sans mt-3"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Z-Report Modal */}
+      {isZReportOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2">
+                <Receipt className="w-4 h-4 text-rose-500" />
+                <h3 className="font-bold text-sm text-slate-900">End-of-Day Z-Report Shift Closure</h3>
+              </div>
+              <button onClick={() => { setIsZReportOpen(false); setZReportData(null); }} className="text-slate-400 hover:text-slate-700">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 text-xs font-mono">
+              {!zReportData ? (
+                <>
+                  <p className="font-sans text-slate-500">
+                    Enter physical cash counted in drawer to balance and permanently close register shift.
+                  </p>
+                  <div>
+                    <label className="font-bold font-sans text-slate-700 block mb-1">Physical Cash Counted ($)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required
+                      value={closingPhysicalCash}
+                      onChange={(e) => setClosingPhysicalCash(parseFloat(e.target.value) || 0)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-black text-slate-900"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => closeZReportMutation.mutate()}
+                    disabled={closeZReportMutation.isPending}
+                    className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold font-sans"
+                  >
+                    {closeZReportMutation.isPending ? 'Closing Register...' : 'Close Shift & Print Official Z-Report'}
+                  </Button>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="text-center pb-2 border-b border-slate-200">
+                    <div className="font-black text-sm">OMNISTAY LUXURY PMS</div>
+                    <div className="text-[10px] text-slate-500">PERMANENT Z-REPORT SHIFT CLOSURE</div>
+                    <div className="text-[10px] text-slate-400 mt-1">Closed At: {new Date(zReportData.closedAt).toLocaleTimeString()}</div>
+                  </div>
+
+                  <div className="space-y-1 text-slate-700">
+                    <div className="flex justify-between">
+                      <span>Total Sales:</span>
+                      <span>{formatCurrency(zReportData.salesBreakdown.totalSales)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Expected Drawer Cash:</span>
+                      <span>{formatCurrency(zReportData.expectedDrawerCash)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Actual Drawer Cash:</span>
+                      <span>{formatCurrency(zReportData.actualDrawerCash)}</span>
+                    </div>
+                    <div className="flex justify-between font-black border-t border-slate-300 pt-1 text-slate-900">
+                      <span>Variance / Discrepancy:</span>
+                      <span className={zReportData.discrepancy === 0 ? 'text-emerald-600' : 'text-rose-600'}>
+                        {formatCurrency(zReportData.discrepancy)} ({zReportData.balancingStatus.toUpperCase()})
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={() => { setIsZReportOpen(false); setZReportData(null); }}
+                    className="w-full bg-slate-900 hover:bg-black text-white font-bold font-sans mt-3"
+                  >
+                    Close
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

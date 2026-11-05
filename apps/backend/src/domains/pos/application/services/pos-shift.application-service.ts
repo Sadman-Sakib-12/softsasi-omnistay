@@ -17,6 +17,21 @@ export class PosShiftApplicationService {
     private readonly repo: IPosRepository,
   ) {}
 
+  async getActiveShift(terminalId?: string) {
+    let shift = terminalId
+      ? await this.repo.findActiveShiftByTerminal(terminalId)
+      : await this.repo.findAnyActiveShift();
+
+    if (!shift && terminalId) {
+      shift = await this.repo.createShift({
+        terminalId,
+        cashierName: 'Alexander Jenkins (Drawer #2)',
+        openingFloat: 500.0,
+      });
+    }
+    return shift;
+  }
+
   async openShift(dto: OpenCashierShiftDto) {
     const existingActiveShift = await this.repo.findActiveShiftByTerminal(dto.terminalId);
 

@@ -1,10 +1,11 @@
 export const POS_REPOSITORY_TOKEN = Symbol('IPosRepository');
 
 export interface IPosRepository {
-  // Outlets & Tables
+  // Outlets, Terminals & Tables
   createOutlet(data: any): Promise<any>;
   findOutlets(tenantId: string): Promise<any[]>;
   findOutletById(tenantId: string, id: string): Promise<any | null>;
+  createTerminal(data: any): Promise<any>;
   createTable(data: any): Promise<any>;
   findTableById(id: string): Promise<any | null>;
   updateTable(id: string, data: Record<string, any>): Promise<any>;
@@ -21,6 +22,7 @@ export interface IPosRepository {
   // Orders & Payments
   createOrder(data: any): Promise<any>;
   findOrderById(id: string): Promise<any | null>;
+  findOrdersByOutlet(outletId: string): Promise<any[]>;
   updateOrder(id: string, data: Record<string, any>): Promise<any>;
   createPayment(data: any): Promise<any>;
   findPaymentsByOrderId(orderId: string): Promise<any[]>;
@@ -44,6 +46,7 @@ export interface IPosRepository {
 
   // Cashier Shifts & Reports
   findActiveShiftByTerminal(terminalId: string): Promise<any | null>;
+  findAnyActiveShift(): Promise<any | null>;
   findShiftById(id: string): Promise<any | null>;
   createShift(data: any): Promise<any>;
   createCashDrop(data: any): Promise<any>;
