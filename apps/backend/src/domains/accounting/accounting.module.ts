@@ -13,6 +13,7 @@ import { AccountsReceivableController } from './presentation/controllers/ar.cont
 import { AccountsPayableController } from './presentation/controllers/ap.controller.js';
 import { BankAndTreasuryController } from './presentation/controllers/bank.controller.js';
 import { FinancialReportController } from './presentation/controllers/financial-report.controller.js';
+import { BudgetController } from './presentation/controllers/budget.controller.js';
 
 // Services
 import { ChartOfAccountsService } from './application/services/coa.service.js';
@@ -22,6 +23,7 @@ import { AccountsReceivableService } from './application/services/ar.service.js'
 import { AccountsPayableService } from './application/services/ap.service.js';
 import { BankAndTreasuryService } from './application/services/bank.service.js';
 import { FinancialReportService } from './application/services/financial-report.service.js';
+import { BudgetService } from './application/services/budget.service.js';
 
 @Module({
   imports: [PrismaModule],
@@ -33,6 +35,7 @@ import { FinancialReportService } from './application/services/financial-report.
     AccountsPayableController,
     BankAndTreasuryController,
     FinancialReportController,
+    BudgetController,
   ],
   providers: [
     {
@@ -47,6 +50,7 @@ import { FinancialReportService } from './application/services/financial-report.
     AccountsPayableService,
     BankAndTreasuryService,
     FinancialReportService,
+    BudgetService,
   ],
   exports: [
     ACCOUNTING_REPOSITORY_TOKEN,
@@ -58,6 +62,7 @@ import { FinancialReportService } from './application/services/financial-report.
     AccountsPayableService,
     BankAndTreasuryService,
     FinancialReportService,
+    BudgetService,
   ],
 })
 export class AccountingModule {}

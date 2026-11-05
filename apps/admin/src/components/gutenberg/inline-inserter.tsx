@@ -126,3 +126,4 @@ export function InlineInserter({ onInsert, onBrowseAll }: InlineInserterProps) {
     </div>
   );
 }
+

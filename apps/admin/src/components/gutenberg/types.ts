@@ -532,3 +532,4 @@ export function serializeBlocksToContent(blocks: GutenbergBlock[]): string {
 
   return `${markdownBody}\n\n${metadataComment}`;
 }
+

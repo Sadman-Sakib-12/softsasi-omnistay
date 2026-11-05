@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '@omnistay/database';
 import { ChartOfAccountsService } from './coa.service.js';
 import { JournalService } from './journal.service.js';
@@ -17,6 +18,39 @@ export class NightAuditService {
     private readonly coaService: ChartOfAccountsService,
     private readonly journalService: JournalService,
   ) {}
+
+  /**
+   * Automated Nightly Revenue Audit (Night Audit Engine - Section 7.2)
+   * At 02:00 every night, the Night Audit daemon automatically executes:
+   * 1. Room Revenue Accrual (Dr 1100 Guest Folio, Cr 4010 Room Revenue + Cr 2250 City Lodging Tax)
+   * 2. Advances Recognition (Dr 2100 Unearned Advance, Cr 4010 Room Revenue)
+   * 3. Generates Trial Balance snapshot ensuring Debits precisely equal Credits before opening the new business day.
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_2AM, { name: 'night-audit-daemon' })
+  async handleScheduledNightAudit() {
+    this.logger.log('⏰ [Night Audit Daemon] 02:00 AM Cron Triggered. Commencing automated hospitality audit rollover...');
+    try {
+      const tenants = await this.prisma.organization.findMany({
+        where: { deletedAt: null },
+        select: { id: true, name: true },
+      });
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      for (const tenant of tenants) {
+        try {
+          await this.runNightAudit(tenant.id, {
+            auditDate: todayStr,
+            forceRun: true,
+          });
+          this.logger.log(`✅ [Night Audit Daemon] Successfully executed night audit for tenant: ${tenant.name} (${tenant.id})`);
+        } catch (err: any) {
+          this.logger.warn(`⚠️ [Night Audit Daemon] Skipped or warning for tenant ${tenant.name}: ${err?.message}`);
+        }
+      }
+    } catch (error: any) {
+      this.logger.error(`❌ [Night Audit Daemon] Scheduled execution failed: ${error?.message}`);
+    }
+  }
 
   /**
    * Executes the Night Audit daemon process for a specific date:

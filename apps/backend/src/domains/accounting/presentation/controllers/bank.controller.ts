@@ -60,6 +60,18 @@ export class BankAndTreasuryController {
     return this.bankService.transferFunds(user.organizationId || '', dto, user);
   }
 
+  @Get('registers')
+  @ApiOperation({ summary: 'List front-desk cash registers & active floats (Section 7.5)' })
+  async listRegisters(@CurrentUser() user: AuthenticatedUserPayload) {
+    return this.bankService.listCashRegisters(user.organizationId || '');
+  }
+
+  @Get('registers/shifts/active')
+  @ApiOperation({ summary: 'Get active cashier drawer shift & float status' })
+  async getActiveShift(@CurrentUser() user: AuthenticatedUserPayload) {
+    return this.bankService.getActiveRegisterShift(user.organizationId || '', user.userId);
+  }
+
   @Post('registers/shifts/open')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Open front-desk cashier drawer shift ($500 standard float)' })

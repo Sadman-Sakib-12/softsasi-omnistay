@@ -764,3 +764,4 @@ export function GutenbergEditor({ initialSlug, onOpenThemeCustomizer }: Gutenber
     </div>
   );
 }
+

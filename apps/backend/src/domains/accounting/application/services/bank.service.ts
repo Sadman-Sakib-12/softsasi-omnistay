@@ -31,13 +31,113 @@ export class BankAndTreasuryService {
     );
   }
 
+  async ensureBankAndRegisters(tenantId: string) {
+    const existingAccounts = await this.prisma.bankAccount.count({
+      where: { tenantId, deletedAt: null },
+    });
+
+    if (existingAccounts === 0) {
+      const coa1010 = await this.prisma.chartOfAccount.findFirst({
+        where: { tenantId, code: '1010' },
+      });
+
+      await this.prisma.bankAccount.createMany({
+        data: [
+          {
+            tenantId,
+            accountName: 'Operating Treasury Account (Chase #8401)',
+            bankName: 'JPMorgan Chase Bank N.A.',
+            accountNumber: 'XXXX-XXXX-8401',
+            currency: 'USD',
+            openingBalance: 142500.0,
+            currentBalance: 148720.5,
+            accountId: coa1010?.id || null,
+          },
+          {
+            tenantId,
+            accountName: 'European Treasury Account (EUR-5012)',
+            bankName: 'BNP Paribas S.A.',
+            accountNumber: 'FR76-XXXX-5012',
+            currency: 'EUR',
+            openingBalance: 85000.0,
+            currentBalance: 92400.0,
+            accountId: coa1010?.id || null,
+          },
+          {
+            tenantId,
+            accountName: 'Local Settlement Clearing Account',
+            bankName: 'Standard Chartered Global',
+            accountNumber: 'SCB-XXXX-1992',
+            currency: 'USD',
+            openingBalance: 35000.0,
+            currentBalance: 39500.0,
+            accountId: coa1010?.id || null,
+          },
+        ],
+      });
+    }
+
+    const existingRegisters = await this.prisma.cashRegister.count({
+      where: { tenantId },
+    });
+
+    if (existingRegisters === 0) {
+      await this.prisma.cashRegister.createMany({
+        data: [
+          {
+            tenantId,
+            registerName: 'Front Desk Cash Drawer #01 (Lobby)',
+            location: 'Main Hotel Front Desk Lobby',
+            currentFloat: 500.0,
+            isActive: true,
+          },
+          {
+            tenantId,
+            registerName: 'Skyline Bistro & Bar POS Register',
+            location: 'Rooftop Bar 18th Floor',
+            currentFloat: 350.0,
+            isActive: true,
+          },
+        ],
+      });
+    }
+  }
+
   async listBankAccounts(tenantId: string) {
+    await this.ensureBankAndRegisters(tenantId);
     return this.prisma.bankAccount.findMany({
       where: { tenantId, deletedAt: null },
       orderBy: { accountName: 'asc' },
       include: {
         chartOfAccount: { select: { code: true, name: true } },
       },
+    });
+  }
+
+  async listCashRegisters(tenantId: string) {
+    await this.ensureBankAndRegisters(tenantId);
+    return this.prisma.cashRegister.findMany({
+      where: { tenantId },
+      include: {
+        shifts: {
+          orderBy: { openedAt: 'desc' },
+          take: 5,
+        },
+      },
+      orderBy: { registerName: 'asc' },
+    });
+  }
+
+  async getActiveRegisterShift(tenantId: string, cashierId?: string) {
+    await this.ensureBankAndRegisters(tenantId);
+    const where = { closedAt: null };
+
+    return this.prisma.cashRegisterShift.findFirst({
+      where,
+      include: {
+        register: true,
+      },
+      orderBy: { openedAt: 'desc' },
     });
   }
 
