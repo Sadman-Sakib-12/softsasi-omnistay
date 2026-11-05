@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import { VendorPayoutApplicationService } from '../../application/services/vendor-payout.application-service.js';
@@ -39,6 +39,12 @@ export class VendorPayoutController {
     return this.payoutService.requestWithdrawal(vendorId, dto);
   }
 
+  @Get('withdrawals')
+  @ApiOperation({ summary: 'List all withdrawal requests' })
+  getAllWithdrawals(@Query('vendorId') vendorId?: string) {
+    return this.payoutService.getWithdrawals(vendorId);
+  }
+
   @Get('withdrawals/:vendorId')
   @ApiOperation({ summary: 'List withdrawal requests for vendor' })
   getWithdrawals(@Param('vendorId') vendorId: string) {
@@ -50,6 +56,12 @@ export class VendorPayoutController {
   @ApiOperation({ summary: 'Approve and execute disbursement payout' })
   processPayout(@Body() dto: ProcessPayoutDto) {
     return this.payoutService.processPayout(dto);
+  }
+
+  @Get('history')
+  @ApiOperation({ summary: 'List all disbursement payout history' })
+  getAllPayouts(@Query('vendorId') vendorId?: string) {
+    return this.payoutService.getPayouts(vendorId);
   }
 
   @Get('history/:vendorId')

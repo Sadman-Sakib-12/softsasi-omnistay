@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, Roles, RolesGuard } from '@omnistay/backend-common';
 import { CommissionApplicationService } from '../../application/services/commission.application-service.js';
@@ -16,6 +16,12 @@ export class CommissionController {
   @ApiOperation({ summary: 'Calculate and record commission deduction for vendor booking' })
   calculateCommission(@Body() dto: CalculateCommissionDto) {
     return this.commissionService.calculateAndRecordCommission(dto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'List all commission deduction ledgers' })
+  getCommissions(@Query('vendorId') vendorId?: string) {
+    return this.commissionService.getCommissionsForVendor(vendorId);
   }
 
   @Get('vendor/:vendorId')

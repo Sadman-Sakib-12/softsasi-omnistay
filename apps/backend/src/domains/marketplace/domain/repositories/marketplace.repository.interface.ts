@@ -31,7 +31,7 @@ export interface IMarketplaceRepository {
     commissionAmt: number;
     netVendorAmt: number;
   }): Promise<any>;
-  findCommissions(vendorId: string): Promise<any[]>;
+  findCommissions(vendorId?: string): Promise<any[]>;
 
   createPayoutMethod(data: { vendorId: string; methodType: string; details: any; isDefault: boolean }): Promise<any>;
   findPayoutMethods(vendorId: string): Promise<any[]>;
@@ -46,8 +46,8 @@ export interface IMarketplaceRepository {
     reference: string;
     processedAt: Date;
   }): Promise<any>;
-  findWithdrawals(vendorId: string): Promise<any[]>;
-  findPayouts(vendorId: string): Promise<any[]>;
+  findWithdrawals(vendorId?: string): Promise<any[]>;
+  findPayouts(vendorId?: string): Promise<any[]>;
 
   findBookingById(bookingId: string): Promise<any | null>;
   findReviewByBookingId(bookingId: string): Promise<any | null>;

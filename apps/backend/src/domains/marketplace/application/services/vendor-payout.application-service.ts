@@ -90,11 +90,11 @@ export class VendorPayoutApplicationService {
     return payout;
   }
 
-  async getWithdrawals(vendorId: string) {
+  async getWithdrawals(vendorId?: string) {
     return this.marketplaceRepo.findWithdrawals(vendorId);
   }
 
-  async getPayouts(vendorId: string) {
+  async getPayouts(vendorId?: string) {
     return this.marketplaceRepo.findPayouts(vendorId);
   }
 }

@@ -48,7 +48,7 @@ export class CommissionApplicationService {
     };
   }
 
-  async getCommissionsForVendor(vendorId: string) {
+  async getCommissionsForVendor(vendorId?: string) {
     return this.marketplaceRepo.findCommissions(vendorId);
   }
 }
