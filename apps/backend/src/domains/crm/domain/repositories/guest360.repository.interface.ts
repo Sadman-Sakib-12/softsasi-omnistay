@@ -2,6 +2,7 @@ export const GUEST360_REPOSITORY_TOKEN = Symbol('IGuest360Repository');
 
 export interface IGuest360Repository {
   findProfileByUserId(userId: string): Promise<any | null>;
+  findAllProfiles(limit?: number): Promise<any[]>;
   createProfile(data: {
     userId: string;
     lifetimeSpend: number;

@@ -15,6 +15,15 @@ import {
 export class Guest360Controller {
   constructor(private readonly guest360Service: Guest360ApplicationService) {}
 
+  @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SuperAdmin', 'Company Owner/GM', 'Front Desk Agent', 'Sales Lead Manager')
+  @ApiOperation({ summary: 'List all guest 360 profiles with stay preferences and allergies' })
+  getAllProfiles() {
+    return this.guest360Service.getAllProfiles();
+  }
+
   @Get('me')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

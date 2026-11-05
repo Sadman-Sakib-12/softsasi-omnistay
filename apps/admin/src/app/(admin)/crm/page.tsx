@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Briefcase,
@@ -8,7 +8,6 @@ import {
   Users,
   Calendar,
   DollarSign,
-  Loader2,
   X,
   Target,
   Sparkles,
@@ -25,42 +24,93 @@ import {
   Layers,
   Code,
   LifeBuoy,
+  FileText,
+  Clock,
+  Phone,
+  Mail,
+  Send,
+  PenTool,
+  Check,
+  AlertTriangle,
+  ArrowRight,
+  UserCheck,
+  Search,
+  BookOpen,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { crmService, BanquetLead } from '@/features/crm/services/crm.service';
+import { BeatLoader } from 'react-spinners';
+import {
+  crmService,
+  LeadItem,
+  DealItem,
+  Guest360Item,
+  FormBuilderItem,
+  SupportTicketItem,
+  CannedResponseItem,
+  KnowledgeBaseItem,
+} from '@/features/crm/services/crm.service';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
-// Chapter 11: Customer Relationship Management (CRM) & Banquet Sales Pipeline
 export default function CrmEnterprisePage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<'pipeline' | 'leads' | 'guest360' | 'builder' | 'complaints'>('pipeline');
+  const [activeTab, setActiveTab] = useState<'leads' | 'deals' | 'guest360' | 'forms' | 'support'>('leads');
 
-  // Load backend CRM leads
-  const { data: leadsData = [], isLoading } = useQuery({
+  // React Query backend hooks (Zero Mock: 100% Real Backend Data)
+  const { data: leads = [], isLoading: isLoadingLeads } = useQuery<LeadItem[]>({
     queryKey: ['crmLeads'],
     queryFn: () => crmService.getLeads(),
   });
 
-  // Load backend CRM deals
-  const { data: realDeals = [] } = useQuery({
+  const { data: deals = [], isLoading: isLoadingDeals } = useQuery<DealItem[]>({
     queryKey: ['crmDeals'],
     queryFn: () => crmService.getDeals(),
   });
 
-  // Load backend CRM Guest 360 profiles
-  const { data: realGuests = [], isLoading: isGuestsLoading } = useQuery({
-    queryKey: ['crmGuest360'],
+  const { data: guests = [], isLoading: isLoadingGuests } = useQuery<Guest360Item[]>({
+    queryKey: ['crmGuests'],
     queryFn: () => crmService.getGuestProfiles(),
   });
 
-  // Modals
+  const { data: forms = [], isLoading: isLoadingForms } = useQuery<FormBuilderItem[]>({
+    queryKey: ['crmForms'],
+    queryFn: () => crmService.getForms(),
+  });
+
+  const { data: tickets = [], isLoading: isLoadingTickets } = useQuery<SupportTicketItem[]>({
+    queryKey: ['crmTickets'],
+    queryFn: () => crmService.getTickets(),
+  });
+
+  const { data: cannedResponses = [] } = useQuery<CannedResponseItem[]>({
+    queryKey: ['crmCannedResponses'],
+    queryFn: () => crmService.getCannedResponses(),
+  });
+
+  const { data: knowledgeBase = [] } = useQuery<KnowledgeBaseItem[]>({
+    queryKey: ['crmKnowledgeBase'],
+    queryFn: () => crmService.getKnowledgeBase(),
+  });
+
+  // UI Modals & Selection States
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
-  const [selectedGuestProfile, setSelectedGuestProfile] = useState<any | null>(null);
-  const [isNewComplaintOpen, setIsNewComplaintOpen] = useState(false);
+  const [isAddDealOpen, setIsAddDealOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
+  const [selectedGuest, setSelectedGuest] = useState<Guest360Item | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicketItem | null>(null);
+  const [selectedDealForProposal, setSelectedDealForProposal] = useState<DealItem | null>(null);
+  const [selectedDealForContract, setSelectedDealForContract] = useState<DealItem | null>(null);
+  const [activeFormTemplate, setActiveFormTemplate] = useState<FormBuilderItem | null>(null);
   const [isEmbedCodeOpen, setIsEmbedCodeOpen] = useState(false);
+  const [ticketReplyInput, setTicketReplyInput] = useState('');
+  const [callLogSubject, setCallLogSubject] = useState('');
+  const [callLogDuration, setCallLogDuration] = useState('15');
+  const [callLogNotes, setCallLogNotes] = useState('');
+  const [leadNoteContent, setLeadNoteContent] = useState('');
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
+  const [kbSearchTerm, setKbSearchTerm] = useState('');
 
   // Notifications
   const [alertBanner, setAlertBanner] = useState<string | null>(null);
@@ -69,1013 +119,1404 @@ export default function CrmEnterprisePage() {
     setTimeout(() => setAlertBanner(null), 4000);
   };
 
-  // 11.1 Banquet Pipeline Deals State (Zero-Mock: Live Backend Sync)
-  const [pipelineDeals, setPipelineDeals] = useState<any[]>([]);
+  // 11.1 New Lead Form State
+  const [newLead, setNewLead] = useState({
+    title: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    budget: 35000,
+    guestCount: 150,
+    durationDays: 2,
+    source: 'web_inquiry',
+  });
 
-  React.useEffect(() => {
-    if (realDeals && realDeals.length > 0) {
-      setPipelineDeals(
-        realDeals.map((d: any) => ({
-          id: d.id,
-          clientName: d.client,
-          eventType: d.title,
-          venue: d.hall,
-          eventDate: d.date,
-          pax: d.pax,
-          budget: d.amount,
-          stage: d.stage,
-          salesRep: 'Sales Account Manager',
-        }))
-      );
-    } else {
-      setPipelineDeals([]);
-    }
-  }, [realDeals]);
-
+  // 11.2 New Deal Form State
   const [newDeal, setNewDeal] = useState({
-    clientName: '',
-    eventType: 'Corporate Gala & Awards',
-    venue: 'Grand Crystal Ballroom',
-    eventDate: '',
-    pax: 100,
-    budget: 15000,
-    salesRep: 'Sales Manager',
+    dealName: '',
+    dealValue: 45000,
+    status: 'open',
+    expectedClose: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   });
 
-  // 11.2 Ingestion & Scoring State (Zero-Mock: Live Backend Sync)
-  const [inboundLeads, setInboundLeads] = useState<any[]>([]);
+  // Mutations
+  const createLeadMutation = useMutation({
+    mutationFn: (dto: any) => crmService.createLead(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crmLeads'] });
+      setIsAddLeadOpen(false);
+      triggerBanner('New Lead created with automated commercial score calculated.');
+    },
+  });
 
-  React.useEffect(() => {
-    if (leadsData && leadsData.length > 0) {
-      setInboundLeads(
-        leadsData.map((ld: any) => ({
-          id: ld.id,
-          name: ld.clientName || 'Inbound Lead',
-          source: ld.eventType || 'Website Inquiry',
-          date: ld.eventDate || 'Recent',
-          pax: ld.pax || 0,
-          score: ld.estimatedBudget > 20000 ? 95 : 85,
-          assignedTo: 'Sales Lead Manager',
-          status: ld.stage || 'NEW',
-        }))
-      );
-    } else {
-      setInboundLeads([]);
+  const createDealMutation = useMutation({
+    mutationFn: (dto: any) => crmService.createDeal(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crmDeals'] });
+      setIsAddDealOpen(false);
+      triggerBanner('New banquet deal added to pipeline.');
+    },
+  });
+
+  const addCallLogMutation = useMutation({
+    mutationFn: ({ leadId, dto }: { leadId: string; dto: any }) => crmService.addCallLog(leadId, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crmLeads'] });
+      setCallLogSubject('');
+      setCallLogNotes('');
+      triggerBanner('Call log recorded successfully.');
+    },
+  });
+
+  const addNoteMutation = useMutation({
+    mutationFn: ({ leadId, dto }: { leadId: string; dto: any }) => crmService.addNote(leadId, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crmLeads'] });
+      setLeadNoteContent('');
+      triggerBanner('Activity note pinned to lead.');
+    },
+  });
+
+  const replyTicketMutation = useMutation({
+    mutationFn: ({ ticketId, message }: { ticketId: string; message: string }) =>
+      crmService.replyTicket(ticketId, { message, senderType: 'staff' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crmTickets'] });
+      setTicketReplyInput('');
+      triggerBanner('Staff response dispatched to guest.');
+    },
+  });
+
+  const updateTicketStatusMutation = useMutation({
+    mutationFn: ({ ticketId, status }: { ticketId: string; status: string }) =>
+      crmService.updateTicketStatus(ticketId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['crmTickets'] });
+      triggerBanner('Ticket status updated.');
+    },
+  });
+
+  // Sync active form template
+  useEffect(() => {
+    if (forms.length > 0 && !activeFormTemplate) {
+      setActiveFormTemplate(forms[0]);
     }
-  }, [leadsData]);
+  }, [forms, activeFormTemplate]);
 
-  // 11.3 Guest 360 Profiles (Zero-Mock: Live Backend API)
-  const guestProfiles = realGuests.length > 0 ? realGuests : [];
+  // Lead source filter helper
+  const filteredLeads = leads.filter((l) => (sourceFilter === 'all' ? true : l.source === sourceFilter));
 
-  // 11.4 Custom Form Builder State
-  const [formFields, setFormFields] = useState<any[]>([
-    { id: 'f-1', label: 'Company / Organization Name', type: 'text', required: true },
-    { id: 'f-2', label: 'Authorized Contact Email', type: 'email', required: true },
-    { id: 'f-3', label: 'Target Event Date', type: 'date', required: true },
-    { id: 'f-4', label: 'Expected Headcount (PAX)', type: 'number', required: true },
-    { id: 'f-5', label: 'Preferred Banquet Space', type: 'select', options: ['Grand Crystal Ballroom', 'Amber Pavilion', 'Rooftop Terrace'] },
-    { id: 'f-6', label: 'Estimated Budget Tier ($)', type: 'select', options: ['$10,000 - $25,000', '$25,000 - $50,000', '$50,000+'] },
-  ]);
-
-  const [newFieldInput, setNewFieldInput] = useState({
-    label: '',
-    type: 'text',
-    required: true,
-  });
-
-  // 11.5 Complaints & Support SLA State (Zero-Mock: Initialized Empty)
-  const [complaints, setComplaints] = useState<any[]>([]);
-
-  const [newComplaintInput, setNewComplaintInput] = useState({
-    room: '',
-    guest: '',
-    category: 'HVAC Temperature',
-    issue: '',
-    priority: 'HIGH',
-  });
-
-  // Handlers
-  const handleAddDeal = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newDeal.clientName) return;
-    const item = {
-      id: `deal-${Date.now()}`,
-      clientName: newDeal.clientName,
-      eventType: newDeal.eventType,
-      venue: newDeal.venue,
-      eventDate: newDeal.eventDate || '2026-12-01',
-      pax: Number(newDeal.pax),
-      budget: Number(newDeal.budget),
-      stage: 'NEW_INQUIRY',
-      salesRep: newDeal.salesRep,
-    };
-    setPipelineDeals([item, ...pipelineDeals]);
-
-    try {
-      await crmService.createLead({
-        clientName: newDeal.clientName,
-        eventType: newDeal.eventType,
-        eventDate: newDeal.eventDate,
-        pax: newDeal.pax,
-        estimatedBudget: newDeal.budget,
-        stage: 'NEW_INQUIRY',
-      });
-    } catch {
-      // Handled
-    }
-
-    setIsAddLeadOpen(false);
-    triggerBanner(`Created banquet deal for ${newDeal.clientName} (${formatCurrency(newDeal.budget)})`);
-  };
-
-  const handleMoveDealStage = (dealId: string, nextStage: string) => {
-    setPipelineDeals(
-      pipelineDeals.map((d) => (d.id === dealId ? { ...d, stage: nextStage } : d)),
-    );
-    triggerBanner(`Deal stage updated to ${nextStage}`);
-  };
-
-  const handleAddField = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newFieldInput.label) return;
-    setFormFields([
-      ...formFields,
-      {
-        id: `f-${Date.now()}`,
-        label: newFieldInput.label,
-        type: newFieldInput.type,
-        required: newFieldInput.required,
-      },
-    ]);
-    setNewFieldInput({ label: '', type: 'text', required: true });
-    triggerBanner('Added dynamic form field');
-  };
-
-  const handleAddComplaint = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComplaintInput.room || !newComplaintInput.issue) return;
-    setComplaints([
-      {
-        id: `cmp-${Date.now()}`,
-        room: newComplaintInput.room,
-        guest: newComplaintInput.guest || 'In-House Guest',
-        category: newComplaintInput.category,
-        issue: newComplaintInput.issue,
-        slaRemaining: '60 mins remaining',
-        priority: newComplaintInput.priority,
-        assignedTo: 'Duty Manager On-Duty',
-        status: 'IN_PROGRESS',
-      },
-      ...complaints,
-    ]);
-    setIsNewComplaintOpen(false);
-    triggerBanner(`Support Ticket created for ${newComplaintInput.room} with 60-min SLA.`);
-  };
+  // 11.2 Kanban column definition
+  const KANBAN_STAGES = [
+    'Discovery / Inquiry',
+    'Site Inspection Scheduled',
+    'Proposal & Banquet Menu Sent',
+    'Contract Negotiation',
+    'Deposit Paid / Won',
+    'Lost',
+  ];
 
   return (
-    <div className="space-y-5 animate-in fade-in duration-200">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-emerald-600 font-semibold"># Dashboard</span>
-        <span>/</span>
-        <span className="text-slate-400">Customer Relationship Management (CRM)</span>
-      </div>
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Briefcase className="w-6 h-6 text-emerald-600" /> CRM & Banquet Sales Pipeline
-          </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            MICE group contracts, AI lead ingestion & scoring, Guest 360° personalization, drag-and-drop forms & SLA tracking (Chapter 11).
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() => setIsAddLeadOpen(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer text-xs"
-          >
-            <Plus className="w-3.5 h-3.5 mr-1" /> New Banquet Event Deal
-          </Button>
-        </div>
-      </div>
-
+    <div className="space-y-6 animate-in fade-in duration-200">
       {/* Alert Banner */}
       {alertBanner && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center justify-between shadow-2xs">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-semibold">{alertBanner}</span>
-          </div>
-          <button onClick={() => setAlertBanner(null)} className="text-emerald-600 hover:text-emerald-800">
-            <X className="w-4 h-4" />
-          </button>
+        <div className="fixed top-5 right-5 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-semibold animate-in slide-in-from-top-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+          <span>{alertBanner}</span>
         </div>
       )}
 
-      {/* Multi-Tab Navigation */}
-      <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 overflow-x-auto text-xs">
+      {/* Breadcrumb & Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+            <span className="text-[#00a8ff] font-semibold">CRM & Guest Intelligence</span>
+            <span>/</span>
+            <span className="text-slate-400">Chapter 11 Enterprise Hospitality Engine</span>
+          </div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2">
+            <Briefcase className="w-6 h-6 text-[#00a8ff]" /> CRM, Leads, Deals & Guest Experience
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Uniform System of Accounts for Lodging Industry (USALI) & Banquet Sales Pipeline with Guest 360° Personalization Ledger
+          </p>
+        </div>
+
+        {/* Global Quick Action */}
+        <div className="flex items-center gap-2">
+          {activeTab === 'leads' && (
+            <Button
+              onClick={() => setIsAddLeadOpen(true)}
+              className="bg-[#00a8ff] hover:bg-[#0090dd] text-white text-xs font-bold gap-1.5 rounded-lg shadow-sm"
+            >
+              <Plus className="w-4 h-4" /> New Inbound Lead
+            </Button>
+          )}
+          {activeTab === 'deals' && (
+            <Button
+              onClick={() => setIsAddDealOpen(true)}
+              className="bg-[#00a8ff] hover:bg-[#0090dd] text-white text-xs font-bold gap-1.5 rounded-lg shadow-sm"
+            >
+              <Plus className="w-4 h-4" /> New Banquet Deal
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Top Navigation Tabs (Chapter 11 Sub-sections) */}
+      <div className="flex items-center gap-1.5 border-b border-slate-200 overflow-x-auto pb-1 text-xs">
         <button
-          onClick={() => setActiveTab('pipeline')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'pipeline' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('leads')}
+          className={`px-4 py-2.5 font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+            activeTab === 'leads'
+              ? 'bg-sky-50 text-[#00a8ff] border-b-2 border-[#00a8ff]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <Layers className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Banquet Kanban Pipeline (11.1)</span>
+          <Target className="w-4 h-4" />
+          <span>11.1 Omnichannel Leads</span>
+          <span className="bg-sky-100 text-[#00a8ff] px-1.5 py-0.5 rounded-full text-[10px]">
+            {leads.length}
+          </span>
         </button>
 
         <button
-          onClick={() => setActiveTab('leads')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'leads' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('deals')}
+          className={`px-4 py-2.5 font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+            activeTab === 'deals'
+              ? 'bg-sky-50 text-[#00a8ff] border-b-2 border-[#00a8ff]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <Target className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Lead Ingestion & Scoring (11.2)</span>
+          <Layers className="w-4 h-4" />
+          <span>11.2 Banquet Sales Kanban</span>
+          <span className="bg-sky-100 text-[#00a8ff] px-1.5 py-0.5 rounded-full text-[10px]">
+            {deals.length}
+          </span>
         </button>
 
         <button
           onClick={() => setActiveTab('guest360')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'guest360' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+          className={`px-4 py-2.5 font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+            activeTab === 'guest360'
+              ? 'bg-sky-50 text-[#00a8ff] border-b-2 border-[#00a8ff]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <Heart className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Guest 360° Profiles (11.3)</span>
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span>11.3 Guest 360° Profile</span>
+          <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full text-[10px]">
+            {guests.length}
+          </span>
         </button>
 
         <button
-          onClick={() => setActiveTab('builder')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'builder' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('forms')}
+          className={`px-4 py-2.5 font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+            activeTab === 'forms'
+              ? 'bg-sky-50 text-[#00a8ff] border-b-2 border-[#00a8ff]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <Sliders className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Drag & Drop Form Builder (11.4)</span>
+          <PenTool className="w-4 h-4" />
+          <span>11.4 Dynamic Form Builder</span>
+          <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-full text-[10px]">
+            {forms.length}
+          </span>
         </button>
 
         <button
-          onClick={() => setActiveTab('complaints')}
-          className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 ${
-            activeTab === 'complaints' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+          onClick={() => setActiveTab('support')}
+          className={`px-4 py-2.5 font-bold rounded-lg transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+            activeTab === 'support'
+              ? 'bg-sky-50 text-[#00a8ff] border-b-2 border-[#00a8ff]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <LifeBuoy className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Complaints & SLA (11.5)</span>
+          <LifeBuoy className="w-4 h-4 text-rose-500" />
+          <span>11.5 Support & 20-min SLA</span>
+          <span className="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full text-[10px]">
+            {tickets.length}
+          </span>
         </button>
       </div>
 
-      {/* TAB 1: BANQUET KANBAN PIPELINE (11.1) */}
-      {activeTab === 'pipeline' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Active Banquet Deals</CardDescription>
-                <CardTitle className="text-2xl text-slate-900">{pipelineDeals.length}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Corporate MICE & Weddings</CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Weighted Pipeline Value</CardDescription>
-                <CardTitle className="text-2xl text-emerald-600">
-                  {formatCurrency(pipelineDeals.reduce((acc, d) => acc + d.budget, 0))}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Contract banquet bookings</CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Total Headcount (PAX)</CardDescription>
-                <CardTitle className="text-2xl text-blue-600">
-                  {pipelineDeals.reduce((acc, d) => acc + d.pax, 0)} Guests
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Catering & space capacity booked</CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs">Average Deal Size</CardDescription>
-                <CardTitle className="text-2xl text-slate-900">
-                  {formatCurrency(
-                    pipelineDeals.length > 0
-                      ? pipelineDeals.reduce((acc, d) => acc + d.budget, 0) / pipelineDeals.length
-                      : 0,
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-[11px] text-slate-500">Per corporate group contract</CardContent>
-            </Card>
-          </div>
-
-          {/* Kanban Board */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 overflow-x-auto pb-2">
-            {[
-              { key: 'NEW_INQUIRY', title: '1. New Inquiries' },
-              { key: 'PROPOSAL_SENT', title: '2. Proposal Sent' },
-              { key: 'SITE_VISIT', title: '3. Site Visit / Tasting' },
-              { key: 'CONTRACT_DRAFTED', title: '4. Contract Drafted' },
-              { key: 'DEPOSIT_PAID', title: '5. Confirmed & BEO' },
-            ].map((col) => {
-              const dealsInCol = pipelineDeals.filter((d) => d.stage === col.key);
-              return (
-                <div key={col.key} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col min-h-[420px] min-w-[220px]">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-200 mb-3">
-                    <span className="font-bold text-xs text-slate-800">{col.title}</span>
-                    <span className="w-5 h-5 rounded-full bg-white border border-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center">
-                      {dealsInCol.length}
-                    </span>
-                  </div>
-
-                  <div className="space-y-2.5 flex-1">
-                    {dealsInCol.length === 0 ? (
-                      <div className="py-8 text-center text-[11px] text-slate-400 border border-dashed border-slate-200 rounded">
-                        No deals in this stage
-                      </div>
-                    ) : (
-                      dealsInCol.map((deal) => (
-                      <div
-                        key={deal.id}
-                        className="p-3 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-2 hover:border-emerald-400 transition-colors"
-                      >
-                        <div className="font-bold text-xs text-slate-900 leading-tight">
-                          {deal.clientName}
-                        </div>
-                        <div className="text-[10px] text-slate-500">{deal.eventType}</div>
-                        <div className="text-[11px] font-semibold text-emerald-600">
-                          {formatCurrency(deal.budget)} · {deal.pax} PAX
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          📍 {deal.venue} · 📅 {deal.eventDate}
-                        </div>
-                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                          <span className="text-slate-500">Rep: {deal.salesRep}</span>
-                          {col.key !== 'DEPOSIT_PAID' && (
-                            <button
-                              onClick={() => {
-                                const stages = ['NEW_INQUIRY', 'PROPOSAL_SENT', 'SITE_VISIT', 'CONTRACT_DRAFTED', 'DEPOSIT_PAID'];
-                                const currIdx = stages.indexOf(col.key);
-                                if (currIdx < stages.length - 1) {
-                                  handleMoveDealStage(deal.id, stages[currIdx + 1]);
-                                }
-                              }}
-                              className="text-emerald-600 font-bold hover:underline flex items-center"
-                            >
-                              <span>Next</span>
-                              <ChevronRight className="w-3 h-3" />
-                            </button>
-                          )}
-                          {col.key === 'DEPOSIT_PAID' && (
-                            <span className="font-bold text-emerald-700">BEO Issued ✔</span>
-                          )}
-                        </div>
-                      </div>
-                    )))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: LEAD INGESTION & SCORING (11.2) */}
+      {/* ============================================================== */}
+      {/* TAB 1: 11.1 Omnichannel Lead Capture & Inbound Inquiries      */}
+      {/* ============================================================== */}
       {activeTab === 'leads' && (
         <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Target className="w-4 h-4 text-emerald-600" /> Multi-Channel Ingestion & AI Lead Scoring Engine
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Automatically ingests inquiries from Website RFP, WhatsApp AI Concierge & Phone, assigns predictive AI score (1-100) and routes round-robin.
-              </p>
-            </div>
-            <Badge variant="outline" className="border-emerald-300 text-emerald-800 bg-emerald-50">
-              Auto-Routing Active
-            </Badge>
+          {/* Filter Bar & Scoring Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-gradient-to-br from-sky-50 to-white border-sky-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-[#00a8ff] flex items-center justify-center">
+                  <Target className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">Active Inquiries</div>
+                  <div className="text-xl font-black text-slate-900">{leads.length}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">High Priority (Score 90+)</div>
+                  <div className="text-xl font-black text-emerald-700">
+                    {leads.filter((l) => l.leadScore >= 90).length}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-indigo-50 to-white border-indigo-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
+                  <UserCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">Round-Robin Logic</div>
+                  <div className="text-xs font-bold text-indigo-700">Active (Auto-Balanced)</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">Total Call Touchpoints</div>
+                  <div className="text-xl font-black text-amber-700">
+                    {leads.reduce((acc, l) => acc + (l.callLogs?.length || 0), 0)}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Inbound Client</th>
-                  <th className="py-3 px-4">Ingestion Channel</th>
-                  <th className="py-3 px-4">Headcount (PAX)</th>
-                  <th className="py-3 px-4">AI Score (1-100)</th>
-                  <th className="py-3 px-4">Assigned Sales Executive</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {inboundLeads.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-400">
-                      No inbound leads received yet. Inquiries from website RFP and WhatsApp will appear here.
-                    </td>
+          {/* Filter Pills */}
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <span className="text-slate-400 mr-1">Channel Source:</span>
+            {['all', 'web_inquiry', 'ai_concierge', 'whatsapp', 'phone_inquiry', 'referral'].map((src) => (
+              <button
+                key={src}
+                onClick={() => setSourceFilter(src)}
+                className={`px-3 py-1 rounded-full capitalize transition ${
+                  sourceFilter === src
+                    ? 'bg-slate-900 text-white font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {src.replace('_', ' ')}
+              </button>
+            ))}
+          </div>
+
+          {/* Leads Table */}
+          {isLoadingLeads ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-3">
+              <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+              <p className="text-xs text-slate-400">Loading live inbound CRM leads...</p>
+            </div>
+          ) : (
+            <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-xs">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
+                    <th className="py-3 px-4">Lead Inquiry & Event Title</th>
+                    <th className="py-3 px-4">Contact Person</th>
+                    <th className="py-3 px-4">Commercial Score</th>
+                    <th className="py-3 px-4">Channel Ingestion</th>
+                    <th className="py-3 px-4">Pipeline Stage</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredLeads.map((lead) => {
+                    const isHigh = lead.leadScore >= 90;
+                    const isMed = lead.leadScore >= 70 && lead.leadScore < 90;
+                    return (
+                      <tr key={lead.id} className="hover:bg-slate-50/60 transition group">
+                        <td className="py-3 px-4 font-bold text-slate-900">
+                          <div className="flex items-center gap-2">
+                            <span>{lead.title}</span>
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-normal">
+                            Received {formatDate(lead.createdAt)}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="font-semibold text-slate-800">{lead.contactName}</div>
+                          <div className="text-[11px] text-slate-400">{lead.email || lead.phone || '—'}</div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-black text-[11px] ${
+                              isHigh
+                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                : isMed
+                                ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                : 'bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            {lead.leadScore} / 100
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <Badge variant="outline" className="capitalize text-[10px] font-bold">
+                            {lead.source.replace('_', ' ')}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="bg-sky-50 text-[#00a8ff] px-2 py-0.5 rounded text-[11px] font-bold border border-sky-100">
+                            {lead.stage?.name || 'Inquiry'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedLead(lead)}
+                            className="text-[#00a8ff] hover:bg-sky-50 text-xs font-bold gap-1"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> Details & Calls
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 2: 11.2 Deal Pipelines & Banquet Sales Kanban Boards      */}
+      {/* ============================================================== */}
+      {activeTab === 'deals' && (
+        <div className="space-y-4">
+          {isLoadingDeals ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-3">
+              <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+              <p className="text-xs text-slate-400">Loading banquet deals and pipeline stages...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-3.5 overflow-x-auto pb-4">
+              {KANBAN_STAGES.map((stageName, idx) => {
+                const stageDeals = deals.filter(
+                  (d) =>
+                    d.stage?.name?.toLowerCase() === stageName.toLowerCase() ||
+                    (stageName === 'Discovery / Inquiry' && (!d.stage || d.status === 'open' && !d.stageId)) ||
+                    (stageName === 'Deposit Paid / Won' && d.status === 'won'),
+                );
+                const totalValue = stageDeals.reduce((sum, d) => sum + Number(d.dealValue || 0), 0);
+
+                return (
+                  <div
+                    key={stageName}
+                    className="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3 flex flex-col min-w-[240px]"
+                  >
+                    {/* Column Header */}
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
+                      <div>
+                        <h4 className="font-extrabold text-xs text-slate-800">{stageName}</h4>
+                        <span className="text-[10px] text-slate-400 font-bold">{formatCurrency(totalValue)}</span>
+                      </div>
+                      <span className="w-5 h-5 rounded-full bg-slate-200/80 text-slate-700 text-[10px] font-bold flex items-center justify-center">
+                        {stageDeals.length}
+                      </span>
+                    </div>
+
+                    {/* Cards */}
+                    <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[600px]">
+                      {stageDeals.map((deal) => {
+                        const hasProposal = deal.proposals && deal.proposals.length > 0;
+                        const hasContract = deal.contracts && deal.contracts.length > 0;
+                        const isSigned = hasContract && deal.contracts![0].isSigned;
+
+                        return (
+                          <div
+                            key={deal.id}
+                            className="bg-white p-3 rounded-lg border border-slate-200/70 shadow-xs hover:border-[#00a8ff] transition group"
+                          >
+                            <h5 className="font-bold text-xs text-slate-900 group-hover:text-[#00a8ff] transition-colors leading-snug">
+                              {deal.dealName}
+                            </h5>
+                            <div className="text-sm font-black text-emerald-700 mt-1.5">
+                              {formatCurrency(deal.dealValue)}
+                            </div>
+
+                            {/* Indicators */}
+                            <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1.5 text-[10px]">
+                              {hasProposal && (
+                                <button
+                                  onClick={() => setSelectedDealForProposal(deal)}
+                                  className="inline-flex items-center gap-1 bg-sky-50 text-[#00a8ff] px-2 py-0.5 rounded font-bold hover:bg-sky-100"
+                                >
+                                  <FileText className="w-3 h-3" /> Proposal PDF
+                                </button>
+                              )}
+                              {hasContract && (
+                                <button
+                                  onClick={() => setSelectedDealForContract(deal)}
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-bold ${
+                                    isSigned
+                                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                      : 'bg-amber-50 text-amber-800 border border-amber-200'
+                                  }`}
+                                >
+                                  <ShieldCheck className="w-3 h-3" />
+                                  {isSigned ? 'Contract E-Signed' : 'Contract Pending'}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 3: 11.3 Guest 360° Profile & Personalization Ledger       */}
+      {/* ============================================================== */}
+      {activeTab === 'guest360' && (
+        <div className="space-y-4">
+          <div className="p-4 bg-gradient-to-r from-amber-50 via-slate-50 to-white rounded-xl border border-amber-200/60 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black">
+                VIP
+              </div>
+              <div>
+                <h3 className="font-black text-sm text-slate-900">
+                  Guest 360° Intelligence & Loyalty Personalization Ledger
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Hyper-personalized hospitality grounded in historical spend (LTV), room temperature, pillow choices, and allergen safeguards.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {isLoadingGuests ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-3">
+              <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+              <p className="text-xs text-slate-400">Loading guest 360 profiles from database...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {guests.map((g) => {
+                const isBlack = g.vipTier === 'VIP Black';
+                const isPlat = g.vipTier === 'Platinum';
+                const isGold = g.vipTier === 'Gold';
+
+                return (
+                  <Card
+                    key={g.id}
+                    className={`border transition shadow-xs hover:shadow-md ${
+                      isBlack
+                        ? 'border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 text-white'
+                        : 'border-slate-200 bg-white'
+                    }`}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className={`font-black text-base ${isBlack ? 'text-white' : 'text-slate-900'}`}>
+                              {g.notes?.includes('Vance') ? 'Lady Eleanor Vance' : g.notes?.includes('business') ? 'Dr. Marcus Sterling' : g.notes?.includes('late check-out') ? 'Sophia Lorenzi' : 'Alexander Wright'}
+                            </h4>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                isBlack
+                                  ? 'bg-amber-400 text-slate-950 border border-amber-300'
+                                  : isPlat
+                                  ? 'bg-violet-100 text-violet-800 border border-violet-200'
+                                  : isGold
+                                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                  : 'bg-slate-100 text-slate-700'
+                              }`}
+                            >
+                              {g.vipTier}
+                            </span>
+                          </div>
+                          <p className={`text-xs mt-0.5 ${isBlack ? 'text-slate-400' : 'text-slate-500'}`}>
+                            User UUID: {g.userId.slice(0, 18)}...
+                          </p>
+                        </div>
+
+                        {/* LTV Spend Badge */}
+                        <div className="text-right">
+                          <div className="text-xs text-slate-400 font-bold uppercase">Lifetime Spend (LTV)</div>
+                          <div className={`text-lg font-black ${isBlack ? 'text-amber-400' : 'text-emerald-700'}`}>
+                            {formatCurrency(g.lifetimeSpend)}
+                          </div>
+                          <div className={`text-[10px] font-bold ${isBlack ? 'text-slate-400' : 'text-slate-500'}`}>
+                            {g.totalNights} Nights Stayed
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-3 pt-0">
+                      {/* HIGH-CONTRAST RED ALLERGY BADGES */}
+                      {g.dietary && g.dietary.length > 0 && (
+                        <div>
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-rose-500 flex items-center gap-1 mb-1.5">
+                            <AlertTriangle className="w-3 h-3" /> Critical Dietary Safeguards & Allergen Flags:
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {g.dietary.map((d) => (
+                              <span
+                                key={d.id}
+                                className="bg-rose-600 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1"
+                              >
+                                <AlertTriangle className="w-2.5 h-2.5 text-rose-200" />
+                                {d.restriction}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Stay Preferences */}
+                      {g.preferences && g.preferences.length > 0 && (
+                        <div className="pt-2 border-t border-slate-100/20">
+                          <div className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${isBlack ? 'text-slate-400' : 'text-slate-500'}`}>
+                            Stay Preferences & Comfort Setup:
+                          </div>
+                          <div className="grid grid-cols-2 gap-1.5 text-xs">
+                            {g.preferences.map((p) => (
+                              <div
+                                key={p.id}
+                                className={`p-2 rounded-lg text-[11px] ${
+                                  isBlack ? 'bg-slate-800/80 text-slate-200' : 'bg-slate-50 text-slate-700'
+                                }`}
+                              >
+                                <span className="font-bold block text-[10px] text-[#00a8ff]">{p.preferenceKey}</span>
+                                <span className="font-medium">{p.preferenceVal}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Notes / GM Greeting Requirement */}
+                      {g.notes && (
+                        <div
+                          className={`p-2.5 rounded-lg text-xs font-semibold ${
+                            isBlack
+                              ? 'bg-amber-400/10 border border-amber-400/30 text-amber-200'
+                              : 'bg-sky-50 border border-sky-100 text-sky-900'
+                          }`}
+                        >
+                          {g.notes}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 4: 11.4 Drag-and-Drop Dynamic Form Builder & Submissions  */}
+      {/* ============================================================== */}
+      {activeTab === 'forms' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-extrabold text-base text-slate-900">
+                Hospitality Dynamic Form Builder & Public Embeddable Schema
+              </h3>
+              <p className="text-xs text-slate-500">
+                Public customer web forms auto-convert incoming inquiries into CRM leads.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEmbedCodeOpen(true)}
+              className="text-xs font-bold gap-1.5 text-[#00a8ff]"
+            >
+              <Code className="w-3.5 h-3.5" /> View Embed Snippet
+            </Button>
+          </div>
+
+          {isLoadingForms ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-3">
+              <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+              <p className="text-xs text-slate-400">Loading form builder templates...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              {/* Template List Selector */}
+              <div className="space-y-2">
+                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Pre-Built Hospitality Templates
+                </div>
+                {forms.map((f) => (
+                  <div
+                    key={f.id}
+                    onClick={() => setActiveFormTemplate(f)}
+                    className={`p-3.5 rounded-xl border transition cursor-pointer ${
+                      activeFormTemplate?.id === f.id
+                        ? 'border-[#00a8ff] bg-sky-50/50 shadow-xs'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-xs text-slate-900">{f.formName}</h5>
+                      <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded">
+                        Active
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                      {f.formSchema?.description || 'Public guest form'}
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-2 font-semibold">
+                      {f.formSchema?.fields?.length || 0} Dynamic Form Fields
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Form Schema Interactive Preview & Test Ingestion */}
+              <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+                {activeFormTemplate ? (
+                  <div className="space-y-4">
+                    <div className="border-b border-slate-100 pb-3">
+                      <h4 className="font-black text-lg text-slate-900">
+                        {activeFormTemplate.formSchema?.title || activeFormTemplate.formName}
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {activeFormTemplate.formSchema?.description}
+                      </p>
+                    </div>
+
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(e.currentTarget);
+                        const payload: Record<string, any> = {};
+                        formData.forEach((value, key) => {
+                          payload[key] = value;
+                        });
+                        await crmService.submitFormResponse(activeFormTemplate.id, payload);
+                        queryClient.invalidateQueries({ queryKey: ['crmLeads'] });
+                        triggerBanner('Form response submitted and converted into a CRM Lead!');
+                      }}
+                      className="space-y-3"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {activeFormTemplate.formSchema?.fields?.map((f) => (
+                          <div key={f.id} className={f.type === 'textarea' ? 'md:col-span-2' : ''}>
+                            <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                              {f.label} {f.required && <span className="text-rose-500">*</span>}
+                            </label>
+
+                            {f.type === 'select' ? (
+                              <select
+                                name={f.name}
+                                required={f.required}
+                                className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-[#00a8ff]"
+                              >
+                                {f.options?.map((opt) => (
+                                  <option key={opt} value={opt}>
+                                    {opt}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : f.type === 'textarea' ? (
+                              <textarea
+                                name={f.name}
+                                required={f.required}
+                                placeholder={f.placeholder}
+                                rows={3}
+                                className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-[#00a8ff]"
+                              />
+                            ) : (
+                              <input
+                                type={f.type}
+                                name={f.name}
+                                required={f.required}
+                                placeholder={f.placeholder}
+                                className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-[#00a8ff]"
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          Auto-ingestion maps name/email into CRM pipeline.
+                        </span>
+                        <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold gap-1.5">
+                          <Send className="w-3.5 h-3.5" /> Submit Test Response
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
                 ) : (
-                  inboundLeads.map((ld) => (
-                  <tr key={ld.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">{ld.name}</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                        {ld.source}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-slate-700">{ld.pax} PAX</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                        ⭐ {ld.score}/100 High Intent
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">{ld.assignedTo}</td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline" className="border-slate-200 text-slate-700">
-                        {ld.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Button
-                        size="xs"
-                        onClick={() => triggerBanner(`Sent AI-generated banquet proposal to ${ld.name}`)}
-                        className="text-[10px] h-6 bg-emerald-600 hover:bg-emerald-700 text-white"
-                      >
-                        Send Instant RFP
-                      </Button>
-                    </td>
-                  </tr>
-                )))}
-              </tbody>
-            </table>
+                  <p className="text-xs text-slate-400">Select a form template to preview.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 5: 11.5 Customer Support Ticketing & Guest Care Desk      */}
+      {/* ============================================================== */}
+      {activeTab === 'support' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="border-rose-100 bg-gradient-to-br from-rose-50 to-white">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center">
+                  <Clock className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">20-Min SLA Active</div>
+                  <div className="text-xl font-black text-rose-700">
+                    {tickets.filter((t) => t.priority === 'urgent' && t.status !== 'resolved').length} Tickets Urgent
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-sky-100 bg-gradient-to-br from-sky-50 to-white">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-[#00a8ff] flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">Canned Fast Macros</div>
+                  <div className="text-xl font-black text-[#00a8ff]">{cannedResponses.length} Fast Shortcuts</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50 to-white">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold text-slate-400 uppercase">Knowledge Base Articles</div>
+                  <div className="text-xl font-black text-emerald-700">{knowledgeBase.length} Indexed Topics</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Tickets List & Detail Thread */}
+          {isLoadingTickets ? (
+            <div className="py-20 flex flex-col items-center justify-center gap-3">
+              <BeatLoader color="#22d3ee" size={18} speedMultiplier={1.2} />
+              <p className="text-xs text-slate-400">Loading support tickets...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              {/* Ticket Cards */}
+              <div className="space-y-3 lg:col-span-1">
+                {tickets.map((t) => {
+                  const isUrgent = t.priority === 'urgent';
+                  const isResolved = t.status === 'resolved';
+
+                  return (
+                    <div
+                      key={t.id}
+                      onClick={() => setSelectedTicket(t)}
+                      className={`p-3.5 rounded-xl border transition cursor-pointer ${
+                        selectedTicket?.id === t.id
+                          ? 'border-[#00a8ff] bg-sky-50/40 shadow-xs'
+                          : 'border-slate-200 bg-white hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-mono text-[10px] font-bold text-slate-400">{t.ticketCode}</span>
+                        <div className="flex items-center gap-1.5">
+                          {isUrgent && !isResolved && (
+                            <span className="bg-rose-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded animate-pulse">
+                              20M SLA
+                            </span>
+                          )}
+                          <span
+                            className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase ${
+                              isResolved
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : t.status === 'in_progress'
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-rose-100 text-rose-800'
+                            }`}
+                          >
+                            {t.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <h5 className="font-bold text-xs text-slate-900 leading-snug">{t.subject}</h5>
+                      <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                        <span>{t.guestName}</span>
+                        <span>{formatDate(t.createdAt)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Ticket Conversation Thread & Fast Canned Response */}
+              <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between shadow-xs min-h-[450px]">
+                {selectedTicket ? (
+                  <div className="space-y-4 flex flex-col h-full justify-between">
+                    <div>
+                      {/* Thread Header */}
+                      <div className="border-b border-slate-100 pb-3 flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-slate-400">
+                              {selectedTicket.ticketCode}
+                            </span>
+                            <h4 className="font-black text-sm text-slate-900">{selectedTicket.subject}</h4>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Guest: <span className="font-bold text-slate-700">{selectedTicket.guestName}</span> ({selectedTicket.guestEmail || 'No email'})
+                          </p>
+                        </div>
+
+                        {/* Status Switcher */}
+                        <div className="flex items-center gap-1">
+                          {['open', 'in_progress', 'resolved'].map((st) => (
+                            <button
+                              key={st}
+                              onClick={() =>
+                                updateTicketStatusMutation.mutate({
+                                  ticketId: selectedTicket.id,
+                                  status: st,
+                                })
+                              }
+                              className={`text-[10px] font-bold px-2 py-1 rounded capitalize transition ${
+                                selectedTicket.status === st
+                                  ? 'bg-slate-900 text-white'
+                                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              {st.replace('_', ' ')}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Messages Stream */}
+                      <div className="space-y-3 py-4 max-h-[300px] overflow-y-auto">
+                        {selectedTicket.replies?.map((r) => {
+                          const isStaff = r.senderType === 'staff';
+                          return (
+                            <div
+                              key={r.id}
+                              className={`flex flex-col ${isStaff ? 'items-end' : 'items-start'}`}
+                            >
+                              <div
+                                className={`p-3 rounded-xl text-xs max-w-[80%] leading-relaxed ${
+                                  isStaff
+                                    ? 'bg-[#00a8ff] text-white rounded-br-xs'
+                                    : 'bg-slate-100 text-slate-800 rounded-bl-xs'
+                                }`}
+                              >
+                                {r.message}
+                              </div>
+                              <span className="text-[9px] text-slate-400 mt-1 font-semibold">
+                                {isStaff ? 'Staff Care Desk' : selectedTicket.guestName} • {formatDate(r.createdAt)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Reply & Fast Canned Response Selector */}
+                    <div className="border-t border-slate-100 pt-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-slate-400">Insert Macro:</span>
+                        <div className="flex flex-wrap gap-1">
+                          {cannedResponses.map((c) => (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => setTicketReplyInput(c.response)}
+                              className="text-[10px] bg-slate-100 hover:bg-sky-50 hover:text-[#00a8ff] text-slate-600 px-2 py-0.5 rounded font-mono transition"
+                              title={c.title}
+                            >
+                              {c.shortcut}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={ticketReplyInput}
+                          onChange={(e) => setTicketReplyInput(e.target.value)}
+                          placeholder="Type response to guest or use /macro shortcuts..."
+                          className="flex-1 text-xs border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-[#00a8ff]"
+                        />
+                        <Button
+                          disabled={!ticketReplyInput.trim() || replyTicketMutation.isPending}
+                          onClick={() =>
+                            replyTicketMutation.mutate({
+                              ticketId: selectedTicket.id,
+                              message: ticketReplyInput,
+                            })
+                          }
+                          className="bg-[#00a8ff] hover:bg-[#0090dd] text-white text-xs font-bold gap-1"
+                        >
+                          <Send className="w-3.5 h-3.5" /> Send
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-24 text-center text-slate-400 text-xs">
+                    Select a support ticket to view conversation thread and 20-min SLA timer.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: Lead Details, Call Logs & Notes                        */}
+      {/* ============================================================== */}
+      {selectedLead && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-black text-lg text-slate-900">{selectedLead.title}</h3>
+                <p className="text-xs text-slate-500">
+                  Contact: <span className="font-bold text-slate-700">{selectedLead.contactName}</span> •{' '}
+                  {selectedLead.email} • {selectedLead.phone}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedLead(null)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Score & Source Overview */}
+            <div className="flex items-center gap-3">
+              <span className="bg-emerald-100 text-emerald-800 font-black text-xs px-2.5 py-1 rounded-full">
+                Score: {selectedLead.leadScore}/100
+              </span>
+              <span className="bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-full capitalize">
+                Source: {selectedLead.source.replace('_', ' ')}
+              </span>
+              <span className="bg-sky-50 text-[#00a8ff] font-bold text-xs px-2.5 py-1 rounded-full">
+                Stage: {selectedLead.stage?.name || 'Inquiry'}
+              </span>
+            </div>
+
+            {/* Call Logs Stream */}
+            <div>
+              <h5 className="font-extrabold text-xs text-slate-800 mb-2 flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-[#00a8ff]" /> Call Log History:
+              </h5>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {selectedLead.callLogs && selectedLead.callLogs.length > 0 ? (
+                  selectedLead.callLogs.map((cl) => (
+                    <div key={cl.id} className="p-2.5 bg-slate-50 rounded-lg text-xs border border-slate-100">
+                      <div className="flex items-center justify-between font-bold text-slate-800">
+                        <span>{cl.callSubject}</span>
+                        <span className="text-[10px] text-slate-400">{cl.callDuration} mins</span>
+                      </div>
+                      {cl.notes && <p className="text-slate-600 mt-1 text-[11px]">{cl.notes}</p>}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400">No calls logged yet.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Add Call Log Box */}
+            <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Call Subject (e.g. Menu tasting review)"
+                value={callLogSubject}
+                onChange={(e) => setCallLogSubject(e.target.value)}
+                className="text-xs border border-slate-300 rounded-lg p-2 flex-1"
+              />
+              <input
+                type="number"
+                placeholder="Mins"
+                value={callLogDuration}
+                onChange={(e) => setCallLogDuration(e.target.value)}
+                className="text-xs border border-slate-300 rounded-lg p-2 w-20"
+              />
+              <Button
+                disabled={!callLogSubject.trim()}
+                onClick={() =>
+                  addCallLogMutation.mutate({
+                    leadId: selectedLead.id,
+                    dto: {
+                      callSubject: callLogSubject,
+                      callDuration: Number(callLogDuration) || 15,
+                      notes: 'Logged from CRM Console',
+                    },
+                  })
+                }
+                size="sm"
+                className="bg-[#00a8ff] text-white text-xs font-bold"
+              >
+                Log Call
+              </Button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* TAB 3: GUEST 360° PROFILES (11.3) */}
-      {activeTab === 'guest360' && (
-        <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Heart className="w-4 h-4 text-rose-500" /> Guest 360° Personalization & Lifetime Value (LTV) Dossier
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Tracks individual guest historical spend, pillow ergonomics, dietary allergies, and VIP tier personalization.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {guestProfiles.map((gp) => (
-              <div
-                key={gp.id}
-                className="p-5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-3 hover:border-emerald-400 transition-colors"
+      {/* ============================================================== */}
+      {/* MODAL: Proposal PDF Details                                   */}
+      {/* ============================================================== */}
+      {selectedDealForProposal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-black text-base text-slate-900">Banquet Event Proposal</h3>
+                <p className="text-xs text-slate-500">{selectedDealForProposal.dealName}</p>
+              </div>
+              <button
+                onClick={() => setSelectedDealForProposal(null)}
+                className="text-slate-400 hover:text-slate-600 p-1"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
-                      {gp.name[0]}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs text-slate-900">{gp.name}</h4>
-                      <p className="text-[10px] text-slate-500">{gp.email}</p>
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="border-amber-300 text-amber-800 bg-amber-50 text-[10px]">
-                    {gp.tier}
-                  </Badge>
-                </div>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-100">
-                  <div className="p-2 bg-slate-50 rounded">
-                    <span className="text-[10px] text-slate-400 block uppercase">Lifetime LTV</span>
-                    <span className="font-bold text-emerald-600">{formatCurrency(gp.ltv)}</span>
+            <div className="space-y-3 text-xs">
+              {selectedDealForProposal.proposals?.map((prop) => (
+                <div key={prop.id} className="p-4 bg-sky-50/50 border border-sky-100 rounded-xl space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-bold text-sky-800">{prop.proposalRef}</span>
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                      {prop.status}
+                    </span>
                   </div>
-                  <div className="p-2 bg-slate-50 rounded">
-                    <span className="text-[10px] text-slate-400 block uppercase">Total Nights</span>
-                    <span className="font-bold text-slate-800">{gp.nightsCount} Nights</span>
-                  </div>
-                </div>
-
-                <div className="space-y-1 text-[11px] text-slate-600">
-                  <div>
-                    <span className="font-bold text-slate-700">Preferred Room:</span> {gp.favRoom}
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-700">Pillow:</span> {gp.pillow}
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-700">Dietary Restrictions:</span>{' '}
-                    <span className="text-rose-600 font-semibold">{gp.dietary}</span>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-100 flex justify-end">
+                  <div className="text-lg font-black text-slate-900">{formatCurrency(prop.amount)}</div>
+                  <p className="text-slate-500 text-[11px]">
+                    Includes Plated Menu selection, Grand Ballroom layout, and Audio-Visual stage setup.
+                  </p>
                   <Button
-                    size="xs"
                     variant="outline"
-                    onClick={() => setSelectedGuestProfile(gp)}
-                    className="text-[10px] h-7 bg-white hover:bg-slate-50"
+                    size="sm"
+                    className="w-full text-xs font-bold text-[#00a8ff] mt-2 gap-1.5"
+                    onClick={() => triggerBanner(`Downloading proposal PDF ${prop.proposalRef}...`)}
                   >
-                    <Eye className="w-3 h-3 mr-1 text-emerald-600" /> Full 360° Profile
+                    <FileText className="w-3.5 h-3.5" /> Download Polished PDF
                   </Button>
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: Digital Banquet Contract E-Signature                   */}
+      {/* ============================================================== */}
+      {selectedDealForContract && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-black text-base text-slate-900">Banquet Contract & E-Signature</h3>
+                <p className="text-xs text-slate-500">{selectedDealForContract.dealName}</p>
+              </div>
+              <button
+                onClick={() => setSelectedDealForContract(null)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {selectedDealForContract.contracts?.map((c) => (
+              <div key={c.id} className="space-y-3 text-xs">
+                <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                  <span className="font-mono font-bold text-slate-700">{c.contractNumber}</span>
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded ${
+                      c.isSigned ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {c.isSigned ? 'Legally Executed & Signed' : 'Pending Signature'}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-slate-50/60 rounded-lg text-slate-600 max-h-36 overflow-y-auto font-mono text-[11px] leading-relaxed border border-slate-100">
+                  {c.termsContent}
+                </div>
+
+                {c.isSigned && c.signatures && c.signatures[0] && (
+                  <div className="p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl space-y-1">
+                    <div className="text-[10px] font-bold text-emerald-800 uppercase">Audit Verified Digital Signature:</div>
+                    <div className="font-bold text-slate-800 text-sm">{c.signatures[0].signerName}</div>
+                    <div className="text-[10px] text-slate-500">
+                      IP Address: {c.signatures[0].signerIp} • Timestamp: {formatDate(c.signatures[0].signedAt)}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* TAB 4: DRAG & DROP FORM BUILDER (11.4) */}
-      {activeTab === 'builder' && (
-        <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-emerald-600" /> Dynamic Lead Capture Form Builder (Chapter 11.4)
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Design custom public RFP forms for weddings, MICE conferences and private dining with instant embed code.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/crm/forms"
-                className="h-8 px-3 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-2xs"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Open Visual Form Studio (11.4)</span>
-              </Link>
-              <Button
-                size="sm"
-                onClick={() => setIsEmbedCodeOpen(true)}
-                variant="outline"
-                className="text-xs bg-white cursor-pointer"
-              >
-                <Code className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Get Embed Code
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-            {/* Field Toolbox */}
-            <div className="md:col-span-5 bg-white border border-slate-200 rounded-lg p-4 shadow-2xs space-y-4 text-xs">
-              <h4 className="font-bold text-slate-800 border-b pb-2">Add Form Field</h4>
-              <form onSubmit={handleAddField} className="space-y-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Field Label *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Number of Banquet Tables"
-                    value={newFieldInput.label}
-                    onChange={(e) => setNewFieldInput({ ...newFieldInput, label: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Field Input Type</label>
-                  <select
-                    value={newFieldInput.type}
-                    onChange={(e) => setNewFieldInput({ ...newFieldInput, type: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  >
-                    <option value="text">Text Input</option>
-                    <option value="email">Email Address</option>
-                    <option value="date">Date Picker</option>
-                    <option value="number">Numeric / PAX Counter</option>
-                    <option value="textarea">Multi-line Textarea</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="checkbox"
-                    id="req"
-                    checked={newFieldInput.required}
-                    onChange={(e) => setNewFieldInput({ ...newFieldInput, required: e.target.checked })}
-                  />
-                  <label htmlFor="req" className="text-slate-700 font-medium">
-                    Mandatory Required Field
-                  </label>
-                </div>
-                <Button type="submit" size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
-                  Add Field to Form Canvas
-                </Button>
-              </form>
-            </div>
-
-            {/* Live Form Canvas Preview */}
-            <div className="md:col-span-7 bg-white border border-slate-200 rounded-lg p-5 shadow-2xs space-y-4">
-              <div className="flex items-center justify-between border-b pb-2">
-                <div>
-                  <h4 className="font-bold text-sm text-slate-900">Live Form Canvas Preview</h4>
-                  <p className="text-[11px] text-slate-500">Public Corporate & Wedding Banquet Inquiry</p>
-                </div>
-                <Badge variant="outline" className="border-emerald-300 text-emerald-800 bg-emerald-50 text-[10px]">
-                  Responsive Form
-                </Badge>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                {formFields.map((field) => (
-                  <div key={field.id} className="space-y-1">
-                    <label className="block text-slate-700 font-semibold">
-                      {field.label} {field.required && <span className="text-rose-500">*</span>}
-                    </label>
-                    {field.type === 'textarea' ? (
-                      <textarea rows={2} disabled className="w-full p-2 bg-slate-50 border border-slate-200 rounded" />
-                    ) : field.type === 'select' ? (
-                      <select disabled className="w-full h-8 px-2.5 bg-slate-50 border border-slate-200 rounded">
-                        {(field.options || []).map((o: string, idx: number) => (
-                          <option key={idx}>{o}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type={field.type}
-                        disabled
-                        placeholder={`Enter ${field.label.toLowerCase()}...`}
-                        className="w-full h-8 px-2.5 bg-slate-50 border border-slate-200 rounded text-slate-400"
-                      />
-                    )}
-                  </div>
-                ))}
-                <div className="pt-2">
-                  <Button disabled className="w-full bg-emerald-600 text-white text-xs">
-                    Submit Banquet Inquiry
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: COMPLAINTS & SLA (11.5) */}
-      {activeTab === 'complaints' && (
-        <div className="space-y-4">
-          <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <LifeBuoy className="w-4 h-4 text-emerald-600" /> Guest Grievance Tracker & Resolution SLA
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Target SLA: 15-minute acknowledgment, 60-minute resolution timer with automatic duty manager escalation.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              onClick={() => setIsNewComplaintOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1" /> Log Guest Ticket
-            </Button>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-2xs">
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="py-3 px-4">Room / Unit</th>
-                  <th className="py-3 px-4">Guest Name</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Grievance Description</th>
-                  <th className="py-3 px-4">SLA Countdown</th>
-                  <th className="py-3 px-4">Assigned Personnel</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {complaints.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900">{c.room}</td>
-                    <td className="py-3 px-4 text-slate-700 font-medium">{c.guest}</td>
-                    <td className="py-3 px-4">
-                      <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50/50">
-                        {c.category}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600 max-w-xs">{c.issue}</td>
-                    <td className="py-3 px-4 font-mono font-bold text-amber-600">{c.slaRemaining}</td>
-                    <td className="py-3 px-4 text-slate-600">{c.assignedTo}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          c.status === 'RESOLVED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      {c.status !== 'RESOLVED' ? (
-                        <Button
-                          size="xs"
-                          onClick={() => {
-                            setComplaints(
-                              complaints.map((item) =>
-                                item.id === c.id ? { ...item, status: 'RESOLVED' } : item,
-                              ),
-                            );
-                            triggerBanner(`Ticket ${c.id} marked as Resolved! SLA met.`);
-                          }}
-                          className="text-[10px] h-6 bg-emerald-600 hover:bg-emerald-700 text-white"
-                        >
-                          Resolve SLA
-                        </Button>
-                      ) : (
-                        <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 justify-end">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Resolved
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 1: NEW BANQUET LEAD */}
-      {isAddLeadOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-emerald-600" /> New Banquet Event Deal (11.1)
-              </h3>
-              <button onClick={() => setIsAddLeadOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
-            </div>
-            <form onSubmit={handleAddDeal} className="p-5 space-y-4 text-xs">
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Client / Corporate Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Apex Tech Summit"
-                  value={newDeal.clientName}
-                  onChange={(e) => setNewDeal({ ...newDeal, clientName: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Event Type</label>
-                  <select
-                    value={newDeal.eventType}
-                    onChange={(e) => setNewDeal({ ...newDeal, eventType: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  >
-                    <option value="Corporate Gala & Awards">Corporate Gala & Awards</option>
-                    <option value="Luxury Wedding Reception">Luxury Wedding Reception</option>
-                    <option value="Diplomatic Summit">Diplomatic Summit</option>
-                    <option value="Private Dinner">Private Dinner</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Banquet Space</label>
-                  <select
-                    value={newDeal.venue}
-                    onChange={(e) => setNewDeal({ ...newDeal, venue: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  >
-                    <option value="Grand Crystal Ballroom">Grand Crystal Ballroom</option>
-                    <option value="Amber Garden Pavilion">Amber Garden Pavilion</option>
-                    <option value="Skyline Terrace">Skyline Terrace</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Target Date</label>
-                  <input
-                    type="date"
-                    value={newDeal.eventDate}
-                    onChange={(e) => setNewDeal({ ...newDeal, eventDate: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Headcount (PAX)</label>
-                  <input
-                    type="number"
-                    value={newDeal.pax}
-                    onChange={(e) => setNewDeal({ ...newDeal, pax: Number(e.target.value) })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Estimated Budget ($)</label>
-                <input
-                  type="number"
-                  value={newDeal.budget}
-                  onChange={(e) => setNewDeal({ ...newDeal, budget: Number(e.target.value) })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsAddLeadOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                  Create Banquet Deal
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 2: GUEST 360 FULL PROFILE */}
-      {selectedGuestProfile && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Heart className="w-4 h-4 text-rose-500" /> Guest 360° Personalization Profile (11.3)
-              </h3>
-              <button onClick={() => setSelectedGuestProfile(null)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
-            </div>
-            <div className="p-5 space-y-4 text-xs">
-              <div className="flex items-center justify-between pb-3 border-b">
-                <div>
-                  <h4 className="text-base font-bold text-slate-900">{selectedGuestProfile.name}</h4>
-                  <p className="text-slate-500 text-[11px]">{selectedGuestProfile.email}</p>
-                </div>
-                <Badge variant="outline" className="border-amber-300 text-amber-800 bg-amber-50">
-                  {selectedGuestProfile.tier}
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Total LTV</span>
-                  <span className="font-bold text-emerald-600">{formatCurrency(selectedGuestProfile.ltv)}</span>
-                </div>
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Completed Stays</span>
-                  <span className="font-bold text-slate-800">{selectedGuestProfile.totalStays}</span>
-                </div>
-                <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Nights Stayed</span>
-                  <span className="font-bold text-blue-600">{selectedGuestProfile.nightsCount}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 p-3 bg-slate-50 rounded border border-slate-200">
-                <span className="font-bold text-slate-800 block">Hospitality Preferences & Personalization:</span>
-                <p>
-                  <strong>Preferred Suite:</strong> {selectedGuestProfile.favRoom}
-                </p>
-                <p>
-                  <strong>Pillow Type:</strong> {selectedGuestProfile.pillow}
-                </p>
-                <p>
-                  <strong>Dietary Restrictions:</strong>{' '}
-                  <span className="text-rose-600 font-bold">{selectedGuestProfile.dietary}</span>
-                </p>
-                <p>
-                  <strong>VIP In-Room Amenities:</strong> {selectedGuestProfile.amenities}
-                </p>
-              </div>
-
-              <div className="flex justify-end pt-3 border-t">
-                <Button size="sm" onClick={() => setSelectedGuestProfile(null)} className="bg-emerald-600 text-white">
-                  Close Profile
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: LOG GUEST COMPLAINT */}
-      {isNewComplaintOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <LifeBuoy className="w-4 h-4 text-emerald-600" /> Log Guest Ticket (11.5 SLA)
-              </h3>
-              <button onClick={() => setIsNewComplaintOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
-              </button>
-            </div>
-            <form onSubmit={handleAddComplaint} className="p-5 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Room / Suite *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Room 304"
-                    value={newComplaintInput.room}
-                    onChange={(e) => setNewComplaintInput({ ...newComplaintInput, room: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Guest Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Maria Santos"
-                    value={newComplaintInput.guest}
-                    onChange={(e) => setNewComplaintInput({ ...newComplaintInput, guest: e.target.value })}
-                    className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Category</label>
-                <select
-                  value={newComplaintInput.category}
-                  onChange={(e) => setNewComplaintInput({ ...newComplaintInput, category: e.target.value })}
-                  className="w-full h-8 px-2.5 border border-slate-200 rounded"
-                >
-                  <option value="HVAC Temperature">HVAC Temperature</option>
-                  <option value="Housekeeping Turn">Housekeeping Turn</option>
-                  <option value="F&B Room Service">F&B Room Service</option>
-                  <option value="Noise Disturbance">Noise Disturbance</option>
-                  <option value="Plumbing / Water">Plumbing / Water</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">Grievance Description *</label>
-                <textarea
-                  rows={3}
-                  required
-                  placeholder="Detail guest request..."
-                  value={newComplaintInput.issue}
-                  onChange={(e) => setNewComplaintInput({ ...newComplaintInput, issue: e.target.value })}
-                  className="w-full p-2 border border-slate-200 rounded"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsNewComplaintOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-emerald-600 text-white">
-                  Create SLA Ticket
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 4: EMBED CODE */}
+      {/* ============================================================== */}
+      {/* MODAL: Embed Code Snippet for Forms                           */}
+      {/* ============================================================== */}
       {isEmbedCodeOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Code className="w-4 h-4 text-emerald-600" /> Public Form Embed Code
-              </h3>
-              <button onClick={() => setIsEmbedCodeOpen(false)}>
-                <X className="w-4 h-4 text-slate-400" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-black text-base text-slate-900">Embed Public Form on Website</h3>
+                <p className="text-xs text-slate-500">Copy iframe code or script tag for your landing page.</p>
+              </div>
+              <button onClick={() => setIsEmbedCodeOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-5 space-y-3 text-xs">
-              <p className="text-slate-600">
-                Paste this snippet onto your landing page or partner marketing site:
-              </p>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-700">HTML Iframe Embed Code:</label>
               <textarea
                 readOnly
                 rows={4}
-                className="w-full font-mono text-[11px] p-2 bg-slate-50 border border-slate-200 rounded text-slate-800"
-                value={`<iframe src="https://omnistay.com/forms/banquet-rfp-2026" width="100%" height="650" frameborder="0"></iframe>`}
+                value={`<iframe src="https://omnistay.softsasi.com/embed/forms/${activeFormTemplate?.id || 'form-id'}" width="100%" height="650" frameborder="0"></iframe>`}
+                className="w-full text-xs font-mono p-3 bg-slate-900 text-sky-400 rounded-xl"
               />
-              <div className="flex justify-end pt-2">
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setIsEmbedCodeOpen(false);
-                    triggerBanner('Copied embed iframe code to clipboard!');
-                  }}
-                  className="bg-emerald-600 text-white"
-                >
-                  Copy Code
+            </div>
+            <Button
+              onClick={() => {
+                triggerBanner('Embed code copied to clipboard!');
+                setIsEmbedCodeOpen(false);
+              }}
+              className="w-full bg-[#00a8ff] text-white text-xs font-bold"
+            >
+              Copy Embed Code
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: Add New Inbound Lead                                   */}
+      {/* ============================================================== */}
+      {isAddLeadOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-black text-base text-slate-900">Create New Inbound Lead</h3>
+                <p className="text-xs text-slate-500">Domain rules will automatically compute commercial lead score.</p>
+              </div>
+              <button onClick={() => setIsAddLeadOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                createLeadMutation.mutate(newLead);
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Inquiry / Event Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Royal Wedding & Ballroom Buyout"
+                  value={newLead.title}
+                  onChange={(e) => setNewLead({ ...newLead, title: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Contact Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Lady Catherine"
+                  value={newLead.contactName}
+                  onChange={(e) => setNewLead({ ...newLead, contactName: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="guest@example.com"
+                    value={newLead.email}
+                    onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    placeholder="+1 (555) 0123"
+                    value={newLead.phone}
+                    onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Budget ($)</label>
+                  <input
+                    type="number"
+                    value={newLead.budget}
+                    onChange={(e) => setNewLead({ ...newLead, budget: Number(e.target.value) })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Headcount</label>
+                  <input
+                    type="number"
+                    value={newLead.guestCount}
+                    onChange={(e) => setNewLead({ ...newLead, guestCount: Number(e.target.value) })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Days</label>
+                  <input
+                    type="number"
+                    value={newLead.durationDays}
+                    onChange={(e) => setNewLead({ ...newLead, durationDays: Number(e.target.value) })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
+                <Button variant="outline" type="button" onClick={() => setIsAddLeadOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-[#00a8ff] text-white font-bold">
+                  Create Lead
                 </Button>
               </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* MODAL: Add New Banquet Deal                                   */}
+      {/* ============================================================== */}
+      {isAddDealOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-black text-base text-slate-900">Add Banquet Deal</h3>
+                <p className="text-xs text-slate-500">Initialize deal on sales pipeline Kanban.</p>
+              </div>
+              <button onClick={() => setIsAddDealOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                <X className="w-5 h-5" />
+              </button>
             </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                createDealMutation.mutate(newDeal);
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Deal Title / Client Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Geneva Watchmakers VIP Preview"
+                  value={newDeal.dealName}
+                  onChange={(e) => setNewDeal({ ...newDeal, dealName: e.target.value })}
+                  className="w-full border border-slate-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Deal Value ($)</label>
+                  <input
+                    type="number"
+                    value={newDeal.dealValue}
+                    onChange={(e) => setNewDeal({ ...newDeal, dealValue: Number(e.target.value) })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Target Close Date</label>
+                  <input
+                    type="date"
+                    value={newDeal.expectedClose}
+                    onChange={(e) => setNewDeal({ ...newDeal, expectedClose: e.target.value })}
+                    className="w-full border border-slate-300 rounded-lg p-2"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
+                <Button variant="outline" type="button" onClick={() => setIsAddDealOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-[#00a8ff] text-white font-bold">
+                  Save Deal
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}

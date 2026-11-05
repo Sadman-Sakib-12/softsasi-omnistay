@@ -563,3 +563,4 @@ export const hrmService = {
     return await api.patch<any>(`/api/v1/hrm/recruitment/offboarding/${id}`, { isReturned });
   },
 };
+

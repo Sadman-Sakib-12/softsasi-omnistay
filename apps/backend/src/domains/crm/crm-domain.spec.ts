@@ -104,6 +104,9 @@ describe('CRM Domain — Clean Architecture & DDD Pilot Test Suite', () => {
             ? Promise.resolve({ id: 'prof-1', userId: 'user-existing', lifetimeSpend: 4000, totalNights: 8, vipTier: 'Silver' })
             : Promise.resolve(null),
         ),
+        findAllProfiles: vi.fn().mockResolvedValue([
+          { id: 'prof-1', userId: 'user-existing', lifetimeSpend: 4000, totalNights: 8, vipTier: 'Silver' },
+        ]),
         createProfile: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'prof-new', ...data })),
         updateProfile: vi.fn().mockImplementation((userId, data) => Promise.resolve({ id: 'prof-1', userId, ...data })),
         addPreference: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'pref-1', ...data })),
@@ -189,6 +192,10 @@ describe('CRM Domain — Clean Architecture & DDD Pilot Test Suite', () => {
       // 8 nights + 30 = 38 nights, $4000 + $8000 = $12000 -> Platinum
       const updated = await guestService.recordStayAndSpend('user-existing', 30, 8000);
       expect(updated.vipTier).toBe('Platinum');
+
+      const all = await guestService.getAllProfiles();
+      expect(all.length).toBeGreaterThan(0);
+      expect(mockGuestRepo.findAllProfiles).toHaveBeenCalled();
     });
 
     it('SupportApplicationService: should generate support tickets and replies', async () => {

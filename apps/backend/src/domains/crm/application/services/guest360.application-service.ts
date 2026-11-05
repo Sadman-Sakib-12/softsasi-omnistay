@@ -31,6 +31,10 @@ export class Guest360ApplicationService {
     return profile;
   }
 
+  async getAllProfiles(limit = 100) {
+    return this.guestRepo.findAllProfiles(limit);
+  }
+
   async updateProfile(userId: string, dto: UpdateGuestProfile360Dto) {
     await this.getOrCreateProfile(userId);
     return this.guestRepo.updateProfile(userId, {
