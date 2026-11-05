@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { BeatLoader } from 'react-spinners';
+import { api } from '@/lib/api/client';
 import {
   Mail,
   Plus,
@@ -71,11 +73,9 @@ export default function EmailTemplateBuilderPage() {
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:4000/api/v1/communications/email/templates');
-      if (res.ok) {
-        const data = await res.json();
-        setTemplates(data);
-      }
+      const res = await api.get<any>('/api/v1/communications/email/templates');
+      const data = Array.isArray(res) ? res : res?.data || [];
+      setTemplates(data);
     } catch (err) {
       console.error('Failed to load email templates:', err);
     } finally {
@@ -112,36 +112,25 @@ export default function EmailTemplateBuilderPage() {
     setSaveSuccess(false);
 
     try {
-      let res;
       if (currentTemplate.id) {
-        res = await fetch(`http://localhost:4000/api/v1/communications/email/templates/${currentTemplate.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: currentTemplate.name,
-            subject: currentTemplate.subject,
-            htmlBody: currentTemplate.htmlBody,
-            mergeTags: currentTemplate.mergeTags,
-          }),
+        await api.put(`/api/v1/communications/email/templates/${currentTemplate.id}`, {
+          name: currentTemplate.name,
+          subject: currentTemplate.subject,
+          htmlBody: currentTemplate.htmlBody,
+          mergeTags: currentTemplate.mergeTags,
         });
       } else {
-        res = await fetch('http://localhost:4000/api/v1/communications/email/templates', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: currentTemplate.name,
-            subject: currentTemplate.subject,
-            htmlBody: currentTemplate.htmlBody,
-            mergeTags: currentTemplate.mergeTags,
-          }),
+        await api.post('/api/v1/communications/email/templates', {
+          name: currentTemplate.name,
+          subject: currentTemplate.subject,
+          htmlBody: currentTemplate.htmlBody,
+          mergeTags: currentTemplate.mergeTags,
         });
       }
 
-      if (res.ok) {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3500);
-        await fetchTemplates();
-      }
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3500);
+      await fetchTemplates();
     } catch (err) {
       console.error('Failed to save email template:', err);
     } finally {
@@ -159,21 +148,15 @@ export default function EmailTemplateBuilderPage() {
       const renderedHtml = renderPreviewHtml(currentTemplate.htmlBody);
       const renderedSubject = renderPreviewSubject(currentTemplate.subject);
 
-      const res = await fetch('http://localhost:4000/api/v1/communications/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          recipient: testRecipient,
-          subject: renderedSubject,
-          htmlBody: renderedHtml,
-          provider: 'sendgrid_hotel_cluster_1',
-        }),
+      await api.post('/api/v1/communications/email/send', {
+        recipient: testRecipient,
+        subject: renderedSubject,
+        htmlBody: renderedHtml,
+        provider: 'sendgrid_hotel_cluster_1',
       });
 
-      if (res.ok) {
-        setTestSuccessNotice(`Test email successfully delivered to ${testRecipient}! Logged in Omnichannel Delivery Audit.`);
-        setTimeout(() => setTestSuccessNotice(null), 5000);
-      }
+      setTestSuccessNotice(`Test email successfully delivered to ${testRecipient}! Logged in Omnichannel Delivery Audit.`);
+      setTimeout(() => setTestSuccessNotice(null), 5000);
     } catch (err) {
       console.error('Test email failed:', err);
     } finally {
@@ -292,7 +275,7 @@ export default function EmailTemplateBuilderPage() {
           <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Select Template:</span>
           {loading ? (
             <div className="text-xs text-slate-400 flex items-center gap-1.5">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading templates...
+              <BeatLoader color="#22d3ee" size={8} speedMultiplier={1.2} /> Loading templates...
             </div>
           ) : (
             <select

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Headers, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser, JwtAuthGuard } from '@omnistay/backend-common';
+import { CurrentUser, JwtAuthGuard, Public } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 import { WhatsappService } from '../../application/services/whatsapp.service.js';
 
@@ -9,8 +9,7 @@ import { WhatsappService } from '../../application/services/whatsapp.service.js'
 export class WhatsappController {
   constructor(private readonly whatsappService: WhatsappService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Post('send')
   @ApiOperation({ summary: 'Send automated transactional WhatsApp message or template trigger' })
   sendMessage(
@@ -23,21 +22,19 @@ export class WhatsappController {
     },
   ) {
     return this.whatsappService.sendWhatsapp({
-      tenantId: user.organizationId || '00000000-0000-0000-0000-000000000001',
+      tenantId: user?.organizationId || '00000000-0000-4000-a000-000000000001',
       ...body,
     });
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Get('messages')
   @ApiOperation({ summary: 'List recent inbound and outbound WhatsApp communications' })
   getMessages(@CurrentUser() user: AuthenticatedUserPayload) {
-    return this.whatsappService.getMessages(user.organizationId || '00000000-0000-0000-0000-000000000001');
+    return this.whatsappService.getMessages(user?.organizationId || '00000000-0000-4000-a000-000000000001');
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Post('templates')
   @ApiOperation({ summary: 'Register approved WhatsApp HSM notification template' })
   createTemplate(

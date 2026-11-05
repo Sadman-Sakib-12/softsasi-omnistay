@@ -69,4 +69,8 @@ export class ChatService {
   async getChannelMembers(channelId: string) {
     return this.commRepo.getChannelMembers(channelId);
   }
+
+  async getCommunicationOverview(tenantId?: string) {
+    return this.commRepo.getCommunicationOverview(tenantId);
+  }
 }

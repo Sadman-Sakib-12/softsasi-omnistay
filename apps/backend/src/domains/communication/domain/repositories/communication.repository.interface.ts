@@ -20,6 +20,7 @@ export interface ICommunicationRepository {
   findSmsLogs(phoneTo?: string): Promise<any[]>;
   upsertSmsGateway(gatewayKey: string, data: any): Promise<any>;
   findActiveSmsGateway(): Promise<any | null>;
+  findSmsGateways(): Promise<any[]>;
 
   createEmailTemplate(data: any): Promise<any>;
   updateEmailTemplate(id: string, data: any): Promise<any>;
@@ -28,7 +29,7 @@ export interface ICommunicationRepository {
   findEmailTemplates(): Promise<any[]>;
 
   createEmailCampaign(data: any): Promise<any>;
-  findEmailCampaigns(tenantId: string): Promise<any[]>;
+  findEmailCampaigns(tenantId?: string): Promise<any[]>;
 
   createEmailLog(data: any): Promise<any>;
   findEmailLogs(recipient?: string): Promise<any[]>;
@@ -37,4 +38,7 @@ export interface ICommunicationRepository {
   createPushNotification(data: any): Promise<any>;
   findPushNotifications(userId: string): Promise<any[]>;
   markPushNotificationAsRead(id: string): Promise<any>;
+
+  // Chapter 17 Enterprise Overview
+  getCommunicationOverview(tenantId?: string): Promise<any>;
 }

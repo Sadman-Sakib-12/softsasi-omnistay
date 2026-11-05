@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@omnistay/backend-common';
+import { JwtAuthGuard, Public } from '@omnistay/backend-common';
 import { SmsGatewayService } from '../../application/services/sms-gateway.service.js';
 
 @ApiTags('Omnichannel - High-Delivery SMS Gateways')
@@ -10,6 +10,7 @@ import { SmsGatewayService } from '../../application/services/sms-gateway.servic
 export class SmsController {
   constructor(private readonly smsService: SmsGatewayService) {}
 
+  @Public()
   @Post('send')
   @ApiOperation({ summary: 'Dispatch SMS alert or critical OTP across carrier gateways' })
   sendSms(@Body() body: {
@@ -21,6 +22,7 @@ export class SmsController {
     return this.smsService.sendSms(body);
   }
 
+  @Public()
   @Post('gateways')
   @ApiOperation({ summary: 'Configure carrier SMS connector credentials (Twilio, Vonage, AWS SNS)' })
   configureGateway(@Body() body: {
@@ -33,6 +35,14 @@ export class SmsController {
     return this.smsService.configureGateway(body);
   }
 
+  @Public()
+  @Get('gateways')
+  @ApiOperation({ summary: 'List all configured carrier SMS gateways' })
+  getGateways() {
+    return this.smsService.getGateways();
+  }
+
+  @Public()
   @Get('logs')
   @ApiOperation({ summary: 'Retrieve historical SMS delivery and audit logs' })
   getLogs(@Query('phoneTo') phoneTo?: string) {

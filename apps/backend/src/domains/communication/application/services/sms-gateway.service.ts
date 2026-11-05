@@ -46,4 +46,8 @@ export class SmsGatewayService {
   async getLogs(phoneTo?: string) {
     return this.commRepo.findSmsLogs(phoneTo);
   }
+
+  async getGateways() {
+    return this.commRepo.findSmsGateways();
+  }
 }

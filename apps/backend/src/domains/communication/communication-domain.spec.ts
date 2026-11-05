@@ -98,6 +98,9 @@ class MockCommunicationRepository implements ICommunicationRepository {
   async findActiveSmsGateway() {
     return Array.from(this.smsGateways.values()).find((g) => g.isActive) || null;
   }
+  async findSmsGateways() {
+    return Array.from(this.smsGateways.values());
+  }
   async createEmailTemplate(data: any) {
     const tpl = { id: `etpl-${Date.now()}`, ...data, createdAt: new Date() };
     this.emailTemplates.set(data.name, tpl);
@@ -151,6 +154,30 @@ class MockCommunicationRepository implements ICommunicationRepository {
     const n = this.pushNotifications.find((x) => x.id === id);
     if (n) n.isRead = true;
     return n;
+  }
+  async getCommunicationOverview(tenantId?: string) {
+    return {
+      channels: Array.from(this.channels.values()),
+      whatsapp: {
+        messages: this.whatsappMessages,
+        totalMessages: this.whatsappMessages.length,
+      },
+      sms: {
+        gateways: Array.from(this.smsGateways.values()),
+        logs: this.smsLogs,
+      },
+      email: {
+        templates: Array.from(this.emailTemplates.values()),
+        campaigns: this.emailCampaigns,
+      },
+      push: {
+        notifications: this.pushNotifications,
+      },
+      summary: {
+        totalChannels: this.channels.size,
+        activeWhatsappChats: this.whatsappMessages.length,
+      },
+    };
   }
 }
 
@@ -342,6 +369,16 @@ describe('Phase 8: Omnichannel Communication & Messaging Infrastructure', () => 
 
       await pushService.markAsRead(notification.id);
       expect(notifs[0].isRead).toBe(true);
+    });
+
+    it('Chapter 17: should return comprehensive omnichannel communication overview', async () => {
+      const overview = await chatService.getCommunicationOverview('tenant-alpha');
+      expect(overview).toBeDefined();
+      expect(overview.channels).toBeDefined();
+      expect(overview.whatsapp).toBeDefined();
+      expect(overview.sms).toBeDefined();
+      expect(overview.email).toBeDefined();
+      expect(overview.push).toBeDefined();
     });
   });
 });
