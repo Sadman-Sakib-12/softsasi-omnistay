@@ -290,6 +290,64 @@ export class PrismaAiRepository implements IAiRepository {
         });
       }
 
+      // 14.6 Canonical AI Agent Personalities in PostgreSQL system_settings
+      const existingAgentsSetting = await this.prisma.systemSetting.findUnique({
+        where: { key: 'ai_configured_agents' },
+      });
+      if (!existingAgentsSetting) {
+        await this.prisma.systemSetting.create({
+          data: {
+            key: 'ai_configured_agents',
+            value: JSON.stringify([
+              {
+                id: 'agent-01',
+                name: 'Store Assistant',
+                slug: 'store-assistant',
+                department: 'General Support & Concierge',
+                model: 'gpt-4o-mini',
+                provider: 'OpenAI',
+                tone: 'Friendly and Professional',
+                conversationsCount: 148,
+                status: 'Published',
+                accentColor: '#4f46e5',
+                temperature: 0.7,
+                description: 'Official AI Assistant for store shopping, product recommendations, and customer support.',
+              },
+              {
+                id: 'agent-02',
+                name: 'Dining & Room Service Bot',
+                slug: 'dining-room-service',
+                department: 'Food & Beverage',
+                model: 'deepseek-chat',
+                provider: 'DeepSeek',
+                tone: 'Hospitality Focused & Warm',
+                conversationsCount: 84,
+                status: 'Published',
+                accentColor: '#059669',
+                temperature: 0.5,
+                description: 'Autonomous in-chat coffee, wine pairing, and in-villa dining orders.',
+              },
+              {
+                id: 'agent-03',
+                name: 'VIP Guest Relations Manager',
+                slug: 'vip-relations',
+                department: 'Executive Front Desk',
+                model: 'gpt-4o',
+                provider: 'OpenAI',
+                tone: 'Luxury Formal & Attentive',
+                conversationsCount: 42,
+                status: 'Published',
+                accentColor: '#d97706',
+                temperature: 0.6,
+                description: 'Multimodal concierge handling high-touch suite upgrades, yacht charters, and VIP transfers.',
+              },
+            ]),
+            group: 'ai_concierge',
+            description: 'Canonical AI agent configurations stored in PostgreSQL database',
+          },
+        });
+      }
+
       this.seeded = true;
     } catch {
       // In-memory or testing fallback
@@ -320,50 +378,33 @@ export class PrismaAiRepository implements IAiRepository {
     const cfg = await this.findConfigByTenantId(tenantId);
     const convCount = await this.prisma.aiConversation.count();
 
-    return [
-      {
-        id: cfg?.id || 'agent-01',
-        name: cfg?.agentName || 'Store Assistant',
-        slug: 'store-assistant',
-        department: 'General Support & Concierge',
-        model: cfg?.modelName || 'gpt-4o-mini',
-        provider: cfg?.modelProvider || 'OpenAI',
-        tone: 'Friendly and Professional',
+    const setting = await this.prisma.systemSetting.findUnique({
+      where: { key: 'ai_configured_agents' },
+    });
+
+    let agents: any[] = [];
+    if (setting?.value) {
+      try {
+        agents = JSON.parse(setting.value);
+      } catch {
+        agents = [];
+      }
+    }
+
+    if (cfg && agents.length > 0) {
+      agents[0] = {
+        ...agents[0],
+        id: cfg.id,
+        name: cfg.agentName,
+        model: cfg.modelName,
+        provider: cfg.modelProvider,
+        status: cfg.isEnabled !== false ? 'Published' : 'Draft',
+        temperature: Number(cfg.temperature || 0.7),
         conversationsCount: convCount > 0 ? convCount + 144 : 148,
-        status: cfg?.isEnabled !== false ? 'Published' : 'Draft',
-        accentColor: '#4f46e5',
-        temperature: Number(cfg?.temperature || 0.7),
-        description: 'Official AI Assistant for store shopping, product recommendations, and customer support.',
-      },
-      {
-        id: 'agent-02',
-        name: 'Dining & Room Service Bot',
-        slug: 'dining-room-service',
-        department: 'Food & Beverage',
-        model: 'deepseek-chat',
-        provider: 'DeepSeek',
-        tone: 'Hospitality Focused & Warm',
-        conversationsCount: 84,
-        status: 'Published',
-        accentColor: '#059669',
-        temperature: 0.5,
-        description: 'Autonomous in-chat coffee, wine pairing, and in-villa dining orders.',
-      },
-      {
-        id: 'agent-03',
-        name: 'VIP Guest Relations Manager',
-        slug: 'vip-relations',
-        department: 'Executive Front Desk',
-        model: 'gpt-4o',
-        provider: 'OpenAI',
-        tone: 'Luxury Formal & Attentive',
-        conversationsCount: 42,
-        status: 'Published',
-        accentColor: '#d97706',
-        temperature: 0.6,
-        description: 'Multimodal concierge handling high-touch suite upgrades, yacht charters, and VIP transfers.',
-      },
-    ];
+      };
+    }
+
+    return agents;
   }
 
   // --- TELEMETRY & ANALYTICS (Figure 14.2) ---

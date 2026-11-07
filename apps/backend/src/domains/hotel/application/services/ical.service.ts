@@ -279,27 +279,19 @@ export class IcalService {
       }
     }
 
-    // If external feed is offline / mock in test environment, provide sample events for verification
+    // If external feed is offline / unreachable, return clean status without synthesizing fake data
     if (!fetchSuccessful && (!icsContent || !icsContent.includes('BEGIN:VEVENT'))) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const afterTomorrow = new Date();
-      afterTomorrow.setDate(afterTomorrow.getDate() + 3);
-
-      const d1 = tomorrow.toISOString().split('T')[0].replace(/-/g, '');
-      const d2 = afterTomorrow.toISOString().split('T')[0].replace(/-/g, '');
-
-      icsContent = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'BEGIN:VEVENT',
-        `UID:ota-sync-${feed.id}-1@${feed.channelName}.com`,
-        `SUMMARY:${feed.channelName.toUpperCase()} External Guest Reservation`,
-        `DTSTART;VALUE=DATE:${d1}`,
-        `DTEND;VALUE=DATE:${d2}`,
-        'END:VEVENT',
-        'END:VCALENDAR',
-      ].join('\r\n');
+      this.logger.warn(`iCal sync aborted for feed ${feed.id}: external feed unreachable and no valid ics content`);
+      return {
+        message: `External iCal feed for channel '${feed.channelName}' is currently unreachable. Zero fake events applied.`,
+        feedId: feed.id,
+        channelName: feed.channelName,
+        lastSyncedAt: feed.lastSyncedAt,
+        eventsSynced: 0,
+        blackoutDatesApplied: 0,
+        conflictsDetected: 0,
+        conflicts: [],
+      };
     }
 
     const parsedEvents = parseIcsContent(icsContent);

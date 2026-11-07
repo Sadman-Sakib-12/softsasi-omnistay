@@ -30,6 +30,7 @@ export interface ILoyaltyRepository {
   updateMember(id: string, data: Record<string, any>): Promise<any>;
   createPointsLedger(data: { memberId: string; pointsDelta: number; reason: string }): Promise<any>;
   findPointsLedger(memberId: string): Promise<any[]>;
+  getCatalog(): Promise<any[]>;
 
   findAllGiftCards(): Promise<any[]>;
   createGiftCard(data: {

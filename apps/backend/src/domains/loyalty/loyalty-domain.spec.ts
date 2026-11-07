@@ -95,6 +95,13 @@ describe('Loyalty Domain — Clean Architecture & DDD Test Suite (Chapter 13)', 
         updateMember: vi.fn().mockImplementation((id, data) => Promise.resolve({ id, ...data })),
         createPointsLedger: vi.fn().mockImplementation((data) => Promise.resolve({ id: 'l-1', ...data })),
         findPointsLedger: vi.fn().mockResolvedValue([{ id: 'l-1', pointsDelta: 300 }]),
+        getCatalog: vi.fn().mockResolvedValue([
+          { id: 'cat-cash-10', title: '$10 Cash', pointsRequired: 1000, cashValue: 10.0 },
+          { id: 'cat-cash-25', title: '$25 Cash', pointsRequired: 2500, cashValue: 25.0 },
+          { id: 'cat-spa-60', title: 'Spa Massage', pointsRequired: 5000, cashValue: 120.0 },
+          { id: 'cat-dining-sunset', title: 'Sunset Dinner', pointsRequired: 6000, cashValue: 160.0 },
+          { id: 'cat-vip-transfer', title: 'VIP Limo', pointsRequired: 8000, cashValue: 200.0 },
+        ]),
 
         findAllGiftCards: vi.fn().mockResolvedValue([
           { id: 'gc-1', code: 'OMNI-2026-X892-LUX1', currentVal: 350 },
@@ -188,7 +195,7 @@ describe('Loyalty Domain — Clean Architecture & DDD Test Suite (Chapter 13)', 
       expect(res.pointsEarned).toBe(300);
       expect(res.member.tierId).toBe('tier-gold');
 
-      const catalog = loyaltyService.getCatalog();
+      const catalog = await loyaltyService.getCatalog();
       expect(catalog.length).toBeGreaterThan(4);
       expect(catalog.some((c) => c.pointsRequired === 1000)).toBe(true);
     });

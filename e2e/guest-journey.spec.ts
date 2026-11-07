@@ -85,3 +85,4 @@ test.describe('E2E Master Guest Journey (Chapter 21.2)', () => {
     expect([200, 201, 400, 404]).toContain(folioSettlementRes.status());
   });
 });
+

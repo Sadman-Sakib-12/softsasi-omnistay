@@ -444,6 +444,62 @@ export class PrismaLoyaltyRepository implements ILoyaltyRepository {
         });
       }
 
+      // 13.5 Loyalty Reward Catalog in PostgreSQL system_settings
+      const existingCatalogSetting = await this.prisma.systemSetting.findUnique({
+        where: { key: 'loyalty_rewards_catalog' },
+      });
+      if (!existingCatalogSetting) {
+        await this.prisma.systemSetting.create({
+          data: {
+            key: 'loyalty_rewards_catalog',
+            value: JSON.stringify([
+              {
+                id: 'cat-cash-10',
+                title: '$10 Direct Checkout Cash Discount',
+                pointsRequired: 1000,
+                cashValue: 10.0,
+                category: 'Direct Folio Credit',
+                description: 'Instant $10 cash deduction applied to room booking or dining checkout (1,000 pts = $10).',
+              },
+              {
+                id: 'cat-cash-25',
+                title: '$25 Direct Checkout Cash Discount',
+                pointsRequired: 2500,
+                cashValue: 25.0,
+                category: 'Direct Folio Credit',
+                description: 'Instant $25 cash deduction applied to room booking or dining checkout.',
+              },
+              {
+                id: 'cat-spa-60',
+                title: 'Free 60-Minute Deep Tissue Spa Massage',
+                pointsRequired: 5000,
+                cashValue: 120.0,
+                category: 'Spa & Wellness',
+                description: 'Relaxing holistic massage treatment at the Imperial Spa & Wellness Center.',
+              },
+              {
+                id: 'cat-suite-upgrade',
+                title: 'Complimentary Suite Category Upgrade',
+                pointsRequired: 7500,
+                cashValue: 250.0,
+                category: 'Hospitality Upgrades',
+                description: 'Guaranteed 1-category room bump to Panoramic Suite upon check-in.',
+              },
+              {
+                id: 'cat-yacht-halfday',
+                title: 'Private Catamaran Sunset Reef Cruise',
+                pointsRequired: 15000,
+                cashValue: 550.0,
+                category: 'VIP Experiences',
+                description: 'Exclusive 3-hour private yacht cruise inclusive of champagne & fruit platter.',
+              },
+            ]),
+            group: 'loyalty_rewards',
+            description: 'Redemption reward catalog items stored in PostgreSQL database',
+          },
+        });
+      }
+
       this.seeded = true;
     } catch (err) {
       // In-memory or testing fallback
@@ -589,6 +645,21 @@ export class PrismaLoyaltyRepository implements ILoyaltyRepository {
 
   async findPointsLedger(memberId: string) {
     return this.prisma.loyaltyPointsLedger.findMany({ where: { memberId }, orderBy: { createdAt: 'desc' } });
+  }
+
+  async getCatalog(): Promise<any[]> {
+    await this.ensureCanonicalSeed();
+    const setting = await this.prisma.systemSetting.findUnique({
+      where: { key: 'loyalty_rewards_catalog' },
+    });
+    if (setting?.value) {
+      try {
+        return JSON.parse(setting.value);
+      } catch {
+        return [];
+      }
+    }
+    return [];
   }
 
   // --- 13.4 GIFT CARD REPOSITORY METHODS ---

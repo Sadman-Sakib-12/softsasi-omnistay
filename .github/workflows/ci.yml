@@ -104,3 +104,4 @@ jobs:
       - name: 5. Monorepo Production Build Gate
         run: |
           pnpm --filter @omnistay/backend build
+

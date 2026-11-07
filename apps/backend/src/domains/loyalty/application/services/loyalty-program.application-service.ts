@@ -31,57 +31,8 @@ export class LoyaltyProgramApplicationService {
     return this.loyaltyRepo.findAllMembers();
   }
 
-  getCatalog() {
-    return [
-      {
-        id: 'cat-cash-10',
-        title: '$10 Direct Checkout Cash Discount',
-        pointsRequired: 1000,
-        cashValue: 10.0,
-        category: 'Direct Folio Credit',
-        description: 'Instant $10 cash deduction applied to room booking or dining checkout (1,000 pts = $10).',
-      },
-      {
-        id: 'cat-cash-25',
-        title: '$25 Direct Checkout Cash Discount',
-        pointsRequired: 2500,
-        cashValue: 25.0,
-        category: 'Direct Folio Credit',
-        description: 'Instant $25 cash deduction applied to room booking or dining checkout.',
-      },
-      {
-        id: 'cat-spa-60',
-        title: 'Free 60-Minute Deep Tissue Spa Massage',
-        pointsRequired: 5000,
-        cashValue: 120.0,
-        category: 'Spa & Wellness',
-        description: 'Relaxing holistic massage treatment at the Imperial Spa & Wellness Center.',
-      },
-      {
-        id: 'cat-dining-sunset',
-        title: '3-Course Sunset Dining Experience for Two',
-        pointsRequired: 6000,
-        cashValue: 160.0,
-        category: 'Food & Beverage',
-        description: 'Curated culinary dinner with ocean view wine pairing at Azure Fine Dining.',
-      },
-      {
-        id: 'cat-vip-transfer',
-        title: 'Complimentary VIP Airport Limousine Transfer',
-        pointsRequired: 8000,
-        cashValue: 200.0,
-        category: 'Concierge & Transport',
-        description: 'Private chauffeur luxury vehicle airport pickup or departure transfer.',
-      },
-      {
-        id: 'cat-room-upgrade',
-        title: 'Complimentary Luxury Suite Weekend Upgrade',
-        pointsRequired: 10000,
-        cashValue: 350.0,
-        category: 'Rooms & Lodging',
-        description: 'Guaranteed space-available upgrade to Panoramic Ocean Penthouse.',
-      },
-    ];
+  async getCatalog() {
+    return this.loyaltyRepo.getCatalog();
   }
 
   async getOrCreateMember(userId: string) {

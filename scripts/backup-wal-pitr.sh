@@ -60,3 +60,4 @@ find "${BACKUP_DIR}" -name "omnistay_backup_*.dump.enc" -mtime +30 -delete
 rm -rf "${BACKUP_DIR}/base_${TIMESTAMP}"
 
 echo "[$(date)] OmniStay PITR snapshot successfully completed and encrypted."
+
