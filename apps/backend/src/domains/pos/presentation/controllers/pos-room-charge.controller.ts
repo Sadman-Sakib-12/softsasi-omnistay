@@ -7,11 +7,11 @@ import { ChargeToRoomDto } from '../dto/room-charge.dto.js';
 @ApiTags('POS - Room Charge & Guest Folio Integration')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('api/v1/pos/room-charge')
+@Controller('api/v1/pos')
 export class PosRoomChargeController {
   constructor(private readonly roomChargeService: PosRoomChargeApplicationService) {}
 
-  @Get('verify/:propertyId/:roomNumber')
+  @Get(['room-charge/verify/:propertyId/:roomNumber', 'verify/:propertyId/:roomNumber'])
   @ApiOperation({ summary: 'Two-way check: verify room occupancy, guest name, and credit limit' })
   verifyRoomForCharge(
     @Param('propertyId') propertyId: string,
@@ -20,8 +20,8 @@ export class PosRoomChargeController {
     return this.roomChargeService.verifyRoomForCharge(propertyId, roomNumber);
   }
 
-  @Post('charge')
-  @ApiOperation({ summary: 'Charge dining bill directly to guest room folio with digital signature' })
+  @Post(['charge-to-room', 'room-charge/charge'])
+  @ApiOperation({ summary: 'Charge dining bill directly to guest room folio with digital signature (Chapter 20.1)' })
   chargeToRoom(@Body() dto: ChargeToRoomDto) {
     return this.roomChargeService.chargeToRoom(dto);
   }

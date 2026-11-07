@@ -9,13 +9,16 @@ import {
 } from '../dto/attendance.dto.js';
 
 @ApiTags('HRM - Attendance, Biometrics & Shifts')
-@Controller('api/v1/hrm/attendance')
+@Controller(['api/v1/hrm/attendance', 'api/v1/hrm'])
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceApplicationService) {}
 
   @Post('biometric-punch')
   @Public()
-  @ApiOperation({ summary: 'Hardware API ingest for ZKTeco/Hikvision biometric punch timestamps' })
+  @ApiOperation({
+    summary: 'Hardware API ingest for ZKTeco/Hikvision biometric punch timestamps (Chapter 20.1)',
+    description: 'Hardware API ingest endpoint for biometric clocks and RFID badge readers.',
+  })
   recordBiometricPunch(@Body() dto: BiometricHardwarePunchDto) {
     return this.attendanceService.recordBiometricPunch(dto);
   }

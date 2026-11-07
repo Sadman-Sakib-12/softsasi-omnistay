@@ -4,15 +4,18 @@ import { CurrentUser, JwtAuthGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 import { InChatBookingService } from '../../application/services/in-chat-booking.service.js';
 
-@ApiTags('AI - Conversational In-Chat Booking & Checkout')
-@Controller('api/v1/ai/in-chat')
+@ApiTags('AI - Conversational In-Chat Booking & Checkout (Chapter 20.1)')
+@Controller(['api/v1/ai/in-chat', 'api/v1/ai/chat'])
 export class InChatBookingController {
   constructor(private readonly inChatBookingService: InChatBookingService) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Post('initiate')
-  @ApiOperation({ summary: 'Initiate frictionless in-chat room checkout directly within conversation' })
+  @Post(['initiate', 'book-room'])
+  @ApiOperation({
+    summary: 'Initiate frictionless in-chat room checkout directly within conversation (Chapter 20.1 POST /api/v1/ai/chat/book-room)',
+    description: 'Enables guests to reserve and checkout rooms natively inside the conversational AI concierge interface.',
+  })
   initiateBooking(
     @CurrentUser() user: AuthenticatedUserPayload,
     @Body() body: {

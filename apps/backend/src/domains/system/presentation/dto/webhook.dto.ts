@@ -61,3 +61,21 @@ export class TestWebhookDto {
   customPayload?: Record<string, any>;
 }
 
+export class ProcessWebhookRetriesDto {
+  @ApiPropertyOptional({
+    description: 'Whether to force retries immediately, bypassing elapsed exponential backoff intervals',
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  force?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Optional maximum batch limit of pending deliveries to process',
+    default: 50,
+  })
+  @IsOptional()
+  limit?: number;
+}
+
+

@@ -53,6 +53,21 @@ export class BookingController {
   }
 
   @Public()
+  @Post('bookings/checkout')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Direct booking checkout & inventory lock (Chapter 20.1)',
+    description: 'Validates cart items, locks inventory via Redis, and initiates booking payment gateway session.',
+  })
+  @ApiResponse({ status: 201, description: 'Booking checkout executed successfully' })
+  async checkoutBooking(
+    @Body(new ValidationPipe({ whitelist: true })) dto: CreateBookingDto,
+    @CurrentUser() user?: AuthenticatedUserPayload,
+  ) {
+    return this.bookingService.createBooking(dto, user?.organizationId, user);
+  }
+
+  @Public()
   @Get('bookings')
   @ApiOperation({
     summary: 'List reservations',

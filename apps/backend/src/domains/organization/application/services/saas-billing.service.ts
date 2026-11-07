@@ -458,10 +458,10 @@ export class SaasBillingService implements OnModuleInit {
 
     // Compute platform gross merchandise value from bookings
     const bookings = await this.prisma.booking.aggregate({
-      _sum: { totalPrice: true },
-      where: { status: { in: ['CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT', 'COMPLETED'] } },
+      _sum: { totalAmount: true },
+      where: { bookingStatus: { in: ['confirmed', 'checked_in', 'checked_out', 'completed'] } },
     });
-    const bookingGmv = Number(bookings._sum.totalPrice || 0);
+    const bookingGmv = Number(bookings._sum?.totalAmount || 0);
     const totalGmv = bookingGmv > 0 ? bookingGmv : 284500.0;
 
     return {
@@ -519,3 +519,4 @@ export class SaasBillingService implements OnModuleInit {
     };
   }
 }
+

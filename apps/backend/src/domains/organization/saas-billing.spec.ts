@@ -148,7 +148,7 @@ describe('Chapter 19: Multi-Tenant SaaS Architecture, Commercial Billing & Compl
         count: vi.fn().mockResolvedValue(85),
       },
       booking: {
-        aggregate: vi.fn().mockResolvedValue({ _sum: { totalPrice: 450000.0 } }),
+        aggregate: vi.fn().mockResolvedValue({ _sum: { totalAmount: 450000.0 } }),
       },
       $transaction: vi.fn().mockImplementation(async (arg) => {
         if (Array.isArray(arg)) {
@@ -250,3 +250,4 @@ describe('Chapter 19: Multi-Tenant SaaS Architecture, Commercial Billing & Compl
     expect(dataPkg.hospitalityActivity.invoices).toHaveLength(1);
   });
 });
+

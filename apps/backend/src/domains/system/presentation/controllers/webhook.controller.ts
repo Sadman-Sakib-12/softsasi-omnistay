@@ -18,7 +18,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { WebhookDispatcherService } from '../../application/services/webhook-dispatcher.service.js';
-import { CreateWebhookDto, TestWebhookDto } from '../dto/webhook.dto.js';
+import {
+  CreateWebhookDto,
+  TestWebhookDto,
+  ProcessWebhookRetriesDto,
+} from '../dto/webhook.dto.js';
 import { JwtAuthGuard, CurrentUser } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 
@@ -61,6 +65,34 @@ export class WebhookController {
   @ApiResponse({ status: 200, description: 'List of delivery logs' })
   async getAllDeliveries(@CurrentUser() user: AuthenticatedUserPayload) {
     return this.webhookService.getDeliveries(user.organizationId || '');
+  }
+
+  @Get('events-catalog')
+  @ApiOperation({
+    summary: 'Get complete webhook events catalog and retry policy (Chapter 20.2)',
+    description: 'Returns schemas, descriptions, HMAC-SHA256 headers, and retry backoff specifications for all 7 event keys.',
+  })
+  @ApiResponse({ status: 200, description: 'Webhook events catalog' })
+  getEventsCatalog() {
+    return this.webhookService.getEventsCatalog();
+  }
+
+  @Post('process-retries')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Process pending/failed webhook retries using exponential backoff (Chapter 20.2)',
+    description: 'Executes automated retries according to 1m, 5m, 15m, 1h, 6h schedule or forced batch execution.',
+  })
+  @ApiResponse({ status: 200, description: 'Retry processing results summary' })
+  async processPendingRetries(
+    @Body(new ValidationPipe({ whitelist: true })) dto: ProcessWebhookRetriesDto,
+    @CurrentUser() user: AuthenticatedUserPayload,
+  ) {
+    return this.webhookService.processPendingRetries(
+      user.organizationId || undefined,
+      dto?.force ?? false,
+      dto?.limit ?? 50,
+    );
   }
 
   @Get(':id')

@@ -4,8 +4,8 @@ import { CurrentUser, JwtAuthGuard } from '@omnistay/backend-common';
 import type { AuthenticatedUserPayload } from '@omnistay/backend-common';
 import { AiConciergeService } from '../../application/services/ai-concierge.service.js';
 
-@ApiTags('AI - Autonomous RAG Concierge')
-@Controller('api/v1/ai/concierge')
+@ApiTags('AI - Autonomous RAG Concierge (Chapter 20.1)')
+@Controller(['api/v1/ai/concierge', 'api/v1/ai/chat'])
 export class AiConciergeController {
   constructor(private readonly conciergeService: AiConciergeService) {}
 
@@ -23,8 +23,11 @@ export class AiConciergeController {
     return this.conciergeService.getTelemetry(tenantId);
   }
 
-  @Post('chat')
-  @ApiOperation({ summary: 'Send conversational query to RAG AI guest concierge' })
+  @Post(['chat', 'message'])
+  @ApiOperation({
+    summary: 'Send conversational query to RAG AI guest concierge (Chapter 20.1 POST /api/v1/ai/chat/message)',
+    description: 'Autonomous LLM agent powered by RAG indexed against property knowledge bases and PMS inventory.',
+  })
   chat(@Body() body: {
     tenantId?: string;
     sessionId: string;
