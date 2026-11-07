@@ -7,13 +7,17 @@ import { PrismaOrganizationRepository } from './infrastructure/repositories/pris
 
 // Controllers
 import { OrganizationController } from './presentation/controllers/organization.controller.js';
+import { SaasBillingController } from './presentation/controllers/saas-billing.controller.js';
+import { ComplianceController } from './presentation/controllers/compliance.controller.js';
 
 // Services
 import { OrganizationService } from './application/services/organization.service.js';
+import { SaasBillingService } from './application/services/saas-billing.service.js';
+import { ComplianceService } from './application/services/compliance.service.js';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [OrganizationController],
+  controllers: [OrganizationController, SaasBillingController, ComplianceController],
   providers: [
     {
       provide: ORGANIZATION_REPOSITORY_TOKEN,
@@ -21,11 +25,15 @@ import { OrganizationService } from './application/services/organization.service
     },
     PrismaOrganizationRepository,
     OrganizationService,
+    SaasBillingService,
+    ComplianceService,
   ],
   exports: [
     ORGANIZATION_REPOSITORY_TOKEN,
     PrismaOrganizationRepository,
     OrganizationService,
+    SaasBillingService,
+    ComplianceService,
   ],
 })
 export class OrganizationModule {}
