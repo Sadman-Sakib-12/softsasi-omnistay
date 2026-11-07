@@ -318,4 +318,78 @@ export const projectsService = {
     const res = await api.post<any>(`/api/v1/projects/bugs/${bugId}/comments`, { comment });
     return res?.data || res;
   },
+
+  // Chapter 21: Developer Implementation Roadmap & 64-Week Sprint Blueprint
+  getRoadmapMaster: async (): Promise<RoadmapMasterData> => {
+    const res = await api.get<any>('/api/v1/developer/roadmap');
+    return res?.data || res;
+  },
+
+  getDodChecklist: async (): Promise<DoDChecklistData> => {
+    const res = await api.get<any>('/api/v1/developer/dod-checklist');
+    return res?.data || res;
+  },
+
+  getQaMetrics: async (): Promise<any> => {
+    const res = await api.get<any>('/api/v1/developer/qa-metrics');
+    return res?.data || res;
+  },
+
+  getCiCdArchitecture: async (): Promise<any> => {
+    const res = await api.get<any>('/api/v1/developer/cicd');
+    return res?.data || res;
+  },
 };
+
+export interface RoadmapSprint {
+  sprintNumber: number;
+  title: string;
+  focus: string;
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'SCHEDULED' | 'HARDENING';
+}
+
+export interface RoadmapPhase {
+  phaseNumber: number;
+  phaseId: string;
+  name: string;
+  focus: string;
+  timelineWeeks: string;
+  timelineMonths: string;
+  weekStart: number;
+  weekEnd: number;
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'SCHEDULED' | 'HARDENING';
+  progressPercent: number;
+  deliverables: string[];
+  exitGate: string;
+  sprints: RoadmapSprint[];
+}
+
+export interface RoadmapMasterData {
+  title: string;
+  totalPhases: number;
+  completedPhases: number;
+  totalWeeks: number;
+  totalMonths: number;
+  overallProgressPercent: number;
+  phases: RoadmapPhase[];
+}
+
+export interface DoDChecklistItem {
+  id: string;
+  category: string;
+  title: string;
+  requirement: string;
+  verificationMethod: string;
+  isCompliant: boolean;
+  auditEvidence: string;
+}
+
+export interface DoDChecklistData {
+  title: string;
+  totalItems: number;
+  compliantCount: number;
+  compliancePercent: number;
+  isProductionReady: boolean;
+  items: DoDChecklistItem[];
+}
+

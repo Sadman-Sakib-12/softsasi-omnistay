@@ -9,11 +9,13 @@ import { PrismaProjectRepository } from './infrastructure/repositories/prisma-pr
 import { ProjectService } from './application/services/project.service.js';
 import { TimesheetService } from './application/services/timesheet.service.js';
 import { BugTrackerService } from './application/services/bug-tracker.service.js';
+import { DeveloperRoadmapService } from './application/services/developer-roadmap.service.js';
 
 // Controllers
 import { ProjectController } from './presentation/controllers/project.controller.js';
 import { TimesheetController } from './presentation/controllers/timesheet.controller.js';
 import { BugTrackerController } from './presentation/controllers/bug-tracker.controller.js';
+import { DeveloperRoadmapController } from './presentation/controllers/developer-roadmap.controller.js';
 
 @Module({
   imports: [PrismaModule],
@@ -21,17 +23,20 @@ import { BugTrackerController } from './presentation/controllers/bug-tracker.con
     ProjectController,
     TimesheetController,
     BugTrackerController,
+    DeveloperRoadmapController,
   ],
   providers: [
     { provide: PROJECT_REPOSITORY_TOKEN, useClass: PrismaProjectRepository },
     ProjectService,
     TimesheetService,
     BugTrackerService,
+    DeveloperRoadmapService,
   ],
   exports: [
     ProjectService,
     TimesheetService,
     BugTrackerService,
+    DeveloperRoadmapService,
   ],
 })
 export class ProjectModule {}
