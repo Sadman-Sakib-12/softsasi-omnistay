@@ -3,10 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Bell,
   Building2,
   Check,
-  CheckCheck,
   ChevronDown,
   ChevronRight,
   LogOut,
@@ -16,7 +14,6 @@ import {
   Calendar,
   Sparkles,
   ExternalLink,
-  ArrowRight,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import { useTenantStore } from '@/stores/tenant-store';
@@ -42,101 +39,6 @@ export function AdminHeader() {
     }
     return null;
   });
-
-  // Notifications State & Real Data Sync
-  const [unreadCount, setUnreadCount] = useState(3);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const notifRef = React.useRef<HTMLDivElement>(null);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 'notif-1',
-      title: 'New Web Booking Received',
-      body: 'Arthur Vance booked Royal Sunset Sky Penthouse 801 ($4,200). Check-in Nov 15.',
-      time: '10m ago',
-      category: 'Reservation',
-      link: '/reservations',
-      isRead: false,
-    },
-    {
-      id: 'notif-2',
-      title: 'Guest Service Request: Suite 402',
-      body: 'David Vance requested 2 feather pillows and late checkout until 2:00 PM.',
-      time: '25m ago',
-      category: 'Guest Chat',
-      link: '/messages',
-      isRead: false,
-    },
-    {
-      id: 'notif-3',
-      title: 'Housekeeping Status Update',
-      body: 'Ocean Villa Suite 214 inspection complete. Status updated to Clean & Ready.',
-      time: '1h ago',
-      category: 'Housekeeping',
-      link: '/housekeeping',
-      isRead: false,
-    },
-    {
-      id: 'notif-4',
-      title: 'IoT Smart Lock Keycard Ready',
-      body: 'Room 101 smart lock gateway active. VAPID WebPush tokens synced.',
-      time: '2h ago',
-      category: 'Smart Rooms',
-      link: '/iot',
-      isRead: true,
-    },
-  ]);
-
-  useEffect(() => {
-    // Attempt loading real push notifications from backend if available
-    api
-      .get<any>('/api/v1/communications/push/notifications')
-      .then((res) => {
-        const data = Array.isArray(res) ? res : res?.data || [];
-        if (data.length > 0) {
-          const mapped = data.map((n: any, idx: number) => ({
-            id: n.id || `notif-dyn-${idx}`,
-            title: n.title,
-            body: n.body,
-            time: n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
-            category: n.title.includes('Booking') ? 'Reservation' : n.title.includes('Guest') ? 'Guest Chat' : 'Operational',
-            link: n.title.includes('Booking') ? '/reservations' : n.title.includes('Guest') ? '/messages' : '/housekeeping',
-            isRead: !!n.isRead,
-          }));
-          setNotifications(mapped);
-          setUnreadCount(mapped.filter((x: any) => !x.isRead).length);
-        }
-      })
-      .catch(() => {
-        // Keep initial alerts on network error
-      });
-  }, []);
-
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    setUnreadCount(0);
-  };
-
-  const handleNotificationClick = (link: string, id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-    );
-    setUnreadCount((c) => Math.max(0, c - 1));
-    router.push(link);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
-        setIsNotifOpen(false);
-      }
-    };
-    if (isNotifOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isNotifOpen]);
 
   useEffect(() => {
     const sessionUser = sessionManager.getUser();
@@ -300,129 +202,8 @@ export function AdminHeader() {
         </DropdownMenu>
       </div>
 
-      {/* Right: Notifications & Interactive Role Switcher */}
+      {/* Right: User Profile & Role Switcher */}
       <div className="flex items-center gap-3">
-        {/* Notifications Interactive Popover */}
-        <div className="relative" ref={notifRef}>
-          <button
-            type="button"
-            onClick={() => setIsNotifOpen((prev) => !prev)}
-            className={`relative p-2 rounded-lg border transition-all cursor-pointer outline-none ${
-              isNotifOpen
-                ? 'bg-sky-50 border-[#00a8ff] text-[#00a8ff]'
-                : 'border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-            title="Notifications & System Alerts"
-            aria-label="Open notifications"
-          >
-            <Bell className="w-4 h-4" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#00a8ff] ring-2 ring-white animate-pulse" />
-            )}
-          </button>
-
-          {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white border border-slate-200 shadow-2xl rounded-2xl p-0 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-              {/* Header */}
-              <div className="p-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-200 text-[#00a8ff] flex items-center justify-center">
-                    <Bell className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900">Notifications & Alerts</h3>
-                    <p className="text-[10px] text-slate-500">Real-time hospitality dispatches</p>
-                  </div>
-                </div>
-
-                {unreadCount > 0 ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMarkAllRead();
-                    }}
-                    className="text-[11px] font-semibold text-[#00a8ff] hover:text-[#0097e6] flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    <CheckCheck className="w-3.5 h-3.5" /> Mark all read
-                  </button>
-                ) : (
-                  <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    All caught up
-                  </span>
-                )}
-              </div>
-
-              {/* List */}
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
-                {notifications.length === 0 ? (
-                  <div className="py-8 text-center text-xs text-slate-400">
-                    No notifications at this time.
-                  </div>
-                ) : (
-                  notifications.map((notif) => (
-                    <div
-                      key={notif.id}
-                      onClick={() => {
-                        handleNotificationClick(notif.link, notif.id);
-                        setIsNotifOpen(false);
-                      }}
-                      className={`p-3.5 hover:bg-slate-50 transition-colors cursor-pointer flex items-start gap-3 ${
-                        !notif.isRead ? 'bg-sky-50/40' : 'bg-white'
-                      }`}
-                    >
-                      <div className="mt-0.5 shrink-0">
-                        {!notif.isRead ? (
-                          <div className="w-2 h-2 rounded-full bg-[#00a8ff] mt-1" />
-                        ) : (
-                          <div className="w-2 h-2 rounded-full bg-slate-200 mt-1" />
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-0.5">
-                          <span className="text-xs font-bold text-slate-900 truncate">
-                            {notif.title}
-                          </span>
-                          <span className="text-[10px] text-slate-400 shrink-0 font-mono">
-                            {notif.time}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
-                          {notif.body}
-                        </p>
-                        <div className="mt-1 flex items-center justify-between">
-                          <span className="text-[9px] uppercase font-bold text-[#00a8ff] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
-                            {notif.category}
-                          </span>
-                          <span className="text-[10px] text-slate-400 hover:text-slate-600 flex items-center gap-0.5">
-                            View details <ChevronRight className="w-3 h-3" />
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Footer */}
-              <div className="p-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsNotifOpen(false);
-                    router.push('/messages');
-                  }}
-                  className="w-full py-1 text-center font-semibold text-[#00a8ff] hover:text-[#0097e6] flex items-center justify-center gap-1 cursor-pointer"
-                >
-                  <span>View All Omnichannel Messages</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* User Profile Pill with Interactive Role Switcher Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
