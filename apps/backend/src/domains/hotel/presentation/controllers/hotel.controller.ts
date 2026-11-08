@@ -45,8 +45,7 @@ export class HotelController {
     @CurrentUser() user?: AuthenticatedUserPayload,
     @Query('organizationId') queryOrgId?: string,
   ) {
-    const orgId = queryOrgId || user?.organizationId;
-    return this.hotelService.listProperties(orgId, user);
+    return this.hotelService.listProperties(queryOrgId, user);
   }
 
   @Public()

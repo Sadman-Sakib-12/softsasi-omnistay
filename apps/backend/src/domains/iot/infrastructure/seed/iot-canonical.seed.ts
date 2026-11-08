@@ -533,3 +533,4 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
     logger.warn(`PostgreSQL database seed check note: ${err?.message || err}`);
   }
 }
+

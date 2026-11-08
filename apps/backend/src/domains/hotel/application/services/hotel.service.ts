@@ -286,9 +286,15 @@ export class HotelService {
   async listProperties(organizationId?: string, caller?: AuthenticatedUserPayload) {
     await this.ensureCanonicalSeed();
 
-    const targetOrgId = organizationId || caller?.organizationId;
+    const isSuper =
+      caller?.role === 'SUPER_ADMIN' ||
+      caller?.role === 'ADMIN' ||
+      caller?.permissions?.includes('*') ||
+      caller?.permissions?.includes('properties:manage');
+
+    const targetOrgId = organizationId || (isSuper ? undefined : caller?.organizationId);
     const where: any = { deletedAt: null };
-    if (targetOrgId) {
+    if (targetOrgId && targetOrgId !== 'all') {
       where.organizationId = targetOrgId;
     }
 
