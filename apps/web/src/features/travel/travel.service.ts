@@ -74,8 +74,8 @@ export const TravelService = {
         maxParticipants: t.maxPax || 16,
         images: [
           t.slug.includes("sundarbans")
-            ? "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1000&q=80"
-            : "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80"
+            ? "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163325/omnistay/travel/travel_guided_tour.jpg"
+            : "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163319/omnistay/hero/hero_beach_sanctuary.jpg"
         ],
         inclusions: t.inclusions?.map((inc: any) => inc.content) || ["English-speaking naturalist guide", "AC cabin aboard vessel", "Buffet meals"],
         itinerary: t.itineraries?.map((it: any) => ({
@@ -109,8 +109,8 @@ export const TravelService = {
         maxParticipants: t.maxPax || 16,
         images: [
           t.slug.includes("sundarbans")
-            ? "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1000&q=80"
-            : "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80"
+            ? "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163325/omnistay/travel/travel_guided_tour.jpg"
+            : "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163319/omnistay/hero/hero_beach_sanctuary.jpg"
         ],
         inclusions: t.inclusions?.map((inc: any) => inc.content) || ["English-speaking naturalist guide", "AC cabin aboard vessel", "Buffet meals"],
         itinerary: t.itineraries?.map((it: any) => ({
@@ -145,8 +145,8 @@ export const TravelService = {
         location: "Dhaka Airport / City & Cox's Bazar",
         images: [
           c.title.includes("Mercedes")
-            ? "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1000&q=80"
-            : "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=80"
+            ? "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163326/omnistay/travel/travel_luxury_car.jpg"
+            : "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163327/omnistay/travel/travel_suv_fleet.jpg"
         ],
       }));
     } catch (err) {
@@ -177,8 +177,8 @@ export const TravelService = {
         location: "Dhaka Airport / City & Cox's Bazar",
         images: [
           c.title.includes("Mercedes")
-            ? "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1000&q=80"
-            : "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=80"
+            ? "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163326/omnistay/travel/travel_luxury_car.jpg"
+            : "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163327/omnistay/travel/travel_suv_fleet.jpg"
         ],
       };
     } catch (err) {
@@ -205,7 +205,7 @@ export const TravelService = {
         description: b.translations?.[0]?.description || b.title,
         includesCaptain: b.charterType === "fully_crewed" || true,
         images: [
-          "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&w=1000&q=80"
+          "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163327/omnistay/travel/travel_superyacht.jpg"
         ],
       }));
     } catch (err) {
@@ -233,7 +233,7 @@ export const TravelService = {
         description: b.translations?.[0]?.description || b.title,
         includesCaptain: b.charterType === "fully_crewed" || true,
         images: [
-          "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&w=1000&q=80"
+          "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163327/omnistay/travel/travel_superyacht.jpg"
         ],
       };
     } catch (err) {
@@ -260,8 +260,8 @@ export const TravelService = {
         capacity: s.capacityPax || 100,
         images: [
           s.slug.includes("ballroom")
-            ? "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80"
-            : "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80"
+            ? "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163328/omnistay/travel/travel_grand_ballroom.jpg"
+            : "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163329/omnistay/travel/travel_executive_boardroom.jpg"
         ],
         amenities: ["wifi", "ac", "parking", "projector", "catering"],
       }));
@@ -290,8 +290,8 @@ export const TravelService = {
         capacity: s.capacityPax || 100,
         images: [
           s.slug.includes("ballroom")
-            ? "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80"
-            : "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80"
+            ? "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163328/omnistay/travel/travel_grand_ballroom.jpg"
+            : "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163329/omnistay/travel/travel_executive_boardroom.jpg"
         ],
         amenities: ["wifi", "ac", "parking", "projector", "catering"],
       };

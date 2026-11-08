@@ -48,7 +48,7 @@ export class HotelService {
       }
       const orgId = org.id;
 
-      // 11 Canonical Hotels from Figure 4.1 in Sakib_Project_Plan.pdf
+      // 11 Canonical Hotels from Figure 4.1 in Sakib_Project_Plan.pdf (Hosted on Cloudinary)
       const canonicalHotels = [
         {
           name: 'The May Fair Hotel',
@@ -56,7 +56,7 @@ export class HotelService {
           city: 'Paris',
           address: 'Stratton St, Mayfair, Paris',
           starRating: 5,
-          image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163314/omnistay/hotels/hotel_mayfair.jpg',
         },
         {
           name: 'Dylan Hotel',
@@ -64,7 +64,7 @@ export class HotelService {
           city: 'New York, United States',
           address: '52 E 41st St, New York',
           starRating: 4,
-          image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163315/omnistay/hotels/hotel_dylan.jpg',
         },
         {
           name: 'Parian Holiday Villas',
@@ -72,7 +72,7 @@ export class HotelService {
           city: 'Paris',
           address: 'Regal Cinemas Battery Park',
           starRating: 5,
-          image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163315/omnistay/hotels/hotel_dylan.jpg',
         },
         {
           name: 'Stewart Hotel',
@@ -80,7 +80,7 @@ export class HotelService {
           city: 'Los Angeles',
           address: '371 7th Ave, Los Angeles',
           starRating: 3,
-          image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163316/omnistay/hotels/hotel_stewart.jpg',
         },
         {
           name: 'Crowne Plaza Hotel',
@@ -88,7 +88,7 @@ export class HotelService {
           city: 'New York, United States',
           address: '1605 Broadway, New York',
           starRating: 2,
-          image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163316/omnistay/hotels/hotel_crowne_plaza.jpg',
         },
         {
           name: 'EnVision Hotel Boston',
@@ -96,7 +96,7 @@ export class HotelService {
           city: 'California',
           address: 'South Huntington Ave, Boston, California',
           starRating: 2,
-          image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163317/omnistay/hotels/hotel_envision_boston.jpg',
         },
         {
           name: 'Studio Allston Hotel',
@@ -104,7 +104,7 @@ export class HotelService {
           city: 'Los Angeles',
           address: '1234 Soldiers Field Rd, Los Angeles',
           starRating: 4,
-          image: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163318/omnistay/hotels/hotel_studio_allston.jpg',
         },
         {
           name: 'Redac Gateway Hotel',
@@ -112,7 +112,7 @@ export class HotelService {
           city: 'Paris',
           address: '20801 S Western Ave, Torrance, Paris',
           starRating: 5,
-          image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163316/omnistay/hotels/hotel_crowne_plaza.jpg',
         },
         {
           name: 'Castello Casole Hotel',
@@ -120,7 +120,7 @@ export class HotelService {
           city: 'Paris',
           address: "Localita Querceto, 53031 Casole d'Elsa, Paris",
           starRating: 4,
-          image: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163316/omnistay/hotels/hotel_stewart.jpg',
         },
         {
           name: 'Hotel WBF Hommachi',
@@ -128,7 +128,7 @@ export class HotelService {
           city: 'Paris',
           address: '4-4-10 Kitakyuhojimachi, Chuo Ward, Paris',
           starRating: 5,
-          image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163315/omnistay/hotels/hotel_dylan.jpg',
         },
         {
           name: 'Hotel Stanford',
@@ -136,7 +136,7 @@ export class HotelService {
           city: 'Paris',
           address: '43 W 32nd St, Midtown Manhattan, Paris',
           starRating: 4,
-          image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
+          image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163314/omnistay/hotels/hotel_mayfair.jpg',
         },
       ];
 
@@ -162,14 +162,14 @@ export class HotelService {
           });
         }
 
-        // Ensure 6 canonical high-res gallery photos exist matching Figure 6.1
+        // Ensure 6 canonical high-res gallery photos exist matching Figure 6.1 (Hosted on Cloudinary)
         const canonicalPhotos = [
-          h.image || 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
-          'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
-          'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
-          'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
-          'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80',
-          'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80',
+          h.image || 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163318/omnistay/hotels/hotel_suite_luxury.jpg',
+          'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163316/omnistay/hotels/hotel_crowne_plaza.jpg',
+          'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163317/omnistay/hotels/hotel_envision_boston.jpg',
+          'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163315/omnistay/hotels/hotel_dylan.jpg',
+          'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163318/omnistay/hotels/hotel_studio_allston.jpg',
+          'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163316/omnistay/hotels/hotel_stewart.jpg',
         ];
 
         const existingPhotos = await this.prisma.propertyPhoto.findMany({

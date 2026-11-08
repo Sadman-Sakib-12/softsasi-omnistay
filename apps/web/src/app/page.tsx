@@ -51,10 +51,10 @@ export default async function HomePage() {
       {/* 1. Hero Banner: Figure 5.1 Multi-Vertical Travel & Leisure Marketplace Customer Booking Portal */}
       {customizer.sections.hero && (
         <section className="relative min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] w-full overflow-hidden flex items-center justify-center">
-          {/* Backdrop Banner: Coastal Beach Sanctuary matching Figure 5.1 in PDF */}
+          {/* Backdrop Banner: Coastal Beach Sanctuary (Hosted on Cloudinary) */}
           <div className="absolute inset-0 z-0">
             <img
-              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2400&q=85"
+              src="https://res.cloudinary.com/drrkr71o0/image/upload/v1794163319/omnistay/hero/hero_beach_sanctuary.jpg"
               alt="Coastal Beach Sanctuary"
               className="w-full h-full object-cover object-center scale-102 transition-transform duration-1000 ease-out"
             />
@@ -99,7 +99,7 @@ export default async function HomePage() {
                 className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#00a8ff]"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+                  src="https://res.cloudinary.com/drrkr71o0/image/upload/v1794163319/omnistay/hero/hero_beach_sanctuary.jpg"
                   alt="Special Offers"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85"
                 />

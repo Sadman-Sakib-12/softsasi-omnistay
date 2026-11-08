@@ -1,14 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { PrismaService } from '@omnistay/database';
+import { createHash, randomUUID } from 'crypto';
 
 export function normalizeUuid(val?: string | null): string {
-  if (!val) return '00000000-0000-4000-a000-000000000001';
+  if (!val) return randomUUID();
   const clean = val.replace(/[^a-fA-F0-9]/g, '');
   if (clean.length === 32) {
     return `${clean.slice(0, 8)}-${clean.slice(8, 12)}-${clean.slice(12, 16)}-${clean.slice(16, 20)}-${clean.slice(20)}`;
   }
-  const hex = Buffer.from(val).toString('hex').padEnd(32, '0').slice(0, 32);
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4000-a000-${hex.slice(20)}`;
+  const h = createHash('md5').update(val).digest('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
 }
 
 /**
@@ -17,9 +18,6 @@ export function normalizeUuid(val?: string | null): string {
  */
 export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logger): Promise<void> {
   try {
-    const lockCount = await prisma.iotSmartLock.count();
-    if (lockCount > 0) return;
-
     logger.log('Seeding PostgreSQL database with live Hospitality, IoT Locks, Thermostats and Dining records...');
 
     // 1. Ensure Organization exists in PostgreSQL
@@ -179,8 +177,9 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
     ];
 
     for (const item of locksData) {
-      const createdLock = await prisma.iotSmartLock.create({
-        data: {
+      const createdLock = await prisma.iotSmartLock.upsert({
+        where: { deviceSerial: item.deviceSerial },
+        create: {
           id: item.id,
           roomId: item.roomId,
           lockVendor: item.lockVendor,
@@ -188,65 +187,90 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
           batteryLevel: item.batteryLevel,
           isOnline: item.isOnline,
         },
+        update: {
+          roomId: item.roomId,
+          batteryLevel: item.batteryLevel,
+          isOnline: item.isOnline,
+        },
       });
 
-      await prisma.iotSmartLockKey.createMany({
-        data: [
-          {
-            id: normalizeUuid(`key-ble-${item.id}`),
-            lockId: createdLock.id,
-            keyType: 'BLE',
-            keyToken: `BLE-SEC-${item.deviceSerial.slice(-3)}-9941`,
-            validFrom: new Date(Date.now() - 86400000 * 2),
-            validUntil: new Date(Date.now() + 86400000 * 5),
-            isRevoked: false,
-          },
-          {
-            id: normalizeUuid(`key-pin-${item.id}`),
-            lockId: createdLock.id,
-            keyType: 'PIN',
-            keyToken: `PIN-${item.pin}`,
-            validFrom: new Date(Date.now() - 86400000 * 2),
-            validUntil: new Date(Date.now() + 86400000 * 5),
-            isRevoked: false,
-          },
-          {
-            id: normalizeUuid(`key-nfc-${item.id}`),
-            lockId: createdLock.id,
-            keyType: 'NFC_APPLE_WALLET',
-            keyToken: `PASS.OMNISTAY.${item.deviceSerial.slice(-3)}`,
-            validFrom: new Date(Date.now() - 86400000 * 2),
-            validUntil: new Date(Date.now() + 86400000 * 5),
-            isRevoked: false,
-          },
-        ],
-      });
+      const keys = [
+        {
+          id: normalizeUuid(`key-ble-${item.id}`),
+          lockId: createdLock.id,
+          keyType: 'BLE',
+          keyToken: `BLE-SEC-${item.deviceSerial.slice(-3)}-9941`,
+          validFrom: new Date(Date.now() - 86400000 * 2),
+          validUntil: new Date(Date.now() + 86400000 * 5),
+          isRevoked: false,
+        },
+        {
+          id: normalizeUuid(`key-pin-${item.id}`),
+          lockId: createdLock.id,
+          keyType: 'PIN',
+          keyToken: `PIN-${item.pin}`,
+          validFrom: new Date(Date.now() - 86400000 * 2),
+          validUntil: new Date(Date.now() + 86400000 * 5),
+          isRevoked: false,
+        },
+        {
+          id: normalizeUuid(`key-nfc-${item.id}`),
+          lockId: createdLock.id,
+          keyType: 'NFC_APPLE_WALLET',
+          keyToken: `PASS.OMNISTAY.${item.deviceSerial.slice(-3)}`,
+          validFrom: new Date(Date.now() - 86400000 * 2),
+          validUntil: new Date(Date.now() + 86400000 * 5),
+          isRevoked: false,
+        },
+      ];
 
-      await prisma.iotLockAccessLog.createMany({
-        data: [
-          {
-            id: normalizeUuid(`log-ble-${item.id}`),
-            lockId: createdLock.id,
-            authMethod: 'BLE_HANDSHAKE',
-            isGranted: true,
-            accessedAt: new Date(Date.now() - 3600000 * 3),
+      for (const k of keys) {
+        await prisma.iotSmartLockKey.upsert({
+          where: { id: k.id },
+          create: k,
+          update: {
+            lockId: k.lockId,
+            keyToken: k.keyToken,
+            validUntil: k.validUntil,
+            isRevoked: k.isRevoked,
           },
-          {
-            id: normalizeUuid(`log-apple-${item.id}`),
-            lockId: createdLock.id,
-            authMethod: 'APPLE_WALLET_NFC',
-            isGranted: true,
-            accessedAt: new Date(Date.now() - 3600000 * 8),
+        });
+      }
+
+      const logs = [
+        {
+          id: normalizeUuid(`log-ble-${item.id}`),
+          lockId: createdLock.id,
+          authMethod: 'BLE_HANDSHAKE',
+          isGranted: true,
+          accessedAt: new Date(Date.now() - 3600000 * 3),
+        },
+        {
+          id: normalizeUuid(`log-apple-${item.id}`),
+          lockId: createdLock.id,
+          authMethod: 'APPLE_WALLET_NFC',
+          isGranted: true,
+          accessedAt: new Date(Date.now() - 3600000 * 8),
+        },
+        {
+          id: normalizeUuid(`log-pin-${item.id}`),
+          lockId: createdLock.id,
+          authMethod: 'KEYPAD_PIN',
+          isGranted: true,
+          accessedAt: new Date(Date.now() - 3600000 * 18),
+        },
+      ];
+
+      for (const l of logs) {
+        await prisma.iotLockAccessLog.upsert({
+          where: { id: l.id },
+          create: l,
+          update: {
+            authMethod: l.authMethod,
+            isGranted: l.isGranted,
           },
-          {
-            id: normalizeUuid(`log-pin-${item.id}`),
-            lockId: createdLock.id,
-            authMethod: 'KEYPAD_PIN',
-            isGranted: true,
-            accessedAt: new Date(Date.now() - 3600000 * 18),
-          },
-        ],
-      });
+        });
+      }
     }
 
     // 5. Seed Smart Thermostats bound to real database room IDs
@@ -294,8 +318,9 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
     ];
 
     for (const t of thermostatsData) {
-      const createdTstat = await prisma.iotThermostat.create({
-        data: {
+      const createdTstat = await prisma.iotThermostat.upsert({
+        where: { id: t.id },
+        create: {
           id: t.id,
           roomId: t.roomId,
           deviceBrand: t.deviceBrand,
@@ -303,22 +328,33 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
           currentTemp: t.currentTemp,
           ecoMode: t.ecoMode,
         },
+        update: {
+          roomId: t.roomId,
+          targetTemp: t.targetTemp,
+          currentTemp: t.currentTemp,
+          ecoMode: t.ecoMode,
+        },
       });
 
-      const energyData = [];
       for (let i = 13; i >= 0; i--) {
         const logDate = new Date();
         logDate.setDate(logDate.getDate() - i);
         const isEco = t.ecoMode || i % 3 === 0;
         const kwh = isEco ? 11.4 + (i % 5) * 0.3 : 17.8 + (i % 4) * 0.4;
-        energyData.push({
-          id: normalizeUuid(`energy-${t.id}-${i}`),
-          thermostatId: createdTstat.id,
-          kwhConsumed: kwh,
-          loggedDate: logDate,
+        const energyId = normalizeUuid(`energy-${t.id}-${i}`);
+        await prisma.iotEnergyLog.upsert({
+          where: { id: energyId },
+          create: {
+            id: energyId,
+            thermostatId: createdTstat.id,
+            kwhConsumed: kwh,
+            loggedDate: logDate,
+          },
+          update: {
+            kwhConsumed: kwh,
+          },
         });
       }
-      await prisma.iotEnergyLog.createMany({ data: energyData });
     }
 
     // 6. Seed Smart Room Scenes into PostgreSQL SystemSetting table
@@ -365,9 +401,13 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
         },
       ];
 
-      await prisma.systemSetting.create({
-        data: {
+      await prisma.systemSetting.upsert({
+        where: { key: 'iot_room_scenes' },
+        create: {
           key: 'iot_room_scenes',
+          value: JSON.stringify(canonicalScenes),
+        },
+        update: {
           value: JSON.stringify(canonicalScenes),
         },
       });
@@ -438,7 +478,7 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
               dietary: ['Halal', 'Gluten-Free'],
               description: 'Charcoal-grilled Australian MB7 Wagyu, truffle potato mousseline, asparagus, and red wine jus.',
               winePairing: 'Cabernet Sauvignon Reserve (Napa Valley)',
-              image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+              image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163322/omnistay/dining/dining_wagyu_ribeye.jpg',
               preparationTimeMin: 25,
             },
             {
@@ -449,7 +489,7 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
               dietary: ['Vegetarian', 'Gluten-Free'],
               description: 'Acquerello carnaroli rice, aged Parmigiano Reggiano 24-month, fresh black Périgord truffles.',
               winePairing: 'Pinot Noir (Burgundy)',
-              image: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80',
+              image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163322/omnistay/dining/dining_truffle_risotto.jpg',
               preparationTimeMin: 20,
             },
             {
@@ -460,7 +500,7 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
               dietary: ['Halal', 'Pescatarian'],
               description: 'Tiger prawns, fresh diver scallops, blue crab, saffron broth, and toasted garlic sourdough.',
               winePairing: 'Crisp Chablis Premier Cru',
-              image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80',
+              image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163323/omnistay/dining/dining_seafood_bouillabaisse.jpg',
               preparationTimeMin: 30,
             },
             {
@@ -471,7 +511,7 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
               dietary: ['Vegetarian'],
               description: 'Pugliese creamy burrata, basil pesto, balsamic pearl caviar, microgreens.',
               winePairing: 'Sauvignon Blanc (Marlborough)',
-              image: 'https://images.unsplash.com/photo-1592417817098-8f3d6910985c?auto=format&fit=crop&w=800&q=80',
+              image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163369/omnistay/dining/dining_burrata_tartare.jpg',
               preparationTimeMin: 12,
             },
             {
@@ -482,7 +522,7 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
               dietary: ['Vegetarian'],
               description: '70% Guanaja single-origin chocolate core, Madagascar bourbon vanilla gelato, gold leaf.',
               winePairing: 'Tawny Port 20-Year',
-              image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
+              image: 'https://res.cloudinary.com/drrkr71o0/image/upload/v1794163324/omnistay/dining/dining_chocolate_souffle.jpg',
               preparationTimeMin: 15,
             },
           ]),
@@ -510,8 +550,9 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
 
       const now = new Date();
       const checkOut = new Date(now.getTime() + 86400000 * 3);
-      await prisma.booking.create({
-        data: {
+      await prisma.booking.upsert({
+        where: { id: '00000000-0000-4000-a000-000000008841' },
+        create: {
           id: '00000000-0000-4000-a000-000000008841',
           tenantId: org.id,
           bookingCode: 'PARIAN-8841',
@@ -525,6 +566,7 @@ export async function ensureIotCanonicalSeed(prisma: PrismaService, logger: Logg
           bookingStatus: 'confirmed',
           paymentStatus: 'paid',
         },
+        update: {},
       });
     }
 
