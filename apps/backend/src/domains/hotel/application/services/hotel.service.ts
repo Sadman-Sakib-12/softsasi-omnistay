@@ -577,12 +577,12 @@ export class HotelService {
     } else if (type === 'Room Category') {
       return this.prisma.roomType.update({
         where: { id },
-        data: { deletedAt: null, isActive: true },
+        data: { deletedAt: null, status: 'active' },
       });
     } else {
       return this.prisma.room.update({
         where: { id },
-        data: { deletedAt: null, status: 'available' },
+        data: { deletedAt: null, operationalStatus: 'available' },
       });
     }
   }
