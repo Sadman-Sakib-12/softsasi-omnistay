@@ -14,15 +14,22 @@ describe('Chapter 18: Global Payment Gateways Integration (Strategy Pattern)', (
   const mockBkashTxs: any[] = [];
   const mockWebhooks: any[] = [];
   const mockSlips: any[] = [];
+  const mockGatewayConfigs: any[] = [];
 
   const mockRepo: IPaymentRepository = {
     async findGatewayConfigs() {
-      return [];
+      return [...mockGatewayConfigs];
     },
-    async findGatewayConfig() {
-      return null;
+    async findGatewayConfig(code) {
+      return mockGatewayConfigs.find((c) => c.gatewayCode === code) || null;
     },
     async createOrUpdateGatewayConfig(data) {
+      const idx = mockGatewayConfigs.findIndex((c) => c.gatewayCode === data.gatewayCode);
+      if (idx >= 0) {
+        mockGatewayConfigs[idx] = { ...mockGatewayConfigs[idx], ...data };
+      } else {
+        mockGatewayConfigs.push(data);
+      }
       return data;
     },
     async recordWebhook(data) {

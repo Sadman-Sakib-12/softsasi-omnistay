@@ -16,6 +16,46 @@ import {
   SUPPORTED_REGIONAL_GATEWAY_CODES,
 } from '../../infrastructure/adapters/regional-gateway.adapter.js';
 
+export const CANONICAL_GATEWAYS = [
+  { code: 'stripe', name: 'Stripe (Credit/Debit, Apple Pay, Google Pay)', regional: 'Global (135+ countries)' },
+  { code: 'paypal', name: 'PayPal Commerce Platform', regional: 'Global (200+ countries)' },
+  { code: 'sslcommerz', name: 'SSLCommerz Session Gateway', regional: 'Bangladesh & South Asia' },
+  { code: 'bkash', name: 'bKash Tokenized Direct Checkout', regional: 'Bangladesh MFS' },
+  { code: 'nagad', name: 'Nagad Direct Merchant Settlement', regional: 'Bangladesh MFS' },
+  { code: 'aamarpay', name: 'AamarPay Mobile & Card Gateway', regional: 'Bangladesh PGW' },
+  { code: 'razorpay', name: 'Razorpay (UPI, NetBanking, Cards)', regional: 'India & South Asia' },
+  { code: 'paytm', name: 'Paytm Payments Bank UPI', regional: 'India' },
+  { code: 'ccavenue', name: 'CCAvenue Multi-Currency PGW', regional: 'India & Middle East' },
+  { code: 'paystack', name: 'Paystack Cross-Border Africa', regional: 'Nigeria, Ghana, Kenya, South Africa' },
+  { code: 'flutterwave', name: 'Flutterwave Barter & MoMo', regional: 'Pan-African & Global' },
+  { code: 'mercadopago', name: 'MercadoPago Pix & Boleto', regional: 'Brazil, Argentina, Mexico' },
+  { code: 'pagseguro', name: 'PagSeguro / PagBank Pix', regional: 'Brazil' },
+  { code: 'mollie', name: 'Mollie (iDEAL, Bancontact, Sofort)', regional: 'Europe & UK' },
+  { code: 'klarna', name: 'Klarna BNPL (Slice in 3/4)', regional: 'Europe, US & UK' },
+  { code: 'afterpay', name: 'Afterpay / Clearpay 4-Pay', regional: 'US, UK, Australia' },
+  { code: 'midtrans', name: 'Midtrans SNAP (GoPay, ShopeePay)', regional: 'Indonesia & SE Asia' },
+  { code: 'xendit', name: 'Xendit (OVO, DANA, QRIS)', regional: 'Philippines, Indonesia, Vietnam' },
+  { code: 'promptpay', name: 'PromptPay National QR', regional: 'Thailand' },
+  { code: 'paynow', name: 'PayNow SGQR FAST Clearing', regional: 'Singapore' },
+  { code: 'fawry', name: 'FawryPay Cash Kiosks & Wallet', regional: 'Egypt & MENA' },
+  { code: 'hyperpay', name: 'HyperPay Mada & Sadad', regional: 'Saudi Arabia & GCC' },
+  { code: 'myfatoorah', name: 'MyFatoorah KNET & GCC Debit', regional: 'Kuwait & GCC' },
+  { code: 'tap', name: 'Tap Payments Benefit & Mada', regional: 'GCC & Middle East' },
+  { code: 'ngenius', name: 'N-Genius Network International', regional: 'UAE & Middle East' },
+  { code: 'authorizenet', name: 'Authorize.Net SIM/DPM', regional: 'North America & Europe' },
+  { code: 'twocheckout', name: '2Checkout / Verifone Global', regional: 'Global (100+ countries)' },
+  { code: 'adyen', name: 'Adyen Omnichannel & POS', regional: 'Global Enterprise' },
+  { code: 'worldpay', name: 'Worldpay / FIS Merchant', regional: 'Global Enterprise' },
+  { code: 'square', name: 'Square Payments Terminal', regional: 'US, Canada, UK, Australia' },
+  { code: 'skrill', name: 'Skrill Global Digital Wallet', regional: 'Global Digital Wallet' },
+  { code: 'payoneer', name: 'Payoneer Cross-Border B2B', regional: 'Global B2B Marketplace' },
+  { code: 'wechat', name: 'WeChat Pay QR & In-App', regional: 'China & Cross-Border' },
+  { code: 'alipay', name: 'Alipay Ant Financial Barcode', regional: 'China & Cross-Border' },
+  { code: 'coingate', name: 'CoinGate Crypto (BTC, ETH, USDT)', regional: 'Web3 & Decentralized' },
+  { code: 'bitpay', name: 'BitPay Cryptocurrency POS', regional: 'Web3 & Decentralized' },
+  { code: 'offline_bank', name: 'Manual Wire Transfer & Slip Verification', regional: 'Global' },
+];
+
 @Injectable()
 export class PaymentOrchestratorService {
   private readonly strategies = new Map<string, IPaymentGatewayStrategy>();
@@ -85,44 +125,26 @@ export class PaymentOrchestratorService {
   }
 
   async listSupportedGateways() {
-    return [
-      { code: 'stripe', name: 'Stripe (Credit/Debit, Apple Pay, Google Pay)', regional: 'Global (135+ countries)', status: 'ACTIVE' },
-      { code: 'paypal', name: 'PayPal Commerce Platform', regional: 'Global (200+ countries)', status: 'ACTIVE' },
-      { code: 'sslcommerz', name: 'SSLCommerz Session Gateway', regional: 'Bangladesh & South Asia', status: 'ACTIVE' },
-      { code: 'bkash', name: 'bKash Tokenized Direct Checkout', regional: 'Bangladesh MFS', status: 'ACTIVE' },
-      { code: 'nagad', name: 'Nagad Direct Merchant Settlement', regional: 'Bangladesh MFS', status: 'ACTIVE' },
-      { code: 'aamarpay', name: 'AamarPay Mobile & Card Gateway', regional: 'Bangladesh PGW', status: 'ACTIVE' },
-      { code: 'razorpay', name: 'Razorpay (UPI, NetBanking, Cards)', regional: 'India & South Asia', status: 'ACTIVE' },
-      { code: 'paytm', name: 'Paytm Payments Bank UPI', regional: 'India', status: 'ACTIVE' },
-      { code: 'ccavenue', name: 'CCAvenue Multi-Currency PGW', regional: 'India & Middle East', status: 'ACTIVE' },
-      { code: 'paystack', name: 'Paystack Cross-Border Africa', regional: 'Nigeria, Ghana, Kenya, South Africa', status: 'ACTIVE' },
-      { code: 'flutterwave', name: 'Flutterwave Barter & MoMo', regional: 'Pan-African & Global', status: 'ACTIVE' },
-      { code: 'mercadopago', name: 'MercadoPago Pix & Boleto', regional: 'Brazil, Argentina, Mexico', status: 'ACTIVE' },
-      { code: 'pagseguro', name: 'PagSeguro / PagBank Pix', regional: 'Brazil', status: 'ACTIVE' },
-      { code: 'mollie', name: 'Mollie (iDEAL, Bancontact, Sofort)', regional: 'Europe & UK', status: 'ACTIVE' },
-      { code: 'klarna', name: 'Klarna BNPL (Slice in 3/4)', regional: 'Europe, US & UK', status: 'ACTIVE' },
-      { code: 'afterpay', name: 'Afterpay / Clearpay 4-Pay', regional: 'US, UK, Australia', status: 'ACTIVE' },
-      { code: 'midtrans', name: 'Midtrans SNAP (GoPay, ShopeePay)', regional: 'Indonesia & SE Asia', status: 'ACTIVE' },
-      { code: 'xendit', name: 'Xendit (OVO, DANA, QRIS)', regional: 'Philippines, Indonesia, Vietnam', status: 'ACTIVE' },
-      { code: 'promptpay', name: 'PromptPay National QR', regional: 'Thailand', status: 'ACTIVE' },
-      { code: 'paynow', name: 'PayNow SGQR FAST Clearing', regional: 'Singapore', status: 'ACTIVE' },
-      { code: 'fawry', name: 'FawryPay Cash Kiosks & Wallet', regional: 'Egypt & MENA', status: 'ACTIVE' },
-      { code: 'hyperpay', name: 'HyperPay Mada & Sadad', regional: 'Saudi Arabia & GCC', status: 'ACTIVE' },
-      { code: 'myfatoorah', name: 'MyFatoorah KNET & GCC Debit', regional: 'Kuwait & GCC', status: 'ACTIVE' },
-      { code: 'tap', name: 'Tap Payments Benefit & Mada', regional: 'GCC & Middle East', status: 'ACTIVE' },
-      { code: 'ngenius', name: 'N-Genius Network International', regional: 'UAE & Middle East', status: 'ACTIVE' },
-      { code: 'authorizenet', name: 'Authorize.Net SIM/DPM', regional: 'North America & Europe', status: 'ACTIVE' },
-      { code: 'twocheckout', name: '2Checkout / Verifone Global', regional: 'Global (100+ countries)', status: 'ACTIVE' },
-      { code: 'adyen', name: 'Adyen Omnichannel & POS', regional: 'Global Enterprise', status: 'ACTIVE' },
-      { code: 'worldpay', name: 'Worldpay / FIS Merchant', regional: 'Global Enterprise', status: 'ACTIVE' },
-      { code: 'square', name: 'Square Payments Terminal', regional: 'US, Canada, UK, Australia', status: 'ACTIVE' },
-      { code: 'skrill', name: 'Skrill Global Digital Wallet', regional: 'Global Digital Wallet', status: 'ACTIVE' },
-      { code: 'payoneer', name: 'Payoneer Cross-Border B2B', regional: 'Global B2B Marketplace', status: 'ACTIVE' },
-      { code: 'wechat', name: 'WeChat Pay QR & In-App', regional: 'China & Cross-Border', status: 'ACTIVE' },
-      { code: 'alipay', name: 'Alipay Ant Financial Barcode', regional: 'China & Cross-Border', status: 'ACTIVE' },
-      { code: 'coingate', name: 'CoinGate Crypto (BTC, ETH, USDT)', regional: 'Web3 & Decentralized', status: 'ACTIVE' },
-      { code: 'bitpay', name: 'BitPay Cryptocurrency POS', regional: 'Web3 & Decentralized', status: 'ACTIVE' },
-      { code: 'offline_bank', name: 'Manual Wire Transfer & Slip Verification', regional: 'Global', status: 'ACTIVE' },
-    ];
+    let configs = await this.repo.findGatewayConfigs();
+    if (!configs || configs.length === 0) {
+      for (const gw of CANONICAL_GATEWAYS) {
+        await this.repo.createOrUpdateGatewayConfig({
+          gatewayCode: gw.code,
+          name: gw.name,
+          supportedModes: [gw.regional],
+          isEnabled: true,
+          isTestMode: false,
+        });
+      }
+      configs = await this.repo.findGatewayConfigs();
+    }
+
+    return configs.map((c) => ({
+      code: c.gatewayCode,
+      name: c.name,
+      regional: Array.isArray(c.supportedModes) && c.supportedModes.length > 0 ? c.supportedModes[0] : 'Global',
+      status: c.isEnabled ? 'ACTIVE' : 'INACTIVE',
+      isTestMode: c.isTestMode,
+    }));
   }
 }

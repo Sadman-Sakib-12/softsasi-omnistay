@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { AddPropertyDialog } from '@/features/properties/components/add-property-dialog';
 import { NewReservationDialog } from '@/features/reservations/components/new-reservation-dialog';
+import { api } from '@/lib/api/client';
 
 export default function DashboardPage() {
   const { metrics, isLoading } = useDashboard();
@@ -36,49 +37,39 @@ export default function DashboardPage() {
 
   // Chapter 19.3: SuperAdmin Central Operations Center State
   const [revenueMetrics, setRevenueMetrics] = useState({
-    monthlyRecurringRevenue: 14850,
-    annualRecurringRevenue: 178200,
-    churnRatePercent: 1.8,
-    totalGrossMerchandiseValue: 450000,
-    activeSubscriptionsCount: 38,
-    growthRatePercent: 24.6,
+    monthlyRecurringRevenue: 0,
+    annualRecurringRevenue: 0,
+    churnRatePercent: 0,
+    totalGrossMerchandiseValue: 0,
+    activeSubscriptionsCount: 0,
+    growthRatePercent: 0,
   });
 
   const [telemetry, setTelemetry] = useState({
-    totalTenants: 12,
-    activeTenants: 12,
+    totalTenants: 0,
+    activeTenants: 0,
     trialTenants: 0,
-    totalUsers: 148,
-    totalRoomsManaged: 85,
-    storageConsumedMB: 142.8,
+    totalUsers: 0,
+    totalRoomsManaged: 0,
+    storageConsumedMB: 0,
     databaseHealth: 'OPTIMAL',
-    redisLatencyMs: 1.2,
+    redisLatencyMs: 0,
     systemUptime: '99.98%',
   });
 
-  const [featureFlags, setFeatureFlags] = useState<any[]>([
-    { flagKey: 'ai_concierge', enabled: true, description: 'Autonomous Multimodal AI Guest Concierge (Chapter 14)' },
-    { flagKey: 'crypto_payments', enabled: true, description: 'CoinGate & BitPay Cryptocurrency Payments (Chapter 18)' },
-    { flagKey: 'biometric_clock', enabled: true, description: 'ZKTECO & Suprema Biometric Attendance Sync (Chapter 10)' },
-    { flagKey: 'whatsapp_api', enabled: true, description: 'WhatsApp Business Cloud API Automation (Chapter 17)' },
-    { flagKey: 'iot_smart_locks', enabled: true, description: 'Assa Abloy Smart Lock Keycard Gateway (Chapter 15)' },
-    { flagKey: 'white_label', enabled: true, description: 'Custom Domain Mapping & Cloudflare SSL (Chapter 19.1)' },
-  ]);
+  const [featureFlags, setFeatureFlags] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/v1/saas/revenue-metrics')
-      .then((r) => (r.ok ? r.json() : null))
+    api.get<any>('/api/v1/saas/revenue-metrics')
       .then((data) => data && setRevenueMetrics(data))
       .catch(() => {});
 
-    fetch('http://localhost:4000/api/v1/saas/telemetry')
-      .then((r) => (r.ok ? r.json() : null))
+    api.get<any>('/api/v1/saas/telemetry')
       .then((data) => data && setTelemetry(data))
       .catch(() => {});
 
-    fetch('http://localhost:4000/api/v1/saas/feature-flags')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => Array.isArray(data) && data.length > 0 && setFeatureFlags(data))
+    api.get<any[]>('/api/v1/saas/feature-flags')
+      .then((data) => Array.isArray(data) && setFeatureFlags(data))
       .catch(() => {});
   }, []);
 
@@ -88,11 +79,7 @@ export default function DashboardPage() {
       prev.map((f) => (f.flagKey === flagKey ? { ...f, enabled: nextVal } : f))
     );
     try {
-      await fetch('http://localhost:4000/api/v1/saas/feature-flags', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ flagKey, enabled: nextVal }),
-      });
+      await api.put('/api/v1/saas/feature-flags', { flagKey, enabled: nextVal });
     } catch {}
   };
 

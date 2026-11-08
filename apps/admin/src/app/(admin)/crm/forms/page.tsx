@@ -33,6 +33,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react';
+import { api } from '@/lib/api/client';
 
 interface FormFieldItem {
   id: string;
@@ -95,9 +96,8 @@ export default function FormBuilderPage() {
   const fetchForms = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:4000/api/v1/crm/forms');
-      if (res.ok) {
-        const data = await res.json();
+      const data = await api.get<FormBuilderData[]>('/api/v1/crm/forms');
+      if (Array.isArray(data)) {
         setForms(data);
       }
     } catch (err) {
@@ -187,34 +187,23 @@ export default function FormBuilderPage() {
     setSaveSuccess(false);
 
     try {
-      let res;
       if (currentForm.id) {
-        res = await fetch(`http://localhost:4000/api/v1/crm/forms/${currentForm.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            formName: currentForm.formName,
-            formSchema: currentForm.formSchema,
-            isActive: currentForm.isActive,
-          }),
+        await api.put(`/api/v1/crm/forms/${currentForm.id}`, {
+          formName: currentForm.formName,
+          formSchema: currentForm.formSchema,
+          isActive: currentForm.isActive,
         });
       } else {
-        res = await fetch(`http://localhost:4000/api/v1/crm/forms`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            formName: currentForm.formName,
-            formSchema: currentForm.formSchema,
-            isActive: currentForm.isActive,
-          }),
+        await api.post(`/api/v1/crm/forms`, {
+          formName: currentForm.formName,
+          formSchema: currentForm.formSchema,
+          isActive: currentForm.isActive,
         });
       }
 
-      if (res.ok) {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3500);
-        await fetchForms();
-      }
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3500);
+      await fetchForms();
     } catch (err) {
       console.error('Failed to save form:', err);
     } finally {
@@ -228,9 +217,8 @@ export default function FormBuilderPage() {
     setSubmissionsLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/crm/forms/${currentForm.id}/responses`);
-      if (res.ok) {
-        const data = await res.json();
+      const data = await api.get<any[]>(`/api/v1/crm/forms/${currentForm.id}/responses`);
+      if (Array.isArray(data)) {
         setSubmissions(data);
       }
     } catch (err) {
@@ -248,22 +236,15 @@ export default function FormBuilderPage() {
     setTestSuccessMessage(null);
 
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/crm/forms/${currentForm.id}/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formData: previewValues,
-          submitterIp: '127.0.0.1 (Admin Preview Test)',
-        }),
+      await api.post(`/api/v1/crm/forms/${currentForm.id}/submit`, {
+        formData: previewValues,
+        submitterIp: '127.0.0.1 (Admin Preview Test)',
       });
 
-      if (res.ok) {
-        setTestSuccessMessage('Test submission successfully recorded in database! Automatically ingested into CRM Banquet Pipeline.');
-        setPreviewValues({});
-        setTimeout(() => setTestSuccessMessage(null), 6000);
-        // Refresh response count
-        fetchForms();
-      }
+      setTestSuccessMessage('Test submission successfully recorded in database! Automatically ingested into CRM Banquet Pipeline.');
+      setPreviewValues({});
+      setTimeout(() => setTestSuccessMessage(null), 6000);
+      await fetchForms();
     } catch (err) {
       console.error('Test submission failed:', err);
     } finally {

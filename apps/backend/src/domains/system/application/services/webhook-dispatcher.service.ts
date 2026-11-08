@@ -196,18 +196,36 @@ export class WebhookDispatcherService {
     const webhook = await this.getWebhookById(tenantId, webhookId);
 
     const testEvent = dto?.eventType || 'booking.created';
+    let sampleData: any = {
+      bookingCode: 'TST-LIVE-VERIFIED',
+      guestName: 'Guest Verification Sample',
+      totalAmount: 350.0,
+      status: 'confirmed',
+      currency: 'USD',
+    };
+
+    const latestBooking = await this.prisma.booking.findFirst({
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' },
+      include: { guest: true },
+    });
+    if (latestBooking) {
+      sampleData = {
+        bookingId: latestBooking.id,
+        bookingCode: latestBooking.bookingCode,
+        guestName: latestBooking.guest ? latestBooking.guest.name : 'Registered Guest',
+        totalAmount: Number(latestBooking.totalAmount),
+        status: latestBooking.bookingStatus,
+        currency: 'USD',
+      };
+    }
+
     const testPayload = dto?.customPayload || {
       event: testEvent,
       timestamp: new Date().toISOString(),
       tenantId,
-      mockData: {
-        bookingCode: 'TST-BOOK-999',
-        guestName: 'Sakib Test Guest',
-        totalAmount: 350.0,
-        status: 'confirmed',
-        currency: 'USD',
-      },
-      note: 'Softsasi OmniStay 360 Webhook Ping Test Verification',
+      sampleData,
+      note: 'Softsasi OmniStay 360 Webhook Ingest Verification',
     };
 
     return this.sendDelivery(webhook, testEvent, testPayload);

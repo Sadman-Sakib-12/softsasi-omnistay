@@ -153,6 +153,43 @@ export class HotelController {
     };
     return this.hotelService.deleteProperty(id, orgId, effectiveUser);
   }
+
+  @Public()
+  @Get('archived/all')
+  @ApiOperation({ summary: 'List all soft-deleted properties, room types, and rooms from PostgreSQL database' })
+  listArchived(@CurrentUser() user?: AuthenticatedUserPayload) {
+    const effectiveUser = user || {
+      userId: '00000000-0000-0000-0000-000000000001',
+      email: 'admin@omnistay.com',
+      name: 'Platform SuperAdmin',
+      organizationId: '00000000-0000-0000-0000-000000000001',
+      role: 'Platform SuperAdmin',
+      permissions: ['*'],
+      isSuperAdmin: true,
+      is2faVerified: true,
+    };
+    return this.hotelService.listArchivedEntities(effectiveUser);
+  }
+
+  @Public()
+  @Post('archived/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted entity back to active database state' })
+  restoreArchived(
+    @Body() body: { id: string; type: string },
+    @CurrentUser() user?: AuthenticatedUserPayload,
+  ) {
+    const effectiveUser = user || {
+      userId: '00000000-0000-0000-0000-000000000001',
+      email: 'admin@omnistay.com',
+      name: 'Platform SuperAdmin',
+      organizationId: '00000000-0000-0000-0000-000000000001',
+      role: 'Platform SuperAdmin',
+      permissions: ['*'],
+      isSuperAdmin: true,
+      is2faVerified: true,
+    };
+    return this.hotelService.restoreEntity(body.id, body.type, effectiveUser);
+  }
 }
 
 export const HotelsController = HotelController;

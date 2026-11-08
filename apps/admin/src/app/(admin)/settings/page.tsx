@@ -34,6 +34,8 @@ import {
   ArrowRight,
   Check,
 } from 'lucide-react';
+import { useTenantStore } from '@/stores/tenant-store';
+import { api } from '@/lib/api/client';
 
 interface LanguageTab {
   id: string;
@@ -102,55 +104,18 @@ export default function HotelSettingsPage() {
   const [brandSubdomain, setBrandSubdomain] = useState('grandresort');
   const [brandSslStatus, setBrandSslStatus] = useState('active');
   const [brandSslIssuer, setBrandSslIssuer] = useState("Cloudflare for SaaS / Let's Encrypt Authority X3");
-  const [brandGallery, setBrandGallery] = useState<any[]>([
-    { id: 'gal-1', title: 'Grand Resort Façade & Entrance', category: 'Exterior', url: '/images/gallery/exterior-1.jpg', width: 1920, height: 1080 },
-    { id: 'gal-2', title: 'Atrium Grand Chandelier Lobby', category: 'Lobby', url: '/images/gallery/lobby-1.jpg', width: 1920, height: 1080 },
-    { id: 'gal-3', title: 'Presidential Oceanfront Penthouse Suite', category: 'Suite', url: '/images/gallery/suite-1.jpg', width: 1920, height: 1080 },
-    { id: 'gal-4', title: 'Infinity Heated Horizon Pool', category: 'Pool', url: '/images/gallery/pool-1.jpg', width: 1920, height: 1080 },
-    { id: 'gal-5', title: 'Michelin Star Fine Dining Restaurant', category: 'Restaurant', url: '/images/gallery/restaurant-1.jpg', width: 1920, height: 1080 },
-    { id: 'gal-6', title: 'Himalayan Salt Sauna & Ayurvedic Spa', category: 'Spa', url: '/images/gallery/spa-1.jpg', width: 1920, height: 1080 },
-  ]);
+  const { currentTenantId, tenants } = useTenantStore();
+  const effectiveTenantId =
+    currentTenantId && currentTenantId !== 'all' ? currentTenantId : tenants[0]?.id || '';
+
+  const [brandGallery, setBrandGallery] = useState<any[]>([]);
   const [galleryFilter, setGalleryFilter] = useState('all');
   const [isVerifyingDomain, setIsVerifyingDomain] = useState(false);
   const [domainVerifyNotice, setDomainVerifyNotice] = useState<string | null>(null);
   const [isSavingBranding, setIsSavingBranding] = useState(false);
 
-  // SaaS Subscription Plans State (Chapter 19.2)
-  const [saasPlans, setSaasPlans] = useState<any[]>([
-    {
-      id: 'plan-1',
-      name: 'Starter Boutique',
-      code: 'starter',
-      monthlyPrice: 49,
-      annualPrice: 490,
-      maxProperties: 1,
-      maxRooms: 15,
-      maxOutlets: 1,
-      features: ['Single Property Management', 'Up to 15 Guest Rooms', '1 POS Dining Terminal', 'Basic PMS & Tape Chart', 'Direct Booking Engine', 'Email Support'],
-    },
-    {
-      id: 'plan-2',
-      name: 'Professional Resort',
-      code: 'professional',
-      monthlyPrice: 149,
-      annualPrice: 1490,
-      maxProperties: 3,
-      maxRooms: 75,
-      maxOutlets: 5,
-      features: ['Up to 3 Properties', '75 Guest Rooms & Suites', '5 POS Restaurant & Bar Outlets', 'Full Double-Entry Accounting', 'HRM & Biometric Time Clock', 'WhatsApp Business API Triggers', 'Priority Phone & Chat Support'],
-    },
-    {
-      id: 'plan-3',
-      name: 'Enterprise Chain',
-      code: 'enterprise',
-      monthlyPrice: 399,
-      annualPrice: 3990,
-      maxProperties: 999,
-      maxRooms: 9999,
-      maxOutlets: 999,
-      features: ['Unlimited Properties & Chains', 'Unlimited Rooms & Villas', 'Unlimited POS Outlets', 'Full White-Labeling & Custom Domain', 'Cloudflare SSL Automation', 'Autonomous Multimodal AI Concierge', 'Dedicated Account Director', '99.99% Uptime SLA'],
-    },
-  ]);
+  // SaaS Subscription Plans State (Chapter 19.2) - Loaded from PostgreSQL
+  const [saasPlans, setSaasPlans] = useState<any[]>([]);
   const [activePlanCode, setActivePlanCode] = useState<string>('professional');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -159,67 +124,59 @@ export default function HotelSettingsPage() {
   const [isEnterpriseModalOpen, setIsEnterpriseModalOpen] = useState<boolean>(false);
   const [enterpriseNotes, setEnterpriseNotes] = useState<string>('');
 
-  // Load branding and SaaS plans from backend
+  // Load branding and SaaS plans from backend (PostgreSQL)
   useEffect(() => {
-    fetch('http://localhost:4000/api/v1/saas/plans')
-      .then((res) => (res.ok ? res.json() : []))
+    api.get<any[]>('/api/v1/saas/plans')
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setSaasPlans(data);
       })
       .catch(() => {});
 
-    fetch('http://localhost:4000/api/v1/saas/subscriptions')
-      .then((res) => (res.ok ? res.json() : []))
+    api.get<any[]>('/api/v1/saas/subscriptions')
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) setSubscriptions(data);
       })
       .catch(() => {});
-    fetch('http://localhost:4000/api/v1/organizations/55c3849e-0fa3-4b52-9c2d-b4cbe23e9525/branding')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data) {
-          if (data.logoUrl) setBrandLogoUrl(data.logoUrl);
-          if (data.logoDarkUrl) setBrandLogoDarkUrl(data.logoDarkUrl);
-          if (data.faviconUrl) setBrandFaviconUrl(data.faviconUrl);
-          if (data.headerBannerUrl) setBrandHeaderBannerUrl(data.headerBannerUrl);
-          if (data.primaryColor) setBrandPrimaryColor(data.primaryColor);
-          if (data.accentColor) setBrandAccentColor(data.accentColor);
-          if (data.customDomain) setBrandCustomDomain(data.customDomain);
-          if (data.subdomain) setBrandSubdomain(data.subdomain);
-          if (data.sslStatus) setBrandSslStatus(data.sslStatus);
-          if (data.sslIssuer) setBrandSslIssuer(data.sslIssuer);
-          if (data.gallery && data.gallery.length > 0) setBrandGallery(data.gallery);
-        }
-      })
-      .catch((err) => console.error('Failed to load branding:', err));
-  }, []);
+
+    if (effectiveTenantId) {
+      api.get<any>(`/api/v1/organizations/${effectiveTenantId}/branding`)
+        .then((data) => {
+          if (data) {
+            if (data.logoUrl) setBrandLogoUrl(data.logoUrl);
+            if (data.logoDarkUrl) setBrandLogoDarkUrl(data.logoDarkUrl);
+            if (data.faviconUrl) setBrandFaviconUrl(data.faviconUrl);
+            if (data.headerBannerUrl) setBrandHeaderBannerUrl(data.headerBannerUrl);
+            if (data.primaryColor) setBrandPrimaryColor(data.primaryColor);
+            if (data.accentColor) setBrandAccentColor(data.accentColor);
+            if (data.customDomain) setBrandCustomDomain(data.customDomain);
+            if (data.subdomain) setBrandSubdomain(data.subdomain);
+            if (data.sslStatus) setBrandSslStatus(data.sslStatus);
+            if (data.sslIssuer) setBrandSslIssuer(data.sslIssuer);
+            if (Array.isArray(data.gallery) && data.gallery.length > 0) setBrandGallery(data.gallery);
+          }
+        })
+        .catch((err) => console.error('Failed to load branding:', err));
+    }
+  }, [effectiveTenantId]);
 
   const handleSaveBranding = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!effectiveTenantId) return;
     setIsSavingBranding(true);
     try {
-      const res = await fetch(
-        'http://localhost:4000/api/v1/organizations/55c3849e-0fa3-4b52-9c2d-b4cbe23e9525/branding',
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            logoUrl: brandLogoUrl,
-            logoDarkUrl: brandLogoDarkUrl,
-            faviconUrl: brandFaviconUrl,
-            headerBannerUrl: brandHeaderBannerUrl,
-            primaryColor: brandPrimaryColor,
-            accentColor: brandAccentColor,
-            customDomain: brandCustomDomain,
-            subdomain: brandSubdomain,
-            gallery: brandGallery,
-          }),
-        }
-      );
-      if (res.ok) {
-        setSavedSuccess(true);
-        setTimeout(() => setSavedSuccess(false), 3500);
-      }
+      await api.put(`/api/v1/organizations/${effectiveTenantId}/branding`, {
+        logoUrl: brandLogoUrl,
+        logoDarkUrl: brandLogoDarkUrl,
+        faviconUrl: brandFaviconUrl,
+        headerBannerUrl: brandHeaderBannerUrl,
+        primaryColor: brandPrimaryColor,
+        accentColor: brandAccentColor,
+        customDomain: brandCustomDomain,
+        subdomain: brandSubdomain,
+        gallery: brandGallery,
+      });
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3500);
     } catch (err) {
       console.error('Failed to save branding:', err);
     } finally {
@@ -228,23 +185,19 @@ export default function HotelSettingsPage() {
   };
 
   const handleVerifyDomain = async () => {
+    if (!effectiveTenantId) return;
     setIsVerifyingDomain(true);
     setDomainVerifyNotice(null);
     try {
-      const res = await fetch(
-        'http://localhost:4000/api/v1/organizations/55c3849e-0fa3-4b52-9c2d-b4cbe23e9525/verify-domain',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ customDomain: brandCustomDomain }),
-        }
+      const data = await api.post<{ verified: boolean; message?: string }>(
+        `/api/v1/organizations/${effectiveTenantId}/verify-domain`,
+        { customDomain: brandCustomDomain }
       );
-      const data = await res.json();
-      if (data.verified) {
+      if (data?.verified) {
         setBrandSslStatus('active');
-        setDomainVerifyNotice(`Success: ${data.message}`);
+        setDomainVerifyNotice(`Success: ${data.message || 'SSL Certificate deployed via Cloudflare Edge'}`);
       } else {
-        setDomainVerifyNotice(`Notice: ${data.message}`);
+        setDomainVerifyNotice(`Notice: ${data?.message || 'Verification in progress'}`);
       }
     } catch (err) {
       console.error('Domain verification failed:', err);
@@ -266,22 +219,17 @@ export default function HotelSettingsPage() {
     setIsSubscribing(true);
     setSubscribeNotice(null);
     try {
-      const res = await fetch('http://localhost:4000/api/v1/saas/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planCode,
-          billingCycle,
-          paymentMethod: 'stripe',
-        }),
+      const data = await api.post<any>('/api/v1/saas/subscribe', {
+        planCode,
+        billingCycle,
+        paymentMethod: 'stripe',
       });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      if (data && data.success) {
         setActivePlanCode(planCode);
         setSubscribeNotice(`Successfully subscribed to ${data.planName} (${billingCycle})! Order ${data.order?.orderNumber || 'confirmed'}.`);
-        fetch('http://localhost:4000/api/v1/saas/subscriptions')
-          .then((r) => r.json())
-          .then((s) => Array.isArray(s) && setSubscriptions(s));
+        api.get<any[]>('/api/v1/saas/subscriptions')
+          .then((s) => Array.isArray(s) && setSubscriptions(s))
+          .catch(() => {});
       } else {
         setActivePlanCode(planCode);
         setSubscribeNotice(`Subscribed to ${planCode} plan (${billingCycle}) successfully.`);
@@ -297,14 +245,10 @@ export default function HotelSettingsPage() {
   const handleSubmitEnterpriseRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:4000/api/v1/saas/plan-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planCode: 'enterprise',
-          billingCycle: 'annual',
-          notes: enterpriseNotes,
-        }),
+      await api.post('/api/v1/saas/plan-requests', {
+        planCode: 'enterprise',
+        billingCycle: 'annual',
+        notes: enterpriseNotes,
       });
       setIsEnterpriseModalOpen(false);
       setEnterpriseNotes('');
@@ -907,8 +851,14 @@ export default function HotelSettingsPage() {
               </div>
 
               {/* 3 Subscription Plan Tiers Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
-                {saasPlans.map((plan) => {
+              {saasPlans.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-slate-200">
+                  <BeatLoader color="#00a8ff" size={10} />
+                  <p className="text-xs text-slate-500 mt-2">Loading SaaS plans from PostgreSQL database...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+                  {saasPlans.map((plan) => {
                   const isActive = activePlanCode === plan.code;
                   const price = billingCycle === 'annual' ? plan.annualPrice : plan.monthlyPrice;
                   const period = billingCycle === 'annual' ? '/ year' : '/ month';
@@ -1025,6 +975,7 @@ export default function HotelSettingsPage() {
                   );
                 })}
               </div>
+              )}
 
               {/* Subscription Orders & Commercial Invoices Table */}
               <div className="pt-4 border-t border-slate-100 space-y-3">

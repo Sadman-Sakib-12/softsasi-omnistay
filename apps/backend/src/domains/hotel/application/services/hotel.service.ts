@@ -498,6 +498,88 @@ export class HotelService {
       },
     });
   }
+
+  /**
+   * Retrieves all soft-deleted properties, room types, and rooms from PostgreSQL database for recovery.
+   */
+  async listArchivedEntities(caller: AuthenticatedUserPayload) {
+    const isSuper =
+      caller.isSuperAdmin ||
+      caller.role === 'SuperAdmin' ||
+      caller.role === 'Platform SuperAdmin' ||
+      caller.role === 'PLATFORM_SUPERADMIN';
+    const orgId = caller.organizationId;
+
+    const [archivedHotels, archivedRooms, archivedRoomTypes] = await Promise.all([
+      this.prisma.hotel.findMany({
+        where: isSuper ? { deletedAt: { not: null } } : { organizationId: orgId, deletedAt: { not: null } },
+      }),
+      this.prisma.room.findMany({
+        where: { deletedAt: { not: null } },
+        include: { roomType: true },
+      }),
+      this.prisma.roomType.findMany({
+        where: { deletedAt: { not: null } },
+      }),
+    ]);
+
+    const results: any[] = [];
+    archivedHotels.forEach((h) => {
+      results.push({
+        id: h.id,
+        name: h.name,
+        type: 'Hotel Property',
+        deletedAt: h.deletedAt ? h.deletedAt.toISOString().split('T')[0] : 'Recently',
+        archivedBy: h.updatedBy || 'Platform Admin',
+      });
+    });
+    archivedRoomTypes.forEach((rt) => {
+      results.push({
+        id: rt.id,
+        name: rt.title,
+        type: 'Room Category',
+        deletedAt: rt.deletedAt ? rt.deletedAt.toISOString().split('T')[0] : 'Recently',
+        archivedBy: 'Front Desk / GM',
+      });
+    });
+    archivedRooms.forEach((r) => {
+      results.push({
+        id: r.id,
+        name: `Room ${r.roomNumber} (${r.roomType?.title || 'Standard'})`,
+        type: 'Physical Room Unit',
+        deletedAt: r.deletedAt ? r.deletedAt.toISOString().split('T')[0] : 'Recently',
+        archivedBy: 'Housekeeping Admin',
+      });
+    });
+
+    return results;
+  }
+
+  /**
+   * Restores a soft-deleted entity in PostgreSQL database.
+   */
+  async restoreEntity(id: string, type: string, caller: AuthenticatedUserPayload) {
+    if (!this.canManageProperties(caller)) {
+      throw new ForbiddenException('Insufficient permissions to restore archived entities');
+    }
+
+    if (type === 'Hotel Property') {
+      return this.prisma.hotel.update({
+        where: { id },
+        data: { deletedAt: null, status: 'active' },
+      });
+    } else if (type === 'Room Category') {
+      return this.prisma.roomType.update({
+        where: { id },
+        data: { deletedAt: null, isActive: true },
+      });
+    } else {
+      return this.prisma.room.update({
+        where: { id },
+        data: { deletedAt: null, status: 'available' },
+      });
+    }
+  }
 }
 
 export const HotelsService = HotelService;

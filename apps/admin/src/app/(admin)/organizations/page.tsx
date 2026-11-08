@@ -25,6 +25,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { organizationsService, Organization } from '@/features/organizations/services/organizations.service';
 import { useTenantStore } from '@/stores/tenant-store';
+import { api } from '@/lib/api/client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -112,9 +113,8 @@ export default function OrganizationsPage() {
     setBCustomDomain(org.domain || '');
 
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/organizations/${org.id}/branding`);
-      if (res.ok) {
-        const data = await res.json();
+      const data = await api.get<any>(`/api/v1/organizations/${org.id}/branding`);
+      if (data) {
         setBLogoUrl(data.logoUrl || '/images/omnistay-logo.png');
         setBLogoDarkUrl(data.logoDarkUrl || '/images/omnistay-logo-dark.png');
         setBFaviconUrl(data.faviconUrl || '/favicon.ico');
@@ -137,18 +137,16 @@ export default function OrganizationsPage() {
     setVerifyNotice(null);
 
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/organizations/${selectedOrgForBranding.id}/verify-domain`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customDomain: bCustomDomain }),
-      });
-      const data = await res.json();
-      if (data.verified) {
+      const data = await api.post<{ verified: boolean; message?: string }>(
+        `/api/v1/organizations/${selectedOrgForBranding.id}/verify-domain`,
+        { customDomain: bCustomDomain }
+      );
+      if (data?.verified) {
         setBSslStatus('active');
-        setVerifyNotice(`Validated: ${data.message}`);
+        setVerifyNotice(`Validated: ${data.message || 'SSL Certificate active'}`);
         queryClient.invalidateQueries({ queryKey: ['organizationsList'] });
       } else {
-        setVerifyNotice(`Notice: ${data.message}`);
+        setVerifyNotice(`Notice: ${data?.message || 'Verification in progress'}`);
       }
     } catch (err) {
       console.error('Domain verification failed:', err);
@@ -164,25 +162,19 @@ export default function OrganizationsPage() {
     setIsSavingBranding(true);
 
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/organizations/${selectedOrgForBranding.id}/branding`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          logoUrl: bLogoUrl,
-          logoDarkUrl: bLogoDarkUrl,
-          faviconUrl: bFaviconUrl,
-          headerBannerUrl: bBannerUrl,
-          primaryColor: bPrimaryColor,
-          accentColor: bAccentColor,
-          customDomain: bCustomDomain,
-          subdomain: bSubdomain,
-        }),
+      await api.put(`/api/v1/organizations/${selectedOrgForBranding.id}/branding`, {
+        logoUrl: bLogoUrl,
+        logoDarkUrl: bLogoDarkUrl,
+        faviconUrl: bFaviconUrl,
+        headerBannerUrl: bBannerUrl,
+        primaryColor: bPrimaryColor,
+        accentColor: bAccentColor,
+        customDomain: bCustomDomain,
+        subdomain: bSubdomain,
       });
 
-      if (res.ok) {
-        queryClient.invalidateQueries({ queryKey: ['organizationsList'] });
-        setIsBrandingOpen(false);
-      }
+      queryClient.invalidateQueries({ queryKey: ['organizationsList'] });
+      setIsBrandingOpen(false);
     } catch (err) {
       console.error('Failed to save branding:', err);
     } finally {

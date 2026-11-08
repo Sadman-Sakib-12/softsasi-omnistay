@@ -59,6 +59,7 @@ describe('Chapter 19: Multi-Tenant SaaS Architecture, Commercial Billing & Compl
         findUnique: vi.fn().mockImplementation(({ where }) => {
           return Promise.resolve(mockOrgs.find((o) => o.id === where.id) || null);
         }),
+        findMany: vi.fn().mockImplementation(() => Promise.resolve(mockOrgs)),
         groupBy: vi.fn().mockResolvedValue([{ planId: 'plan-1', _count: { id: 1 } }]),
         update: vi.fn().mockImplementation(({ where, data }) => {
           const org = mockOrgs.find((o) => o.id === where.id);
@@ -68,12 +69,20 @@ describe('Chapter 19: Multi-Tenant SaaS Architecture, Commercial Billing & Compl
         count: vi.fn().mockResolvedValue(12),
       },
       subscriptionOrder: {
+        count: vi.fn().mockImplementation(() => Promise.resolve(mockOrders.length)),
         create: vi.fn().mockImplementation(({ data }) => {
           const order = { id: `order-${mockOrders.length + 1}`, ...data };
           mockOrders.push(order);
           return Promise.resolve(order);
         }),
-        findMany: vi.fn().mockImplementation(() => Promise.resolve(mockOrders)),
+        findMany: vi.fn().mockImplementation(() =>
+          Promise.resolve(
+            mockOrders.map((o) => ({
+              ...o,
+              plan: mockPlans.find((p) => p.id === o.planId) || null,
+            }))
+          )
+        ),
       },
       planRequest: {
         create: vi.fn().mockImplementation(({ data }) => {
@@ -144,6 +153,9 @@ describe('Chapter 19: Multi-Tenant SaaS Architecture, Commercial Billing & Compl
       hotel: {
         count: vi.fn().mockResolvedValue(15),
       },
+      room: {
+        count: vi.fn().mockResolvedValue(85),
+      },
       roomType: {
         count: vi.fn().mockResolvedValue(85),
       },
@@ -193,6 +205,7 @@ describe('Chapter 19: Multi-Tenant SaaS Architecture, Commercial Billing & Compl
   });
 
   it('19.3: should calculate SuperAdmin health telemetry and macro revenue metrics (MRR, ARR, GMV)', async () => {
+    await saasService.ensureSeedPlans();
     const telemetry = await saasService.getHealthTelemetry();
     expect(telemetry.totalTenants).toBe(12);
     expect(telemetry.totalUsers).toBe(148);
