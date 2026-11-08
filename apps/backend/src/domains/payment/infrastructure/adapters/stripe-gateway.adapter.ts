@@ -21,8 +21,40 @@ export class StripeGatewayAdapter implements IPaymentGatewayStrategy {
   ) {}
 
   async initiatePayment(req: PaymentInitiateRequest): Promise<PaymentInitiateResponse> {
-    const intentId = `pi_${crypto.randomBytes(12).toString('hex')}`;
-    const clientSecret = `${intentId}_secret_${crypto.randomBytes(8).toString('hex')}`;
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    let intentId = `pi_${crypto.randomBytes(12).toString('hex')}`;
+    let clientSecret = `${intentId}_secret_${crypto.randomBytes(8).toString('hex')}`;
+
+    if (secretKey && secretKey.startsWith('sk_')) {
+      try {
+        const currency = (req.currency || 'USD').toLowerCase();
+        const amountCents = Math.round(Number(req.amount) * 100);
+        const params = new URLSearchParams();
+        params.append('amount', amountCents.toString());
+        params.append('currency', currency);
+        params.append('automatic_payment_methods[enabled]', 'true');
+        params.append('description', 'OmniStay 360 Booking Payment');
+
+        const res = await fetch('https://api.stripe.com/v1/payment_intents', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${secretKey}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params.toString(),
+        });
+
+        if (res.ok) {
+          const data = (await res.json()) as any;
+          if (data && data.id && data.client_secret) {
+            intentId = data.id;
+            clientSecret = data.client_secret;
+          }
+        }
+      } catch {
+        // Fallback to local intent generation if network is unavailable
+      }
+    }
 
     await this.repo.createStripePaymentIntent({
       intentId,
@@ -43,6 +75,33 @@ export class StripeGatewayAdapter implements IPaymentGatewayStrategy {
   }
 
   async verifyPayment(transactionId: string): Promise<PaymentVerifyResponse> {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (secretKey && secretKey.startsWith('sk_') && transactionId.startsWith('pi_')) {
+      try {
+        const res = await fetch(`https://api.stripe.com/v1/payment_intents/${transactionId}`, {
+          headers: {
+            Authorization: `Bearer ${secretKey}`,
+          },
+        });
+        if (res.ok) {
+          const data = (await res.json()) as any;
+          if (data && (data.status === 'succeeded' || data.status === 'requires_capture')) {
+            await this.repo.updateStripePaymentIntent(transactionId, 'succeeded');
+            return {
+              gateway: this.gatewayCode,
+              transactionId,
+              isVerified: true,
+              amount: data.amount ? data.amount / 100 : 0,
+              currency: (data.currency || 'USD').toUpperCase(),
+              status: 'paid',
+            };
+          }
+        }
+      } catch {
+        // Fallback to local database record
+      }
+    }
+
     const record = await this.repo.findStripePaymentIntent(transactionId);
     if (!record) {
       return {
