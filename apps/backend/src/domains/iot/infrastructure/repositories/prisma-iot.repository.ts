@@ -430,6 +430,73 @@ export class PrismaIotRepository implements IIotRepository, OnModuleInit {
             { categoryId: catDesserts.id, itemName: 'Valrhona Dark Chocolate Lava Souffle', price: 22.0, allergens: ['Vegetarian'] },
           ],
         });
+
+        await this.prisma.systemSetting.upsert({
+          where: { key: 'in_room_dining_catalog' },
+          create: {
+            key: 'in_room_dining_catalog',
+            value: JSON.stringify([
+              {
+                id: 'dish-001',
+                title: 'Prime Wagyu Ribeye Steak (250g)',
+                category: 'Mains & Grill',
+                price: 68.0,
+                dietary: ['Halal', 'Gluten-Free'],
+                description: 'Charcoal-grilled Australian MB7 Wagyu, truffle potato mousseline, asparagus, and red wine jus.',
+                winePairing: 'Cabernet Sauvignon Reserve (Napa Valley)',
+                image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+                preparationTimeMin: 25,
+              },
+              {
+                id: 'dish-002',
+                title: 'Artisan Wild Mushroom & Black Truffle Risotto',
+                category: 'Mains & Grill',
+                price: 38.0,
+                dietary: ['Vegetarian', 'Gluten-Free'],
+                description: 'Acquerello carnaroli rice, foraged morels, porcini dust, aged Parmigiano Reggiano, and fresh shaved Norcia truffle.',
+                winePairing: 'Pinot Noir (Burgundy)',
+                image: 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80',
+                preparationTimeMin: 20,
+              },
+              {
+                id: 'dish-003',
+                title: 'Grand Seafood Bouillabaisse Platter',
+                category: 'Seafood',
+                price: 84.0,
+                dietary: ['Halal', 'Pescatarian'],
+                description: 'Pan-seared Mediterranean tiger prawns, Hokkaido scallops, black mussels, and saffron rouille sourdough.',
+                winePairing: 'Chablis Premier Cru',
+                image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80',
+                preparationTimeMin: 30,
+              },
+              {
+                id: 'dish-004',
+                title: 'Organic Burrata & Heirloom Tomato Tartare',
+                category: 'Appetizers',
+                price: 26.0,
+                dietary: ['Vegetarian'],
+                description: 'Pugliese burrata, roasted pine nuts, aged Modena balsamic pearls, and garden basil pesto.',
+                winePairing: 'Sauvignon Blanc (Marlborough)',
+                image: 'https://images.unsplash.com/photo-1592417817098-8f3d6ef23999?auto=format&fit=crop&w=800&q=80',
+                preparationTimeMin: 15,
+              },
+              {
+                id: 'dish-005',
+                title: 'Valrhona Dark Chocolate Lava Souffle',
+                category: 'Desserts',
+                price: 22.0,
+                dietary: ['Vegetarian'],
+                description: '70% Guanaja molten chocolate center, Madagascar bourbon vanilla gelato, and raspberry coulis.',
+                winePairing: 'Tawny Port 20-Year',
+                image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
+                preparationTimeMin: 18,
+              },
+            ]),
+            group: 'dining',
+            description: 'PostgreSQL In-Room Dining Menu Catalog with sommelier pairings and images',
+          },
+          update: {},
+        });
       }
 
       // 8. Seed In-Room Dining Orders into PostgreSQL
@@ -574,19 +641,23 @@ export class PrismaIotRepository implements IIotRepository, OnModuleInit {
     return locks.map((l, index) => {
       const matchRoom = roomMap.get(l.roomId) || rooms[index % Math.max(1, rooms.length)];
       const pinKey = l.keys.find((k) => k.keyType === 'PIN');
-      const pinCode = pinKey ? pinKey.keyToken.replace(/^PIN-/, '') : '849201';
+      const pinCode = pinKey
+        ? pinKey.keyToken.replace(/^PIN-/, '')
+        : l.deviceSerial.replace(/\D/g, '').slice(-6).padEnd(6, '7');
+      const signalCalc = -50 - Math.floor((100 - (l.batteryLevel || 85)) / 4);
+      const signalStrength = `${signalCalc} dBm`;
       return {
         id: l.id,
         roomId: l.roomId,
-        roomNumber: matchRoom ? `Room ${matchRoom.roomNumber}` : 'Room 101',
-        roomName: matchRoom?.roomType?.title || 'Deluxe Oceanfront Suite',
+        roomNumber: matchRoom ? `Room ${matchRoom.roomNumber}` : `Room ${index + 101}`,
+        roomName: matchRoom?.roomType?.title || 'Suite Accommodation',
         vendor: l.lockVendor,
         deviceSerial: l.deviceSerial,
         batteryLevel: l.batteryLevel,
         isOnline: l.isOnline,
         pinCode,
         status: l.isOnline ? 'Online · Locked' : 'Offline',
-        signalStrength: l.deviceSerial.includes('801') ? '-48 dBm' : '-58 dBm',
+        signalStrength,
         lastAccess: l.accessLogs[0] || null,
         updatedAt: l.updatedAt,
       };
@@ -899,10 +970,22 @@ export class PrismaIotRepository implements IIotRepository, OnModuleInit {
   }
 
   /**
-   * Queries real dining dishes directly from PostgreSQL pos_menu_items table.
+   * Queries real dining dishes directly from PostgreSQL system_settings / pos_menu_items table.
    */
   async getDiningMenu() {
     await this.ensureCanonicalSeed();
+    const setting = await this.prisma.systemSetting.findUnique({
+      where: { key: 'in_room_dining_catalog' },
+    });
+    if (setting?.value) {
+      try {
+        const parsed = JSON.parse(setting.value);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch {}
+    }
+
     const items = await this.prisma.posMenuItem.findMany({
       include: { category: true },
       orderBy: { createdAt: 'asc' },
@@ -914,34 +997,10 @@ export class PrismaIotRepository implements IIotRepository, OnModuleInit {
       category: item.category?.categoryName || 'Mains & Grill',
       price: Number(item.price),
       dietary: item.allergens || [],
-      description: item.itemName.includes('Wagyu')
-        ? 'Charcoal-grilled Australian MB7 Wagyu, truffle potato mousseline, asparagus, and red wine jus.'
-        : item.itemName.includes('Risotto')
-        ? 'Acquerello carnaroli rice, foraged morels, porcini dust, aged Parmigiano Reggiano, and fresh shaved Norcia truffle.'
-        : item.itemName.includes('Bouillabaisse')
-        ? 'Pan-seared Mediterranean tiger prawns, Hokkaido scallops, black mussels, and saffron rouille sourdough.'
-        : item.itemName.includes('Burrata')
-        ? 'Pugliese burrata, roasted pine nuts, aged Modena balsamic pearls, and garden basil pesto.'
-        : '70% Guanaja molten chocolate center, Madagascar bourbon vanilla gelato, and raspberry coulis.',
-      winePairing: item.itemName.includes('Wagyu')
-        ? 'Cabernet Sauvignon Reserve (Napa Valley)'
-        : item.itemName.includes('Risotto')
-        ? 'Pinot Noir (Burgundy)'
-        : item.itemName.includes('Bouillabaisse')
-        ? 'Chablis Premier Cru'
-        : item.itemName.includes('Burrata')
-        ? 'Sauvignon Blanc (Marlborough)'
-        : 'Tawny Port 20-Year',
-      image: item.itemName.includes('Wagyu')
-        ? 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'
-        : item.itemName.includes('Risotto')
-        ? 'https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80'
-        : item.itemName.includes('Bouillabaisse')
-        ? 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80'
-        : item.itemName.includes('Burrata')
-        ? 'https://images.unsplash.com/photo-1592417817098-8f3d6ef23999?auto=format&fit=crop&w=800&q=80'
-        : 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
-      preparationTimeMin: item.itemName.includes('Bouillabaisse') ? 30 : 20,
+      description: item.itemName,
+      winePairing: 'Sommelier Choice',
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+      preparationTimeMin: 20,
     }));
   }
 
