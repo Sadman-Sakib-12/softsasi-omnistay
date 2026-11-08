@@ -11,7 +11,7 @@
                     "build:admin":  "pnpm --filter @omnistay/admin build",
                     "build:api":  "pnpm --filter @omnistay/api build",
                     "dev:backend":  "pnpm --filter @omnistay/backend start:dev",
-                    "build:backend":  "pnpm --filter @omnistay/backend build",
+                    "build:backend":  "pnpm --filter @omnistay/backend... build",
                     "dev":  "turbo run dev --filter=@omnistay/web --filter=@omnistay/admin --filter=@omnistay/backend"
                 },
     "devDependencies":  {
