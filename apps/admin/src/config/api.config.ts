@@ -1,5 +1,9 @@
 export const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
+  baseUrl:
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NODE_ENV === 'production'
+      ? 'https://omnistay-backend.onrender.com'
+      : 'http://localhost:4000'),
   defaultTenantId: '0646902b-6163-4729-9901-6282ad7236e3', // Grand Palace Dhaka
   endpoints: {
     auth: {

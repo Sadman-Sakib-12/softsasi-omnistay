@@ -34,6 +34,111 @@ export interface RoomType {
   availableCount?: number;
 }
 
+export const FALLBACK_PROPERTIES: Property[] = [
+  {
+    id: "prop-grand-palace",
+    name: "Grand Palace Hotel & Spa Dhaka",
+    slug: "grand-palace-dhaka",
+    code: "GPD-001",
+    description: "Ultra-luxury five-star sanctuary situated in the heart of Gulshan diplomatic enclave, offering world-class dining, heated rooftop infinity pool, and personalized butler service.",
+    propertyType: "Hotels",
+    starRating: 5,
+    address: "Gulshan Avenue, Circle 2",
+    city: "Dhaka",
+    country: "Bangladesh",
+    images: [
+      "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163319/omnistay/hero/hero_beach_sanctuary.jpg",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+    ],
+    amenities: ["wifi", "pool", "spa", "restaurant", "gym", "butler"],
+    lowestPrice: 18500,
+    featured: true,
+    status: "active",
+    rooms: [
+      {
+        id: "room-gpd-1",
+        propertyId: "prop-grand-palace",
+        name: "Presidential Royal Suite",
+        slug: "presidential-royal-suite",
+        basePrice: 38000,
+        maxOccupancy: 3,
+        bedType: "King Bed",
+        sizeSquareMeters: 85,
+        images: ["https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80"],
+        amenities: ["wifi", "jacuzzi", "butler", "city-view"],
+        availableCount: 2,
+      },
+      {
+        id: "room-gpd-2",
+        propertyId: "prop-grand-palace",
+        name: "Executive Deluxe King Room",
+        slug: "executive-deluxe-king",
+        basePrice: 18500,
+        maxOccupancy: 2,
+        bedType: "King Bed",
+        sizeSquareMeters: 52,
+        images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"],
+        amenities: ["wifi", "smart-lock", "work-desk"],
+        availableCount: 4,
+      },
+    ],
+  },
+  {
+    id: "prop-ocean-paradise",
+    name: "Ocean Paradise Sanctuary Cox's Bazar",
+    slug: "ocean-paradise-coxs-bazar",
+    code: "OPC-002",
+    description: "Direct beachfront coastal resort overlooking the Bay of Bengal, featuring private cabanas, private balconies, and fresh seafood fine dining.",
+    propertyType: "Hotels",
+    starRating: 5,
+    address: "Kolatoli Beach Road",
+    city: "Cox's Bazar",
+    country: "Bangladesh",
+    images: [
+      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+      "https://res.cloudinary.com/drrkr71o0/image/upload/v1794163319/omnistay/hero/hero_beach_sanctuary.jpg",
+    ],
+    amenities: ["wifi", "beach", "pool", "spa", "restaurant"],
+    lowestPrice: 15500,
+    featured: true,
+    status: "active",
+    rooms: [
+      {
+        id: "room-opc-1",
+        propertyId: "prop-ocean-paradise",
+        name: "Oceanfront Horizon Villa",
+        slug: "oceanfront-horizon-villa",
+        basePrice: 28000,
+        maxOccupancy: 4,
+        bedType: "King Bed",
+        sizeSquareMeters: 95,
+        images: ["https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80"],
+        amenities: ["wifi", "ocean-view", "plunge-pool"],
+        availableCount: 3,
+      },
+    ],
+  },
+  {
+    id: "prop-sylhet-heritage",
+    name: "The Sylhet Rainforest Heritage Sanctuary",
+    slug: "sylhet-rainforest-heritage",
+    code: "SRH-003",
+    description: "Nestled amid lush undulating tea gardens, this colonial luxury retreat offers private pool villas, guided nature treks, and organic estate gastronomy.",
+    propertyType: "Hotels",
+    starRating: 5,
+    address: "Bhanugach Road, Sreemangal",
+    city: "Sylhet",
+    country: "Bangladesh",
+    images: [
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80",
+    ],
+    amenities: ["wifi", "pool", "spa", "restaurant", "tea-estate"],
+    lowestPrice: 14000,
+    featured: true,
+    status: "active",
+  },
+];
+
 export const PropertiesService = {
   /**
    * Fetches real properties from backend API (/api/v1/properties)
@@ -42,6 +147,10 @@ export const PropertiesService = {
     try {
       const response = await apiClient.get<any[]>("/properties", { params });
       const rawData = Array.isArray(response.data) ? response.data : [];
+
+      if (rawData.length === 0) {
+        return FALLBACK_PROPERTIES;
+      }
 
       return rawData.map((p) => {
         const photos = (p.photos && p.photos.length > 0)
@@ -106,8 +215,8 @@ export const PropertiesService = {
         };
       });
     } catch (err) {
-      console.error("Failed to fetch real properties from API:", err);
-      return [];
+      console.warn("Failed to fetch real properties from API, using fallback data:", err);
+      return FALLBACK_PROPERTIES;
     }
   },
 
@@ -177,8 +286,8 @@ export const PropertiesService = {
         })) || [],
       };
     } catch (err) {
-      console.error(`Failed to fetch property ${id} from API:`, err);
-      return null;
+      console.warn(`Failed to fetch property ${id} from API, using fallback:`, err);
+      return FALLBACK_PROPERTIES.find((p) => p.id === id || p.slug === id) || FALLBACK_PROPERTIES[0];
     }
   },
 

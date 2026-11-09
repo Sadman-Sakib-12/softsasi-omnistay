@@ -9,7 +9,7 @@ import { Plus, Check, Clock, Users, ArrowRight } from "lucide-react";
 
 export interface VerticalCardProps {
   id: string;
-  verticalType: "tour" | "car" | "boat" | "space";
+  verticalType: "tour" | "car" | "boat" | "space" | "event";
   title: string;
   subtitle?: string;
   imageUrl: string;

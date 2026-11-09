@@ -41,7 +41,7 @@ const DEFAULT_NAV_ITEMS: NavItem[] = [
   { label: "TOURS", path: "/tours" },
   { label: "SPACE", path: "/spaces" },
   { label: "CAR", path: "/cars" },
-  { label: "EVENT", path: "/stays?type=event" },
+  { label: "EVENT", path: "/events" },
   { label: "FLIGHT", path: "/flights" },
   { label: "BOAT", path: "/boats" },
   { label: "PAGES", path: "/about" },

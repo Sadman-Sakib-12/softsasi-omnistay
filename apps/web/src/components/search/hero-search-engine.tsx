@@ -22,7 +22,7 @@ const ALL_TABS = [
   { id: "space", label: "Space", icon: Building2, path: "/spaces" },
   { id: "tour", label: "Tour", icon: Compass, path: "/tours" },
   { id: "car", label: "Car", icon: Car, path: "/cars" },
-  { id: "event", label: "Event", icon: Compass, path: "/stays?type=event" },
+  { id: "event", label: "Event", icon: Compass, path: "/events" },
   { id: "flight", label: "Flight", icon: Plane, path: "/flights" },
   { id: "boat", label: "Boat", icon: Anchor, path: "/boats" },
 ];

@@ -361,7 +361,7 @@ export default async function HomePage() {
                 imageUrl={car.images[0]}
                 price={car.pricePerDay}
                 unitLabel="day"
-                detailUrl="/cars"
+                detailUrl={`/cars/${car.id}`}
                 metaBadge={car.withDriver ? "With Chauffeur" : "Self-Drive"}
                 specs={[
                   { label: "Seats", value: String(car.seats) },
@@ -380,7 +380,7 @@ export default async function HomePage() {
                 imageUrl={boat.images[0]}
                 price={boat.pricePerDay}
                 unitLabel="day"
-                detailUrl="/boats"
+                detailUrl={`/boats/${boat.id}`}
                 metaBadge="Includes Captain"
                 specs={[
                   { label: "Capacity", value: `${boat.capacity} guests` },
