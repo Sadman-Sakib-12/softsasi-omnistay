@@ -32,8 +32,7 @@ export class RateLimiterService {
     if (this.redisService.isReady()) {
       await this.consumeRedis(key, maxAttempts, windowMs);
     } else {
-      const isProduction = process.env.NODE_ENV === 'production';
-      if (isProduction) {
+      if (process.env.REQUIRE_REDIS === 'true') {
         this.logger.error(
           `[FAIL-CLOSED] Redis rate limiter unavailable in production for key: ${key}. Denying access.`,
         );
@@ -47,9 +46,9 @@ export class RateLimiterService {
         );
       }
 
-      // Non-production fallback with warning
+      // Robust in-memory sliding-window fallback
       this.logger.warn(
-        `[FALLBACK] Redis disconnected. Using in-memory rate limiter for key: ${key}`,
+        `[FALLBACK] Redis offline/unconfigured. Using in-memory rate limiter for key: ${key}`,
       );
       this.consumeInMemory(key, maxAttempts, windowMs);
     }
@@ -111,7 +110,7 @@ export class RateLimiterService {
     } catch (err: any) {
       if (err instanceof HttpException) throw err;
       this.logger.error(`Redis rate limit check error: ${err.message}`);
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.REQUIRE_REDIS === 'true') {
         throw new HttpException(
           'Security service temporarily unavailable',
           HttpStatus.SERVICE_UNAVAILABLE,

@@ -191,7 +191,7 @@ export class AuthService {
     );
 
     const isMandatory2faRole = activeRole && isMandatory2FaRole(activeRole.name);
-    const requires2fa = user.isTwoFactorEnabled || (isMandatory2faRole && process.env.ENABLE_MANDATORY_2FA !== 'false');
+    const requires2fa = user.isTwoFactorEnabled || (isMandatory2faRole && process.env.ENABLE_MANDATORY_2FA === 'true');
 
     if (requires2fa) {
       // If user has not yet enrolled their secret, provision a fresh secret for enrollment
@@ -273,7 +273,7 @@ export class AuthService {
           throw new UnauthorizedException('2FA challenge token has already been used');
         }
       } else {
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.REQUIRE_REDIS === 'true') {
           throw new HttpException(
             {
               statusCode: HttpStatus.SERVICE_UNAVAILABLE,
@@ -317,7 +317,7 @@ export class AuthService {
           throw new UnauthorizedException('TOTP code has already been consumed. Please wait for the next code.');
         }
       } else {
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.REQUIRE_REDIS === 'true') {
           throw new HttpException(
             {
               statusCode: HttpStatus.SERVICE_UNAVAILABLE,
