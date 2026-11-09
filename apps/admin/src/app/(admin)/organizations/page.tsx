@@ -29,6 +29,7 @@ import { api } from '@/lib/api/client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getPublicWebUrl } from '@/config/site.config';
 
 export default function OrganizationsPage() {
   const queryClient = useQueryClient();
@@ -279,12 +280,12 @@ export default function OrganizationsPage() {
                       <span className="text-slate-400 font-medium">Domain Mapping</span>
                       <p className="font-medium text-slate-800 mt-0.5">{tenant.domain || `${tenant.slug || 'tenant'}.omnistay.com`}</p>
                       <a
-                        href={`http://${tenant.slug || 'tenant'}.localhost:3001`}
+                        href={getPublicWebUrl('', tenant.slug)}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[11px] text-[#00a8ff] hover:underline inline-flex items-center gap-1 mt-0.5 font-mono"
                       >
-                        http://{tenant.slug || 'tenant'}.localhost:3001 <ExternalLink className="w-2.5 h-2.5" />
+                        {getPublicWebUrl('', tenant.slug).replace(/^https?:\/\//, '')} <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </div>
                     <div>

@@ -146,22 +146,10 @@ export function RegisterForm() {
         setTenantId(tenantId);
       }
 
-      sessionManager.setToken(res.accessToken, res.refreshToken);
-      sessionManager.setUser({
-        id: res.user?.id || `user-${Date.now()}`,
-        email: res.user?.email || data.email,
-        name: res.user?.name || data.fullName,
-        role: activeRole,
-        tenantId: tenantId,
-        permissions: res.permissions || ['*'],
-      });
-
-      useUiStore.getState().setActiveRole(activeRole);
-
       setSuccess(true);
       setTimeout(() => {
-        router.push('/dashboard');
-      }, 1200);
+        router.push(`/login?registered=1&email=${encodeURIComponent(data.email)}`);
+      }, 1500);
     } catch (err: any) {
       setErrorMsg(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -180,7 +168,7 @@ export function RegisterForm() {
           Welcome to SoftSasi OmniStay. Your administrator account and hotel workspace have been initialized successfully.
         </p>
         <div className="flex items-center justify-center gap-2 text-xs text-[#00a8ff] pt-2 font-medium">
-          <Loader2 className="w-4 h-4 animate-spin text-[#00a8ff]" /> Redirecting to Dashboard...
+          <Loader2 className="w-4 h-4 animate-spin text-[#00a8ff]" /> Redirecting to Login Page...
         </div>
       </div>
     );

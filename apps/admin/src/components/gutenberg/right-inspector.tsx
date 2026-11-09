@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { GutenbergBlock, BlockType } from './types';
+import { getPublicWebUrl } from '@/config/site.config';
 import {
   X,
   ChevronDown,
@@ -69,7 +70,7 @@ export function RightInspector({
   if (!isOpen) return null;
 
   const cleanSlug = pageSlug ? pageSlug.replace(/^\//, '') : '';
-  const livePageUrl = `http://localhost:3001/page/${cleanSlug}`;
+  const livePageUrl = getPublicWebUrl(`/page/${cleanSlug}`);
 
   return (
     <div className="w-80 h-full bg-white border-l border-slate-200 flex flex-col shrink-0 z-30 shadow-lg select-none text-xs">

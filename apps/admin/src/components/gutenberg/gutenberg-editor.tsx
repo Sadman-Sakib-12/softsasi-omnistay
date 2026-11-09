@@ -15,6 +15,7 @@ import { InlineInserter } from './inline-inserter';
 import { LeftBlockDrawer } from './left-block-drawer';
 import { RightInspector } from './right-inspector';
 import { contentService, CustomPageItem } from '@/features/content/services/content.service';
+import { getPublicWebUrl } from '@/config/site.config';
 import {
   Plus,
   Edit2,
@@ -315,7 +316,7 @@ export function GutenbergEditor({
 
   const activeBlock = blocks.find((b) => b.id === activeBlockId) || null;
   const cleanSlug = pageSlug ? pageSlug.replace(/^\//, '') : '';
-  const livePageUrl = `http://localhost:3001/page/${cleanSlug}`;
+  const livePageUrl = getPublicWebUrl(`/page/${cleanSlug}`);
 
   if (isLoadingPages && pages.length === 0) {
     return (

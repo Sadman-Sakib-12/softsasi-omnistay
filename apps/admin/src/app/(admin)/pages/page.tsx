@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getPublicWebUrl } from '@/config/site.config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, CustomPageItem } from '@/features/content/services/content.service';
 import { UnifiedRichEditor } from '@/components/editor/unified-rich-editor';
@@ -233,7 +234,7 @@ export default function StaticPagesCmsPage() {
                   </td>
                   <td className="py-3.5 px-4 font-mono text-slate-500">
                     <a
-                      href={`http://localhost:3001${p.slug}`}
+                      href={getPublicWebUrl(p.slug)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-[#00a8ff] hover:underline"
@@ -395,7 +396,7 @@ export default function StaticPagesCmsPage() {
 
               <div className="flex items-center justify-between pt-3 border-t border-slate-100">
                 <a
-                  href={`http://localhost:3001${editingPage.slug}`}
+                  href={getPublicWebUrl(editingPage.slug)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-[#00a8ff] hover:underline inline-flex items-center gap-1 font-semibold"

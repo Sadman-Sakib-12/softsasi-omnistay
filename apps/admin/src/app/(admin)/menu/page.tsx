@@ -25,6 +25,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getPublicWebUrl } from '@/config/site.config';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   contentService,
@@ -214,7 +215,7 @@ export default function MenuManagerPage() {
 
         <div className="flex items-center gap-2">
           <a
-            href="http://localhost:3001"
+            href={getPublicWebUrl()}
             target="_blank"
             rel="noopener noreferrer"
             className="h-9 px-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-200"
@@ -509,7 +510,7 @@ export default function MenuManagerPage() {
                       </button>
 
                       <a
-                        href={`http://localhost:3001${item.url}`}
+                        href={getPublicWebUrl(item.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-1.5 text-slate-400 hover:text-[#00a8ff] rounded-lg hover:bg-sky-50 transition-colors"

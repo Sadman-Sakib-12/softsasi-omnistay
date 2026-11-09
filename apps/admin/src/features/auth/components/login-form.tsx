@@ -1,30 +1,41 @@
 'use client';
 import { BeatLoader } from 'react-spinners';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, Loader2, AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Loader2, AlertCircle, Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { loginSchema, LoginFormData } from '../schemas/login.schema';
 import { useAuth } from '../hooks/use-auth';
 
 export function LoginForm() {
   const { login, isLoggingIn, loginError } = useAuth();
+  const searchParams = useSearchParams();
+  const justRegistered = searchParams.get('registered') === '1';
+  const prefilledEmail = searchParams.get('email') || '';
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema) as any,
     defaultValues: {
-      email: '',
+      email: prefilledEmail,
       password: '',
       rememberMe: false,
     },
   });
+
+  useEffect(() => {
+    if (prefilledEmail) {
+      setValue('email', prefilledEmail);
+    }
+  }, [prefilledEmail, setValue]);
 
   const onSubmit = (data: LoginFormData) => {
     login(data);
@@ -44,6 +55,13 @@ export function LoginForm() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {justRegistered && !loginError && (
+          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>Account created successfully! Please sign in with your credentials.</span>
+          </div>
+        )}
+
         {loginError && (
           <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs flex flex-col gap-1.5">
             <div className="flex items-center gap-2">

@@ -33,6 +33,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react';
+import { getPublicWebUrl } from '@/config/site.config';
 import { api } from '@/lib/api/client';
 
 interface FormFieldItem {
@@ -764,7 +765,7 @@ export default function FormBuilderPage() {
               <div>
                 <span className="font-bold text-slate-700 block mb-1">Responsive Iframe Widget:</span>
                 <div className="relative bg-slate-900 text-emerald-400 p-3 rounded font-mono text-[11px] overflow-x-auto">
-                  {`<iframe src="http://localhost:3001/forms/${currentForm?.id || 'demo'}" width="100%" height="700" frameborder="0"></iframe>`}
+                  {`<iframe src="${getPublicWebUrl(`/forms/${currentForm?.id || 'demo'}`)}" width="100%" height="700" frameborder="0"></iframe>`}
                 </div>
               </div>
 
@@ -774,12 +775,12 @@ export default function FormBuilderPage() {
                   <input
                     type="text"
                     readOnly
-                    value={`http://localhost:3001/forms/${currentForm?.id || 'demo'}`}
+                    value={getPublicWebUrl(`/forms/${currentForm?.id || 'demo'}`)}
                     className="w-full h-8 px-2 bg-slate-50 border border-slate-200 rounded font-mono text-[11px]"
                   />
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(`http://localhost:3001/forms/${currentForm?.id || 'demo'}`);
+                      navigator.clipboard.writeText(getPublicWebUrl(`/forms/${currentForm?.id || 'demo'}`));
                       alert('Link copied to clipboard!');
                     }}
                     className="h-8 px-3 bg-slate-800 text-white rounded font-medium hover:bg-slate-700"
