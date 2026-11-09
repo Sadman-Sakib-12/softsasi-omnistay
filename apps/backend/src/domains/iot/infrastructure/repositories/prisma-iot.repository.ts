@@ -439,12 +439,14 @@ export class PrismaIotRepository implements IIotRepository, OnModuleInit {
       orderBy: { roomNumber: 'asc' },
     });
 
+    const webBase = (process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_WEB_URL || 'https://omnistay-web.vercel.app').replace(/\/+$/, '');
+
     return rooms.map((room) => ({
       roomId: room.id,
       roomNumber: `Room ${room.roomNumber}`,
       roomTitle: room.roomType?.title || `Room ${room.roomNumber}`,
       placardLocation: 'Bedside Table & Work Desk Acrylic Disc',
-      directPortalUrl: `http://localhost:3000/guest/room-service?room=${encodeURIComponent(room.roomNumber)}&id=${room.id}`,
+      directPortalUrl: `${webBase}/guest/room-service?room=${encodeURIComponent(room.roomNumber)}&id=${room.id}`,
       token: `QR-ROOM-${room.roomNumber.replace(/\D/g, '')}-DISC`,
       isActive: true,
     }));

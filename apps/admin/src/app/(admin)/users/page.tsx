@@ -371,7 +371,10 @@ export default function UsersPage() {
               <div className="mt-5 flex items-center justify-center gap-2">
                 <Button
                   onClick={() => {
-                    const credsText = `OmniStay Login Credentials\nEmail: ${createdCredentials.email}\nPassword: ${createdCredentials.pass}\nRole: ${createdCredentials.role}\nLogin URL: http://localhost:3000/login`;
+                    const loginBaseUrl = typeof window !== 'undefined'
+                      ? `${window.location.origin}/login`
+                      : 'https://omnistay-admin.vercel.app/login';
+                    const credsText = `OmniStay Login Credentials\nEmail: ${createdCredentials.email}\nPassword: ${createdCredentials.pass}\nRole: ${createdCredentials.role}\nLogin URL: ${loginBaseUrl}`;
                     navigator.clipboard.writeText(credsText);
                     setCopiedPass(true);
                     setTimeout(() => setCopiedPass(false), 2000);

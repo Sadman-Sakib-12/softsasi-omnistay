@@ -2,6 +2,7 @@
 import { BeatLoader } from 'react-spinners';
 
 import React, { useState, useEffect, use } from 'react';
+import apiClient from '@/lib/api-client';
 import {
   Sliders,
   CheckCircle2,
@@ -55,12 +56,11 @@ export default function PublicFormSubmissionPage({ params }: { params: Promise<{
     async function fetchForm() {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:4000/api/v1/crm/forms/${formId}`);
-        if (!res.ok) {
+        const res = await apiClient.get<FormDataPayload>(`/crm/forms/${formId}`);
+        if (!res.data) {
           throw new Error('Form not found or has been deactivated.');
         }
-        const data = await res.json();
-        setForm(data);
+        setForm(res.data);
       } catch (err: any) {
         setError(err.message || 'Unable to load form');
       } finally {
@@ -76,18 +76,10 @@ export default function PublicFormSubmissionPage({ params }: { params: Promise<{
     setError(null);
 
     try {
-      const res = await fetch(`http://localhost:4000/api/v1/crm/forms/${formId}/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formData: formValues,
-          submitterIp: 'Public Web Guest',
-        }),
+      await apiClient.post(`/crm/forms/${formId}/submit`, {
+        formData: formValues,
+        submitterIp: 'Public Web Guest',
       });
-
-      if (!res.ok) {
-        throw new Error('Failed to record submission. Please check your answers and try again.');
-      }
 
       setSubmitted(true);
     } catch (err: any) {
