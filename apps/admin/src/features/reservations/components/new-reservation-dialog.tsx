@@ -5,15 +5,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Calendar, DollarSign, User, Mail, Phone, Loader2 } from 'lucide-react';
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
+import { Plus, Calendar, DollarSign, User, Mail, Phone, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useReservations } from '../hooks/use-reservations';
@@ -56,6 +48,11 @@ export function NewReservationDialog() {
       await createReservation(data);
       reset();
       setOpen(false);
+      await showAlert({
+        title: 'Success!',
+        text: 'New reservation created successfully.',
+        icon: 'success',
+      });
     } catch (e: any) {
       console.error(e);
       await showAlert({
@@ -67,93 +64,114 @@ export function NewReservationDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="glow" size="sm">
-          <Plus className="w-4 h-4 mr-1" /> New Reservation
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-emerald-400" /> New Guest Reservation
-          </DialogTitle>
-          <DialogDescription>
-            Register a direct front-desk reservation into the active hotel folio.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Button
+        onClick={() => setOpen(true)}
+        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 h-8 rounded-lg shadow-xs flex items-center gap-1.5 cursor-pointer"
+      >
+        <Plus className="w-4 h-4" /> New Reservation
+      </Button>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Guest Full Name *</label>
-            <Input placeholder="John Doe" icon={<User className="w-4 h-4" />} {...register('guestName')} />
-            {errors.guestName && <p className="text-[11px] text-rose-400">{errors.guestName.message}</p>}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Guest Email *</label>
-              <Input placeholder="guest@example.com" icon={<Mail className="w-4 h-4" />} {...register('guestEmail')} />
-              {errors.guestEmail && <p className="text-[11px] text-rose-400">{errors.guestEmail.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Phone</label>
-              <Input placeholder="+1 555-0199" icon={<Phone className="w-4 h-4" />} {...register('guestPhone')} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Check-In Date *</label>
-              <Input type="date" {...register('checkInDate')} />
-              {errors.checkInDate && <p className="text-[11px] text-rose-400">{errors.checkInDate.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Check-Out Date *</label>
-              <Input type="date" {...register('checkOutDate')} />
-              {errors.checkOutDate && <p className="text-[11px] text-rose-400">{errors.checkOutDate.message}</p>}
-            </div>
-          </div>
-
-          {rooms.length > 0 && (
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Assign Room Unit</label>
-              <select
-                {...register('roomId')}
-                className="w-full h-10 rounded-xl border border-slate-700/80 bg-slate-900/60 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/80"
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-blue-400" /> New Guest Reservation
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Register a direct front-desk reservation into the active hotel folio.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-slate-800"
               >
-                <option value="">Select an available room</option>
-                {rooms.map((r) => (
-                  <option key={r.id} value={r.id} className="bg-slate-900 text-white">
-                    {r.name} (Unit #{r.roomNumber || '—'})
-                  </option>
-                ))}
-              </select>
+                <X className="w-5 h-5" />
+              </button>
             </div>
-          )}
 
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Total Folio Charge ($) *</label>
-            <Input type="number" step="0.01" icon={<DollarSign className="w-4 h-4" />} {...register('totalAmount')} />
-            {errors.totalAmount && <p className="text-[11px] text-rose-400">{errors.totalAmount.message}</p>}
-          </div>
+            {/* Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Guest Full Name *</label>
+                <Input placeholder="John Doe" icon={<User className="w-4 h-4" />} {...register('guestName')} />
+                {errors.guestName && <p className="text-[11px] text-rose-500 font-medium">{errors.guestName.message}</p>}
+              </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3">
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="glow" disabled={isCreating}>
-              {isCreating ? (
-                <>
-                  <BeatLoader color="currentColor" size={8} speedMultiplier={1.2} className="mr-2" /> Booking Folio...
-                </>
-              ) : (
-                'Create Reservation'
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Guest Email *</label>
+                  <Input placeholder="guest@example.com" icon={<Mail className="w-4 h-4" />} {...register('guestEmail')} />
+                  {errors.guestEmail && <p className="text-[11px] text-rose-500 font-medium">{errors.guestEmail.message}</p>}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Phone</label>
+                  <Input placeholder="+1 555-0199" icon={<Phone className="w-4 h-4" />} {...register('guestPhone')} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Check-In Date *</label>
+                  <Input type="date" {...register('checkInDate')} />
+                  {errors.checkInDate && <p className="text-[11px] text-rose-500 font-medium">{errors.checkInDate.message}</p>}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Check-Out Date *</label>
+                  <Input type="date" {...register('checkOutDate')} />
+                  {errors.checkOutDate && <p className="text-[11px] text-rose-500 font-medium">{errors.checkOutDate.message}</p>}
+                </div>
+              </div>
+
+              {rooms.length > 0 && (
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Assign Room Unit</label>
+                  <select
+                    {...register('roomId')}
+                    className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
+                  >
+                    <option value="">Select an available room</option>
+                    {rooms.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} (Unit #{r.roomNumber || '—'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
-            </Button>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Total Folio Charge ($) *</label>
+                <Input type="number" step="0.01" icon={<DollarSign className="w-4 h-4" />} {...register('totalAmount')} />
+                {errors.totalAmount && <p className="text-[11px] text-rose-500 font-medium">{errors.totalAmount.message}</p>}
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isCreating}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                >
+                  {isCreating ? (
+                    <>
+                      <BeatLoader color="currentColor" size={8} speedMultiplier={1.2} className="mr-2" /> Booking Folio...
+                    </>
+                  ) : (
+                    'Create Reservation'
+                  )}
+                </Button>
+              </div>
+            </form>
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+      )}
+    </>
   );
 }
