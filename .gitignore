@@ -48,6 +48,7 @@ Thumbs.db
 # Temp
 .tmp/
 .temp/
+.turbo/
 
 # Local environment secrets
 .env
