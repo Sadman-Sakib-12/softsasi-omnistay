@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, PopupModalItem } from '@/features/content/services/content.service';
+import { showConfirm } from '@/lib/sweetalert';
 
 export default function PopupsPage() {
   const queryClient = useQueryClient();
@@ -72,8 +73,14 @@ export default function PopupsPage() {
     });
   };
 
-  const handleDelete = (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete popup "${title}"?`)) {
+  const handleDelete = async (id: string, title: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Popup?',
+      text: `Are you sure you want to delete popup "${title}"?`,
+      confirmButtonText: 'Yes, delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };

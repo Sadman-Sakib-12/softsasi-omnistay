@@ -28,6 +28,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { showAlert } from "@/lib/sweetalert";
 import { BeatLoader } from "react-spinners";
 
 export default function PropertyDetailPage() {
@@ -248,9 +249,15 @@ export default function PropertyDetailPage() {
                 <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
                   <button
                     type="button"
-                    onClick={() => {
-                      navigator.clipboard?.writeText?.(window.location.href);
-                      alert("Link copied to clipboard!");
+                    onClick={async () => {
+                      if (typeof window !== "undefined") {
+                        await navigator.clipboard?.writeText?.(window.location.href);
+                        await showAlert({
+                          title: "Link Copied!",
+                          text: "Property link copied to clipboard!",
+                          icon: "success",
+                        });
+                      }
                     }}
                     className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white flex items-center justify-center transition-colors cursor-pointer shadow-md"
                     title="Share"

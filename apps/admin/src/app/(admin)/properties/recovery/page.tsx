@@ -5,6 +5,7 @@ import { RotateCcw, Search, Trash2, CheckCircle2 } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api/client';
+import { showAlert } from '@/lib/sweetalert';
 
 export interface ArchivedItem {
   id: string;
@@ -44,7 +45,11 @@ export default function PropertiesRecoveryPage() {
       setArchivedItems((prev) => prev.filter((item) => item.id !== id));
       setTimeout(() => setActionNotice(null), 3000);
     } catch (err: any) {
-      alert(`Failed to restore item: ${err?.message || 'Database error'}`);
+      await showAlert({
+        title: 'Restore Failed',
+        text: `Failed to restore item: ${err?.message || 'Database error'}`,
+        icon: 'error',
+      });
     } finally {
       setRestoringId(null);
     }

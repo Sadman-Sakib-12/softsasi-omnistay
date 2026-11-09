@@ -8,6 +8,7 @@ import { travelService, BoatItem } from '@/features/travel/services/travel.servi
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function BoatsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,7 +42,7 @@ export default function BoatsPage() {
       setNewVesselType('Luxury Motor Yacht');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error registering vessel');
+      showAlert({ title: 'Error', text: err.message || 'Error registering vessel', icon: 'error' });
     }
   };
 
@@ -59,17 +60,24 @@ export default function BoatsPage() {
       setEditingBoat(null);
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error updating vessel');
+      showAlert({ title: 'Error', text: err.message || 'Error updating vessel', icon: 'error' });
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to remove vessel "${name}" from the active fleet?`)) {
+    const confirmed = await showConfirm({
+      title: 'Remove Vessel?',
+      text: `Are you sure you want to remove vessel "${name}" from the active fleet?`,
+      confirmButtonText: 'Yes, Remove',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await travelService.deleteBoat(id);
         refetch();
+        showAlert({ title: 'Removed', text: `Vessel "${name}" has been deleted.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Error deleting vessel');
+        showAlert({ title: 'Error', text: err.message || 'Error deleting vessel', icon: 'error' });
       }
     }
   };

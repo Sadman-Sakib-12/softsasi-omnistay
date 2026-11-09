@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, NewsArticleItem } from '@/features/content/services/content.service';
 import { UnifiedRichEditor } from '@/components/editor/unified-rich-editor';
+import { showConfirm } from '@/lib/sweetalert';
 
 export default function NewsCmsPage() {
   const queryClient = useQueryClient();
@@ -73,8 +74,14 @@ export default function NewsCmsPage() {
     });
   };
 
-  const handleDelete = (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete article "${title}"?`)) {
+  const handleDelete = async (id: string, title: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Article?',
+      text: `Are you sure you want to delete article "${title}"?`,
+      confirmButtonText: 'Yes, delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       deleteMutation.mutate(id);
     }
   };

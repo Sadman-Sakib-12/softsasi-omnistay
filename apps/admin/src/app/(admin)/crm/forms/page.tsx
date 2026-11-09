@@ -34,6 +34,7 @@ import {
   X,
 } from 'lucide-react';
 import { getPublicWebUrl } from '@/config/site.config';
+import { showAlert } from '@/lib/sweetalert';
 import { api } from '@/lib/api/client';
 
 interface FormFieldItem {
@@ -781,7 +782,7 @@ export default function FormBuilderPage() {
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(getPublicWebUrl(`/forms/${currentForm?.id || 'demo'}`));
-                      alert('Link copied to clipboard!');
+                      showAlert({ title: 'Copied!', text: 'Form share link copied to clipboard.', icon: 'success' });
                     }}
                     className="h-8 px-3 bg-slate-800 text-white rounded font-medium hover:bg-slate-700"
                   >

@@ -19,6 +19,7 @@ import { useProperties } from '@/features/properties/hooks/use-properties';
 import { AddPropertyDialog } from '@/features/properties/components/add-property-dialog';
 import { Property } from '@/features/properties/services/properties.service';
 import { formatDate } from '@/lib/utils';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function PropertiesPage() {
   const router = useRouter();
@@ -116,11 +117,18 @@ export default function PropertiesPage() {
             onClick={async () => {
               if (selectedIds.length === 0) return;
               if (bulkAction === 'Delete') {
-                if (confirm(`Are you sure you want to delete ${selectedIds.length} property(ies)?`)) {
+                const confirmed = await showConfirm({
+                  title: 'Delete Properties?',
+                  text: `Are you sure you want to delete ${selectedIds.length} property(ies)?`,
+                  confirmButtonText: 'Yes, Delete',
+                  icon: 'warning',
+                });
+                if (confirmed) {
                   for (const id of selectedIds) {
                     await deleteProperty(id);
                   }
                   setSelectedIds([]);
+                  showAlert({ title: 'Deleted', text: 'Properties have been removed.', icon: 'success' });
                 }
               } else {
                 setSelectedIds([]);
@@ -323,9 +331,16 @@ export default function PropertiesPage() {
                               </button>
                               <button
                                 onClick={async () => {
-                                  if (confirm(`Delete ${hotel.name}?`)) {
+                                  const confirmed = await showConfirm({
+                                    title: 'Delete Property?',
+                                    text: `Are you sure you want to delete "${hotel.name}"?`,
+                                    confirmButtonText: 'Yes, Delete',
+                                    icon: 'warning',
+                                  });
+                                  if (confirmed) {
                                     await deleteProperty(hotel.id);
                                     setOpenActionId(null);
+                                    showAlert({ title: 'Deleted', text: `Property "${hotel.name}" has been removed.`, icon: 'success' });
                                   }
                                 }}
                                 className="w-full px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-1.5"

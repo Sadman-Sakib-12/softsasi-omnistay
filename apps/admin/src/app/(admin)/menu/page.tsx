@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getPublicWebUrl } from '@/config/site.config';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   contentService,
@@ -156,9 +157,16 @@ export default function MenuManagerPage() {
     });
   };
 
-  const handleDelete = (id: string, title: string) => {
-    if (confirm(`Are you sure you want to remove navigation link "${title}" from the ${activeLocation} menu?`)) {
+  const handleDelete = async (id: string, title: string) => {
+    const confirmed = await showConfirm({
+      title: 'Remove Menu Link?',
+      text: `Are you sure you want to remove navigation link "${title}" from the ${activeLocation} menu?`,
+      confirmButtonText: 'Yes, Remove',
+      icon: 'warning',
+    });
+    if (confirmed) {
       deleteMutation.mutate(id);
+      showAlert({ title: 'Removed', text: `Menu item "${title}" deleted.`, icon: 'success' });
     }
   };
 

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 import { useTenantStore } from '@/stores/tenant-store';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function UsersPage() {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function UsersPage() {
       setNewUser({ name: '', email: '', role: 'HOTEL_STAFF', password: 'OmniStay@2026' });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     } catch (err: any) {
-      alert(err.message || 'Failed to invite user');
+      showAlert({ title: 'Error', text: err.message || 'Failed to invite user', icon: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -83,21 +84,28 @@ export default function UsersPage() {
       setEditingUser(null);
       setEditPassword('');
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      alert('User profile and credentials updated successfully!');
+      showAlert({ title: 'Success', text: 'User profile and credentials updated successfully!', icon: 'success' });
     } catch (err: any) {
-      alert(err.message || 'Failed to update user');
+      showAlert({ title: 'Error', text: err.message || 'Failed to update user', icon: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteUser = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to deactivate or remove user "${name}"?`)) {
+    const confirmed = await showConfirm({
+      title: 'Deactivate User?',
+      text: `Are you sure you want to deactivate or remove user "${name}"?`,
+      confirmButtonText: 'Yes, Deactivate',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await usersService.delete(id);
         queryClient.invalidateQueries({ queryKey: ['users'] });
+        showAlert({ title: 'Deactivated', text: `User "${name}" has been removed.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Failed to delete user');
+        showAlert({ title: 'Error', text: err.message || 'Failed to delete user', icon: 'error' });
       }
     }
   };

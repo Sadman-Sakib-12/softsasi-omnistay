@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { couponsService, CouponItem } from '@/features/coupons/services/coupons.service';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function CouponsPage() {
   const queryClient = useQueryClient();
@@ -88,9 +89,16 @@ export default function CouponsPage() {
     });
   };
 
-  const handleDelete = (id: string, code: string) => {
-    if (confirm(`Are you sure you want to delete coupon code "${code}"?`)) {
+  const handleDelete = async (id: string, code: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Coupon?',
+      text: `Are you sure you want to delete coupon code "${code}"?`,
+      confirmButtonText: 'Yes, Delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       deleteMutation.mutate(id);
+      showAlert({ title: 'Deleted', text: `Coupon "${code}" has been deleted.`, icon: 'success' });
     }
   };
 

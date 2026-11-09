@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useProperties } from '../hooks/use-properties';
+import { showAlert } from '@/lib/sweetalert';
 
 const propertySchema = z.object({
   name: z.string().min(2, 'Hotel name is required'),
@@ -63,7 +64,11 @@ export function AddPropertyDialog() {
       setOpen(false);
     } catch (e: any) {
       console.error(e);
-      alert(e?.message || 'Error registering property. Please try again.');
+      await showAlert({
+        title: 'Registration Error',
+        text: e?.message || 'Error registering property. Please try again.',
+        icon: 'error',
+      });
     }
   };
 

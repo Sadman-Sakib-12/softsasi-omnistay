@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Image as ImageIcon, Upload, Loader2, X, Plus } from 'lucide-react';
 import { useRooms } from '../hooks/use-rooms';
 import { useProperties } from '@/features/properties/hooks/use-properties';
+import { showAlert } from '@/lib/sweetalert';
 
 const roomSchema = z.object({
   name: z.string().min(2, 'Room name is required'),
@@ -67,10 +68,18 @@ export function AddRoomForm() {
       reset();
       setImagePreview(null);
       setGalleryPreviews([]);
-      alert('Room created successfully!');
+      await showAlert({
+        title: 'Success!',
+        text: 'Room created successfully!',
+        icon: 'success',
+      });
     } catch (e: any) {
       console.error(e);
-      alert(e?.message || 'Error creating room unit');
+      await showAlert({
+        title: 'Error',
+        text: e?.message || 'Error creating room unit',
+        icon: 'error',
+      });
     }
   };
 

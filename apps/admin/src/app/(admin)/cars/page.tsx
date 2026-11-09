@@ -8,6 +8,7 @@ import { travelService, CarItem } from '@/features/travel/services/travel.servic
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function CarsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,7 +42,7 @@ export default function CarsPage() {
       setNewCategory('Executive SUV');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error creating vehicle');
+      showAlert({ title: 'Error', text: err.message || 'Error creating vehicle', icon: 'error' });
     }
   };
 
@@ -60,17 +61,24 @@ export default function CarsPage() {
       setEditingCar(null);
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error updating vehicle');
+      showAlert({ title: 'Error', text: err.message || 'Error updating vehicle', icon: 'error' });
     }
   };
 
   const handleDelete = async (id: string, model: string) => {
-    if (confirm(`Are you sure you want to remove "${model}" from the vehicle fleet?`)) {
+    const confirmed = await showConfirm({
+      title: 'Remove Vehicle?',
+      text: `Are you sure you want to remove "${model}" from the vehicle fleet?`,
+      confirmButtonText: 'Yes, Remove',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await travelService.deleteCar(id);
         refetch();
+        showAlert({ title: 'Removed', text: `Vehicle "${model}" has been deleted.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Error deleting vehicle');
+        showAlert({ title: 'Error', text: err.message || 'Error deleting vehicle', icon: 'error' });
       }
     }
   };

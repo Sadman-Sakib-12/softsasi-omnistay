@@ -27,6 +27,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getPublicWebUrl } from '@/config/site.config';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentService, CustomPageItem } from '@/features/content/services/content.service';
 import { UnifiedRichEditor } from '@/components/editor/unified-rich-editor';
@@ -117,9 +118,16 @@ export default function StaticPagesCmsPage() {
     });
   };
 
-  const handleDelete = (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete static page "${title}"?`)) {
+  const handleDelete = async (id: string, title: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Page?',
+      text: `Are you sure you want to delete static page "${title}"?`,
+      confirmButtonText: 'Yes, Delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       deleteMutation.mutate(id);
+      showAlert({ title: 'Deleted', text: `Page "${title}" has been deleted.`, icon: 'success' });
     }
   };
 

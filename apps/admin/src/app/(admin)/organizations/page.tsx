@@ -30,6 +30,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getPublicWebUrl } from '@/config/site.config';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function OrganizationsPage() {
   const queryClient = useQueryClient();
@@ -333,8 +334,27 @@ export default function OrganizationsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={async () => {
-                          if (confirm(`Delete organization "${tenant.name}"? This will soft-delete the tenant partition.`)) {
-                            await deleteMutation.mutateAsync(tenant.id);
+                          const confirmed = await showConfirm({
+                            title: 'Delete Organization?',
+                            text: `Are you sure you want to delete organization "${tenant.name}"? This will soft-delete the tenant partition.`,
+                            confirmButtonText: 'Yes, Delete',
+                            icon: 'warning',
+                          });
+                          if (confirmed) {
+                            try {
+                              await deleteMutation.mutateAsync(tenant.id);
+                              showAlert({
+                                title: 'Deleted!',
+                                text: `Organization "${tenant.name}" has been removed.`,
+                                icon: 'success',
+                              });
+                            } catch (err: any) {
+                              showAlert({
+                                title: 'Error',
+                                text: err?.message || 'Failed to delete organization',
+                                icon: 'error',
+                              });
+                            }
                           }
                         }}
                         className="text-rose-500 hover:text-rose-700 hover:bg-rose-50 h-8 px-2 cursor-pointer"

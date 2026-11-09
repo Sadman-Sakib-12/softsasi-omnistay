@@ -8,6 +8,7 @@ import { travelService, SpaceItem } from '@/features/travel/services/travel.serv
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function SpacesPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,7 +42,7 @@ export default function SpacesPage() {
       setNewHourlyRate('');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error creating venue space');
+      showAlert({ title: 'Error', text: err.message || 'Error creating venue space', icon: 'error' });
     }
   };
 
@@ -59,17 +60,24 @@ export default function SpacesPage() {
       setEditingSpace(null);
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error updating space');
+      showAlert({ title: 'Error', text: err.message || 'Error updating space', icon: 'error' });
     }
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to remove "${name}" from venue listings?`)) {
+    const confirmed = await showConfirm({
+      title: 'Remove Space?',
+      text: `Are you sure you want to remove "${name}" from venue listings?`,
+      confirmButtonText: 'Yes, Remove',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await travelService.deleteSpace(id);
         refetch();
+        showAlert({ title: 'Removed', text: `Space "${name}" has been deleted.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Error deleting space');
+        showAlert({ title: 'Error', text: err.message || 'Error deleting space', icon: 'error' });
       }
     }
   };

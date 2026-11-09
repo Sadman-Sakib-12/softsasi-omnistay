@@ -17,6 +17,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm } from '@/lib/sweetalert';
 
 interface RoleDefinition {
   name: string;
@@ -215,8 +216,14 @@ export default function RolesPage() {
     setEditingRole(null);
   };
 
-  const handleDeleteRole = (name: string) => {
-    if (confirm(`Delete custom role ${name}?`)) {
+  const handleDeleteRole = async (name: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Custom Role?',
+      text: `Are you sure you want to delete custom role "${name}"?`,
+      confirmButtonText: 'Yes, delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       setRoles((prev) => prev.filter((r) => r.name !== name));
     }
   };

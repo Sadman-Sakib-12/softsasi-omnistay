@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { BedDouble, Plus, Edit, Trash2, X, Search, Wifi, Tv, Wind, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { showConfirm } from '@/lib/sweetalert';
 
 interface RoomAttribute {
   id: string;
@@ -73,8 +74,14 @@ export default function RoomAttributesPage() {
     setEditingAttr(null);
   };
 
-  const handleDelete = (id: string, name: string) => {
-    if (confirm(`Delete room amenity "${name}"?`)) {
+  const handleDelete = async (id: string, name: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Room Amenity?',
+      text: `Are you sure you want to delete room amenity "${name}"?`,
+      confirmButtonText: 'Yes, delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       setAttributes((prev) => prev.filter((a) => a.id !== id));
     }
   };

@@ -16,6 +16,7 @@ import { LeftBlockDrawer } from './left-block-drawer';
 import { RightInspector } from './right-inspector';
 import { contentService, CustomPageItem } from '@/features/content/services/content.service';
 import { getPublicWebUrl } from '@/config/site.config';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 import {
   Plus,
   Edit2,
@@ -628,8 +629,14 @@ export function GutenbergEditor({
                 <div className="py-1">
                   <button
                     type="button"
-                    onClick={() => {
-                      if (confirm('Clear all blocks in this document?')) {
+                    onClick={async () => {
+                      const confirmed = await showConfirm({
+                        title: 'Clear Document?',
+                        text: 'Clear all blocks in this document?',
+                        confirmButtonText: 'Yes, Clear',
+                        icon: 'warning',
+                      });
+                      if (confirmed) {
                         setBlocks([createEmptyBlock('paragraph')]);
                         pushHistory([createEmptyBlock('paragraph')]);
                       }
@@ -763,9 +770,16 @@ export function GutenbergEditor({
           }}
           onDeletePage={
             selectedPageId && pages.some((p) => p.id === selectedPageId)
-              ? () => {
-                  if (confirm(`Are you sure you want to delete "${pageTitle}"?`)) {
+              ? async () => {
+                  const confirmed = await showConfirm({
+                    title: 'Delete Page?',
+                    text: `Are you sure you want to delete "${pageTitle}"?`,
+                    confirmButtonText: 'Yes, Delete',
+                    icon: 'warning',
+                  });
+                  if (confirmed) {
                     deleteMutation.mutate(selectedPageId);
+                    showAlert({ title: 'Deleted', text: `Page "${pageTitle}" has been deleted.`, icon: 'success' });
                   }
                 }
               : undefined

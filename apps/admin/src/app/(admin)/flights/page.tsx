@@ -8,6 +8,7 @@ import { travelService, FlightItem } from '@/features/travel/services/travel.ser
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function FlightsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,7 +44,7 @@ export default function FlightsPage() {
       setNewSeatPrice('');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error scheduling flight');
+      showAlert({ title: 'Error', text: err.message || 'Error scheduling flight', icon: 'error' });
     }
   };
 
@@ -61,17 +62,24 @@ export default function FlightsPage() {
       setEditingFlight(null);
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error updating flight route');
+      showAlert({ title: 'Error', text: err.message || 'Error updating flight route', icon: 'error' });
     }
   };
 
   const handleDelete = async (id: string, flightNumber: string) => {
-    if (confirm(`Are you sure you want to cancel flight route "${flightNumber}"?`)) {
+    const confirmed = await showConfirm({
+      title: 'Cancel Flight Route?',
+      text: `Are you sure you want to cancel flight route "${flightNumber}"?`,
+      confirmButtonText: 'Yes, Cancel Route',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await travelService.deleteFlight(id);
         refetch();
+        showAlert({ title: 'Cancelled', text: `Flight route "${flightNumber}" has been deleted.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Error deleting flight route');
+        showAlert({ title: 'Error', text: err.message || 'Error deleting flight route', icon: 'error' });
       }
     }
   };

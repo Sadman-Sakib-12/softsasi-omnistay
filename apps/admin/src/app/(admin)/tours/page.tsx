@@ -8,6 +8,7 @@ import { travelService, TourItem } from '@/features/travel/services/travel.servi
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function ToursPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,7 +44,7 @@ export default function ToursPage() {
       setNewDuration('Full Day');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error creating tour package');
+      showAlert({ title: 'Error', text: err.message || 'Error creating tour package', icon: 'error' });
     }
   };
 
@@ -62,17 +63,24 @@ export default function ToursPage() {
       setEditingTour(null);
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error updating tour package');
+      showAlert({ title: 'Error', text: err.message || 'Error updating tour package', icon: 'error' });
     }
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (confirm(`Are you sure you want to remove tour package "${title}"?`)) {
+    const confirmed = await showConfirm({
+      title: 'Remove Tour Package?',
+      text: `Are you sure you want to remove tour package "${title}"?`,
+      confirmButtonText: 'Yes, Remove',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await travelService.deleteTour(id);
         refetch();
+        showAlert({ title: 'Removed', text: `Tour "${title}" has been deleted.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Error deleting tour package');
+        showAlert({ title: 'Error', text: err.message || 'Error deleting tour package', icon: 'error' });
       }
     }
   };

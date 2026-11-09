@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Tag, Plus, CheckCircle2, Edit, Trash2, X, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { showConfirm } from '@/lib/sweetalert';
 
 interface PropertyAttribute {
   id: string;
@@ -73,8 +74,14 @@ export default function PropertyAttributesPage() {
     setEditingAttr(null);
   };
 
-  const handleDelete = (id: string, name: string) => {
-    if (confirm(`Delete attribute "${name}"?`)) {
+  const handleDelete = async (id: string, name: string) => {
+    const confirmed = await showConfirm({
+      title: 'Delete Attribute?',
+      text: `Are you sure you want to delete attribute "${name}"?`,
+      confirmButtonText: 'Yes, delete',
+      icon: 'warning',
+    });
+    if (confirmed) {
       setAttributes((prev) => prev.filter((a) => a.id !== id));
     }
   };

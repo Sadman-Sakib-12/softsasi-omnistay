@@ -1,8 +1,9 @@
+const DEFAULT_REMOTE_URL = "https://omnistay-backend.onrender.com";
+
 export const API_BASE_URL =
   process.env.INTERNAL_API_URL ||
-  (typeof window === "undefined"
-    ? "http://127.0.0.1:4000"
-    : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"));
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production" ? DEFAULT_REMOTE_URL : "http://localhost:4000");
 
 export const VERTICALS = [
   { id: "stays", label: "Hotels & Stays", icon: "🏨", path: "/stays" },

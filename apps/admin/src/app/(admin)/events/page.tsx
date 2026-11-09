@@ -8,6 +8,7 @@ import { travelService, EventItem } from '@/features/travel/services/travel.serv
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,7 +43,7 @@ export default function EventsPage() {
       setNewTotalTickets('200');
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error creating event');
+      showAlert({ title: 'Error', text: err.message || 'Error creating event', icon: 'error' });
     }
   };
 
@@ -60,17 +61,24 @@ export default function EventsPage() {
       setEditingEvent(null);
       refetch();
     } catch (err: any) {
-      alert(err.message || 'Error updating event');
+      showAlert({ title: 'Error', text: err.message || 'Error updating event', icon: 'error' });
     }
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (confirm(`Are you sure you want to cancel event "${title}"?`)) {
+    const confirmed = await showConfirm({
+      title: 'Cancel Event?',
+      text: `Are you sure you want to cancel event "${title}"?`,
+      confirmButtonText: 'Yes, Cancel Event',
+      icon: 'warning',
+    });
+    if (confirmed) {
       try {
         await travelService.deleteEvent(id);
         refetch();
+        showAlert({ title: 'Cancelled', text: `Event "${title}" has been deleted.`, icon: 'success' });
       } catch (err: any) {
-        alert(err.message || 'Error deleting event');
+        showAlert({ title: 'Error', text: err.message || 'Error deleting event', icon: 'error' });
       }
     }
   };

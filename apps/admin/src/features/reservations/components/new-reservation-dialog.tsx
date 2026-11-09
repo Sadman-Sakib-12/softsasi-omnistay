@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useReservations } from '../hooks/use-reservations';
 import { useRooms } from '@/features/rooms/hooks/use-rooms';
+import { showAlert } from '@/lib/sweetalert';
 
 const reservationSchema = z.object({
   guestName: z.string().min(2, 'Guest full name is required'),
@@ -57,7 +58,11 @@ export function NewReservationDialog() {
       setOpen(false);
     } catch (e: any) {
       console.error(e);
-      alert(e?.message || 'Error creating reservation. Please verify details.');
+      await showAlert({
+        title: 'Reservation Error',
+        text: e?.message || 'Error creating reservation. Please verify details.',
+        icon: 'error',
+      });
     }
   };
 

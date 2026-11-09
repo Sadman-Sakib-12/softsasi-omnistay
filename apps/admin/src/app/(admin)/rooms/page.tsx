@@ -9,6 +9,7 @@ import { useProperties } from '@/features/properties/hooks/use-properties';
 import { Room } from '@/features/rooms/services/rooms.service';
 import { Calendar, ArrowLeft, Edit, Trash2, X, Save, Loader2 } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 export default function RoomManagementPage() {
   const router = useRouter();
@@ -125,11 +126,19 @@ export default function RoomManagementPage() {
               <button
                 type="button"
                 className="h-8 px-3 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs cursor-pointer"
-                onClick={() => {
+                onClick={async () => {
                   if (selectedIds.length === 0) {
-                    alert('Please select items first');
+                    await showAlert({
+                      title: 'No Selection',
+                      text: 'Please select items first',
+                      icon: 'info',
+                    });
                   } else {
-                    alert(`${bulkAction} applied to ${selectedIds.length} room(s)`);
+                    await showAlert({
+                      title: 'Bulk Action',
+                      text: `${bulkAction} applied to ${selectedIds.length} room(s)`,
+                      icon: 'success',
+                    });
                   }
                 }}
               >
@@ -225,8 +234,15 @@ export default function RoomManagementPage() {
                                 type="button"
                                 className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors"
                                 onClick={async () => {
-                                  if (confirm(`Delete ${room.name}?`)) {
+                                  const confirmed = await showConfirm({
+                                    title: 'Delete Room Unit?',
+                                    text: `Are you sure you want to delete "${room.name}"?`,
+                                    confirmButtonText: 'Yes, Delete',
+                                    icon: 'warning',
+                                  });
+                                  if (confirmed) {
                                     await deleteRoom(room.id);
+                                    showAlert({ title: 'Deleted', text: `Room "${room.name}" has been removed.`, icon: 'success' });
                                   }
                                 }}
                               >

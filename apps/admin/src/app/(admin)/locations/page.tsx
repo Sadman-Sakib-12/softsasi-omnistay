@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { MapPin, Plus, Search, Globe, Building, Loader2, Edit, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { showConfirm, showAlert } from '@/lib/sweetalert';
 
 interface LocationItem {
   id: string;
@@ -89,9 +90,16 @@ export default function LocationsPage() {
     setEditingLoc(null);
   };
 
-  const handleDeleteLocation = (id: string, name: string) => {
-    if (confirm(`Are you sure you want to remove "${name}"?`)) {
+  const handleDeleteLocation = async (id: string, name: string) => {
+    const confirmed = await showConfirm({
+      title: 'Remove Location?',
+      text: `Are you sure you want to remove "${name}"?`,
+      confirmButtonText: 'Yes, Remove',
+      icon: 'warning',
+    });
+    if (confirmed) {
       setCustomLocations((prev) => prev.filter((l) => l.id !== id));
+      showAlert({ title: 'Removed', text: `Location "${name}" deleted.`, icon: 'success' });
     }
   };
 

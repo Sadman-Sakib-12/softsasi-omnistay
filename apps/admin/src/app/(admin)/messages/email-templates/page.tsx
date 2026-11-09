@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BeatLoader } from 'react-spinners';
 import { api } from '@/lib/api/client';
+import { showAlert } from '@/lib/sweetalert';
 import {
   Mail,
   Plus,
@@ -456,9 +457,13 @@ export default function EmailTemplateBuilderPage() {
                     {currentTemplate?.htmlBody?.length || 0} chars
                   </span>
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(currentTemplate?.htmlBody || '');
-                      alert('HTML copied to clipboard!');
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(currentTemplate?.htmlBody || '');
+                      await showAlert({
+                        title: 'Copied!',
+                        text: 'HTML copied to clipboard!',
+                        icon: 'success',
+                      });
                     }}
                     className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs"
                     title="Copy HTML"
