@@ -311,7 +311,12 @@ export default function OrganizationsPage() {
                       <Button
                         variant={isActive ? 'outline' : 'default'}
                         size="sm"
-                        onClick={() => setTenantId(tenant.id)}
+                        onClick={() => {
+                          if (typeof window !== 'undefined') {
+                            sessionStorage.setItem('omnistay_tenant_switched', 'true');
+                          }
+                          setTenantId(tenant.id);
+                        }}
                         className={isActive ? 'border-slate-300 text-slate-700 cursor-pointer' : 'bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer'}
                       >
                         {isActive ? (

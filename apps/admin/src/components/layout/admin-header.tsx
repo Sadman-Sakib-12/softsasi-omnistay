@@ -74,13 +74,19 @@ export function AdminHeader() {
           }
         }
 
-        // If currentTenantId is not among orgs or is obsolete, prioritize OmniStay Global HQ
+        // Prioritize OmniStay Global HQ as the central operational workspace
+        const hqOrg = orgs.find((o) => o.slug === 'omnistay-hq' || o.id === 'cb57c2f2-3810-4a0e-8af0-78ad02d69971');
+        const manuallySwitched = typeof window !== 'undefined' && sessionStorage.getItem('omnistay_tenant_switched') === 'true';
         const currentId = useTenantStore.getState().currentTenantId;
-        const isValid = orgs.some((o) => o.id === currentId);
-        if (!isValid || currentId === '90567e14-9765-4f36-87d2-d967a03243dd') {
-          const hqOrg = orgs.find((o) => o.slug === 'omnistay-hq' || o.id === 'cb57c2f2-3810-4a0e-8af0-78ad02d69971');
-          const fallbackId = hqOrg ? hqOrg.id : (sessionUser?.tenantId || orgs[0].id);
-          setTenantId(fallbackId);
+
+        if (!manuallySwitched && hqOrg) {
+          setTenantId(hqOrg.id);
+        } else {
+          const isValid = orgs.some((o) => o.id === currentId);
+          if (!isValid || currentId === '90567e14-9765-4f36-87d2-d967a03243dd') {
+            const fallbackId = hqOrg ? hqOrg.id : (sessionUser?.tenantId || orgs[0].id);
+            setTenantId(fallbackId);
+          }
         }
       }
     });
