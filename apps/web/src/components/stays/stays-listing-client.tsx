@@ -51,7 +51,7 @@ export function StaysListingClient({ properties, destination }: StaysListingClie
             onClick={() => setShowMap(!showMap)}
             className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               showMap
-                ? "bg-[#2577e3] text-white border-[#2577e3] shadow-md shadow-blue-500/20"
+                ? "bg-[#00a8ff] text-white border-[#00a8ff] shadow-md shadow-sky-500/20"
                 : "bg-white text-slate-700 border-slate-200 hover:border-slate-300"
             }`}
           >
@@ -74,7 +74,7 @@ export function StaysListingClient({ properties, destination }: StaysListingClie
         <aside className="lg:col-span-1 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs h-fit space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-[#2577e3]" />
+              <SlidersHorizontal className="w-4 h-4 text-[#00a8ff]" />
               <span>Filters</span>
             </h3>
             {(selectedStars.length > 0 || selectedTypes.length > 0) && (
@@ -83,7 +83,7 @@ export function StaysListingClient({ properties, destination }: StaysListingClie
                   setSelectedStars([]);
                   setSelectedTypes([]);
                 }}
-                className="text-xs text-[#2577e3] font-bold hover:underline"
+                className="text-xs text-[#00a8ff] font-bold hover:underline"
               >
                 Reset
               </button>

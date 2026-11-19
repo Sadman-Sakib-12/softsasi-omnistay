@@ -131,7 +131,7 @@ export function PublicHeader() {
       <div className="w-full h-1 bg-[#0b132b]" />
 
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Balanced 3-Zone Header Layout with standard 64px (h-16) height */}
           <div className="flex items-center justify-between h-16 gap-2">
             {/* ZONE 1 (Left): Brand Logo & Tagline (Figure 4.1 & Figure 5.1 in PDF) */}
@@ -221,7 +221,7 @@ export function PublicHeader() {
                     className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 pl-1.5 pr-2.5 py-1 rounded-full transition-all cursor-pointer text-xs"
                     aria-expanded={dropdownOpen}
                   >
-                    <div className="w-5 h-5 rounded-full bg-[#0284c7] text-white flex items-center justify-center text-[10px] font-bold">
+                    <div className="w-5 h-5 rounded-full bg-[#00a8ff] text-white flex items-center justify-center text-[10px] font-bold">
                       {user.name ? user.name.charAt(0).toUpperCase() : "G"}
                     </div>
                     <span className="font-bold text-slate-800 hidden sm:inline max-w-[90px] truncate text-xs">
@@ -252,7 +252,7 @@ export function PublicHeader() {
                         <Link
                           href="/guest/profile"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0284c7] transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#00a8ff] transition-colors"
                         >
                           <User className="w-3.5 h-3.5 text-slate-400" />
                           <span>My Profile & Settings</span>
@@ -261,7 +261,7 @@ export function PublicHeader() {
                         <Link
                           href="/guest/bookings"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0284c7] transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#00a8ff] transition-colors"
                         >
                           <Calendar className="w-3.5 h-3.5 text-slate-400" />
                           <span>My Bookings & Vouchers</span>
@@ -270,7 +270,7 @@ export function PublicHeader() {
                         <Link
                           href="/guest/wallet"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0284c7] transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#00a8ff] transition-colors"
                         >
                           <Wallet className="w-3.5 h-3.5 text-slate-400" />
                           <span>Digital Wallet & Rewards</span>
@@ -279,7 +279,7 @@ export function PublicHeader() {
                         <Link
                           href="/guest/checkin"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0284c7] transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#00a8ff] transition-colors"
                         >
                           <KeyRound className="w-3.5 h-3.5 text-slate-400" />
                           <span>Express Mobile Key</span>
@@ -337,7 +337,7 @@ export function PublicHeader() {
                   href={item.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${active
-                    ? "bg-sky-50 text-[#0284c7] font-bold"
+                    ? "bg-sky-50 text-[#00a8ff] font-bold"
                     : "text-slate-700 hover:bg-slate-50"
                     }`}
                 >

@@ -67,9 +67,9 @@ export function HeroSearchEngine({
   };
 
   return (
-    <div className="w-full max-w-5xl">
+    <div className="w-full max-w-5xl 2xl:max-w-6xl">
       {/* 1. Category Bar Matching Figure 5.1 in PDF */}
-      <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-1 overflow-x-auto scrollbar-none pb-1">
         {visibleTabs.map((tab) => {
           const active = activeTab === tab.id;
           const IconComp = tab.icon;
@@ -78,9 +78,9 @@ export function HeroSearchEngine({
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap rounded-t-lg ${
+              className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer whitespace-nowrap rounded-t-lg sm:rounded-t-xl ${
                 active
-                  ? "bg-[#2577e3] text-white shadow-md"
+                  ? "bg-[#00a8ff] text-white shadow-md font-extrabold"
                   : "bg-[#0b132b]/85 text-white/80 hover:text-white hover:bg-[#0b132b]"
               }`}
             >
@@ -94,11 +94,11 @@ export function HeroSearchEngine({
       {/* 2. Unified Search Capsule Matching Figure 5.1 in PDF */}
       <form
         onSubmit={handleSearch}
-        className="bg-white rounded-b-xl rounded-tr-xl shadow-2xl border border-slate-200/90 p-2 md:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2"
+        className="bg-white rounded-2xl md:rounded-b-2xl md:rounded-tr-2xl shadow-2xl border border-slate-200/90 p-2 sm:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2"
       >
         {/* Field 1: Location */}
-        <div className="flex-1 px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3 cursor-text">
-          <div className="text-[#2577e3] shrink-0">
+        <div className="flex-1 px-3 sm:px-4 py-2.5 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-3 cursor-text border md:border-0 border-slate-100">
+          <div className="text-[#00a8ff] shrink-0">
             <MapPin className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
@@ -119,8 +119,8 @@ export function HeroSearchEngine({
         <div className="hidden md:block w-px h-9 bg-slate-200 my-auto" />
 
         {/* Field 2: Check in - Out */}
-        <div className="flex-1 px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3">
-          <div className="text-[#2577e3] shrink-0">
+        <div className="flex-1 px-3 sm:px-4 py-2.5 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-3 border md:border-0 border-slate-100">
+          <div className="text-[#00a8ff] shrink-0">
             <Calendar className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
@@ -148,8 +148,8 @@ export function HeroSearchEngine({
         <div className="hidden md:block w-px h-9 bg-slate-200 my-auto" />
 
         {/* Field 3: Guests */}
-        <div className="w-full md:w-56 px-4 py-2 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3">
-          <div className="text-[#2577e3] shrink-0">
+        <div className="w-full md:w-56 px-3 sm:px-4 py-2.5 hover:bg-slate-50 rounded-xl transition-colors flex items-center gap-3 border md:border-0 border-slate-100">
+          <div className="text-[#00a8ff] shrink-0">
             <Users className="w-5 h-5" />
           </div>
           <div className="flex-1 min-w-0">
@@ -177,7 +177,7 @@ export function HeroSearchEngine({
         {/* Search Button (Figure 5.1) */}
         <button
           type="submit"
-          className="w-full md:w-auto px-7 py-3 rounded-lg font-bold text-xs uppercase tracking-wider text-white bg-[#2577e3] hover:bg-[#1d62c2] transition-colors shadow-md cursor-pointer shrink-0"
+          className="w-full md:w-auto px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-[#00a8ff] hover:bg-[#0097e6] transition-colors shadow-md cursor-pointer shrink-0 active:scale-[0.98]"
         >
           {searchButtonText === "Search Availability" ? "SEARCH" : searchButtonText}
         </button>

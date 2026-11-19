@@ -122,7 +122,7 @@ export function SignaturePad({
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
         <span className="flex items-center gap-1.5">
-          <PenTool className="w-3.5 h-3.5 text-blue-600" />
+          <PenTool className="w-3.5 h-3.5 text-[#00a8ff]" />
           {label} {required && <span className="text-rose-500">*</span>}
         </span>
         <div className="flex items-center gap-2">

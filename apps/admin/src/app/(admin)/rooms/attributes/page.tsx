@@ -162,7 +162,7 @@ export default function RoomAttributesPage() {
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       onClick={() => openEditModal(att)}
-                      className="p-1 rounded text-blue-600 hover:bg-blue-50 cursor-pointer"
+                      className="p-1 rounded text-[#00a8ff] hover:bg-sky-50 cursor-pointer"
                       title="Edit amenity"
                     >
                       <Edit className="w-3.5 h-3.5" />
@@ -201,7 +201,7 @@ export default function RoomAttributesPage() {
                   placeholder="e.g. Ergonomic Workstation & Chair"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-[#00a8ff]"
                 />
               </div>
               <div className="space-y-1">
@@ -209,7 +209,7 @@ export default function RoomAttributesPage() {
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-[#00a8ff]"
                 >
                   <option value="Technology">Technology</option>
                   <option value="Comfort">Comfort</option>
@@ -249,15 +249,15 @@ export default function RoomAttributesPage() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-[#00a8ff]"
                 />
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-700">Category</label>
                 <select
                   value={editCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-blue-500"
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-[#00a8ff]"
                 >
                   <option value="Technology">Technology</option>
                   <option value="Comfort">Comfort</option>

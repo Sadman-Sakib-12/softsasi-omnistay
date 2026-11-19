@@ -30,7 +30,7 @@ export default function ReservationsPage() {
       header: 'Reservation Code',
       accessorKey: 'confirmationCode',
       cell: (item) => (
-        <span className="font-mono text-blue-600 font-bold">
+        <span className="font-mono text-[#00a8ff] font-bold">
           {item.confirmationCode || item.id.slice(0, 8).toUpperCase()}
         </span>
       ),
@@ -111,7 +111,7 @@ export default function ReservationsPage() {
             variant="ghost"
             size="sm"
             onClick={() => router.push(`/reservations/${item.id}`)}
-            className="hover:text-blue-600 hover:bg-blue-50 text-slate-500"
+            className="hover:text-[#00a8ff] hover:bg-sky-50 text-slate-500"
           >
             <Eye className="w-3.5 h-3.5" />
           </Button>

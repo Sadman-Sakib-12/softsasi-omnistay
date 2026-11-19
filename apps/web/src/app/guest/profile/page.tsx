@@ -182,7 +182,7 @@ export default function GuestProfilePage() {
         <div className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-[#2577e3] text-white flex items-center justify-center text-2xl font-black shadow-md">
+              <div className="w-16 h-16 rounded-full bg-[#00a8ff] text-white flex items-center justify-center text-2xl font-black shadow-md">
                 {user?.name ? user.name.charAt(0).toUpperCase() : "G"}
               </div>
               <div className="overflow-hidden">
@@ -261,7 +261,7 @@ export default function GuestProfilePage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#2577e3]" /> Personal Information
+                  <User className="w-4 h-4 text-[#00a8ff]" /> Personal Information
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Your primary identity information used for booking confirmations and hotel check-in.
@@ -295,7 +295,7 @@ export default function GuestProfilePage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Enter your full name"
-                    className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#2577e3] focus:bg-white transition-colors"
+                    className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#00a8ff] focus:bg-white transition-colors"
                   />
                 </div>
 
@@ -326,7 +326,7 @@ export default function GuestProfilePage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full h-10 pl-9 pr-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#2577e3] focus:bg-white transition-colors"
+                    className="w-full h-10 pl-9 pr-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#00a8ff] focus:bg-white transition-colors"
                   />
                 </div>
               </div>
@@ -335,7 +335,7 @@ export default function GuestProfilePage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="bg-[#2577e3] text-white hover:bg-blue-700 px-5 text-xs font-semibold"
+                  className="bg-[#00a8ff] text-white hover:bg-[#0097e6] px-5 text-xs font-semibold cursor-pointer"
                 >
                   {saving ? "Saving Changes..." : "Save Changes"}
                 </Button>
@@ -346,7 +346,7 @@ export default function GuestProfilePage() {
           {/* Regional & Currency Preferences */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-1">
-              <Globe className="w-4 h-4 text-[#2577e3]" /> Travel & Currency Preferences
+              <Globe className="w-4 h-4 text-[#00a8ff]" /> Travel & Currency Preferences
             </h3>
             <p className="text-xs text-slate-500 mb-5">
               Customize how pricing and booking rates are presented to you across the marketplace.
@@ -360,7 +360,7 @@ export default function GuestProfilePage() {
                 <select
                   value={currentCurrency}
                   onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
-                  className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#2577e3] focus:bg-white transition-colors"
+                  className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#00a8ff] focus:bg-white transition-colors"
                 >
                   {CURRENCIES.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -376,7 +376,7 @@ export default function GuestProfilePage() {
                 </label>
                 <select
                   defaultValue="en"
-                  className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#2577e3] focus:bg-white transition-colors"
+                  className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#00a8ff] focus:bg-white transition-colors"
                 >
                   <option value="en">English (US)</option>
                   <option value="bn">বাংলা (Bengali)</option>
@@ -391,7 +391,7 @@ export default function GuestProfilePage() {
           {/* Account Security Card */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-1">
-              <Lock className="w-4 h-4 text-[#2577e3]" /> Password & Security
+              <Lock className="w-4 h-4 text-[#00a8ff]" /> Password & Security
             </h3>
             <p className="text-xs text-slate-500 mb-5">
               Ensure your account is protected with a secure password and multi-factor protection.
@@ -423,7 +423,7 @@ export default function GuestProfilePage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Min. 8 characters"
-                    className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#2577e3] focus:bg-white transition-colors"
+                    className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#00a8ff] focus:bg-white transition-colors"
                   />
                 </div>
 
@@ -437,7 +437,7 @@ export default function GuestProfilePage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#2577e3] focus:bg-white transition-colors"
+                    className="w-full h-10 px-3.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-[#00a8ff] focus:bg-white transition-colors"
                   />
                 </div>
               </div>

@@ -100,8 +100,9 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs">
+      <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+        <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
         {/* Header - Unified Clean Light Design */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2.5">
@@ -143,7 +144,7 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
             </div>
             <div>
               <span className="text-slate-400 text-[10px] uppercase font-bold block">Booking Code</span>
-              <span className="font-mono font-bold text-blue-600">
+              <span className="font-mono font-bold text-[#00a8ff]">
                 {reservation.confirmationCode || reservation.id.slice(0, 8).toUpperCase()}
               </span>
             </div>
@@ -165,14 +166,14 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                <BedDouble className="w-3.5 h-3.5 text-blue-600" />
+                <BedDouble className="w-3.5 h-3.5 text-[#00a8ff]" />
                 Assign Physical Room Unit *
               </label>
               <select
                 value={selectedRoomId}
                 onChange={(e) => setSelectedRoomId(e.target.value)}
                 required
-                className="w-full h-9 px-3 text-xs border border-slate-200 rounded focus:border-blue-500 font-medium bg-white"
+                className="w-full h-9 px-3 text-xs border border-slate-200 rounded focus:border-[#00a8ff] font-medium bg-white"
               >
                 {rooms.length === 0 ? (
                   <option value="00000000-0000-0000-0000-000000000001">Room 101 (Standard King - Clean)</option>
@@ -188,7 +189,7 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                <KeyRound className="w-3.5 h-3.5 text-blue-600" />
+                <KeyRound className="w-3.5 h-3.5 text-[#00a8ff]" />
                 RFID Door Lock / BLE Mobile Key Code *
               </label>
               <input
@@ -197,7 +198,7 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
                 value={keycardCode}
                 onChange={(e) => setKeycardCode(e.target.value)}
                 placeholder="RFID-000000"
-                className="w-full h-9 px-3 text-xs border border-slate-200 rounded focus:border-blue-500 font-mono"
+                className="w-full h-9 px-3 text-xs border border-slate-200 rounded focus:border-[#00a8ff] font-mono"
               />
             </div>
           </div>
@@ -207,7 +208,7 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <ScanLine className="w-4 h-4 text-blue-600" /> Passport & ID OCR Scanner (Chapter 15.1)
+                  <ScanLine className="w-4 h-4 text-[#00a8ff]" /> Passport & ID OCR Scanner (Chapter 15.1)
                 </h4>
                 <p className="text-[11px] text-slate-500">
                   Extracts ICAO Doc 9303 MRZ lines for digital hospitality guest audit compliance.
@@ -321,5 +322,6 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
         </form>
       </div>
     </div>
+  </div>
   );
 }

@@ -147,7 +147,7 @@ export default function PropertiesPage() {
               placeholder="Search by name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-9 w-44 sm:w-56 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
+              className="h-9 w-44 sm:w-56 px-3 text-xs bg-white border border-slate-200 rounded text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#00a8ff]"
             />
           </div>
 
@@ -180,7 +180,7 @@ export default function PropertiesPage() {
                 <th className="py-3 px-3 w-10 text-center">
                   <input
                     type="checkbox"
-                    className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                    className="rounded border-slate-300 text-[#00a8ff] focus:ring-0 cursor-pointer"
                     onChange={handleSelectAll}
                     checked={
                       filteredProperties.length > 0 &&
@@ -247,7 +247,7 @@ export default function PropertiesPage() {
                       >
                         <input
                           type="checkbox"
-                          className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                          className="rounded border-slate-300 text-[#00a8ff] focus:ring-0 cursor-pointer"
                           checked={isChecked}
                           onChange={() => handleSelectOne(hotel.id)}
                         />
@@ -261,7 +261,7 @@ export default function PropertiesPage() {
                               Featured
                             </span>
                           )}
-                          <span className="font-semibold text-slate-900 hover:text-blue-600">
+                          <span className="font-semibold text-slate-900 hover:text-[#00a8ff]">
                             {hotel.name}
                           </span>
                         </div>
@@ -321,7 +321,7 @@ export default function PropertiesPage() {
                                 onClick={() => router.push(`/properties/${hotel.id}`)}
                                 className="w-full px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-1.5"
                               >
-                                <Eye className="w-3.5 h-3.5 text-blue-500" /> View Hotel
+                                <Eye className="w-3.5 h-3.5 text-[#00a8ff]" /> View Hotel
                               </button>
                               <button
                                 onClick={() => router.push('/rooms')}

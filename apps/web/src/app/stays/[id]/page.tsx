@@ -174,7 +174,7 @@ export default function PropertyDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
+      <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 sm:p-8">
           {/* 2. Top Header Section matching Figure 6.1 */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
@@ -209,7 +209,7 @@ export default function PropertyDetailPage() {
                   <span className="text-[10px] text-slate-400 block">from 4 reviews</span>
                   <span className="text-[10px] text-emerald-600 font-bold block">100% of guests recommend</span>
                 </div>
-                <div className="w-10 h-10 rounded-md bg-[#2577e3] text-white flex flex-col items-center justify-center font-black text-xs leading-none shadow-sm">
+                <div className="w-10 h-10 rounded-md bg-[#00a8ff] text-white flex flex-col items-center justify-center font-black text-xs leading-none shadow-sm">
                   <span className="text-xs font-bold">4.8</span>
                   <span className="text-[8px] font-normal text-white/80">/5</span>
                 </div>
@@ -223,7 +223,7 @@ export default function PropertyDetailPage() {
                 <div>
                   <div className="flex items-center gap-1">
                     <span className="text-xs font-bold text-slate-900">Customer 01</span>
-                    <span className="w-3 h-3 rounded-full bg-[#2577e3] text-white flex items-center justify-center text-[8px] font-black">
+                    <span className="w-3 h-3 rounded-full bg-[#00a8ff] text-white flex items-center justify-center text-[8px] font-black">
                       ✓
                     </span>
                   </div>
@@ -306,7 +306,7 @@ export default function PropertyDetailPage() {
                       type="button"
                       onClick={() => setActivePhotoIndex(idx)}
                       className={`relative aspect-square rounded-md overflow-hidden cursor-pointer transition-all ${isActive
-                        ? "ring-2 ring-[#2577e3] opacity-100"
+                        ? "ring-2 ring-[#00a8ff] opacity-100"
                         : "opacity-75 hover:opacity-100"
                         }`}
                     >
@@ -357,7 +357,7 @@ export default function PropertyDetailPage() {
                     type="button"
                     onClick={() => setActiveBookingTab("book")}
                     className={`pb-2.5 transition-all cursor-pointer relative ${activeBookingTab === "book"
-                      ? "text-[#2577e3] border-b-2 border-[#2577e3]"
+                      ? "text-[#00a8ff] border-b-2 border-[#00a8ff]"
                       : "text-slate-400 hover:text-slate-700"
                       }`}
                   >
@@ -367,7 +367,7 @@ export default function PropertyDetailPage() {
                     type="button"
                     onClick={() => setActiveBookingTab("enquiry")}
                     className={`pb-2.5 transition-all cursor-pointer relative ${activeBookingTab === "enquiry"
-                      ? "text-[#2577e3] border-b-2 border-[#2577e3]"
+                      ? "text-[#00a8ff] border-b-2 border-[#00a8ff]"
                       : "text-slate-400 hover:text-slate-700"
                       }`}
                   >
@@ -415,7 +415,7 @@ export default function PropertyDetailPage() {
                         const el = document.getElementById("room-selection-matrix");
                         el?.scrollIntoView({ behavior: "smooth" });
                       }}
-                      className="w-full py-2 font-black text-xs uppercase bg-[#2577e3] hover:bg-[#1d62c2] text-white cursor-pointer"
+                      className="w-full py-2 font-black text-xs uppercase bg-[#00a8ff] hover:bg-[#0097e6] text-white cursor-pointer"
                     >
                       CHECK AVAILABILITY
                     </Button>
@@ -429,7 +429,7 @@ export default function PropertyDetailPage() {
                     return (
                       <div
                         key={room.id}
-                        className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#2577e3] transition-all shadow-xs flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
+                        className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#00a8ff] transition-all shadow-xs flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
                       >
                         <div className="flex gap-3.5 items-center">
                           <img
@@ -471,7 +471,7 @@ export default function PropertyDetailPage() {
                             onClick={() => handleBookRoom(room)}
                             variant={isSelected ? "secondary" : "primary"}
                             size="sm"
-                            className="font-extrabold text-xs uppercase px-4 py-1.5 bg-[#2577e3] hover:bg-[#1d62c2]"
+                            className="font-extrabold text-xs uppercase px-4 py-1.5 bg-[#00a8ff] hover:bg-[#0097e6]"
                           >
                             {isSelected ? (
                               <>
@@ -497,7 +497,7 @@ export default function PropertyDetailPage() {
             <aside className="lg:col-span-4 space-y-6">
               {/* RELATED HOTEL Section with Blue Left Border (Figure 6.1 & Figure 4.2) */}
               <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
-                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-4">
+                <div className="border-l-3 border-[#00a8ff] pl-2.5 mb-4">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                     RELATED HOTEL
                   </h3>
@@ -519,7 +519,7 @@ export default function PropertyDetailPage() {
                         <div className="flex text-amber-500 text-[10px] mb-0.5">
                           {"★".repeat(rel.starRating || 5)}
                         </div>
-                        <h4 className="font-bold text-xs text-[#2577e3] hover:underline truncate">
+                        <h4 className="font-bold text-xs text-[#00a8ff] hover:underline truncate">
                           {rel.name}
                         </h4>
                         <span className="text-xs text-slate-500 font-medium">
@@ -533,7 +533,7 @@ export default function PropertyDetailPage() {
 
               {/* PROPERTY TYPE Filter List with Blue Left Border (Figure 6.1 & Figure 4.2) */}
               <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
-                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
+                <div className="border-l-3 border-[#00a8ff] pl-2.5 mb-3">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                     PROPERTY TYPE
                   </h3>
@@ -554,7 +554,7 @@ export default function PropertyDetailPage() {
                     <label key={i} className="flex items-center gap-2.5 cursor-pointer hover:text-slate-900">
                       <input
                         type="checkbox"
-                        className="rounded text-[#2577e3] focus:ring-[#2577e3] w-4 h-4 cursor-pointer"
+                        className="rounded text-[#00a8ff] focus:ring-[#00a8ff] w-4 h-4 cursor-pointer"
                         defaultChecked={pt.checked}
                       />
                       <span>{pt.name}</span>
@@ -565,7 +565,7 @@ export default function PropertyDetailPage() {
 
               {/* FACILITIES List with Outline Icons Matching Figure 4.2 in PDF */}
               <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
-                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
+                <div className="border-l-3 border-[#00a8ff] pl-2.5 mb-3">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                     FACILITIES
                   </h3>
@@ -605,7 +605,7 @@ export default function PropertyDetailPage() {
 
               {/* HOTEL SERVICE Section with Blue Left Border (Figure 4.2) */}
               <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs">
-                <div className="border-l-3 border-[#2577e3] pl-2.5 mb-3">
+                <div className="border-l-3 border-[#00a8ff] pl-2.5 mb-3">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                     HOTEL SERVICE
                   </h3>

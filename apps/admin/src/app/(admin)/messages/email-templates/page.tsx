@@ -667,7 +667,7 @@ export default function EmailTemplateBuilderPage() {
                 <button
                   type="submit"
                   disabled={testSending}
-                  className="h-8 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded text-xs inline-flex items-center gap-1.5 disabled:opacity-50"
+                  className="h-8 px-4 bg-[#00a8ff] hover:bg-[#0097e6] text-white font-semibold rounded text-xs inline-flex items-center gap-1.5 disabled:opacity-50"
                 >
                   {testSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                   <span>Dispatch Now</span>

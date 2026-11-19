@@ -62,11 +62,11 @@ export default function RoomManagementPage() {
     <div className="space-y-5 animate-in fade-in duration-200">
       {/* Breadcrumb Matching Figure 3.1 in PDF */}
       <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-blue-500 font-semibold"># Dashboard</span>
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
         <span>/</span>
-        <span className="text-blue-500 font-semibold">Hotels</span>
+        <span className="text-[#00a8ff] font-semibold">Hotels</span>
         <span>/</span>
-        <span className="text-blue-500 font-semibold">Hotel: {selectedHotelName}</span>
+        <span className="text-[#00a8ff] font-semibold">Hotel: {selectedHotelName}</span>
         <span>/</span>
         <span className="text-slate-400">Room Management</span>
       </div>
@@ -116,7 +116,7 @@ export default function RoomManagementPage() {
               <select
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
-                className="h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-700 focus:outline-none focus:border-blue-500"
+                className="h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-700 focus:outline-none focus:border-[#00a8ff]"
               >
                 <option>Bulk Actions</option>
                 <option>Publish</option>
@@ -160,7 +160,7 @@ export default function RoomManagementPage() {
                     <th className="py-2.5 px-3 w-10 text-center">
                       <input
                         type="checkbox"
-                        className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                        className="rounded border-slate-300 text-[#00a8ff] focus:ring-0 cursor-pointer"
                         onChange={handleSelectAll}
                         checked={rooms.length > 0 && selectedIds.length === rooms.length}
                       />
@@ -194,7 +194,7 @@ export default function RoomManagementPage() {
                           <td className="py-3 px-3 text-center">
                             <input
                               type="checkbox"
-                              className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                              className="rounded border-slate-300 text-[#00a8ff] focus:ring-0 cursor-pointer"
                               checked={isChecked}
                               onChange={() => handleSelectOne(room.id)}
                             />

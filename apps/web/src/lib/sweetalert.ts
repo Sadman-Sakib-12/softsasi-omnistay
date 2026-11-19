@@ -37,7 +37,7 @@ export const showAlert = (options: {
     title: options.title || '',
     text: options.text,
     icon: options.icon || 'info',
-    confirmButtonColor: '#0284c7',
+    confirmButtonColor: '#00a8ff',
     customClass: {
       popup: 'rounded-2xl shadow-2xl font-sans',
       confirmButton: 'rounded-xl px-4 py-2 font-semibold text-xs',

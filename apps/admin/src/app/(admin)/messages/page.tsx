@@ -688,7 +688,7 @@ export default function OmnichannelMessagesPage() {
             <Button
               onClick={() => setIsSendSmsOpen(true)}
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+              className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-semibold border-0 shadow-xs"
             >
               <Plus className="w-3.5 h-3.5 mr-1" /> Dispatch SMS / Critical OTP
             </Button>
@@ -1093,7 +1093,7 @@ export default function OmnichannelMessagesPage() {
                   type="submit"
                   size="sm"
                   disabled={sendSmsMutation.isPending}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white border-0 shadow-xs"
                 >
                   Dispatch SMS
                 </Button>

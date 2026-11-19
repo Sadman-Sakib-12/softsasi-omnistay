@@ -54,7 +54,7 @@ export default function FrontDeskPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <ConciergeBell className="w-6 h-6 text-blue-600" /> Front Desk Availability Matrix
+            <ConciergeBell className="w-6 h-6 text-[#00a8ff]" /> Front Desk Availability Matrix
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Real-time tape chart, occupancy grid, and daily dynamic yield rates (PDF Figure 4.3).
@@ -65,7 +65,7 @@ export default function FrontDeskPage() {
             variant="outline"
             size="sm"
             onClick={() => router.push('/reservations')}
-            className="bg-white text-xs text-blue-700 border-blue-200 hover:bg-blue-50 cursor-pointer"
+            className="bg-white text-xs text-[#00a8ff] border-sky-200 hover:bg-sky-50 cursor-pointer"
           >
             <LogIn className="w-3.5 h-3.5 mr-1" /> Express Check-In & OCR
           </Button>
@@ -77,7 +77,7 @@ export default function FrontDeskPage() {
       <Card className="bg-white border-slate-200 shadow-xs">
         <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-blue-600" />
+            <CalendarIcon className="w-4 h-4 text-[#00a8ff]" />
             <span className="text-base font-bold text-slate-900">
               {monthName} {year}
             </span>
@@ -130,27 +130,27 @@ export default function FrontDeskPage() {
                       key={dayNum}
                       className={`h-24 rounded-lg p-2.5 flex flex-col justify-between border transition-all ${
                         isToday
-                          ? 'border-blue-500 bg-blue-50/50 shadow-xs'
-                          : 'border-slate-200 bg-white hover:border-blue-400 hover:shadow-xs'
+                          ? 'border-[#00a8ff] bg-sky-50/50 shadow-xs'
+                          : 'border-slate-200 bg-white hover:border-sky-300 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span
                           className={`text-xs font-bold ${
-                            isToday ? 'text-blue-700' : 'text-slate-800'
+                            isToday ? 'text-[#00a8ff]' : 'text-slate-800'
                           }`}
                         >
                           {dayNum}
                         </span>
                         {isToday && (
-                          <span className="text-[9px] uppercase font-bold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[9px] uppercase font-bold text-sky-800 bg-sky-100 px-1.5 py-0.5 rounded">
                             Today
                           </span>
                         )}
                       </div>
 
                       <div className="space-y-1">
-                        <div className="text-[11px] font-bold text-blue-600 flex items-center justify-between">
+                        <div className="text-[11px] font-bold text-[#00a8ff] flex items-center justify-between">
                           <span>Avg Rate</span>
                           <span>{rooms.length > 0 && rooms[0]?.pricePerNight ? `$${rooms[0].pricePerNight}/d` : '-'}</span>
                         </div>

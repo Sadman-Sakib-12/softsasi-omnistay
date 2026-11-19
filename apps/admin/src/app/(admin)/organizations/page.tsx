@@ -196,7 +196,7 @@ export default function OrganizationsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-blue-600" /> Multi-Tenant Organizations
+            <Building2 className="w-6 h-6 text-[#00a8ff]" /> Multi-Tenant Organizations
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Isolated tenant partitions retrieved directly from NestJS Organization API (`/api/v1/organizations`).
@@ -209,7 +209,7 @@ export default function OrganizationsPage() {
           }}
           variant="default"
           size="sm"
-          className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+          className="bg-[#00a8ff] hover:bg-[#0097e6] text-white cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1" /> New Organization
         </Button>
@@ -234,7 +234,7 @@ export default function OrganizationsPage() {
 
       {isLoading ? (
         <div className="p-12 text-center text-slate-500 text-xs flex items-center justify-center gap-2">
-          <Loader2 className="w-4 h-4 animate-spin text-blue-600" /> Loading tenant partitions from database...
+          <Loader2 className="w-4 h-4 animate-spin text-[#00a8ff]" /> Loading tenant partitions from database...
         </div>
       ) : filteredOrgs.length === 0 ? (
         <Card className="p-12 text-center bg-white border border-slate-200">
@@ -253,7 +253,7 @@ export default function OrganizationsPage() {
                 key={tenant.id || tenant.slug || `tenant-card-${idx}`}
                 className={`transition-all bg-white border ${
                   isActive
-                    ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md'
+                    ? 'border-[#00a8ff] ring-2 ring-[#00a8ff]/20 shadow-md'
                     : 'border-slate-200 hover:border-slate-300 shadow-sm'
                 }`}
               >
@@ -271,7 +271,7 @@ export default function OrganizationsPage() {
                       UUID: {tenant.id}
                     </CardDescription>
                   </div>
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-[#00a8ff] shrink-0">
                     <Building2 className="w-4 h-4" />
                   </div>
                 </CardHeader>
@@ -291,7 +291,7 @@ export default function OrganizationsPage() {
                     </div>
                     <div>
                       <span className="text-slate-400 font-medium">SaaS Tier</span>
-                      <p className="font-medium text-blue-600 capitalize mt-0.5">{tenant.planId || 'Professional'}</p>
+                      <p className="font-medium text-[#00a8ff] capitalize mt-0.5">{tenant.planId || 'Professional'}</p>
                     </div>
                   </div>
 
@@ -318,7 +318,7 @@ export default function OrganizationsPage() {
                           }
                           setTenantId(tenant.id);
                         }}
-                        className={isActive ? 'border-slate-300 text-slate-700 cursor-pointer' : 'bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer'}
+                        className={isActive ? 'border-slate-300 text-slate-700 cursor-pointer' : 'bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs cursor-pointer'}
                       >
                         {isActive ? (
                           <>
@@ -373,131 +373,134 @@ export default function OrganizationsPage() {
 
       {/* New Organization Modal Dialog */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-slate-900 text-sm">Provision New Organization</h3>
-              </div>
-              <button
-                onClick={() => setIsCreateOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSubmit} className="p-5 space-y-4">
-              {formError && (
-                <div className="p-3 rounded bg-rose-50 border border-rose-200 text-xs text-rose-700">
-                  {formError}
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs">
+          <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-[#00a8ff]" />
+                  <h3 className="font-bold text-slate-900 text-sm">Provision New Organization</h3>
                 </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Organization / Hotel Chain Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Grand Horizon Hospitality Group"
-                  value={formName}
-                  onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none"
-                />
+                <button
+                  onClick={() => setIsCreateOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Tenant Slug (Subdomain) *</label>
-                <div className="flex items-center">
+              <form onSubmit={handleCreateSubmit} className="p-5 space-y-4">
+                {formError && (
+                  <div className="p-3 rounded bg-rose-50 border border-rose-200 text-xs text-rose-700">
+                    {formError}
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Organization / Hotel Chain Name *</label>
                   <input
                     type="text"
                     required
-                    pattern="^[a-z0-9-]+$"
-                    placeholder="grand-horizon"
-                    value={formSlug}
-                    onChange={(e) => setFormSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-l text-xs font-mono focus:ring-1 focus:ring-blue-500 outline-none"
+                    placeholder="e.g. Grand Horizon Hospitality Group"
+                    value={formName}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-[#00a8ff] outline-none"
                   />
-                  <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 text-slate-500 text-xs font-mono rounded-r">
-                    .omnistay.com
-                  </span>
                 </div>
-                <p className="text-[10px] text-slate-500">Only lowercase alphanumeric characters and hyphens allowed.</p>
-              </div>
 
-              <div className="p-3 bg-slate-50 rounded border border-slate-200 text-[11px] text-slate-600 space-y-1">
-                <p className="font-semibold text-slate-800">Auto-Provisioned Services:</p>
-                <ul className="list-disc pl-4 space-y-0.5 text-[10px]">
-                  <li>Isolated PostgreSQL Tenant Workspace</li>
-                  <li>Company Owner/GM Administrative Role</li>
-                  <li>SaaS Professional Cloud Cluster</li>
-                </ul>
-              </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700">Tenant Slug (Subdomain) *</label>
+                  <div className="flex items-center">
+                    <input
+                      type="text"
+                      required
+                      pattern="^[a-z0-9-]+$"
+                      placeholder="grand-horizon"
+                      value={formSlug}
+                      onChange={(e) => setFormSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-l text-xs font-mono focus:ring-1 focus:ring-[#00a8ff] outline-none"
+                    />
+                    <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 text-slate-500 text-xs font-mono rounded-r">
+                      .omnistay.com
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500">Only lowercase alphanumeric characters and hyphens allowed.</p>
+                </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsCreateOpen(false)}
-                  className="text-xs"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={createMutation.isPending}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-                >
-                  {createMutation.isPending ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Provisioning...
-                    </>
-                  ) : (
-                    'Create Organization'
-                  )}
-                </Button>
-              </div>
-            </form>
+                <div className="p-3 bg-slate-50 rounded border border-slate-200 text-[11px] text-slate-600 space-y-1">
+                  <p className="font-semibold text-slate-800">Auto-Provisioned Services:</p>
+                  <ul className="list-disc pl-4 space-y-0.5 text-[10px]">
+                    <li>Isolated PostgreSQL Tenant Workspace</li>
+                    <li>Company Owner/GM Administrative Role</li>
+                    <li>SaaS Professional Cloud Cluster</li>
+                  </ul>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="text-xs"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={createMutation.isPending}
+                    className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs cursor-pointer"
+                  >
+                    {createMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> Provisioning...
+                      </>
+                    ) : (
+                      'Create Organization'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
 
       {/* Branding & SSL Domain Modal Dialog (Chapter 4.1.1.4 & Chapter 19) */}
       {isBrandingOpen && selectedOrgForBranding && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-              <div className="flex items-center gap-2">
-                <Palette className="w-5 h-5 text-[#00a8ff]" />
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm">
-                    White-Label Branding & Domain Management (Chapters 4.1.1.4 & 19)
-                  </h3>
-                  <p className="text-[11px] text-slate-500">Tenant: {selectedOrgForBranding.name}</p>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs">
+          <div className="flex min-h-full items-center justify-center p-3 sm:p-4">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden my-auto sm:my-8 flex flex-col animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <Palette className="w-5 h-5 text-[#00a8ff]" />
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      White-Label Branding & Domain Management (Chapters 4.1.1.4 & 19)
+                    </h3>
+                    <p className="text-[11px] text-slate-500">Tenant: {selectedOrgForBranding.name}</p>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setIsBrandingOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 p-1 rounded cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setIsBrandingOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <form onSubmit={handleSaveBranding} className="p-5 flex-1 overflow-y-auto space-y-4 text-xs">
-              {/* Domain & Subdomain Section */}
-              <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/70 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-blue-600" /> Multi-Tenant Domain Routing & SSL
-                  </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-600" /> {bSslStatus === 'active' ? 'SSL Active (TLS 1.3)' : 'Pending'}
-                  </span>
-                </div>
+              <form onSubmit={handleSaveBranding} className="p-5 flex-1 overflow-y-auto space-y-4 text-xs">
+                {/* Domain & Subdomain Section */}
+                <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/70 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-[#00a8ff]" /> Multi-Tenant Domain Routing & SSL
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" /> {bSslStatus === 'active' ? 'SSL Active (TLS 1.3)' : 'Pending'}
+                    </span>
+                  </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -660,7 +663,7 @@ export default function OrganizationsPage() {
                   type="submit"
                   disabled={isSavingBranding}
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                  className="bg-[#00a8ff] hover:bg-[#0097e6] text-white cursor-pointer"
                 >
                   {isSavingBranding ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Save className="w-3.5 h-3.5 mr-1" />}
                   Save White-Labeling
@@ -669,6 +672,7 @@ export default function OrganizationsPage() {
             </form>
           </div>
         </div>
+      </div>
       )}
     </div>
   );

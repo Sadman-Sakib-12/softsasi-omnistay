@@ -162,7 +162,7 @@ export default function PropertyAttributesPage() {
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       onClick={() => openEditModal(att)}
-                      className="p-1 rounded text-blue-600 hover:bg-blue-50 cursor-pointer"
+                      className="p-1 rounded text-[#00a8ff] hover:bg-sky-50 cursor-pointer"
                       title="Edit attribute"
                     >
                       <Edit className="w-3.5 h-3.5" />
@@ -201,7 +201,7 @@ export default function PropertyAttributesPage() {
                   placeholder="e.g. Heated Rooftop Pool"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-[#00a8ff]"
                 />
               </div>
               <div className="space-y-1">
@@ -209,7 +209,7 @@ export default function PropertyAttributesPage() {
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-[#00a8ff]"
                 >
                   <option value="Facilities">Facilities</option>
                   <option value="Location Features">Location Features</option>
@@ -250,7 +250,7 @@ export default function PropertyAttributesPage() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none focus:ring-1 focus:ring-[#00a8ff]"
                 />
               </div>
               <div className="space-y-1">
@@ -258,7 +258,7 @@ export default function PropertyAttributesPage() {
                 <select
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs outline-none bg-white focus:ring-1 focus:ring-[#00a8ff]"
                 >
                   <option value="Facilities">Facilities</option>
                   <option value="Location Features">Location Features</option>

@@ -90,9 +90,9 @@ export function DataTable<T extends { id?: string | number }>({
             </div>
           )}
           {selectedIds.size > 0 && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-700">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-sky-50 border border-sky-200 text-xs text-sky-800">
               <span className="font-medium">{selectedIds.size} selected</span>
-              <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())} className="h-6 px-2 text-xs">
+              <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())} className="h-6 px-2 text-xs text-[#00a8ff] hover:text-[#0097e6]">
                 Clear
               </Button>
             </div>
@@ -112,7 +112,7 @@ export function DataTable<T extends { id?: string | number }>({
                 <th className="px-4 py-3.5 w-10">
                   <input
                     type="checkbox"
-                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-slate-300 text-[#00a8ff] focus:ring-[#00a8ff]"
                     checked={paginatedData.length > 0 && selectedIds.size === paginatedData.length}
                     onChange={toggleSelectAll}
                   />
@@ -158,13 +158,13 @@ export function DataTable<T extends { id?: string | number }>({
                       onClick={() => onRowClick?.(item)}
                       className={cn(
                         'transition-colors hover:bg-slate-50/80 cursor-pointer',
-                        isSelected && 'bg-blue-50/40'
+                        isSelected && 'bg-sky-50/50'
                       )}
                     >
                       <td className="px-4 py-3.5 w-10" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          className="rounded border-slate-300 text-[#00a8ff] focus:ring-[#00a8ff]"
                           checked={isSelected}
                           onChange={() => toggleSelect(id)}
                         />
@@ -183,7 +183,7 @@ export function DataTable<T extends { id?: string | number }>({
         </div>
 
         {/* Pagination Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50/70 text-xs text-slate-600">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 bg-slate-50/70 text-xs text-slate-600">
           <div>
             Showing {filteredData.length === 0 ? 0 : (page - 1) * pageSize + 1} to{' '}
             {Math.min(page * pageSize, filteredData.length)} of {filteredData.length} records

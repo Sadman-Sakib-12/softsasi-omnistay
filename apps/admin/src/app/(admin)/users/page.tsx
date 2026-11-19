@@ -116,7 +116,7 @@ export default function UsersPage() {
       accessorKey: 'name',
       cell: (item) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
+          <div className="w-8 h-8 rounded-lg bg-sky-50 border border-sky-100 flex items-center justify-center text-[#00a8ff] font-bold text-xs">
             {item.name ? item.name[0].toUpperCase() : 'U'}
           </div>
           <div>
@@ -169,7 +169,7 @@ export default function UsersPage() {
             variant="ghost"
             size="sm"
             onClick={() => router.push(`/users/${item.id || (item as any).userId}`)}
-            className="hover:text-blue-600 hover:bg-blue-50 text-slate-500 h-7 px-2"
+            className="hover:text-[#00a8ff] hover:bg-sky-50 text-slate-500 h-7 px-2"
             title="View user details"
           >
             <Eye className="w-3.5 h-3.5" />
@@ -194,12 +194,19 @@ export default function UsersPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 animate-in fade-in duration-200">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1.5 text-xs text-slate-500">
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
+        <span>/</span>
+        <span className="text-slate-400">Users & Operators</span>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Users className="w-6 h-6 text-blue-600" /> Users & Operators Directory
+            <Users className="w-6 h-6 text-[#00a8ff]" /> Users & Operators Directory
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Enterprise user management, authentication credentials, and multi-tenant scoping (Chapter 3.2).
@@ -209,7 +216,7 @@ export default function UsersPage() {
           variant="default"
           size="sm"
           onClick={() => setIsAddUserOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+          className="bg-[#00a8ff] hover:bg-[#0097e6] text-white cursor-pointer border-0"
         >
           <UserPlus className="w-4 h-4 mr-1" /> Add New User
         </Button>
@@ -254,7 +261,7 @@ export default function UsersPage() {
                     placeholder="e.g. John Doe"
                     value={newUser.name}
                     onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
                   />
                 </div>
 
@@ -266,7 +273,7 @@ export default function UsersPage() {
                     placeholder="john@example.com"
                     value={newUser.email}
                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
                   />
                 </div>
 
@@ -276,7 +283,7 @@ export default function UsersPage() {
                     <button
                       type="button"
                       onClick={() => setNewUser({ ...newUser, password: 'OmniStay@2026' })}
-                      className="text-[10px] text-blue-600 hover:underline cursor-pointer font-medium"
+                      className="text-[10px] text-[#00a8ff] hover:underline cursor-pointer font-medium"
                     >
                       Reset Default (OmniStay@2026)
                     </button>
@@ -288,7 +295,7 @@ export default function UsersPage() {
                       placeholder="e.g. OmniStay@2026"
                       value={newUser.password}
                       onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                      className="w-full h-8 pl-2.5 pr-8 text-xs bg-white border border-slate-200 rounded text-slate-800 font-mono focus:outline-none focus:border-blue-500"
+                      className="w-full h-8 pl-2.5 pr-8 text-xs bg-white border border-slate-200 rounded text-slate-800 font-mono focus:outline-none focus:border-[#00a8ff]"
                     />
                     <button
                       type="button"
@@ -299,7 +306,7 @@ export default function UsersPage() {
                     </button>
                   </div>
                   <p className="text-[10px] text-slate-500 leading-tight">
-                    💡 This password will be given to the staff member so they can log in at <code className="text-blue-600 font-semibold">/login</code>. Default: <span className="font-mono font-bold text-slate-700">OmniStay@2026</span>
+                    💡 This password will be given to the staff member so they can log in at <code className="text-[#00a8ff] font-semibold">/login</code>. Default: <span className="font-mono font-bold text-slate-700">OmniStay@2026</span>
                   </p>
                 </div>
 
@@ -308,7 +315,7 @@ export default function UsersPage() {
                   <select
                     value={newUser.role}
                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
                   >
                     <option value="HOTEL_STAFF">HOTEL_STAFF</option>
                     <option value="FRONT_DESK_AGENT">FRONT_DESK_AGENT</option>
@@ -332,7 +339,7 @@ export default function UsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? 'Registering...' : 'Add User'}
                 </button>
@@ -467,7 +474,7 @@ export default function UsersPage() {
                   <select
                     value={editingUser.status || 'ACTIVE'}
                     onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value })}
-                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full h-8 px-2.5 text-xs bg-white border border-slate-200 rounded text-slate-800 focus:outline-none focus:border-[#00a8ff]"
                   >
                     <option value="ACTIVE">ACTIVE</option>
                     <option value="SUSPENDED">SUSPENDED</option>
@@ -484,7 +491,7 @@ export default function UsersPage() {
                       placeholder="Leave blank to keep current password"
                       value={editPassword}
                       onChange={(e) => setEditPassword(e.target.value)}
-                      className="w-full h-8 pl-2.5 pr-8 text-xs bg-white border border-slate-200 rounded text-slate-800 font-mono focus:outline-none focus:border-blue-500"
+                      className="w-full h-8 pl-2.5 pr-8 text-xs bg-white border border-slate-200 rounded text-slate-800 font-mono focus:outline-none focus:border-[#00a8ff]"
                     />
                     <button
                       type="button"
@@ -511,7 +518,7 @@ export default function UsersPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#00a8ff] hover:bg-[#0097e6] rounded transition-colors shadow-2xs inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </button>

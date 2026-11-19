@@ -13,7 +13,7 @@ export function AdminShell({ children }: AdminShellProps) {
   const { mobileSidebarOpen, setMobileSidebarOpen } = useUiStore();
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 antialiased selection:bg-blue-600 selection:text-white relative">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 antialiased selection:bg-[#00a8ff] selection:text-white relative">
       {/* Mobile Drawer Backdrop Overlay */}
       {mobileSidebarOpen && (
         <div
@@ -30,7 +30,7 @@ export function AdminShell({ children }: AdminShellProps) {
       <div className="flex flex-1 flex-col overflow-hidden z-10 relative bg-slate-50 min-w-0">
         <AdminHeader />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin scrollbar-thumb-slate-300">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] w-full min-w-0">
             {children}
           </div>
         </main>

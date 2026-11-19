@@ -76,11 +76,11 @@ export default function AvailabilityCalendarPage() {
     <div className="space-y-5 animate-in fade-in duration-200">
       {/* Breadcrumb Matching Figure 4.3 in PDF */}
       <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-blue-500 font-semibold"># Dashboard</span>
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
         <span>/</span>
-        <span className="text-blue-500 font-semibold">Hotels</span>
+        <span className="text-[#00a8ff] font-semibold">Hotels</span>
         <span>/</span>
-        <span className="text-blue-500 font-semibold">Hotel: {selectedHotelName}</span>
+        <span className="text-[#00a8ff] font-semibold">Hotel: {selectedHotelName}</span>
         <span>/</span>
         <span className="text-slate-400">Availability</span>
       </div>
@@ -126,8 +126,8 @@ export default function AvailabilityCalendarPage() {
                     onClick={() => setSelectedRoomIndex(idx)}
                     className={`w-full text-left p-3.5 text-xs transition-colors cursor-pointer flex items-center justify-between ${
                       isSelected
-                        ? 'bg-blue-50/80 font-bold text-blue-600 border-l-4 border-blue-500'
-                        : 'text-blue-500 hover:bg-slate-50/80 font-medium'
+                        ? 'bg-sky-50 font-bold text-[#00a8ff] border-l-4 border-[#00a8ff]'
+                        : 'text-slate-600 hover:text-[#00a8ff] hover:bg-slate-50/80 font-medium'
                     }`}
                   >
                     <span>{roomItem.label}</span>

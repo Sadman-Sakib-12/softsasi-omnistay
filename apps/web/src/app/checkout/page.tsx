@@ -522,7 +522,7 @@ export default function CheckoutPage() {
                   <p className="text-[11px] text-slate-500 leading-relaxed">
                     Instant 1-click checkout using stored value credits.
                   </p>
-                  <div className="mt-2 text-xs font-bold text-blue-600">
+                  <div className="mt-2 text-xs font-bold text-[#00a8ff]">
                     Available Balance: {formatPrice(500)}
                   </div>
                 </button>
@@ -636,10 +636,10 @@ export default function CheckoutPage() {
     )}
 
     {paymentMethod === "wallet" && (
-      <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 space-y-2 text-xs animate-in fade-in">
+      <div className="p-4 rounded-2xl bg-sky-50/60 border border-sky-200 space-y-2 text-xs animate-in fade-in">
         <div className="flex items-center justify-between">
-          <span className="font-bold text-blue-900 flex items-center gap-1.5">
-            <Wallet className="w-4 h-4 text-blue-600" /> OmniStay Stored-Value Wallet
+          <span className="font-bold text-sky-950 flex items-center gap-1.5">
+            <Wallet className="w-4 h-4 text-[#00a8ff]" /> OmniStay Stored-Value Wallet
           </span>
           <span className="font-mono font-bold text-emerald-600 bg-white px-2 py-0.5 rounded border border-emerald-200">
             Balance: {formatPrice(500)}
@@ -854,7 +854,7 @@ export default function CheckoutPage() {
           <div className="pt-2 border-t border-slate-100 space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-slate-700 flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5 text-blue-600" /> Currency:
+                <Globe className="w-3.5 h-3.5 text-[#00a8ff]" /> Currency:
               </span>
               <select
                 value={mounted ? currentCurrency : "USD"}

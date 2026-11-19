@@ -65,15 +65,15 @@ export default async function HomePage() {
           </div>
 
           {/* Hero Content Container Matching Figure 5.1 */}
-          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-            <div className="text-left max-w-4xl">
+          <div className="relative z-10 w-full max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+            <div className="text-left max-w-5xl 2xl:max-w-6xl">
               {/* Hero Title (Figure 5.1) */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white drop-shadow-lg mb-2">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-lg mb-2">
                 Hi There!
               </h1>
 
               {/* Subtitle (Figure 5.1) */}
-              <p className="text-base sm:text-xl font-normal text-white/95 drop-shadow-md mb-8">
+              <p className="text-sm sm:text-xl font-normal text-white/95 drop-shadow-md mb-6 sm:mb-8">
                 Where would you like to go?
               </p>
 
@@ -91,8 +91,8 @@ export default async function HomePage() {
       {/* 2. Three Feature Cards Section (Sakib_Project_Plan.pdf Figure 5.1) */}
       {customizer.sections.featureCards && (
         <section className="bg-white py-6 sm:py-8 w-full border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
               {/* Card 1: Holiday Sale / Special Offers (Figure 5.1) */}
               <Link
                 href="/stays"
@@ -124,7 +124,7 @@ export default async function HomePage() {
               {/* Card 2: Newsletters (Figure 5.1) */}
               <Link
                 href="/news"
-                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#3576ea]"
+                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#0086cc]"
               >
                 <div className="relative z-10 flex items-start justify-between">
                   <div>
@@ -148,7 +148,7 @@ export default async function HomePage() {
               {/* Card 3: Travel Tips (Figure 5.1) */}
               <Link
                 href="/about"
-                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#e5b025]"
+                className="rounded-2xl text-white p-6 min-h-[170px] sm:min-h-[190px] relative overflow-hidden shadow-md flex flex-col justify-between group cursor-pointer hover:shadow-xl transition-all duration-300 bg-[#e5a010]"
               >
                 <div className="relative z-10 flex items-start justify-between">
                   <div>
@@ -175,7 +175,7 @@ export default async function HomePage() {
 
       {/* 3. Luxury Category Quick-Browse Bar */}
       <section className="border-b border-slate-100 bg-white py-3 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 overflow-x-auto scrollbar-none py-1">
             {LUXURY_CATEGORIES.map((cat, idx) => {
               const Icon = cat.icon;
@@ -183,9 +183,9 @@ export default async function HomePage() {
                 <Link
                   key={idx}
                   href={cat.path}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-slate-600 hover:text-[#0284c7] hover:bg-sky-50 transition-all group shrink-0 border border-slate-100/80 hover:border-sky-200"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-slate-600 hover:text-[#00a8ff] hover:bg-sky-50 transition-all group shrink-0 border border-slate-100/80 hover:border-sky-200"
                 >
-                  <div className="w-6 h-6 rounded-full bg-slate-50 group-hover:bg-sky-100 flex items-center justify-center text-slate-600 group-hover:text-[#0284c7] transition-colors">
+                  <div className="w-6 h-6 rounded-full bg-slate-50 group-hover:bg-sky-100 flex items-center justify-center text-slate-600 group-hover:text-[#00a8ff] transition-colors">
                     <Icon className="w-3.5 h-3.5 stroke-[1.8]" />
                   </div>
                   <span className="text-xs font-semibold tracking-tight whitespace-nowrap">
@@ -200,10 +200,10 @@ export default async function HomePage() {
 
       {/* 4. Trust & Hospitality Guarantees Bar */}
       <section className="bg-slate-50 border-y border-slate-100 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-sky-100 text-[#0284c7] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-sky-100 text-[#00a8ff] flex items-center justify-center shrink-0">
                 <Award className="w-4.5 h-4.5 stroke-[2]" />
               </div>
               <div>
@@ -247,10 +247,10 @@ export default async function HomePage() {
 
       {/* 5. Featured Stays - Real API Data from PostgreSQL */}
       {customizer.sections.featuredStays && (
-        <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <section className="py-12 max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3">
             <div>
-              <span className="text-xs font-black text-[#0284c7] uppercase tracking-widest">
+              <span className="text-xs font-black text-[#00a8ff] uppercase tracking-widest">
                 Handpicked Sanctuaries
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 tracking-tight">
@@ -262,14 +262,14 @@ export default async function HomePage() {
             </div>
             <Link
               href="/stays"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0284c7] hover:text-[#0369a1] uppercase tracking-wider group"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00a8ff] hover:text-[#0097e6] uppercase tracking-wider group"
             >
               <span>View All Hotels ({properties.length})</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {properties.map((property) => (
               <StayCard key={property.id} property={property} />
             ))}
@@ -280,7 +280,7 @@ export default async function HomePage() {
       {/* 6. Guided Expeditions & Tours - Real API Data */}
       {customizer.sections.trendingTours && (
         <section className="py-12 bg-slate-50/80 border-y border-slate-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3">
               <div>
                 <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">
@@ -302,7 +302,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
               {tours.map((tour) => (
                 <VerticalCard
                   key={tour.id}
@@ -328,7 +328,7 @@ export default async function HomePage() {
 
       {/* 7. Luxury Fleets & Marine Charters - Real API Data */}
       {customizer.sections.verticals && (
-        <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <section className="py-12 max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3">
             <div>
               <span className="text-xs font-black text-amber-600 uppercase tracking-widest">
@@ -350,7 +350,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {cars.map((car) => (
               <VerticalCard
                 key={car.id}
@@ -393,7 +393,7 @@ export default async function HomePage() {
       )}
 
       {/* 8. OmniStay Privé VIP Club Newsletter Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">
+      <section className="max-w-7xl xl:max-w-[1380px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">
         <div className="rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white p-7 sm:p-10 relative overflow-hidden shadow-xl border border-slate-800">
           <div className="absolute right-0 top-0 -mt-10 -mr-10 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 max-w-2xl">

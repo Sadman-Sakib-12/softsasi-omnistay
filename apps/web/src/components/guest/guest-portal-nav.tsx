@@ -34,11 +34,11 @@ export function GuestPortalNav() {
               href={tab.href}
               className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg transition-all border-b-2 whitespace-nowrap ${
                 isActive
-                  ? "border-[#2577e3] text-[#2577e3] bg-sky-50/50"
+                  ? "border-[#00a8ff] text-[#00a8ff] bg-sky-50/50"
                   : "border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300"
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? "text-[#2577e3]" : "text-slate-400"}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-[#00a8ff]" : "text-slate-400"}`} />
               <span>{tab.label}</span>
             </Link>
           );

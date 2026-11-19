@@ -240,7 +240,7 @@ export default function RolesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-blue-600" /> Roles & Permissions (RBAC)
+            <ShieldCheck className="w-6 h-6 text-[#00a8ff]" /> Roles & Permissions (RBAC)
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Granular role-based access control protecting all backend microservice routes (Chapter 19.4).
@@ -250,7 +250,7 @@ export default function RolesPage() {
           onClick={() => setIsCreateOpen(true)}
           variant="default"
           size="sm"
-          className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+          className="bg-[#00a8ff] hover:bg-[#0097e6] text-white cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1" /> Create Custom Role
         </Button>
@@ -283,7 +283,7 @@ export default function RolesPage() {
                   <CardDescription className="text-xs font-mono mt-0.5 text-slate-500">{r.name}</CardDescription>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 text-[10px]">
+                  <Badge variant="outline" className="border-sky-200 text-sky-700 bg-sky-50 text-[10px]">
                     {r.badge}
                   </Badge>
                   {r.isCustom && (
@@ -318,7 +318,7 @@ export default function RolesPage() {
                 onClick={() => openEditModal(r)}
                 className="text-xs border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
               >
-                <Edit className="w-3.5 h-3.5 mr-1 text-blue-600" /> Edit Permissions
+                <Edit className="w-3.5 h-3.5 mr-1 text-[#00a8ff]" /> Edit Permissions
               </Button>
               {r.isCustom && (
                 <Button
@@ -386,7 +386,7 @@ export default function RolesPage() {
                   placeholder="e.g. Front Office / VIP Concierge"
                   value={newBadge}
                   onChange={(e) => setNewBadge(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-[#00a8ff] outline-none"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export default function RolesPage() {
                   placeholder="Operational responsibilities and scope of access..."
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-[#00a8ff] outline-none"
                 />
               </div>
 
@@ -412,14 +412,14 @@ export default function RolesPage() {
                       <label
                         key={perm}
                         className={`flex items-center gap-2 p-1.5 rounded cursor-pointer text-[11px] font-mono select-none ${
-                          checked ? 'bg-blue-100/70 text-blue-900 font-semibold' : 'hover:bg-slate-100 text-slate-700'
+                          checked ? 'bg-sky-100/70 text-sky-900 font-semibold' : 'hover:bg-slate-100 text-slate-700'
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={checked}
                           onChange={() => toggleNewPerm(perm)}
-                          className="rounded text-blue-600 focus:ring-0"
+                          className="rounded text-[#00a8ff] focus:ring-0"
                         />
                         <span className="truncate">{perm}</span>
                       </label>
@@ -438,7 +438,7 @@ export default function RolesPage() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+                <Button type="submit" size="sm" className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs cursor-pointer">
                   Create Role
                 </Button>
               </div>
@@ -473,7 +473,7 @@ export default function RolesPage() {
                   rows={3}
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 border border-slate-300 rounded text-xs focus:ring-1 focus:ring-[#00a8ff] outline-none"
                 />
               </div>
 
@@ -488,14 +488,14 @@ export default function RolesPage() {
                       <label
                         key={perm}
                         className={`flex items-center gap-2 p-1.5 rounded cursor-pointer text-[11px] font-mono select-none ${
-                          checked ? 'bg-blue-100/70 text-blue-900 font-semibold' : 'hover:bg-slate-100 text-slate-700'
+                          checked ? 'bg-sky-100/70 text-sky-900 font-semibold' : 'hover:bg-slate-100 text-slate-700'
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={checked}
                           onChange={() => toggleEditPerm(perm)}
-                          className="rounded text-blue-600 focus:ring-0"
+                          className="rounded text-[#00a8ff] focus:ring-0"
                         />
                         <span className="truncate">{perm}</span>
                       </label>
@@ -514,7 +514,7 @@ export default function RolesPage() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+                <Button type="submit" size="sm" className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs cursor-pointer">
                   Save Changes
                 </Button>
               </div>

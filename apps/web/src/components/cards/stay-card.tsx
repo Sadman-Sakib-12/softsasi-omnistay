@@ -51,7 +51,7 @@ export function StayCard({ property }: { property: Property }) {
           </div>
 
           <Link href={`/stays/${property.code || property.id}`}>
-            <h3 className="font-bold text-slate-900 text-base group-hover:text-[#2577e3] transition-colors line-clamp-1">
+            <h3 className="font-bold text-slate-900 text-base group-hover:text-[#00a8ff] transition-colors line-clamp-1">
               {property.name}
             </h3>
           </Link>
@@ -98,7 +98,7 @@ export function StayCard({ property }: { property: Property }) {
           </div>
 
           <Link href={`/stays/${property.code || property.id}`}>
-            <button className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-[#2577e3] text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer">
+            <button className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-[#00a8ff] text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer">
               View Rooms
             </button>
           </Link>

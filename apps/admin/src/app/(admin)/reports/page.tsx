@@ -71,7 +71,7 @@ export default function ReportsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-blue-600" /> Analytical Reports & BI
+            <BarChart3 className="w-6 h-6 text-[#00a8ff]" /> Analytical Reports & BI
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Real-time RevPAR, ADR, occupancy percentages, and financial export ledgers (Chapter 7.8).
@@ -90,7 +90,7 @@ export default function ReportsPage() {
             variant="default"
             size="sm"
             onClick={handlePrintPdf}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs cursor-pointer"
+            className="bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs cursor-pointer border-0 shadow-xs"
           >
             <Printer className="w-3.5 h-3.5 mr-1.5" /> Print / Export PDF
           </Button>
@@ -109,7 +109,7 @@ export default function ReportsPage() {
         <button
           onClick={() => setPeriod('today')}
           className={`px-3 py-1.5 rounded font-semibold transition-colors cursor-pointer ${
-            period === 'today' ? 'bg-blue-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            period === 'today' ? 'bg-[#00a8ff] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Today
@@ -117,7 +117,7 @@ export default function ReportsPage() {
         <button
           onClick={() => setPeriod('7d')}
           className={`px-3 py-1.5 rounded font-semibold transition-colors cursor-pointer ${
-            period === '7d' ? 'bg-blue-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            period === '7d' ? 'bg-[#00a8ff] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Trailing 7 Days
@@ -125,7 +125,7 @@ export default function ReportsPage() {
         <button
           onClick={() => setPeriod('mtd')}
           className={`px-3 py-1.5 rounded font-semibold transition-colors cursor-pointer ${
-            period === 'mtd' ? 'bg-blue-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            period === 'mtd' ? 'bg-[#00a8ff] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Month to Date
@@ -133,7 +133,7 @@ export default function ReportsPage() {
         <button
           onClick={() => setPeriod('ytd')}
           className={`px-3 py-1.5 rounded font-semibold transition-colors cursor-pointer ${
-            period === 'ytd' ? 'bg-blue-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+            period === 'ytd' ? 'bg-[#00a8ff] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           Year to Date
@@ -157,7 +157,7 @@ export default function ReportsPage() {
         <Card className="bg-white border-slate-200">
           <CardHeader>
             <CardDescription className="text-slate-500 font-medium">RevPAR (Revenue Per Available Room)</CardDescription>
-            <CardTitle className="text-2xl text-blue-600 font-bold">
+            <CardTitle className="text-2xl text-[#00a8ff] font-bold">
               {formatCurrency(revPar)}
             </CardTitle>
           </CardHeader>

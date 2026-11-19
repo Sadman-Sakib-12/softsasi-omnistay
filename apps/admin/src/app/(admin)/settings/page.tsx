@@ -810,12 +810,12 @@ export default function HotelSettingsPage() {
                   <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-slate-600 flex items-center gap-1.5">
-                        <Building className="w-3.5 h-3.5 text-blue-600" /> Hotel Properties
+                        <Building className="w-3.5 h-3.5 text-[#00a8ff]" /> Hotel Properties
                       </span>
                       <span className="font-bold text-slate-900">1 / 3 Used</span>
                     </div>
                     <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '33%' }} />
+                      <div className="bg-[#00a8ff] h-2 rounded-full" style={{ width: '33%' }} />
                     </div>
                     <div className="text-[10px] text-slate-400">2 property slots remaining</div>
                   </div>
@@ -876,7 +876,7 @@ export default function HotelSettingsPage() {
                       }`}
                     >
                       {isPopular && (
-                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-600 text-white shadow-xs">
+                        <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#00a8ff] text-white shadow-xs">
                           Most Popular Choice
                         </span>
                       )}
@@ -911,15 +911,15 @@ export default function HotelSettingsPage() {
                           </div>
                           <ul className="text-xs text-slate-600 space-y-1.5 font-medium">
                             <li className="flex items-center gap-2">
-                              <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                              <Check className="w-3.5 h-3.5 text-[#00a8ff] shrink-0" />
                               <span>{plan.maxProperties === 999 ? 'Unlimited' : plan.maxProperties} Property Branches</span>
                             </li>
                             <li className="flex items-center gap-2">
-                              <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                              <Check className="w-3.5 h-3.5 text-[#00a8ff] shrink-0" />
                               <span>{plan.maxRooms === 9999 ? 'Unlimited' : plan.maxRooms} Guest Rooms & Suites</span>
                             </li>
                             <li className="flex items-center gap-2">
-                              <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                              <Check className="w-3.5 h-3.5 text-[#00a8ff] shrink-0" />
                               <span>{plan.maxOutlets === 999 ? 'Unlimited' : plan.maxOutlets} Touchscreen POS Outlets</span>
                             </li>
                           </ul>
@@ -1107,7 +1107,7 @@ export default function HotelSettingsPage() {
                         </button>
                         <button
                           type="submit"
-                          className="px-4 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold"
+                          className="px-4 py-1.5 rounded bg-[#00a8ff] hover:bg-[#0097e6] text-white text-xs font-bold cursor-pointer"
                         >
                           Submit Enterprise Request
                         </button>
@@ -1323,7 +1323,7 @@ export default function HotelSettingsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <Camera className="w-3.5 h-3.5 text-blue-600" /> 3. Photography Gallery Management (Chapter 4.1.1.4)
+                        <Camera className="w-3.5 h-3.5 text-[#00a8ff]" /> 3. Photography Gallery Management (Chapter 4.1.1.4)
                       </h5>
                       <p className="text-[11px] text-slate-500">
                         Curate property photography categorized by Exterior, Lobby, Suite, Pool, Restaurant, and Spa.

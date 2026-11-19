@@ -219,7 +219,7 @@ export default function BookingConfirmationPage() {
             </button>
 
             <Link href={`/guest/checkin/${booking.id}`}>
-              <Button size="sm" className="gap-2 bg-[#2577e3] hover:bg-[#1d62c2]">
+              <Button size="sm" className="gap-2 bg-[#00a8ff] hover:bg-[#0097e6]">
                 <KeyRound className="w-4 h-4" />
                 <span>Digital Self Check-in</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -234,7 +234,7 @@ export default function BookingConfirmationPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
             <div>
               <div className="flex items-center gap-2">
-                <Building2 className="w-6 h-6 text-[#2577e3]" />
+                <Building2 className="w-6 h-6 text-[#00a8ff]" />
                 <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">
                   SOFTSASI OMNISTAY 360 ENTERPRISE
                 </h2>
