@@ -19,6 +19,7 @@ export class OrderItemModifierDto {
   name!: string;
 
   @ApiProperty({ example: 4.5 })
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   price!: number;
@@ -31,11 +32,13 @@ export class CreateOrderItemDto {
   itemName!: string;
 
   @ApiProperty({ example: 2, minimum: 1 })
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   quantity!: number;
 
   @ApiProperty({ example: 58.0 })
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   unitPrice!: number;
@@ -75,6 +78,7 @@ export class CreatePosOrderDto {
   tableId?: string;
 
   @ApiPropertyOptional({ example: 4, default: 1 })
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsOptional()
@@ -98,11 +102,13 @@ export class SettlePosOrderDto {
   paymentMode!: string;
 
   @ApiProperty({ example: 125.5 })
+  @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   amount!: number;
 
   @ApiPropertyOptional({ example: 15.0, default: 0 })
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   @IsOptional()
@@ -116,6 +122,7 @@ export class SettlePosOrderDto {
 
 export class SplitCheckDto {
   @ApiProperty({ description: 'Number of even ways to split bill, or specific item splits', example: 2 })
+  @Type(() => Number)
   @IsInt()
   @Min(2)
   splitCount!: number;

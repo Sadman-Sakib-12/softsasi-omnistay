@@ -133,17 +133,18 @@ export default function PosEnterprisePage() {
   const [splitCount, setSplitCount] = useState(2);
 
   // Cart Totals: 10% Service Charge + 5% Dining Tax
-  const cartSubtotal = activeCart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const cartSubtotal = activeCart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.qty) || 1), 0);
   const cartServiceCharge = Math.round(cartSubtotal * 0.1 * 100) / 100;
   const cartTax = Math.round(cartSubtotal * 0.05 * 100) / 100;
   const cartGrandTotal = Math.round((cartSubtotal + cartServiceCharge + cartTax) * 100) / 100;
 
   const addToCart = (item: PosMenuItem) => {
+    const numericPrice = Number(item.price) || 0;
     const existing = activeCart.find((i) => i.id === item.id);
     if (existing) {
       setActiveCart(activeCart.map((i) => (i.id === item.id ? { ...i, qty: i.qty + 1 } : i)));
     } else {
-      setActiveCart([...activeCart, { id: item.id, name: item.itemName, price: item.price, qty: 1 }]);
+      setActiveCart([...activeCart, { id: item.id, name: item.itemName, price: numericPrice, qty: 1 }]);
     }
   };
 
@@ -208,12 +209,12 @@ export default function PosEnterprisePage() {
         outletId: activeOutletId,
         terminalId: activeTerminal?.id,
         tableId: selectedTableForOrder?.id,
-        guestCount,
+        guestCount: Math.max(1, Number(guestCount) || 1),
         serverName,
         items: activeCart.map((i) => ({
           itemName: i.name,
-          quantity: i.qty,
-          unitPrice: i.price,
+          quantity: Math.max(1, Number(i.qty) || 1),
+          unitPrice: Math.max(0, Number(i.price) || 0),
           notes: i.notes,
         })),
       });
@@ -221,7 +222,7 @@ export default function PosEnterprisePage() {
       if (settleImmediate) {
         await posService.settleOrder((order as any).id, {
           paymentMode: settleImmediate.paymentMode,
-          amount: (order as any).totalAmount,
+          amount: Math.max(0.01, Number((order as any).totalAmount) || 0),
         });
       }
 

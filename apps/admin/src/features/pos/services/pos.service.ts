@@ -211,7 +211,21 @@ export const posService = {
       modifiers?: Array<{ name: string; price: number }>;
     }>;
   }): Promise<any> => {
-    return await api.post<any>('/api/v1/pos/orders', dto);
+    const payload = {
+      ...dto,
+      guestCount: Math.max(1, Number(dto.guestCount) || 1),
+      items: (dto.items || []).map((it) => ({
+        itemName: String(it.itemName || 'Item'),
+        quantity: Math.max(1, Number(it.quantity) || 1),
+        unitPrice: Math.max(0, Number(it.unitPrice) || 0),
+        notes: it.notes,
+        modifiers: it.modifiers?.map((m) => ({
+          name: String(m.name),
+          price: Math.max(0, Number(m.price) || 0),
+        })),
+      })),
+    };
+    return await api.post<any>('/api/v1/pos/orders', payload);
   },
 
   getOrdersByOutlet: async (outletId: string): Promise<any[]> => {
