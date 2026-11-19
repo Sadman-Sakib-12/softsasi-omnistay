@@ -272,9 +272,9 @@ export default function RoomManagementPage() {
 
       {/* Edit Room Dialog Modal */}
       {editingRoom && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Edit className="w-4 h-4 text-[#00a8ff]" /> Edit Room Details
               </h3>

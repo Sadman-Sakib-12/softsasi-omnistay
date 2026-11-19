@@ -14,6 +14,7 @@ import {
   Calendar,
   Sparkles,
   ExternalLink,
+  Menu,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import { useTenantStore } from '@/stores/tenant-store';
@@ -31,7 +32,7 @@ import {
 
 export function AdminHeader() {
   const router = useRouter();
-  const { activeRole, setActiveRole } = useUiStore();
+  const { activeRole, setActiveRole, toggleMobileSidebar } = useUiStore();
   const { currentTenantId, tenants, setTenantId, setTenants } = useTenantStore();
   const [user, setUser] = useState<UserSession | null>(() => {
     if (typeof window !== 'undefined') {
@@ -137,17 +138,26 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="h-14 border-b border-slate-200 bg-white px-5 flex items-center justify-between z-20 shadow-xs">
-      {/* Left: Current Hotel / Property Partition */}
-      <div className="flex items-center gap-3">
+    <header className="h-14 border-b border-slate-200 bg-white px-3 sm:px-5 flex items-center justify-between z-20 shadow-xs shrink-0">
+      {/* Left: Mobile Menu Toggle + Current Hotel / Property Partition */}
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={toggleMobileSidebar}
+          className="lg:hidden p-1.5 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-xs text-slate-800 font-medium cursor-pointer">
-              <Building2 className="w-3.5 h-3.5 text-[#00a8ff]" />
-              <span className="truncate max-w-[140px] sm:max-w-[200px]">
+            <button className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-xs text-slate-800 font-medium cursor-pointer max-w-[150px] sm:max-w-xs truncate">
+              <Building2 className="w-3.5 h-3.5 text-[#00a8ff] shrink-0" />
+              <span className="truncate max-w-[90px] sm:max-w-[180px] md:max-w-[240px]">
                 {tenantDisplayName}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-72 bg-white border border-slate-200 shadow-xl rounded-2xl p-1.5 z-50">

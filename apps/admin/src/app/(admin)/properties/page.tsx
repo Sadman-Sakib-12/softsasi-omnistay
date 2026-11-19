@@ -76,9 +76,9 @@ export default function PropertiesPage() {
     <div className="space-y-5 animate-in fade-in duration-200">
       {/* Breadcrumb Matching Figure 4.1 in PDF */}
       <div className="flex items-center gap-1.5 text-xs text-slate-500">
-        <span className="text-blue-500 font-semibold"># Dashboard</span>
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
         <span>/</span>
-        <span className="text-blue-500 font-semibold">Hotels</span>
+        <span className="text-[#00a8ff] font-semibold">Hotels</span>
         <span>/</span>
         <span className="text-slate-400">All</span>
       </div>

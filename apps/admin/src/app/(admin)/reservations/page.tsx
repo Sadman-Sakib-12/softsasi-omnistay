@@ -121,12 +121,19 @@ export default function ReservationsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 animate-in fade-in duration-200">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1.5 text-xs text-slate-500">
+        <span className="text-[#00a8ff] font-semibold"># Dashboard</span>
+        <span>/</span>
+        <span className="text-slate-400">Reservations & Folios</span>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <CalendarDays className="w-6 h-6 text-blue-600" /> Reservations & Folios
+            <CalendarDays className="w-6 h-6 text-[#00a8ff]" /> Reservations & Folios
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Manage incoming arrivals, departures, room assignments, and front-desk check-in status (Chapter 4.1.5).

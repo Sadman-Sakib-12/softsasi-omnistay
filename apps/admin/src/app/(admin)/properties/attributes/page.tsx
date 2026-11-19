@@ -184,9 +184,9 @@ export default function PropertyAttributesPage() {
 
       {/* Add Modal */}
       {isAddOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
               <h3 className="font-bold text-slate-900 text-sm">Add Property Attribute</h3>
               <button onClick={() => setIsAddOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-4 h-4" />
@@ -234,9 +234,9 @@ export default function PropertyAttributesPage() {
 
       {/* Edit Modal */}
       {editingAttr && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 border border-slate-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
               <h3 className="font-bold text-slate-900 text-sm">Edit Attribute</h3>
               <button onClick={() => setEditingAttr(null)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-4 h-4" />

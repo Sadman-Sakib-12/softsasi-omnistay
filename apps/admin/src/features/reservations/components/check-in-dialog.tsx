@@ -100,28 +100,34 @@ export function CheckInDialog({ reservation, isOpen, onClose, onSuccess }: Check
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold flex items-center gap-2">
-              <LogIn className="w-5 h-5 text-blue-400" /> Front Desk Digital Check-In & E-Registration
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Guest Registration Card &middot; MRZ Document OCR &middot; E-Signature &middot; RFID Encoder (Chapter 4.1.5.2)
-            </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
+        {/* Header - Unified Clean Light Design */}
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-[#00a8ff] shrink-0">
+              <LogIn className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                Front Desk Digital Check-In & E-Registration
+              </h2>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Guest Registration Card &middot; MRZ Document OCR &middot; E-Signature &middot; RFID Encoder (Chapter 4.1.5.2)
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer p-1.5 rounded-lg shrink-0 ml-2"
+            aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <form onSubmit={handleCompleteCheckIn} className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleCompleteCheckIn} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 text-left">
           {errorMessage && (
             <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />

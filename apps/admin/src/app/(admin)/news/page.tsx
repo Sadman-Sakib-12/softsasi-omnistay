@@ -201,8 +201,8 @@ export default function NewsCmsPage() {
 
       {/* Write Article Modal */}
       {isWriteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 my-auto sm:my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Newspaper className="w-4 h-4 text-[#00a8ff]" /> Write New Article
@@ -276,8 +276,8 @@ export default function NewsCmsPage() {
 
       {/* Edit Article Modal */}
       {editingArticle && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150 my-auto sm:my-8">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Newspaper className="w-4 h-4 text-[#00a8ff]" /> Edit Article

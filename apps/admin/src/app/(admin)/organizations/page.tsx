@@ -267,26 +267,26 @@ export default function OrganizationsPage() {
                         </Badge>
                       )}
                     </CardTitle>
-                    <CardDescription className="text-xs font-mono mt-1 text-slate-500">
+                    <CardDescription className="text-xs font-mono mt-1 text-slate-500 break-all">
                       UUID: {tenant.id}
                     </CardDescription>
                   </div>
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                     <Building2 className="w-4 h-4" />
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-4">
-                  <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
                       <span className="text-slate-400 font-medium">Domain Mapping</span>
-                      <p className="font-medium text-slate-800 mt-0.5">{tenant.domain || `${tenant.slug || 'tenant'}.omnistay.com`}</p>
+                      <p className="font-medium text-slate-800 mt-0.5 truncate">{tenant.domain || `${tenant.slug || 'tenant'}.omnistay.com`}</p>
                       <a
                         href={getPublicWebUrl('', tenant.slug)}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[11px] text-[#00a8ff] hover:underline inline-flex items-center gap-1 mt-0.5 font-mono"
+                        className="text-[11px] text-[#00a8ff] hover:underline inline-flex items-center gap-1 mt-0.5 font-mono break-all"
                       >
-                        {getPublicWebUrl('', tenant.slug).replace(/^https?:\/\//, '')} <ExternalLink className="w-2.5 h-2.5" />
+                        {getPublicWebUrl('', tenant.slug).replace(/^https?:\/\//, '')} <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                       </a>
                     </div>
                     <div>
@@ -295,11 +295,11 @@ export default function OrganizationsPage() {
                     </div>
                   </div>
 
-                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                  <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100">
                     <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> PostgreSQL RLS Partitioned
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> PostgreSQL RLS Partitioned
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"

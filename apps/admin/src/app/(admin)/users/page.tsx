@@ -229,16 +229,16 @@ export default function UsersPage() {
 
       {/* Add User Modal Dialog */}
       {isAddUserOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-blue-600" /> Register New Platform User
+                <UserPlus className="w-4 h-4 text-[#00a8ff]" /> Register New Platform User
               </h3>
               <button
                 type="button"
                 onClick={() => setIsAddUserOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -344,8 +344,8 @@ export default function UsersPage() {
 
       {/* Newly Created User Credentials Success Modal */}
       {createdCredentials && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-emerald-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150">
             <div className="p-6 text-center">
               <div className="w-12 h-12 mx-auto rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-3">
                 <Check className="w-6 h-6" />
@@ -407,16 +407,16 @@ export default function UsersPage() {
 
       {/* Edit User Modal Dialog */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Edit className="w-4 h-4 text-blue-600" /> Edit User Profile & Role
+                <Edit className="w-4 h-4 text-[#00a8ff]" /> Edit User Profile & Role
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingUser(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>

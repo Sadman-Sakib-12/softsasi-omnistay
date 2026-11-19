@@ -338,11 +338,11 @@ export default function RolesPage() {
 
       {/* Create Custom Role Modal Dialog */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col my-auto sm:my-8 border border-slate-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white shrink-0">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-blue-600" />
+                <ShieldCheck className="w-5 h-5 text-[#00a8ff]" />
                 <h3 className="font-bold text-slate-900 text-sm">Create Custom Operational Role</h3>
               </div>
               <button
@@ -449,11 +449,11 @@ export default function RolesPage() {
 
       {/* Edit Role Modal Dialog */}
       {editingRole && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col my-auto sm:my-8 border border-slate-200">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white shrink-0">
               <div className="flex items-center gap-2">
-                <Edit className="w-5 h-5 text-blue-600" />
+                <Edit className="w-5 h-5 text-[#00a8ff]" />
                 <h3 className="font-bold text-slate-900 text-sm">
                   Edit Role: {editingRole.title} ({editingRole.name})
                 </h3>

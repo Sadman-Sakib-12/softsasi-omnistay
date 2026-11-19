@@ -250,23 +250,23 @@ export default function CarsPage() {
 
       {/* Edit Vehicle Modal */}
       {editingCar && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white shrink-0">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Car className="w-4 h-4 text-[#00a8ff]" /> Edit Vehicle Fleet Profile
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingCar(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleUpdate}>
-              <div className="p-5 space-y-4 text-xs">
+            <form onSubmit={handleUpdate} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-5 space-y-4 text-xs overflow-y-auto flex-1">
                 <div className="space-y-1">
                   <label className="block text-slate-700 font-semibold">Model Name *</label>
                   <input

@@ -67,35 +67,41 @@ export function NewReservationDialog() {
     <>
       <Button
         onClick={() => setOpen(true)}
-        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 h-8 rounded-lg shadow-xs flex items-center gap-1.5 cursor-pointer"
+        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 h-8 rounded-lg shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
       >
         <Plus className="w-4 h-4" /> New Reservation
       </Button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
-            {/* Header */}
-            <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-blue-400" /> New Guest Reservation
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Register a direct front-desk reservation into the active hotel folio.
-                </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto sm:my-8 animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[92vh]">
+            {/* Header - Unified Clean Light Design */}
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-[#00a8ff] shrink-0">
+                  <Calendar className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                    New Guest Reservation
+                  </h2>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Register a direct front-desk reservation into the active hotel folio.
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-slate-800"
+                className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer p-1.5 rounded-lg shrink-0 ml-2"
+                aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            {/* Form Body with Smooth Scrolling on All Devices */}
+            <form onSubmit={handleSubmit(onSubmit)} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 text-left">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-700">Guest Full Name *</label>
                 <Input placeholder="John Doe" icon={<User className="w-4 h-4" />} {...register('guestName')} />
@@ -150,14 +156,14 @@ export function NewReservationDialog() {
                 {errors.totalAmount && <p className="text-[11px] text-rose-500 font-medium">{errors.totalAmount.message}</p>}
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 shrink-0">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isCreating}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold cursor-pointer"
                 >
                   {isCreating ? (
                     <>

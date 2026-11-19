@@ -16,11 +16,14 @@ const getInitialRole = (): Role => {
 
 interface UiState {
   sidebarCollapsed: boolean;
+  mobileSidebarOpen: boolean;
   theme: 'dark' | 'light';
   activeRole: Role;
   isCommandPaletteOpen: boolean;
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  toggleMobileSidebar: () => void;
+  setMobileSidebarOpen: (open: boolean) => void;
   toggleTheme: () => void;
   setTheme: (theme: 'dark' | 'light') => void;
   setActiveRole: (role: Role) => void;
@@ -29,11 +32,14 @@ interface UiState {
 
 export const useUiStore = create<UiState>((set) => ({
   sidebarCollapsed: false,
+  mobileSidebarOpen: false,
   theme: 'dark',
   activeRole: getInitialRole(),
   isCommandPaletteOpen: false,
   toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
   setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+  toggleMobileSidebar: () => set((state) => ({ mobileSidebarOpen: !state.mobileSidebarOpen })),
+  setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
   setActiveRole: (role) => set({ activeRole: role }),
   toggleTheme: () =>
     set((state) => {

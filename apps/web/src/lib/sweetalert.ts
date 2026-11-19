@@ -46,3 +46,4 @@ export const showAlert = (options: {
 };
 
 export default Swal;
+

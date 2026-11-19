@@ -44,6 +44,7 @@ import {
   BarChart3,
   History,
   Building,
+  X,
 } from 'lucide-react';
 import { useUiStore } from '@/stores/ui-store';
 import { sessionManager } from '@/lib/auth/session';
@@ -161,7 +162,8 @@ export const navigationSections: NavSection[] = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const { sidebarCollapsed, toggleSidebar, activeRole } = useUiStore();
+  const { sidebarCollapsed, toggleSidebar, activeRole, mobileSidebarOpen, setMobileSidebarOpen } = useUiStore();
+  const isExpanded = !sidebarCollapsed || mobileSidebarOpen;
 
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
     Hotel: true,
@@ -225,21 +227,29 @@ export function AdminSidebar() {
   return (
     <aside
       className={cn(
-        'relative flex flex-col border-r border-[#1b263b] text-slate-300 transition-all duration-200 z-30 select-none shadow-sm shrink-0',
-        sidebarCollapsed ? 'w-16' : 'w-60'
+        // Desktop positioning:
+        'lg:relative lg:flex flex-col border-r border-[#1b263b] text-slate-300 transition-all duration-200 select-none shadow-sm shrink-0',
+        sidebarCollapsed ? 'lg:w-16' : 'lg:w-60',
+        // Mobile drawer positioning:
+        'fixed inset-y-0 left-0 z-50 w-72 lg:w-auto transform lg:transform-none flex flex-col',
+        mobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
       )}
       style={{ backgroundColor: 'var(--brand-bg, #162032)' }}
     >
       {/* Brand Header Matching PDF Figures */}
       <div className="flex h-14 items-center justify-between px-3 border-b border-[#212f45]" style={{ backgroundColor: 'var(--brand-bg, #111927)' }}>
-        <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
+        <Link
+          href="/dashboard"
+          onClick={() => setMobileSidebarOpen(false)}
+          className="flex items-center gap-2.5 overflow-hidden"
+        >
           <div
             className="w-8 h-8 rounded flex items-center justify-center font-black text-white text-xs shadow-xs shrink-0 tracking-wider transition-colors"
             style={{ backgroundColor: 'var(--brand-primary, #00a8ff)' }}
           >
             OS
           </div>
-          {!sidebarCollapsed && (
+          {isExpanded && (
             <div className="flex flex-col">
               <span className="font-bold text-xs tracking-wider text-white uppercase">OmniStay 360</span>
               <span className="text-[10px] text-slate-400 font-medium truncate max-w-[130px]">
@@ -248,20 +258,31 @@ export function AdminSidebar() {
             </div>
           )}
         </Link>
-        <button
-          onClick={toggleSidebar}
-          className="p-1 rounded text-slate-400 hover:text-white hover:bg-[#212f45] transition-colors"
-          title={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Mobile Drawer Close Button */}
+          <button
+            onClick={() => setMobileSidebarOpen(false)}
+            className="lg:hidden p-1.5 rounded text-slate-400 hover:text-white hover:bg-[#212f45] transition-colors cursor-pointer"
+            aria-label="Close navigation menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          {/* Desktop Sidebar Collapse Toggle */}
+          <button
+            onClick={toggleSidebar}
+            className="hidden lg:flex p-1 rounded text-slate-400 hover:text-white hover:bg-[#212f45] transition-colors cursor-pointer"
+            title={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          >
+            {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Main Navigation List Matching Exact Hierarchy in PDF Figures 2.1, 3.1, 4.1 */}
       <div className="flex-1 overflow-y-auto px-2 py-3 space-y-3 scrollbar-thin scrollbar-thumb-[#212f45]">
         {visibleSections.map((section, secIdx) => (
           <div key={secIdx} className="space-y-0.5">
-            {section.section && !sidebarCollapsed && (
+            {section.section && isExpanded && (
               <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 {section.section}
               </div>
@@ -294,9 +315,9 @@ export function AdminSidebar() {
                           className={cn('w-4 h-4 shrink-0', isActive ? 'text-white' : 'text-slate-400')}
                           style={isActive ? { color: 'var(--brand-primary, #00a8ff)' } : {}}
                         />
-                        {!sidebarCollapsed && <span className="truncate">{item.title}</span>}
+                        {isExpanded && <span className="truncate">{item.title}</span>}
                       </div>
-                      {!sidebarCollapsed && (
+                      {isExpanded && (
                         <div className="text-slate-400">
                           {isSubExpanded ? (
                             <ChevronDown className="w-3.5 h-3.5" />
@@ -308,7 +329,7 @@ export function AdminSidebar() {
                     </button>
 
                     {/* Submenu Items Matching PDF Figures 3.1 & 4.1 */}
-                    {!sidebarCollapsed && isSubExpanded && (
+                    {isExpanded && isSubExpanded && (
                       <div className="pl-6 space-y-0.5 py-0.5">
                         {item.submenu?.map((sub) => {
                           const isSubSelected = pathname === sub.href;
@@ -316,6 +337,7 @@ export function AdminSidebar() {
                             <Link
                               key={sub.title}
                               href={sub.href}
+                              onClick={() => setMobileSidebarOpen(false)}
                               className={cn(
                                 'block px-3 py-1.5 rounded text-[11px] transition-colors',
                                 isSubSelected
@@ -339,6 +361,7 @@ export function AdminSidebar() {
                 <Link
                   key={item.title}
                   href={item.href || '#'}
+                  onClick={() => setMobileSidebarOpen(false)}
                   className={cn(
                     'group flex items-center justify-between px-3 py-2 rounded text-xs font-medium transition-colors',
                     isActive
@@ -349,9 +372,9 @@ export function AdminSidebar() {
                 >
                   <div className="flex items-center gap-2.5 truncate">
                     <Icon className={cn('w-4 h-4 shrink-0', isActive ? 'text-white' : 'text-slate-400')} />
-                    {!sidebarCollapsed && <span className="truncate">{item.title}</span>}
+                    {isExpanded && <span className="truncate">{item.title}</span>}
                   </div>
-                  {!sidebarCollapsed && item.hasSubmenu && (
+                  {isExpanded && item.hasSubmenu && (
                     <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                   )}
                 </Link>
@@ -364,15 +387,18 @@ export function AdminSidebar() {
       {/* Footer Profile & Logout */}
       <div className="p-2 border-t border-[#212f45] bg-[#111927]">
         <button
-          onClick={handleLogout}
+          onClick={() => {
+            setMobileSidebarOpen(false);
+            handleLogout();
+          }}
           className={cn(
             'w-full flex items-center gap-2.5 px-3 py-2 rounded text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer',
-            sidebarCollapsed && 'justify-center px-0'
+            !isExpanded && 'justify-center px-0'
           )}
           title="Sign Out"
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          {!sidebarCollapsed && <span>Sign Out</span>}
+          {isExpanded && <span>Sign Out</span>}
         </button>
       </div>
     </aside>
